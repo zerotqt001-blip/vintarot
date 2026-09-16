@@ -5,12 +5,7 @@ export const CYLINDER_RADIUS=198;
 const DEGREES_TO_RADIANS=Math.PI/180;
 
 function cylinderAngle(index:number,count:number,rotation:number){
- const cardsPerSide=Math.max(1,Math.ceil(count/2));
- const rowSide=index%2===0?-1:1;
- const sideIndex=Math.floor(index/2);
- const progress=cardsPerSide<=1?0:sideIndex/(cardsPerSide-1);
- // Two inward-facing arcs leave clear front and rear openings, like the reference tunnel.
- const arcDegrees=rowSide*(30+progress*120);
+ const arcDegrees=count<=1?0:index/count*360;
  return (rotation+arcDegrees)*DEGREES_TO_RADIANS;
 }
 
@@ -29,18 +24,14 @@ export function cylinderPose(index:number,count=SHUFFLE_CARD_COUNT,rotation=0,xS
  const angle=cylinderAngle(index,count,rotation);
  const side=Math.sin(angle),depth=Math.cos(angle);
  const visualRotation=normalizedRotation(rotation);
- const cardsPerSide=Math.max(1,Math.ceil(count/2));
- const rowSide=index%2===0?-1:1;
- const sideIndex=Math.floor(index/2);
- const progress=cardsPerSide<=1?0:sideIndex/(cardsPerSide-1);
- const cardAngle=visualRotation+rowSide*(30+progress*120);
+ const cardAngle=visualRotation+(count<=1?0:index/count*360);
  return {
   x:side*CYLINDER_RADIUS*xScale,
   y:Math.sin(angle*2)*8,
   z:depth*CYLINDER_RADIUS,
   rotateX:Math.cos(angle*2)*3.5,
-  // A card's front normal points toward the central axis, like the reference tunnel.
-  rotateY:normalizedAngle(cardAngle+180),
+  // Turn the card's radial edge toward the axis, leaving the central aisle open.
+  rotateY:normalizedAngle(cardAngle+90),
   rotateZ:side*4,
  };
 }
