@@ -218,6 +218,89 @@
 @media(max-width:420px){.guidebook-map{grid-template-columns:1fr}.guidebook-map-node-top{grid-column:auto}.guidebook-map-node{min-height:225px}.guidebook-map-node-art{scale:.82;margin-top:-3px;margin-bottom:-8px}}
 @media(prefers-reduced-motion:reduce){.guidebook-map-shell::before{animation:none}.guidebook-map-node,.guidebook-map-node-art img{transition:none}}
 
+/* Celestial Luxury Tarot: the room is a dark observatory stage and the cards remain the focus. */
+.room-page{--tarot-bg-deep:#06111F;--tarot-bg:#081A2B;--tarot-surface:rgba(7, 20, 36, 0.78);--tarot-surface-hover:rgba(13, 34, 54, 0.88);--tarot-gold:#C7A66A;--tarot-gold-light:#E3C98F;--tarot-gold-muted:rgba(199, 166, 106, 0.45);--tarot-gold-border:rgba(199, 166, 106, 0.35);--tarot-ivory:#EEE7D8;--tarot-text:#E9E2D4;--tarot-text-secondary:#AEB7BE;--tarot-text-muted:#7E8C97;--tarot-teal:#315E63;--tarot-glow:rgba(199, 166, 106, 0.20);--table:var(--tarot-bg);--table-edge:var(--tarot-bg-deep);--ink:var(--tarot-text);background-color:var(--tarot-bg-deep);background-image:linear-gradient(rgba(3, 12, 24, 0.18),rgba(3, 12, 24, 0.32)),url('/room/celestial-observatory.png');background-position:center top;background-size:cover;background-repeat:no-repeat;color:var(--tarot-text);font-family:'Work Sans',Arial,sans-serif;isolation:isolate}
+.room-page .topbar{height:62px;padding:0 24px;background:rgba(4, 15, 28, 0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(199, 166, 106, 0.18);color:var(--tarot-text);box-shadow:0 8px 30px rgba(2, 8, 18, 0.24)}
+.room-page .brand{color:var(--tarot-ivory);font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;letter-spacing:-.8px;text-shadow:0 1px 18px rgba(199, 166, 106, 0.2)}
+.room-page .topbar>span{color:var(--tarot-text-secondary);font-size:12px;letter-spacing:.04em}
+.room-page .top-actions{gap:8px}
+.room-page .top-actions .button,.room-page .top-actions>button,.room-page .language-select select{min-height:34px;border:1px solid var(--tarot-gold-border);border-radius:999px;background:rgba(8, 24, 40, 0.65);color:var(--tarot-ivory);transition:background .25s ease,border-color .25s ease,transform .25s ease}
+.room-page .top-actions .button{padding:5px 15px;font-size:11px}
+.room-page .top-actions>button{height:34px;padding:5px 15px}
+.room-page .top-actions .button:hover,.room-page .top-actions>button:hover,.room-page .language-select select:hover{background:rgba(199, 166, 106, 0.1);border-color:rgba(227, 201, 143, 0.75);transform:translateY(-1px)}
+.room-page .top-actions .black,.room-page .top-actions .host-button{background:rgba(8, 24, 40, 0.72);color:var(--tarot-ivory)}
+.room-page .avatar{width:36px;height:36px;margin-left:2px;background:rgba(8, 24, 40, 0.75);border:1px solid var(--tarot-gold-border);color:var(--tarot-gold-light)}
+.room-page .media-tools{top:78px;left:18px;padding:6px;gap:4px;background:var(--tarot-surface);backdrop-filter:blur(14px);border:1px solid var(--tarot-gold-border);box-shadow:0 12px 28px rgba(2, 8, 18, 0.32)}
+.room-page .media-tools button{color:var(--tarot-gold-light);border-radius:8px}
+.room-page .media-tools button:hover{background:rgba(199, 166, 106, 0.1);color:var(--tarot-ivory)}
+.room-page .room-avatar{top:78px;width:88px;height:88px;background:rgba(8, 24, 40, 0.52);border:1px solid rgba(199, 166, 106, 0.62);color:var(--tarot-gold-light);box-shadow:0 0 32px rgba(199, 166, 106, 0.12)}
+.room-page .room-avatar>span{top:100%;background:rgba(4, 15, 28, 0.82);color:var(--tarot-text-secondary);border:1px solid rgba(199, 166, 106, 0.18)}
+.room-page .zoom-tools{top:78px;right:18px;padding:5px 7px;gap:8px;background:var(--tarot-surface);backdrop-filter:blur(14px);border:1px solid var(--tarot-gold-border);color:var(--tarot-ivory);box-shadow:0 12px 28px rgba(2, 8, 18, 0.32)}
+.room-page .zoom-tools button{color:var(--tarot-gold-light);border-radius:8px}
+.room-page .zoom-tools button:hover{background:rgba(199, 166, 106, 0.1)}
+.room-page .camera-nav{top:124px;right:18px;background:var(--tarot-surface);backdrop-filter:blur(14px);border:1px solid var(--tarot-gold-border);box-shadow:0 14px 32px rgba(2, 8, 18, 0.34)}
+.room-page .camera-nav button{color:var(--tarot-gold-light)}
+.room-page .camera-nav button:hover{background:rgba(199, 166, 106, 0.1);color:var(--tarot-ivory)}
+.room-page .camera-nav-reset{color:var(--tarot-text-muted)!important}
+.room-page .room-question{top:148px;left:25%;right:25%;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--tarot-ivory);text-shadow:0 2px 20px rgba(2, 8, 18, 0.72);pointer-events:none}
+.room-page .room-question-kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--tarot-gold-light)}
+.room-page .room-question-rule{display:block;width:min(235px,70%);height:1px;background:linear-gradient(90deg,transparent,rgba(227, 201, 143, 0.78),transparent)}
+.room-page .room-question-copy{max-width:600px;font-family:'Instrument Serif',serif;font-size:clamp(32px,3.25vw,48px);font-weight:400;line-height:1.06;letter-spacing:-.025em}
+.room-page .room-question-user{font-size:12px;letter-spacing:.08em;color:var(--tarot-text-secondary)}
+.room-page .tabletop{inset:62px 0 55px;background:transparent;touch-action:none;perspective:1400px;box-shadow:inset 0 40px 100px rgba(2, 8, 18, 0.12),inset 0 -70px 130px rgba(2, 8, 18, 0.52)}
+.room-page .tabletop::before{inset:-8%;z-index:0;background:radial-gradient(circle at 50% 38%,rgba(49, 94, 99, 0.15),transparent 38%),radial-gradient(circle at 50% 82%,rgba(199, 166, 106, 0.08),transparent 42%);opacity:.8;transform:translate3d(0,0,-55px) scale(1.08);animation:room-celestial-breathe 28s ease-in-out infinite alternate}
+.room-page .tabletop::after{z-index:1;background:radial-gradient(circle at 50% 43%,rgba(24, 65, 86, 0.1) 0%,rgba(5, 16, 30, 0.18) 50%,rgba(2, 8, 18, 0.38) 100%),linear-gradient(180deg,rgba(3, 12, 24, 0.08),rgba(3, 12, 24, 0.34));mix-blend-mode:normal}
+.room-page .table-layout{top:42%;width:900px;height:380px;z-index:2}
+.room-page .spread-slots{height:356px;gap:28px;counter-reset:spread-position}
+.room-page .spread-slot{flex-basis:235px;height:356px;overflow:visible;border:0;border-color:rgba(199, 166, 106, 0.35);border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;counter-increment:spread-position}
+.room-page .spread-slot::before{content:counter(spread-position,upper-roman);position:absolute;top:calc(100% + 4px);left:50%;z-index:3;display:grid;place-items:center;width:34px;height:34px;transform:translateX(-50%);border:1px solid var(--tarot-gold);border-radius:50%;color:var(--tarot-gold-light);font:400 15px/1 'Instrument Serif',serif;background:rgba(6, 17, 31, 0.78);box-shadow:0 4px 14px rgba(2, 8, 18, 0.38)}
+.room-page .spread-slot>span{top:calc(100% + 47px);display:flex;flex-direction:column;align-items:center;gap:6px;white-space:normal;color:var(--tarot-ivory);text-shadow:0 2px 14px rgba(2, 8, 18, 0.82)}
+.room-page .spread-slot>span strong{font:400 29px/1 'Instrument Serif',serif;letter-spacing:-.02em}
+.room-page .spread-slot>span small{font:12px/1.25 'Work Sans',Arial,sans-serif;color:var(--tarot-text-secondary);letter-spacing:.02em}
+.room-page .drawn-card{border:0;background:transparent;filter:drop-shadow(0 20px 26px rgba(2, 8, 18, 0.42))}
+.room-page .drawn-card:hover .room-front,.room-page .drawn-card.is-card-active .room-front{box-shadow:0 20px 42px rgba(2, 8, 18, 0.52),0 0 30px rgba(199, 166, 106, 0.08)}
+.room-page .room-flip>.card-back{box-shadow:0 18px 35px rgba(2, 8, 18, 0.44)}
+.room-page .room-front{box-shadow:0 18px 35px rgba(2, 8, 18, 0.42);border-radius:8px}
+.room-page .card-prompt{background:rgba(5, 18, 32, 0.9);border:1px solid var(--tarot-gold-border);color:var(--tarot-ivory);box-shadow:0 10px 24px rgba(2, 8, 18, 0.54)}
+.room-page .room-guide{top:34%;left:22px;width:215px;padding:22px 19px;background:var(--tarot-surface);backdrop-filter:blur(14px);border:1px solid rgba(199, 166, 106, 0.38);border-radius:18px;color:var(--tarot-text);box-shadow:0 16px 50px rgba(2, 8, 18, 0.4)}
+.room-page .room-guide h2{color:var(--tarot-gold-light);font-size:23px;letter-spacing:-.4px}
+.room-page .room-guide p{color:#D5D9DA;font-size:12px;line-height:1.55}
+.room-page .room-guide small{color:var(--tarot-gold-light);letter-spacing:.14em}
+.room-page .guide-close{color:var(--tarot-text-secondary)}
+.room-page .text-button{color:var(--tarot-gold-light);text-underline-offset:3px}
+.room-page .text-button:hover{color:var(--tarot-ivory)}
+.room-page .room-toolbar{right:18px;top:31%;gap:12px;padding:10px;background:var(--tarot-surface);backdrop-filter:blur(14px);border:1px solid rgba(199, 166, 106, 0.3);border-radius:20px;box-shadow:0 16px 45px rgba(2, 8, 18, 0.42)}
+.room-page .room-toolbar>div{display:flex;flex-direction:column;gap:4px;border:0;background:transparent}
+.room-page .room-toolbar>button,.room-page .room-toolbar button{width:42px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--tarot-gold-light)}
+.room-page .room-toolbar button:hover,.room-page .room-toolbar button.on{background:rgba(199, 166, 106, 0.1);color:var(--tarot-ivory)}
+.room-page .room-toolbar button.on{outline:1px solid rgba(227, 201, 143, 0.72);outline-offset:1px}
+.room-page .room-status{bottom:66px;left:18px;background:rgba(5, 18, 32, 0.74);backdrop-filter:blur(12px);border:1px solid rgba(199, 166, 106, 0.22);border-radius:10px;color:var(--tarot-text-secondary);box-shadow:0 10px 24px rgba(2, 8, 18, 0.32)}
+.room-page .room-status button{color:var(--tarot-gold-light)}
+.room-page .room-bottom{height:55px;background:rgba(4, 15, 28, 0.88);backdrop-filter:blur(14px);border-top:1px solid rgba(199, 166, 106, 0.24);color:var(--tarot-text)}
+.room-page .room-bottom .button{border-color:var(--tarot-gold-border);color:var(--tarot-ivory);background:rgba(8, 24, 40, 0.62)}
+.room-page .room-bottom .button:hover{background:rgba(199, 166, 106, 0.1);border-color:rgba(227, 201, 143, 0.75)}
+.room-page .room-bottom strong{color:var(--tarot-ivory);font-weight:500}.room-page .room-bottom small{color:var(--tarot-text-muted)}
+.room-page .shuffle-control{bottom:78px;min-height:44px;padding:9px 20px;background:rgba(5, 18, 32, 0.82);border:1px solid var(--tarot-gold-border);color:var(--tarot-gold-light);box-shadow:0 12px 28px rgba(2, 8, 18, 0.36)}
+.room-page .shuffle-control:hover{background:rgba(199, 166, 106, 0.12);border-color:rgba(227, 201, 143, 0.75)}
+.room-page .deck-instruction{position:absolute;left:50%;bottom:171px;z-index:4;transform:translateX(-50%);color:var(--tarot-gold-light);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-shadow:0 2px 12px rgba(2, 8, 18, 0.84);white-space:nowrap}
+.room-page .card-fan{left:4%;right:4%;bottom:10px;z-index:3;filter:drop-shadow(0 -14px 26px rgba(2, 8, 18, 0.62))}
+.room-page .fan-surface{border-color:rgba(199, 166, 106, 0.48);background-color:rgba(5, 18, 32, 0.74)!important;box-shadow:0 8px 18px rgba(2, 8, 18, 0.36)}
+.room-page .fan-card:hover .fan-surface{box-shadow:0 15px 28px rgba(2, 8, 18, 0.55),0 0 22px rgba(199, 166, 106, 0.1)}
+.room-page .room-loading{color:var(--tarot-gold-light)}
+.room-dialog,[data-slot=dialog-content].room-dialog{background:rgba(5, 18, 32, 0.95);border:1px solid rgba(199, 166, 106, 0.38);color:var(--tarot-text);box-shadow:0 20px 70px rgba(2, 8, 18, 0.62)}
+.room-dialog [data-slot=dialog-title]{color:var(--tarot-gold-light)}
+.room-dialog [data-slot=dialog-description]{color:var(--tarot-text-secondary)}
+.room-dialog input,.room-dialog textarea{background:rgba(8, 24, 40, 0.82);border-color:rgba(199, 166, 106, 0.32);color:var(--tarot-ivory)}
+.room-dialog input::placeholder,.room-dialog textarea::placeholder{color:var(--tarot-text-muted)}
+.room-dialog .button.black{background:var(--tarot-gold);color:#06111F;border-color:var(--tarot-gold-light)}
+.room-dialog .button.black:hover{background:var(--tarot-gold-light)}
+.room-page .drawing-layer{color:var(--tarot-gold-light)}
+@keyframes room-celestial-breathe{from{transform:translate3d(-.5%,.2%,-55px) scale(1.08)}to{transform:translate3d(.7%,-.8%,-55px) scale(1.12)}}
+@media(max-width:950px){.room-page .topbar{padding-inline:17px}.room-page .room-guide{left:16px;width:190px}.room-page .room-question{left:21%;right:21%}.room-page .room-toolbar{right:14px}.room-page .spread-slots{gap:16px}.room-page .spread-slot>span strong{font-size:26px}}
+@media(min-width:901px) and (max-width:1100px){.room-page .table-layout{left:calc(50% + 76px)}.room-page .room-guide{left:14px;width:180px}}
+@media(max-width:700px){.room-page .topbar{height:56px;padding:0 10px}.room-page .brand{font-size:24px}.room-page .top-actions{gap:4px}.room-page .top-actions .button,.room-page .top-actions>button{min-height:30px;padding:4px 9px;font-size:10px}.room-page .top-actions .button:not(.host-button){font-size:0;width:30px;padding:0}.room-page .top-actions .button:not(.host-button)::after{content:'×';font-size:16px}.room-page .avatar{width:32px;height:32px}.room-page .media-tools{top:68px;left:8px}.room-page .room-avatar{top:68px;width:64px;height:64px}.room-page .room-avatar svg{width:30px}.room-page .zoom-tools{top:68px;right:8px}.room-page .camera-nav{top:106px;right:8px;scale:.82;transform-origin:top right}.room-page .room-question{top:123px;left:10%;right:10%;gap:7px}.room-page .room-question-kicker{font-size:8px;letter-spacing:.18em}.room-page .room-question-copy{font-size:clamp(25px,7vw,36px);max-width:340px}.room-page .room-question-user{font-size:10px}.room-page .tabletop{inset:56px 0 50px}.room-page .table-layout{top:43%;scale:.43;transform-origin:0 0}.room-page .room-guide{top:auto;bottom:137px;left:8px;width:166px;max-height:170px;padding:18px 13px;border-radius:14px}.room-page .room-guide h2{font-size:19px}.room-page .room-guide p{font-size:10px}.room-page .room-toolbar{right:8px;top:148px;padding:6px;gap:6px;border-radius:15px}.room-page .room-toolbar>div{gap:2px}.room-page .room-toolbar>button,.room-page .room-toolbar button{width:32px;height:31px}.room-page .room-toolbar svg{width:16px}.room-page .deck-instruction{bottom:169px;font-size:8px;letter-spacing:.1em}.room-page .card-fan{left:2%;right:2%;bottom:4px}.room-page .room-status{bottom:61px;left:8px;max-width:175px;font-size:9px}.room-page .room-bottom{height:50px;padding:5px 7px}.room-page .room-bottom .button{padding:5px 9px;font-size:10px}.room-page .room-bottom strong{font-size:10px}.room-page .room-bottom small{font-size:9px}.room-page .spread-slot>span strong{font-size:24px}.room-page .spread-slot>span small{font-size:11px}.room-page .room-dialog{max-height:90vh}}
+@media(prefers-reduced-motion:reduce){.room-page .tabletop::before{animation:none!important}.room-page .card-hover-shell,.room-page .room-question,.room-page .deck-instruction{animation:none!important}.room-page .spread-slot,.room-page .drawn-card,.room-page .fan-card{transition:none!important}}
+
 /* Curved labels: keep each translated phrase intact while matching Moonlight's circular controls. */
 .site-sidebar [data-slot=sidebar-content],.main-nav,.main-nav a{overflow:visible}
 .main-nav a{position:relative;justify-content:flex-end;gap:0;padding-bottom:3px}
