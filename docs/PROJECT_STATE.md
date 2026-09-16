@@ -8,7 +8,7 @@ Moonlight-inspired tarot website. Preserve reference interactions, smooth motion
 
 ## Latest feature
 /create now offers a custom question, six topics with four suggestions each, and skip/back controls. Create and +Room link here. A one-use sessionStorage draft (1h expiry) transfers question into room state without exposing question in URL; existing D1 room and journal persistence retains it. Work prompts were observed in reference; other prompts are VinTarot-authored.
-Deck tap starts, second tap stops the CSS shuffle in its current pose, then a short settle exit opens the fan. The stop action is local UI state, not shared across participants. The shuffle now uses a two-packet Arc Sweep motion that travels left-to-right and back through 3D depth, with opposite packet tilt and reduced-motion fallbacks.
+Deck tap starts, second tap stops the CSS shuffle in its current pose, then a short settle exit opens the fan. The stop action is local UI state, not shared across participants. The shuffle now uses an Arc Cascade motion: 32 cards travel left-to-right and back through a bowed 3D path with staggered depth and reduced-motion fallbacks.
 The interface now supports English and Tiếng Việt through a shared client locale provider. The selector is available in the site header and Room, with a profile selector for signed-in users. The choice is stored in localStorage and mirrored to the D1 profile record; visible navigation, Create questions, Room controls, guidebook, daily spread, journal, practice, profile, booking and invite copy are translated while Tarot card names and stored room data remain unchanged.
 
 ## Remaining work
