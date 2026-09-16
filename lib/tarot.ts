@@ -26,6 +26,15 @@ export const guidebookGroups:GuidebookGroup[]=(['Major Arcana','Wands','Cups','S
   ...groupDetails[suit],
   cardIds:cards.filter((card)=>card.suit===suit).map((card)=>card.id),
 }));
+export type GuidebookMapPosition='top'|'left'|'right'|'bottom-left'|'bottom-right';
+export type GuidebookMapItem={suit:Card['suit'];position:GuidebookMapPosition;accent:string};
+export const guidebookMapLayout:GuidebookMapItem[]=[
+  {suit:'Major Arcana',position:'top',accent:'#f4cf83'},
+  {suit:'Wands',position:'left',accent:'#f28a53'},
+  {suit:'Cups',position:'right',accent:'#74c8ff'},
+  {suit:'Swords',position:'bottom-left',accent:'#9dafff'},
+  {suit:'Pentacles',position:'bottom-right',accent:'#d7c878'},
+];
 export function cardSlug(card:Pick<Card,'name'>){return card.name.toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 export function cardBySlug(slug:string){const normalized=slug.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return cards.find((card)=>cardSlug(card)===normalized)}
 export const spreads:Record<string,string[]>={'Three-card insight':['Persona','Obstacle','Solution'],'Past · Present · Future':['Past','Present','Future'],'One small step':['Your focus'],'Social battery check':['How I feel','What I need'],'Relationship check-in':['You','Connection','Them'],'Celtic cross':['The present','The challenge','Foundation','Recent past','Possibility','Near future','Your approach','Your surroundings','Hopes and fears','Direction']};

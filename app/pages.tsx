@@ -2,8 +2,8 @@
 
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
-import { useEffect, useState, type FormEvent } from "react";
-import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
+import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, guidebookMapLayout, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import {
   Dialog,
@@ -287,7 +287,7 @@ function Library({ section, initialCard = null, closeHref }: { section: string; 
   );
   return (
     <>
-      <div className="library-hero">
+      <div className={section === "guidebook" ? "library-hero guidebook-library-hero" : "library-hero"}>
         <Tabs value={section} onValueChange={(value) => (location.href = "/" + value)}>
           <TabsList>
             <TabsTrigger value="guidebook">{t("pages.guidebook")}</TabsTrigger>
@@ -360,17 +360,61 @@ function Library({ section, initialCard = null, closeHref }: { section: string; 
         <>
           {section === "guidebook" ? (
             <>
-              <div className="guidebook-groups" aria-label={t("pages.chooseGroup")}>
-                {guidebookGroups.map((group) => (
-                  <button className="guidebook-group-card" key={group.suit} onClick={() => setOpenGroup(group)}>
-                    <div className="guidebook-group-art" aria-hidden="true">
-                      {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
-                    </div>
-                    <h2>{t(groupLabelKey(group.suit))}</h2>
-                    <p>{t(groupDescriptionKey(group.suit))}</p>
-                    <small>{t(groupElementKey(group.suit)).toUpperCase()}</small>
-                  </button>
-                ))}
+              <div className="guidebook-map-shell">
+                <div className="guidebook-map-heading">
+                  <span>VIN TAROT · 78 {t("common.cards").toUpperCase()}</span>
+                  <p>{t("pages.chooseGroup")}</p>
+                </div>
+                <div className="guidebook-map" aria-label={t("pages.chooseGroup")}>
+                  <svg className="guidebook-map-lines" viewBox="0 0 1000 720" aria-hidden="true" focusable="false">
+                    <defs>
+                      <radialGradient id="guidebook-map-glow">
+                        <stop offset="0" stopColor="#f4cf83" stopOpacity=".8" />
+                        <stop offset="1" stopColor="#f4cf83" stopOpacity="0" />
+                      </radialGradient>
+                    </defs>
+                    <circle cx="500" cy="360" r="285" className="guidebook-map-orbit guidebook-map-orbit-outer" />
+                    <circle cx="500" cy="360" r="220" className="guidebook-map-orbit guidebook-map-orbit-inner" />
+                    <path d="M500 360 L500 82 M500 360 L155 288 M500 360 L845 288 M500 360 L300 640 M500 360 L700 640" className="guidebook-map-connector" />
+                    <circle cx="500" cy="360" r="72" fill="url(#guidebook-map-glow)" />
+                    <g className="guidebook-map-stars">
+                      <circle cx="500" cy="70" r="3" />
+                      <circle cx="150" cy="285" r="2" />
+                      <circle cx="850" cy="285" r="2" />
+                      <circle cx="295" cy="642" r="2" />
+                      <circle cx="705" cy="642" r="2" />
+                    </g>
+                  </svg>
+                  <div className="guidebook-map-center">
+                    <span className="guidebook-map-center-kicker">VIN TAROT</span>
+                    <strong>5</strong>
+                    <span>{t("pages.chooseGroup")}</span>
+                    <small>78 {t("common.cards")}</small>
+                  </div>
+                  {guidebookMapLayout.map((layout) => {
+                    const group = guidebookGroups.find((item) => item.suit === layout.suit);
+                    if (!group) return null;
+                    return (
+                      <button
+                        className={`guidebook-map-node guidebook-map-node-${layout.position}`}
+                        key={group.suit}
+                        style={{ "--map-accent": layout.accent } as CSSProperties}
+                        onClick={() => setOpenGroup(group)}
+                        aria-label={`${t(groupLabelKey(group.suit))}: ${group.cardIds.length} ${t("common.cards")}`}
+                      >
+                        <span className="guidebook-map-node-art" aria-hidden="true">
+                          {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
+                        </span>
+                        <span className="guidebook-map-node-copy">
+                          <strong>{t(groupLabelKey(group.suit))}</strong>
+                          <small>{t(groupDescriptionKey(group.suit))}</small>
+                          <em>{group.cardIds.length} {t("common.cards")} · {t(groupElementKey(group.suit)).toUpperCase()}</em>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="guidebook-map-hint">{t("pages.meaningsText")}</p>
               </div>
               <Dialog open={!!openGroup} onOpenChange={() => setOpenGroup(null)}>
                 <DialogContent className="guidebook-group-dialog">

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cardBySlug, cardSlug, cards, guidebookGroups } from "../lib/tarot";
+import { cardBySlug, cardSlug, cards, guidebookGroups, guidebookMapLayout } from "../lib/tarot";
 
 test("guidebook exposes the five tarot groups in reference order", () => {
   assert.deepEqual(
@@ -11,6 +11,18 @@ test("guidebook exposes the five tarot groups in reference order", () => {
     guidebookGroups.map((group) => group.cardIds.length),
     [22, 14, 14, 14, 14],
   );
+});
+
+test("guidebook map arranges the five groups around a central reading", () => {
+  assert.deepEqual(
+    guidebookMapLayout.map((item) => item.suit),
+    ["Major Arcana", "Wands", "Cups", "Swords", "Pentacles"],
+  );
+  assert.deepEqual(
+    guidebookMapLayout.map((item) => item.position),
+    ["top", "left", "right", "bottom-left", "bottom-right"],
+  );
+  assert.ok(guidebookMapLayout.every((item) => item.accent.startsWith("#")));
 });
 
 test("card slugs round-trip every guidebook card", () => {
