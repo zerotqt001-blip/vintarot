@@ -153,6 +153,14 @@
 @media(max-width:700px){.room-page .tabletop::before{inset:-12%;transform:translate3d(0,0,-60px) scale(1.2) rotateX(1deg);animation-duration:32s}.room-page .spread-slot{background:#04142666;backdrop-filter:blur(1px)}.room-page .room-question{font-size:19px}}
 @media(prefers-reduced-motion:reduce){.room-page .tabletop::before{animation:none;transform:translate3d(0,0,-70px) scale(1.12) rotateX(1deg)}}
 
+/* Direct tabletop gestures: empty space pans with a pointer, while two pointers pinch to zoom. */
+.room-page .tabletop{cursor:grab;overscroll-behavior:none}
+.room-page .tabletop.is-table-panning{cursor:grabbing}
+.room-page .tabletop.drawing-mode{cursor:crosshair}
+.room-page .tabletop .drawn-card,.room-page .tabletop .fan-card{cursor:grab}
+.room-page .tabletop .drawn-card.is-dragging,.room-page .tabletop .fan-card:active{cursor:grabbing}
+@media(max-width:700px){.room-page .tabletop{cursor:grab}.room-page .tabletop.is-table-panning{cursor:grabbing}}
+
 /* Guidebook constellation: keep the existing card data, but present each family as a visual map. */
 .guidebook-library-hero{margin-bottom:20px;border-color:#877b65;background:radial-gradient(circle at 50% 0%,#263d61 0%,#101d35 42%,#071022 100%);color:#f6ecd9;box-shadow:0 20px 45px #040b1a40;overflow:hidden}
 .guidebook-library-hero [data-slot=tabs-list]{background:#0d172a;border-color:#9a8d75}
