@@ -8,7 +8,7 @@ Moonlight-inspired tarot website. Preserve reference interactions, smooth motion
 
 ## Latest feature
 /create now offers a custom question, six topics with four suggestions each, and skip/back controls. Create and +Room link here. A one-use sessionStorage draft (1h expiry) transfers question into room state without exposing question in URL; existing D1 room and journal persistence retains it. Work prompts were observed in reference; other prompts are VinTarot-authored.
-Deck tap starts, second tap stops the CSS shuffle in its current pose, then a short settle exit opens the fan. The stop action is local UI state, not shared across participants. The shuffle now uses an Arc Cascade motion: 32 cards travel left-to-right and back through a bowed 3D path with staggered depth and reduced-motion fallbacks.
+Deck tap starts, second tap pauses the current pose, then a short settle exit opens the fan. The stop action is local UI state, not shared across participants. The shuffle now uses a hands-free 3D cylinder: all 32 full-size cards orbit one central axis continuously, with depth shading and a static reduced-motion fallback. Stopping preserves the current rotation before the fan opens.
 The interface now supports English and Tiếng Việt through a shared client locale provider. The selector is available in the site header and Room, with a profile selector for signed-in users. The choice is stored in localStorage and mirrored to the D1 profile record; visible navigation, Create questions, Room controls, guidebook, daily spread, journal, practice, profile, booking and invite copy are translated while Tarot card names and stored room data remain unchanged.
 
 ## Remaining work
@@ -21,4 +21,4 @@ Baseline commit 64fca6d, tag baseline-before-skills-2026-09-16. GitHub origin: h
 Existing Sites project lookup returned project_not_found. No production deployment succeeded. Do not create duplicate projects or expose stored credentials.
 
 ## Verification
-`npx tsc --noEmit`, `npm run build`, `npx tsx --test tests/i18n.test.ts`, `npx tsx --test tests/shuffle.test.ts`, and `git diff --check` pass for the locale and shuffle work. Browser checks covered English/Vietnamese switching, persistence across routes, Create topic suggestions, Room shuffle start/stop/settle, fan draw, card flip and translated spread controls. Full fidelity and production integrations remain incomplete.
+`npx tsc --noEmit`, `npm run build`, `npx tsx --test tests/i18n.test.ts tests/shuffle.test.ts tests/shuffle-motion.test.ts` (6/6), and `git diff --check` pass for the locale and shuffle work. Browser checks covered English/Vietnamese switching, persistence across routes, Create topic suggestions, the continuous 3D-cylinder Room shuffle, two-tap stop/settle, fan draw, card flip and translated spread controls. Full fidelity and production integrations remain incomplete.
