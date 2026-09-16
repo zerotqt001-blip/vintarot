@@ -18,7 +18,7 @@ Continue reference fidelity review, mobile motion tuning and provision real serv
 Baseline commit 64fca6d, tag baseline-before-skills-2026-09-16. GitHub origin: https://github.com/zerotqt001-blip/vintarot (private). Baseline is on main; tooling is on codex/tooling-and-version-history. Push completed changes and verify remote refs; report any failures.
 
 ## Hosting
-Existing Sites project lookup returned project_not_found. No production deployment succeeded. Do not create duplicate projects or expose stored credentials.
+VinTarot is deployed privately on Sites at https://vintarot.lindajacksonz316.chatgpt.site. The deployment uses the current card-back artwork, 3D cylinder shuffle, question prompts, and bilingual interface. Keep the Site owner-only unless the user explicitly requests another audience; do not expose stored credentials.
 
 ## Verification
-`npx tsc --noEmit`, `npm run build`, `npx tsx --test tests/i18n.test.ts tests/shuffle.test.ts tests/shuffle-motion.test.ts` (6/6), and `git diff --check` pass for the locale and shuffle work. Browser checks covered English/Vietnamese switching, persistence across routes, Create topic suggestions, the continuous 3D-cylinder Room shuffle, two-tap stop/settle, fan draw, card flip and translated spread controls. Full fidelity and production integrations remain incomplete.
+`npx tsc --noEmit`, `npm run build`, `npx tsx --test tests/i18n.test.ts tests/shuffle.test.ts tests/shuffle-motion.test.ts` (6/6), and `git diff --check` pass for the locale and shuffle work. The production archive was validated and the first private Sites deployment succeeded. Browser checks covered English/Vietnamese switching, persistence across routes, Create topic suggestions, the continuous 3D-cylinder Room shuffle, two-tap stop/settle, fan draw, card flip and translated spread controls. Full fidelity and production integrations remain incomplete.
