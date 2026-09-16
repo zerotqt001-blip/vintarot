@@ -40,32 +40,31 @@
 .feature-cards:hover .card-back:first-child{transform:translateX(-12px) rotate(-22deg)}
 .feature-cards:hover .card-back:nth-child(2){transform:translateY(-38px)}
 .feature-cards:hover .card-back:last-child{transform:translateX(12px) rotate(22deg)}
-/* Orbit shuffle replaces the earlier planar waterfall. */
-.shuffle-deck{position:absolute;left:50%;top:45%;width:200px;height:300px;transform:translate(-50%,-50%);border:0;background:none;padding:0;cursor:pointer;perspective:1100px;touch-action:manipulation}
+/* Arc sweep shuffle: two packets travel left-to-right and back through depth. */
+.shuffle-deck{position:absolute;left:50%;top:50%;width:228px;height:320px;transform:translate(-50%,-50%);border:0;background:none;padding:0;cursor:pointer;perspective:1300px;touch-action:manipulation}
 .shuffle-deck:focus-visible{outline:2px solid #9872b3;outline-offset:30px;border-radius:20px}
-.shuffle-camera,.shuffle-orbit,.shuffle-leaf,.shuffle-plane{position:absolute;inset:0;transform-style:preserve-3d}
-.shuffle-camera{transform:rotateX(35deg)}
-.shuffle-orbit{transform:rotateX(10deg) rotateY(-18deg)}
-.shuffle-leaf{transform:translateZ(calc(var(--index)*1.3px))}
-.shuffle-plane{transform:rotateZ(calc((var(--index) - 16)*.12deg))}
-.shuffle-deck .card-back{width:150px;height:232px;position:absolute;left:25px;top:34px;background:#fff;color:#111;box-shadow:0 1px 1px #0003;border-radius:11px;border:1px solid #222;backface-visibility:visible}
-.is-mixing .shuffle-orbit{animation:deck-orbit 7s linear infinite}
-.is-mixing .shuffle-leaf{animation:leaf-orbit 1.76s linear infinite;animation-delay:var(--delay)}
-.is-mixing .shuffle-plane{animation:leaf-counter 1.76s linear infinite;animation-delay:var(--delay)}
-@keyframes deck-orbit{from{transform:rotateX(10deg) rotateY(-18deg)}to{transform:rotateX(10deg) rotateY(342deg)}}
-@keyframes leaf-orbit{from{transform:rotateX(0deg) translateZ(105px)}to{transform:rotateX(360deg) translateZ(105px)}}
-@keyframes leaf-counter{from{transform:rotateX(0deg) rotateZ(-3deg)}50%{transform:rotateX(-180deg) rotateZ(3deg)}to{transform:rotateX(-360deg) rotateZ(-3deg)}}
+.shuffle-camera,.shuffle-orbit,.shuffle-packet,.shuffle-leaf,.shuffle-plane{position:absolute;inset:0;transform-style:preserve-3d}
+.shuffle-camera{transform:rotateX(34deg) rotateZ(-2deg);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.shuffle-orbit{transform:rotateX(6deg) rotateY(-8deg);transition:transform .55s cubic-bezier(.16,1,.3,1)}
+.shuffle-packet{transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.shuffle-packet.packet-left{--packet-side:-1;--packet-start:-1}
+.shuffle-packet.packet-right{--packet-side:1;--packet-start:1}
+.shuffle-leaf{transform:translate3d(calc(var(--side)*7px),calc(var(--offset)*1.3px),calc(var(--index)*1.6px)) rotateZ(calc(var(--side)*-6deg))}
+.shuffle-plane{transform:rotateY(calc(var(--side)*-4deg))}
+.shuffle-deck .card-back{width:146px;height:228px;position:absolute;left:41px;top:44px;background:#fff;color:#111;box-shadow:0 2px 4px #0003;border-radius:11px;border:1px solid #222;backface-visibility:visible}
+.is-mixing .shuffle-orbit{animation:arc-orbit 4.6s cubic-bezier(.45,0,.2,1) infinite}
+.is-mixing .shuffle-packet{animation:arc-sweep 2.4s cubic-bezier(.45,0,.2,1) infinite}
+.is-mixing .shuffle-packet.packet-right{animation-delay:-.12s}
+.is-mixing .shuffle-leaf{animation:arc-card 2.4s cubic-bezier(.45,0,.2,1) infinite;animation-delay:var(--delay)}
+@keyframes arc-orbit{0%,100%{transform:rotateX(6deg) rotateY(-8deg) rotateZ(-1deg)}50%{transform:rotateX(11deg) rotateY(12deg) rotateZ(1deg)}}
+@keyframes arc-sweep{0%,100%{transform:translate3d(calc(var(--packet-start)*72px),20px,0) rotateZ(calc(var(--packet-start)*-13deg)) rotateY(calc(var(--packet-start)*-10deg))}25%{transform:translate3d(calc(var(--packet-start)*24px),-58px,150px) rotateZ(calc(var(--packet-start)*-5deg)) rotateY(calc(var(--packet-start)*-4deg))}50%{transform:translate3d(calc(var(--packet-start)*-72px),20px,0) rotateZ(calc(var(--packet-start)*13deg)) rotateY(calc(var(--packet-start)*10deg))}75%{transform:translate3d(calc(var(--packet-start)*-24px),-58px,150px) rotateZ(calc(var(--packet-start)*5deg)) rotateY(calc(var(--packet-start)*4deg))}}
+@keyframes arc-card{0%,100%{transform:translate3d(calc(var(--side)*7px),calc(var(--offset)*1.3px),calc(var(--index)*1.6px)) rotateZ(calc(var(--side)*-6deg)) rotateY(calc(var(--side)*-4deg))}28%{transform:translate3d(calc(var(--side)*14px),calc(var(--offset)*-1px - 10px),calc(36px + var(--index)*2px)) rotateZ(calc(var(--side)*-10deg)) rotateY(calc(var(--side)*-18deg))}54%{transform:translate3d(calc(var(--side)*5px),calc(var(--offset)*1.1px + 8px),calc(8px + var(--index)*1.6px)) rotateZ(calc(var(--side)*-3deg)) rotateY(calc(var(--side)*-8deg))}78%{transform:translate3d(calc(var(--side)*13px),calc(var(--offset)*-1.2px - 8px),calc(32px + var(--index)*2px)) rotateZ(calc(var(--side)*-9deg)) rotateY(calc(var(--side)*-16deg))}}
 .card-fan .fan-card,.card-fan .fan-card:hover,.card-fan .fan-card:has(+ .fan-card:hover),.card-fan .fan-card:hover + .fan-card{translate:0 var(--lift,0px);transition:translate .24s cubic-bezier(.2,.65,.25,1),transform .55s ease;z-index:auto!important}
 .card-fan .fan-card:focus-visible{translate:0 -65px;outline:none}
 .card-fan .fan-card:focus-visible .fan-surface{outline:2px solid #9872b3}
 @media(max-width:700px){.shuffle-deck{scale:.8;transform-origin:0 0}.card-fan .fan-card{translate:0 calc(var(--lift,0px)*.65)}}
-@media(prefers-reduced-motion:reduce){.shuffle-orbit,.shuffle-leaf,.shuffle-plane{animation:none!important}.card-fan .fan-card{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.shuffle-orbit,.shuffle-packet,.shuffle-leaf{animation:none!important}.shuffle-camera,.shuffle-orbit,.shuffle-packet{transition:none!important}.card-fan .fan-card{transition:none!important}}
 @keyframes deal-in{from{opacity:1;translate:var(--deal-x,0px) var(--deal-y,260px);scale:var(--deal-scale,.65);rotate:0deg}to{opacity:1;translate:0 0;scale:1;rotate:0deg}}
-.shuffle-deck{top:50%}
-.is-gathering .shuffle-orbit{animation:none;transform:rotateX(10deg) rotateY(-18deg);transition:transform .45s ease-in-out}
-.is-gathering .shuffle-leaf{animation:leaf-gather .45s cubic-bezier(.65,0,.35,1) both}
-.is-gathering .shuffle-plane{animation:none;transform:rotateX(0);transition:transform .45s ease-in-out}
-@keyframes leaf-gather{from{transform:translateY(calc((var(--index) - 16)*5px)) translateZ(calc(var(--index)*2px))}to{transform:translateZ(calc(var(--index)*1.3px))}}
 /* Cards extend beyond the viewport; focus must never scroll the fixed table. */
 .room-page{overflow:clip}
 .question-flow{position:relative;min-height:620px;max-width:720px;margin:0 auto;padding:94px 36px 70px;text-align:center;isolation:isolate}
@@ -90,15 +89,11 @@
 .question-suggestions button:hover{background:white;border-color:#111;transform:translateX(3px)}
 .question-suggestions button:hover svg{opacity:1}
 .question-flow button:focus-visible{outline:2px solid #9360b2;outline-offset:5px}
-.is-paused .shuffle-orbit,.is-paused .shuffle-leaf,.is-paused .shuffle-plane{animation-play-state:paused}
 @media(max-width:700px){.question-flow{padding:90px 8px 60px;min-height:600px}.question-step h1{font-size:40px}.question-back{left:0;top:22px}.question-step h2{margin-top:45px;font-size:26px}.question-topics{grid-template-columns:repeat(2,1fr);gap:14px 10px}.question-topics button{font-size:10px;min-height:44px}.question-input{padding:0 10px}.question-input input{font-size:14px}.question-suggestions button{padding:13px 16px}.question-glow{inset:90px -10% 100px}}
-/* Finish from the current pose instead of snapping every card to a new orbit. */
-.is-mixing.is-gathering .shuffle-orbit{animation:deck-orbit 7s linear infinite;animation-play-state:paused;transition:none}
-.is-mixing.is-gathering .shuffle-leaf{animation:leaf-orbit 1.76s linear infinite;animation-delay:var(--delay);animation-play-state:paused}
-.is-mixing.is-gathering .shuffle-plane{animation:leaf-counter 1.76s linear infinite;animation-delay:var(--delay);animation-play-state:paused;transition:none}
+.is-gathering .shuffle-orbit,.is-gathering .shuffle-packet,.is-gathering .shuffle-leaf{animation-play-state:paused}
 .shuffle-deck.is-gathering{animation:shuffle-exit .48s cubic-bezier(.65,0,.35,1) both;pointer-events:none}
 @keyframes shuffle-exit{0%{opacity:1;translate:0 0}100%{opacity:0;translate:0 65px}}
-.shuffle-orbit,.shuffle-leaf,.shuffle-plane{will-change:transform}
+.shuffle-orbit,.shuffle-packet,.shuffle-leaf{will-change:transform}
 .language-select{display:inline-flex;align-items:center}
 .language-select select{appearance:none;border:1px solid #888;border-radius:999px;background:var(--table,#f5f5f5);color:inherit;padding:6px 24px 6px 10px;font-size:10px;letter-spacing:.05em;cursor:pointer;line-height:1.1}
 .language-select select:focus-visible{outline:2px solid #9872b3;outline-offset:3px}
