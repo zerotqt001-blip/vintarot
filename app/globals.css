@@ -99,3 +99,8 @@
 .shuffle-deck.is-gathering{animation:shuffle-exit .48s cubic-bezier(.65,0,.35,1) both;pointer-events:none}
 @keyframes shuffle-exit{0%{opacity:1;translate:0 0}100%{opacity:0;translate:0 65px}}
 .shuffle-orbit,.shuffle-leaf,.shuffle-plane{will-change:transform}
+.language-select{display:inline-flex;align-items:center}
+.language-select select{appearance:none;border:1px solid #888;border-radius:999px;background:var(--table,#f5f5f5);color:inherit;padding:6px 24px 6px 10px;font-size:10px;letter-spacing:.05em;cursor:pointer;line-height:1.1}
+.language-select select:focus-visible{outline:2px solid #9872b3;outline-offset:3px}
+.question-language{position:absolute;right:20px;top:32px}
+@media(max-width:700px){.language-select select{width:47px;padding:6px 3px;font-size:9px}.language-select select option{font-size:14px}.question-language{right:8px;top:20px}}

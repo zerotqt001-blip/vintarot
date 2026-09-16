@@ -1,25 +1,775 @@
-'use client';
+"use client";
+
 import CardMark from "@/components/card-mark";
-import {useEffect,useState} from 'react';
-import {cards,spreads,shuffleDeck,Card} from '@/lib/tarot';
-import {api} from '@/lib/client';
-import {Dialog,DialogContent,DialogTitle,DialogDescription} from '@/components/ui/dialog';
-import {Tabs,TabsList,TabsTrigger} from '@/components/ui/tabs';
-import {Calendar} from '@/components/ui/calendar';
-import {Search,ArrowLeft,ArrowRight,Plus,BookOpen,Moon,Check,CalendarDays,Video,User,Copy} from 'lucide-react';
-export function CardFace({card,reversed=false}:{card:Card,reversed?:boolean}){return <img className={'tarot-face'+(reversed?' reversed-card':'')} src={card.image} alt={card.name+(reversed?' reversed':'')} loading="lazy" draggable={false}/>}
-export function CardDetail({card,onClose}:{card:Card|null,onClose:()=>void}){const [reverse,setReverse]=useState(false);useEffect(()=>setReverse(false),[card]);return <Dialog open={!!card} onOpenChange={onClose}><DialogContent className="card-detail"><DialogTitle>{card?.name}</DialogTitle><DialogDescription>{card?.keywords}</DialogDescription>{card&&<><div className="card-reading"><CardFace card={card} reversed={reverse}/><div><Tabs value={reverse?'reverse':'upright'} onValueChange={v=>setReverse(v==='reverse')}><TabsList><TabsTrigger value="upright">Upright</TabsTrigger><TabsTrigger value="reverse">Reversed</TabsTrigger></TabsList></Tabs><p>{reverse?card.reversed:card.upright}</p><h3>A question to sit with</h3><p>Where do you recognize this energy in your life right now?</p></div></div><a href={'/room?card='+card.id} className="button black">Explore in a room</a></>}</DialogContent></Dialog>}
-export function CardPicker({open,onClose,onSelect,exclude=[]}:{open:boolean,onClose:()=>void,onSelect:(id:number)=>void,exclude?:number[]}){const [q,setQ]=useState('');return <Dialog open={open} onOpenChange={onClose}><DialogContent className="picker-dialog"><DialogTitle>Choose a card</DialogTitle><DialogDescription>Search all 78 cards.</DialogDescription><input autoFocus aria-label="Search cards" placeholder="Search cards…" value={q} onChange={e=>setQ(e.target.value)}/><div className="picker-grid">{cards.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())&&!exclude.includes(c.id)).map(c=><button key={c.id} onClick={()=>{onSelect(c.id);onClose()}}><CardFace card={c}/><span>{c.name}</span></button>)}</div></DialogContent></Dialog>}
-export function SignIn(){return <div className="empty"><Moon size={34}/><h2>Your own space.</h2><p>Sign in to keep your readings, rooms and journal together.</p><a className="button black" href="/signin-with-chatgpt?return_to=/profile" target="_top">Sign in with ChatGPT</a></div>}
-export default function Pages({section,user}:{section:string,user:{name:string,email:string}|null}){if(section==='decks'||section==='guidebook')return <Library section={section}/>;if(section==='daily-spread')return <Daily user={user}/>;if(section==='game')return <Game user={user}/>;if(section==='journal')return <Journal user={user}/>;if(section==='community')return <Practice user={user}/>;if(section==='profile')return <Profile user={user}/>;if(section==='book')return <Book/>;if(!user)return <SignIn/>;if(section==='bookings')return <><Header title="Your bookings" text="Your upcoming sessions and past conversations."/><div className="empty"><CalendarDays size={36}/><h2>No sessions booked yet.</h2><p>Booking opens when VinTarot's readers and payment services are ready.</p><a className="button" href="/book">Explore readings</a></div></>;return <Invites/>}
-function Header({title,text}:{title:string,text?:string}){return <header className="page-head"><h1>{title}</h1>{text&&<p>{text}</p>}</header>}
-function Library({section}:{section:string}){const [q,setQ]=useState(''),[suit,setSuit]=useState('All'),[detail,setDetail]=useState<Card|null>(null),[deck,setDeck]=useState(false);const groups=['All','Major Arcana','Wands','Cups','Swords','Pentacles'];return <><div className="library-hero"><Tabs value={section} onValueChange={v=>location.href='/'+v}><TabsList><TabsTrigger value="guidebook">Guidebook</TabsTrigger><TabsTrigger value="decks">Decks</TabsTrigger></TabsList></Tabs>{section==='decks'?<div className="library-intro"><div><h1>Digital decks</h1><p>Carry a complete tarot deck into your VinTarot room. Shuffle, explore and create a ritual of your own, with a guidebook always close by.</p><button className="button peach" onClick={()=>setDeck(true)}>About the artist</button></div><div className="display-fan">{[2,17,19].map(id=><CardFace key={id} card={cards[id]}/>)}</div></div>:<><h1>Meanings</h1><p className="intro-copy">Explore all 78 cards as a spark for your own interpretations. Discover upright and reversed meanings, symbols and questions for reflection.</p></>}</div>{section==='decks'?<><button className="deck-product" onClick={()=>setDeck(true)}><div className="deck-art"><CardFace card={cards[0]}/><CardFace card={cards[1]}/><CardFace card={cards[2]}/></div><h2>Rider Waite Smith</h2><p>Pamela Colman Smith · 78 cards</p><span className="included">✓ INCLUDED</span></button><p className="attribution">Illustrated by Pamela Colman Smith, 1909. Public-domain artwork. <a href="/ATTRIBUTION.md" target="_blank">Artwork credits</a></p><Dialog open={deck} onOpenChange={setDeck}><DialogContent><DialogTitle>Rider Waite Smith</DialogTitle><DialogDescription>Art by Pamela Colman Smith</DialogDescription><div className="deck-modal-art"><CardFace card={cards[2]}/><p>First published in 1909, this 78-card deck pairs richly illustrated scenes with a symbolic language that invites your own interpretation.<br/><br/>All 78 cards are included in VinTarot. Artwork sourced from the public-domain Geldard scans on Wikimedia Commons.</p></div><a className="button black" href="/room">Use this deck</a><a className="button" href="/guidebook">Browse the guidebook</a></DialogContent></Dialog></>:<><div className="library-tools"><label className="search"><Search size={18}/><input aria-label="Search tarot cards" value={q} onChange={e=>setQ(e.target.value)} placeholder="Find a card…"/></label><div className="suit-tabs">{groups.map(g=><button className={suit===g?'selected':''} onClick={()=>setSuit(g)} key={g}>{g}</button>)}</div></div><div className="card-grid">{cards.filter(c=>(suit==='All'||c.suit===suit)&&c.name.toLowerCase().includes(q.toLowerCase())).map(c=><button key={c.id} className="library-card" onClick={()=>setDetail(c)}><CardFace card={c}/><span>{c.name}</span><small>{c.suit}</small></button>)}</div>{!cards.some(c=>(suit==='All'||c.suit===suit)&&c.name.toLowerCase().includes(q.toLowerCase()))&&<div className="empty">No cards match your search.</div>}<CardDetail card={detail} onClose={()=>setDetail(null)}/></>}</>}
-function Daily({user}:{user:any}){const [draw,setDraw]=useState<number[]>([]),[flipped,setFlipped]=useState<boolean[]>([false,false]),[detail,setDetail]=useState<Card|null>(null),[msg,setMsg]=useState(''),[saved,setSaved]=useState(false);useEffect(()=>setDraw(shuffleDeck().slice(0,2)),[]);async function save(){try{await api('records',{kind:'journal',data:{question:'Social battery check',notes:'How social I feel like being / How social I need to be',cards:draw.map(id=>({id,reversed:false}))}});setSaved(true);setMsg('Saved to your journal.')}catch(e:any){setMsg(e.message)}}return <div className="daily-view"><a className="button back-home" href="/"><ArrowLeft size={15}/>Home</a><span className="pill">SOCIAL BATTERY CHECK</span><div className="daily-frame"><div className="daily-cards">{['how social I feel like being','how social I need to be'].map((label,i)=><div key={label}><p>{label}:</p><button className={'flip-card '+(flipped[i]?'flipped':'')} aria-label={flipped[i]?cards[draw[i]]?.name:'Reveal card '+(i+1)} onClick={()=>{if(flipped[i])setDetail(cards[draw[i]]);else setFlipped(v=>v.map((b,j)=>j===i?true:b))}}><span className="flip-inner"><span className="card-back flip-back"><CardMark/></span><span className="flip-front">{draw.length>0&&<CardFace card={cards[draw[i]]}/>}</span></span></button></div>)}</div></div><p>{flipped.every(Boolean)?'Tap a card to explore its meaning.':'Tap the cards whenever you’re ready.'}</p>{flipped.every(Boolean)&&<div className="daily-result"><h2>A moment to reflect.</h2><p>How can you make room for both what you feel and what you need today?</p>{user?<button className="button black" disabled={saved} onClick={save}>{saved?'Saved ✓':'Save to journal'}</button>:<a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">Sign in to save</a>}</div>}<p className="status" role="status">{msg}</p><CardDetail card={detail} onClose={()=>setDetail(null)}/></div>}
-const puzzles=[{clue:'A new beginning asks you to trust a small spark of hope.',answer:[0,17]},{clue:'Clear boundaries make room for a nurturing kind of care.',answer:[4,3]},{clue:'A quiet pause reveals what your intuition already knows.',answer:[9,2]},{clue:'An old structure falls, making space for a new chapter.',answer:[16,13]},{clue:'Patience and courage bring a difficult moment into balance.',answer:[8,14]}];
-function Game({user}:{user:any}){const [round,setRound]=useState(0),[choices,setChoices]=useState<number[]>([]),[picker,setPicker]=useState<number|null>(null),[history,setHistory]=useState<{ids:number[],correct:number}[]>([]),[rules,setRules]=useState(false),[msg,setMsg]=useState('');const p=puzzles[round],won=history.some(h=>h.correct===2),finished=won||history.length===5;async function guess(){if(choices.length!==2||finished)return;const correct=choices.filter(id=>p.answer.includes(id)).length;const next=[...history,{ids:[...choices],correct}];setHistory(next);setChoices([]);if(user&&(correct===2||next.length===5)){try{await api('records',{kind:'game',data:{day:new Date().toISOString().slice(0,10),guesses:next.length,won:correct===2,round}})}catch(e:any){setMsg(e.message)}}}return <div className="game-view"><h2>PAIROT</h2><h1>Guess the combo</h1><button className="soft-button" onClick={()=>setRules(true)}>How to play</button><p className="muted">DAILY PUZZLE {round+1} OF 5</p><p className="game-clue">{p.clue}</p><div className="game-selection">{[0,1].map(i=><button key={i} disabled={finished} onClick={()=>setPicker(i)} aria-label={'Choose card '+(i+1)}>{choices[i]!==undefined?<CardFace card={cards[choices[i]]}/>:<Plus size={18}/>}</button>)}</div>{choices.length===2&&!finished&&<button className="button black" onClick={guess}>Check the pair</button>}<p className="muted">{won?'YOU FOUND THE PAIR!':`${5-history.length} GUESSES LEFT`}</p><div className="guess-history">{history.map((h,i)=><div key={i}><span>{cards[h.ids[0]].name}</span><span>{cards[h.ids[1]].name}</span><small>{h.correct}/2 matched</small></div>)}</div>{finished&&<div className="game-end"><h2>{won?'Beautifully connected.':'A new way to see it.'}</h2><p>{p.answer.map(id=>cards[id].name).join(' + ')}</p>{round<4?<button className="button" onClick={()=>{setRound(round+1);setHistory([]);setChoices([])}}>Next puzzle <ArrowRight size={15}/></button>:<a className="button" href="/guidebook">Explore the guidebook</a>}</div>}<p role="status">{msg}</p><CardPicker open={picker!==null} onClose={()=>setPicker(null)} exclude={choices} onSelect={id=>setChoices(c=>{const next=[...c];next[picker??0]=id;return next})}/><Dialog open={rules} onOpenChange={setRules}><DialogContent><DialogTitle>Two cards. One story.</DialogTitle><DialogDescription>Read the clue, then choose the two Major Arcana cards whose themes fit together. Their order doesn’t matter. You have five guesses per puzzle. After each guess, you’ll see how many cards match.</DialogDescription><button className="button black" onClick={()=>setRules(false)}>Let’s play</button></DialogContent></Dialog></div>}
-function Journal({user}:{user:any}){const [items,setItems]=useState<any[]>([]),[loading,setLoading]=useState(true),[msg,setMsg]=useState(''),[open,setOpen]=useState(false),[picker,setPicker]=useState(false),[question,setQuestion]=useState(''),[notes,setNotes]=useState(''),[chosen,setChosen]=useState<{id:number,reversed:boolean}[]>([]),[edit,setEdit]=useState<string|undefined>(),[busy,setBusy]=useState(false);async function load(){try{const r=await api('records?kind=journal');setItems(r.items)}catch(e:any){setMsg(e.message)}finally{setLoading(false)}}useEffect(()=>{if(user)load()},[]);async function save(e:React.FormEvent){e.preventDefault();setBusy(true);try{await api('records',{id:edit,kind:'journal',data:{question,notes,cards:chosen}});setOpen(false);setMsg('Your reflection is saved.');await load()}catch(e:any){setMsg(e.message)}finally{setBusy(false)}}if(!user)return <SignIn/>;return <><div className="journal-head"><Header title="Your journal" text="A space to reflect on your readings. Save the moments you want to return to."/><button className="button" onClick={()=>{setEdit(undefined);setQuestion('');setNotes('');setChosen([]);setOpen(true)}}>+ Physical entry</button></div><p role="status" className="status">{msg}</p>{loading?<p className="empty">Opening your journal…</p>:items.length===0?<div className="empty"><BookOpen size={36}/><h2>Your next chapter starts here.</h2><p>Create a reading in a tarot room, or add a physical entry.</p><a className="button black" href="/room">Open a room</a></div>:<div className="journal-grid">{items.map(item=><button className="journal-entry" key={item.id} onClick={()=>{setEdit(item.id);setQuestion(item.question);setNotes(item.notes);setChosen(item.cards);setOpen(true)}}><time>{new Date(item.created).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</time><h2>{item.question}</h2><div className="mini-cards">{item.cards.map((c:any)=><CardFace key={c.id} card={cards[c.id]} reversed={c.reversed}/>)}</div><p>{item.notes}</p><span>Open reflection ↗</span></button>)}</div>}<Dialog open={open} onOpenChange={setOpen}><DialogContent className="journal-dialog"><DialogTitle>{edit?'Your reflection':'Your question'}</DialogTitle><DialogDescription>Keep your cards and thoughts together.</DialogDescription><form onSubmit={save}><label>Question<input required maxLength={500} value={question} onChange={e=>setQuestion(e.target.value)} placeholder="What’s on your mind?"/></label><label>Reflection<textarea rows={5} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="What do you notice in these cards?"/></label><label>CARDS ({chosen.length}/10)</label><div className="chosen-cards">{chosen.map((c,i)=><div key={c.id}><CardFace card={cards[c.id]} reversed={c.reversed}/><button type="button" onClick={()=>setChosen(v=>v.map((x,j)=>j===i?{...x,reversed:!x.reversed}:x))}>↻ Reverse</button><button type="button" onClick={()=>setChosen(v=>v.filter((_,j)=>i!==j))}>Remove</button></div>)}{chosen.length<10&&<button type="button" className="button" onClick={()=>setPicker(true)}><Plus size={16}/>Card</button>}</div><p role="status">{msg}</p><div className="form-actions"><button type="button" className="button" onClick={()=>setOpen(false)}>Cancel</button><button className="button black" disabled={busy}>{busy?'Saving…':'Save'}</button></div></form></DialogContent></Dialog><CardPicker open={picker} onClose={()=>setPicker(false)} exclude={chosen.map(c=>c.id)} onSelect={id=>setChosen(v=>[...v,{id,reversed:false}])}/></>}
-function Practice({user}:{user:any}){const [id,setId]=useState(0),[shown,setShown]=useState(false),[text,setText]=useState(''),[msg,setMsg]=useState('');useEffect(()=>setId(shuffleDeck()[0]),[]);return <><Header title="A little practice." text="Trust what you notice. There is more than one way to read a card."/><div className="practice-panel"><div><CardFace card={cards[id]}/><button className="button" onClick={()=>{setId(shuffleDeck()[0]);setText('');setShown(false);setMsg('')}}>Another card</button></div><div><h2>What stands out to you?</h2><p>Look at the colors, figures, and small details. What story do they bring to mind?</p><textarea aria-label="Your interpretation" rows={6} value={text} onChange={e=>setText(e.target.value)} placeholder="Write your own interpretation…"/><div className="form-actions"><button className="button" onClick={()=>setShown(!shown)}>{shown?'Hide meaning':'Reveal meaning'}</button><button className="button black" disabled={!text.trim()} onClick={async()=>{try{await api('records',{kind:'journal',data:{question:'Practice: '+cards[id].name,notes:text,cards:[{id,reversed:false}]}});setMsg('Saved to your journal.')}catch(e:any){setMsg(e.message)}}}>Save reflection</button></div>{shown&&<div className="meaning-block"><h2>{cards[id].name}</h2><p>{cards[id].upright}</p></div>}<p role="status">{msg}</p></div></div><div className="empty"><h2>Read together.</h2><p>Open a room and share an invitation with someone you know. Community matching will open when VinTarot is ready for public members.</p><a className="button" href="/room">Create a room</a></div></>}
-function Profile({user}:{user:any}){const [name,setName]=useState(user?.name||''),[bio,setBio]=useState(''),[language,setLanguage]=useState('English'),[timezone,setTimezone]=useState('Asia/Ho_Chi_Minh'),[msg,setMsg]=useState(''),[busy,setBusy]=useState(false);useEffect(()=>{if(user)api('records?kind=profile').then(r=>{if(r.items[0]){const p=r.items[0];setName(p.name);setBio(p.bio);setLanguage(p.language);setTimezone(p.timezone)}}).catch(e=>setMsg(e.message))},[]);if(!user)return <SignIn/>;return <><Header title="Your space" text="A little about you, and the way you like to read."/><form className="profile-form" onSubmit={async e=>{e.preventDefault();setBusy(true);try{await api('records',{kind:'profile',data:{name,bio,timezone,language}});setMsg('Your profile is saved.')}catch(e:any){setMsg(e.message)}finally{setBusy(false)}}}><div className="profile-avatar"><Moon size={43}/></div><label>Display name<input value={name} required maxLength={80} onChange={e=>setName(e.target.value)}/></label><label>Email<input readOnly value={user.email}/></label><label>About you<textarea value={bio} rows={4} onChange={e=>setBio(e.target.value)}/></label><label>Language<select value={language} onChange={e=>setLanguage(e.target.value)}><option>English</option><option>Tiếng Việt</option></select></label><label>Timezone<select value={timezone} onChange={e=>setTimezone(e.target.value)}>{['Asia/Ho_Chi_Minh','Asia/Bangkok','Asia/Singapore','Europe/London','America/New_York','America/Los_Angeles','UTC'].map(t=><option key={t}>{t}</option>)}</select></label><button className="button black" disabled={busy}>{busy?'Saving…':'Save profile'}</button><p role="status">{msg}</p></form><div className="service-status"><h2>VinTarot services</h2><p><Check size={16}/>Tarot, guidebook and private journal</p><p><span className="pending-dot"/>Video calls — setup required</p><p><span className="pending-dot"/>Payments and booking — setup required</p><p><span className="pending-dot"/>Email notifications — setup required</p><p><span className="pending-dot"/>Public members — site is currently private</p></div></>}
-function Book(){const [date,setDate]=useState<Date|undefined>(),[open,setOpen]=useState(false);return <><section className="booking-hero"><div><h1>Let’s make space<br/>for a reading.</h1><p>Explore your thoughts, dreams, and crossroads in a conversation with a tarot reader.</p><button className="button black" onClick={()=>setOpen(true)}>Explore sessions</button></div><div className="booking-illustration"><div className="tiny-top">VinTarot <span>YOUR TAROT ROOM</span></div><div className="tiny-avatars"><Moon/><User/></div><div className="tiny-spread">{[2,17,19].map(id=><CardFace key={id} card={cards[id]}/>)}</div></div></section><div className="empty"><h2>Our reading room is getting ready.</h2><p>Professional bookings aren’t open yet. You can explore session formats below, or start your own tarot ritual now.</p><a className="button" href="/room">Start your own room</a></div><div className="session-options">{[['A fresh perspective','30 minutes'],['A deeper conversation','60 minutes'],['Learn to read','60 minutes']].map(([name,duration])=><button key={name} onClick={()=>setOpen(true)}><Video size={22}/><h2>{name}</h2><p>{duration}</p><span>Explore session →</span></button>)}</div><Dialog open={open} onOpenChange={setOpen}><DialogContent className="booking-dialog"><DialogTitle>Plan your reading</DialogTitle><DialogDescription>Preview the calendar. No readers or appointment times are available yet; choosing a date does not reserve a session.</DialogDescription><Calendar mode="single" selected={date} onSelect={setDate} disabled={d=>d<new Date(new Date().setHours(0,0,0,0))}/><p>{date?date.toLocaleDateString('en-GB',{dateStyle:'full'}):'Choose a day to explore.'}</p><p className="notice">Booking will open once readers, payment and confirmation email services are connected.</p><button disabled className="button black">Bookings not open yet</button></DialogContent></Dialog></>}
-function Invites(){const [items,setItems]=useState<any[]>([]),[msg,setMsg]=useState('');useEffect(()=>{api('rooms').then(r=>setItems(r.items)).catch(e=>setMsg(e.message))},[]);return <><Header title="Your rooms & invites" text="Return to a room or invite someone to read together."/><p className="notice">This site is currently private. Invitation links work only for people who have site access.</p><p role="status">{msg}</p>{items.length?<div className="room-list">{items.map(r=><a key={r.id} href={'/room?id='+r.id}><Moon size={24}/><div><h2>{r.state.question||'A little tarot ritual'}</h2><p>{r.state.cards.length} cards · {new Date(r.updated).toLocaleDateString()}</p></div><ArrowRight size={20}/></a>)}</div>:<div className="empty"><GiftIcon/><h2>Begin a shared ritual.</h2><p>Your rooms will appear here after you save them.</p><a className="button black" href="/room">Create a room</a></div>}</>}
-function GiftIcon(){return <Moon size={34}/>}
+import { useLanguage } from "@/components/language";
+import { useEffect, useState, type FormEvent } from "react";
+import { cards, shuffleDeck, type Card } from "@/lib/tarot";
+import { api } from "@/lib/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Search,
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  BookOpen,
+  Moon,
+  Check,
+  CalendarDays,
+  Video,
+  User,
+} from "lucide-react";
+
+export function CardFace({
+  card,
+  reversed = false,
+}: {
+  card: Card;
+  reversed?: boolean;
+}) {
+  return (
+    <img
+      className={"tarot-face" + (reversed ? " reversed-card" : "")}
+      src={card.image}
+      alt={card.name + (reversed ? " reversed" : "")}
+      loading="lazy"
+      draggable={false}
+    />
+  );
+}
+
+export function CardDetail({
+  card,
+  onClose,
+}: {
+  card: Card | null;
+  onClose: () => void;
+}) {
+  const { t } = useLanguage();
+  const [reverse, setReverse] = useState(false);
+  useEffect(() => setReverse(false), [card]);
+  return (
+    <Dialog open={!!card} onOpenChange={onClose}>
+      <DialogContent className="card-detail">
+        <DialogTitle>{card?.name}</DialogTitle>
+        <DialogDescription>{card?.keywords}</DialogDescription>
+        {card && (
+          <>
+            <div className="card-reading">
+              <CardFace card={card} reversed={reverse} />
+              <div>
+                <Tabs
+                  value={reverse ? "reverse" : "upright"}
+                  onValueChange={(value) => setReverse(value === "reverse")}
+                >
+                  <TabsList>
+                    <TabsTrigger value="upright">{t("pages.upright")}</TabsTrigger>
+                    <TabsTrigger value="reverse">{t("pages.reversed")}</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <p>{reverse ? card.reversed : card.upright}</p>
+                <h3>{t("pages.questionSit")}</h3>
+                <p>{t("pages.recognize")}</p>
+              </div>
+            </div>
+            <a href={"/room?card=" + card.id} className="button black">
+              {t("pages.exploreRoom")}
+            </a>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function CardPicker({
+  open,
+  onClose,
+  onSelect,
+  exclude = [],
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (id: number) => void;
+  exclude?: number[];
+}) {
+  const { t } = useLanguage();
+  const [query, setQuery] = useState("");
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="picker-dialog">
+        <DialogTitle>{t("pages.chooseCard")}</DialogTitle>
+        <DialogDescription>{t("pages.searchAll")}</DialogDescription>
+        <input
+          autoFocus
+          aria-label={t("pages.searchCards")}
+          placeholder={t("pages.searchCards") + "…"}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <div className="picker-grid">
+          {cards
+            .filter(
+              (card) =>
+                card.name.toLowerCase().includes(query.toLowerCase()) &&
+                !exclude.includes(card.id),
+            )
+            .map((card) => (
+              <button
+                key={card.id}
+                onClick={() => {
+                  onSelect(card.id);
+                  onClose();
+                }}
+              >
+                <CardFace card={card} />
+                <span>{card.name}</span>
+              </button>
+            ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function SignIn() {
+  const { t } = useLanguage();
+  return (
+    <div className="empty">
+      <Moon size={34} />
+      <h2>{t("pages.yourSpace")}</h2>
+      <p>{t("pages.signInText")}</p>
+      <a
+        className="button black"
+        href="/signin-with-chatgpt?return_to=/profile"
+        target="_top"
+      >
+        {t("common.signIn")}
+      </a>
+    </div>
+  );
+}
+
+export default function Pages({
+  section,
+  user,
+}: {
+  section: string;
+  user: { name: string; email: string } | null;
+}) {
+  const { t } = useLanguage();
+  if (section === "decks" || section === "guidebook") return <Library section={section} />;
+  if (section === "daily-spread") return <Daily user={user} />;
+  if (section === "game") return <Game user={user} />;
+  if (section === "journal") return <Journal user={user} />;
+  if (section === "community") return <Practice user={user} />;
+  if (section === "profile") return <Profile user={user} />;
+  if (section === "book") return <Book />;
+  if (!user) return <SignIn />;
+  if (section === "bookings")
+    return (
+      <>
+        <Header title={t("pages.bookings")} text={t("pages.bookingsText")} />
+        <div className="empty">
+          <CalendarDays size={36} />
+          <h2>{t("pages.noSessions")}</h2>
+          <p>{t("pages.bookingText")}</p>
+          <a className="button" href="/book">
+            {t("pages.exploreReadings")}
+          </a>
+        </div>
+      </>
+    );
+  return <Invites />;
+}
+
+function Header({ title, text }: { title: string; text?: string }) {
+  return (
+    <header className="page-head">
+      <h1>{title}</h1>
+      {text && <p>{text}</p>}
+    </header>
+  );
+}
+
+function Library({ section }: { section: string }) {
+  const { t } = useLanguage();
+  const [query, setQuery] = useState("");
+  const [suit, setSuit] = useState("All");
+  const [detail, setDetail] = useState<Card | null>(null);
+  const [deck, setDeck] = useState(false);
+  const groups = [
+    ["All", "pages.all"],
+    ["Major Arcana", "pages.majorArcana"],
+    ["Wands", "pages.wands"],
+    ["Cups", "pages.cups"],
+    ["Swords", "pages.swords"],
+    ["Pentacles", "pages.pentacles"],
+  ] as const;
+  const filteredCards = cards.filter(
+    (card) =>
+      (suit === "All" || card.suit === suit) &&
+      card.name.toLowerCase().includes(query.toLowerCase()),
+  );
+  return (
+    <>
+      <div className="library-hero">
+        <Tabs value={section} onValueChange={(value) => (location.href = "/" + value)}>
+          <TabsList>
+            <TabsTrigger value="guidebook">{t("pages.guidebook")}</TabsTrigger>
+            <TabsTrigger value="decks">{t("pages.decks")}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        {section === "decks" ? (
+          <div className="library-intro">
+            <div>
+              <h1>{t("pages.digitalDecks")}</h1>
+              <p>{t("pages.digitalDecksText")}</p>
+              <button className="button peach" onClick={() => setDeck(true)}>
+                {t("pages.aboutArtist")}
+              </button>
+            </div>
+            <div className="display-fan">
+              {[2, 17, 19].map((id) => (
+                <CardFace key={id} card={cards[id]} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1>{t("pages.meanings")}</h1>
+            <p className="intro-copy">{t("pages.meaningsText")}</p>
+          </>
+        )}
+      </div>
+      {section === "decks" ? (
+        <>
+          <button className="deck-product" onClick={() => setDeck(true)}>
+            <div className="deck-art">
+              {[0, 1, 2].map((id) => (
+                <CardFace key={id} card={cards[id]} />
+              ))}
+            </div>
+            <h2>Rider Waite Smith</h2>
+            <p>Pamela Colman Smith · 78 {t("common.cards")}</p>
+            <span className="included">✓ {t("room.included")}</span>
+          </button>
+          <p className="attribution">
+            {t("pages.artworkAttribution")}{" "}
+            <a href="/ATTRIBUTION.md" target="_blank">
+              {t("pages.artworkCredits")}
+            </a>
+          </p>
+          <Dialog open={deck} onOpenChange={setDeck}>
+            <DialogContent>
+              <DialogTitle>Rider Waite Smith</DialogTitle>
+              <DialogDescription>{t("pages.deckArtist")}</DialogDescription>
+              <div className="deck-modal-art">
+                <CardFace card={cards[2]} />
+                <p>
+                  {t("pages.deckDescription")}
+                  <br />
+                  <br />
+                  {t("pages.deckSource")}
+                </p>
+              </div>
+              <a className="button black" href="/room">
+                {t("pages.useDeck")}
+              </a>
+              <a className="button" href="/guidebook">
+                {t("pages.browseGuidebook")}
+              </a>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : (
+        <>
+          <div className="library-tools">
+            <label className="search">
+              <Search size={18} />
+              <input
+                aria-label={t("pages.searchCards")}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t("pages.findCard")}
+              />
+            </label>
+            <div className="suit-tabs">
+              {groups.map(([value, key]) => (
+                <button
+                  className={suit === value ? "selected" : ""}
+                  onClick={() => setSuit(value)}
+                  key={value}
+                >
+                  {t(key)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="card-grid">
+            {filteredCards.map((card) => (
+              <button
+                key={card.id}
+                className="library-card"
+                onClick={() => setDetail(card)}
+              >
+                <CardFace card={card} />
+                <span>{card.name}</span>
+                <small>{card.suit}</small>
+              </button>
+            ))}
+          </div>
+          {!filteredCards.length && <div className="empty">{t("pages.noMatch")}</div>}
+          <CardDetail card={detail} onClose={() => setDetail(null)} />
+        </>
+      )}
+    </>
+  );
+}
+
+function Daily({ user }: { user: any }) {
+  const { t } = useLanguage();
+  const [draw, setDraw] = useState<number[]>([]);
+  const [flipped, setFlipped] = useState<boolean[]>([false, false]);
+  const [detail, setDetail] = useState<Card | null>(null);
+  const [message, setMessage] = useState("");
+  const [saved, setSaved] = useState(false);
+  useEffect(() => setDraw(shuffleDeck().slice(0, 2)), []);
+  async function save() {
+    try {
+      await api("records", {
+        kind: "journal",
+        data: {
+          question: "Social battery check",
+          notes: "How social I feel like being / How social I need to be",
+          cards: draw.map((id) => ({ id, reversed: false })),
+        },
+      });
+      setSaved(true);
+      setMessage(t("pages.saveStatus"));
+    } catch (error: any) {
+      setMessage(error.message);
+    }
+  }
+  const labels = [t("pages.dailyFeel"), t("pages.dailyNeed")];
+  return (
+    <div className="daily-view">
+      <a className="button back-home" href="/">
+        <ArrowLeft size={15} /> {t("common.home")}
+      </a>
+      <span className="pill">{t("pages.daily")}</span>
+      <div className="daily-frame">
+        <div className="daily-cards">
+          {labels.map((label, index) => (
+            <div key={label}>
+              <p>{label}:</p>
+              <button
+                className={"flip-card " + (flipped[index] ? "flipped" : "")}
+                aria-label={
+                  flipped[index]
+                    ? cards[draw[index]]?.name
+                    : t("pages.revealCard") + " " + (index + 1)
+                }
+                onClick={() => {
+                  if (flipped[index]) setDetail(cards[draw[index]]);
+                  else setFlipped((value) => value.map((item, i) => (i === index ? true : item)));
+                }}
+              >
+                <span className="flip-inner">
+                  <span className="card-back flip-back">
+                    <CardMark />
+                  </span>
+                  <span className="flip-front">
+                    {draw.length > 0 && <CardFace card={cards[draw[index]]} />}
+                  </span>
+                </span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <p>{flipped.every(Boolean) ? t("pages.dailyExplore") : t("pages.dailyReady")}</p>
+      {flipped.every(Boolean) && (
+        <div className="daily-result">
+          <h2>{t("pages.reflect")}</h2>
+          <p>{t("pages.reflectText")}</p>
+          {user ? (
+            <button className="button black" disabled={saved} onClick={save}>
+              {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
+            </button>
+          ) : (
+            <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
+              {t("common.signIn")}
+            </a>
+          )}
+        </div>
+      )}
+      <p className="status" role="status">{message}</p>
+      <CardDetail card={detail} onClose={() => setDetail(null)} />
+    </div>
+  );
+}
+
+const puzzles = [
+  { clue: "A new beginning asks you to trust a small spark of hope.", answer: [0, 17] },
+  { clue: "Clear boundaries make room for a nurturing kind of care.", answer: [4, 3] },
+  { clue: "A quiet pause reveals what your intuition already knows.", answer: [9, 2] },
+  { clue: "An old structure falls, making space for a new chapter.", answer: [16, 13] },
+  { clue: "Patience and courage bring a difficult moment into balance.", answer: [8, 14] },
+];
+
+function Game({ user }: { user: any }) {
+  const { t } = useLanguage();
+  const [round, setRound] = useState(0);
+  const [choices, setChoices] = useState<number[]>([]);
+  const [picker, setPicker] = useState<number | null>(null);
+  const [history, setHistory] = useState<{ ids: number[]; correct: number }[]>([]);
+  const [rules, setRules] = useState(false);
+  const [message, setMessage] = useState("");
+  const puzzle = puzzles[round];
+  const won = history.some((item) => item.correct === 2);
+  const finished = won || history.length === 5;
+  async function guess() {
+    if (choices.length !== 2 || finished) return;
+    const correct = choices.filter((id) => puzzle.answer.includes(id)).length;
+    const next = [...history, { ids: [...choices], correct }];
+    setHistory(next);
+    setChoices([]);
+    if (user && (correct === 2 || next.length === 5)) {
+      try {
+        await api("records", {
+          kind: "game",
+          data: { day: new Date().toISOString().slice(0, 10), guesses: next.length, won: correct === 2, round },
+        });
+      } catch (error: any) {
+        setMessage(error.message);
+      }
+    }
+  }
+  return (
+    <div className="game-view">
+      <h2>PAIROT</h2>
+      <h1>{t("pages.pairTitle")}</h1>
+      <button className="soft-button" onClick={() => setRules(true)}>{t("pages.howToPlay")}</button>
+      <p className="muted">{t("pages.dailyPuzzle")} {round + 1} OF 5</p>
+      <p className="game-clue">{puzzle.clue}</p>
+      <div className="game-selection">
+        {[0, 1].map((index) => (
+          <button key={index} disabled={finished} onClick={() => setPicker(index)} aria-label={t("pages.chooseCardNumber") + " " + (index + 1)}>
+            {choices[index] !== undefined ? <CardFace card={cards[choices[index]]} /> : <Plus size={18} />}
+          </button>
+        ))}
+      </div>
+      {choices.length === 2 && !finished && <button className="button black" onClick={guess}>{t("pages.checkPair")}</button>}
+      <p className="muted">{won ? t("pages.foundPair") : 5 - history.length + " " + t("pages.guessesLeft")}</p>
+      <div className="guess-history">
+        {history.map((item, index) => (
+          <div key={index}>
+            <span>{cards[item.ids[0]].name}</span>
+            <span>{cards[item.ids[1]].name}</span>
+            <small>{item.correct}/2 {t("pages.gameMatched")}</small>
+          </div>
+        ))}
+      </div>
+      {finished && (
+        <div className="game-end">
+          <h2>{won ? t("pages.gameConnected") : t("pages.gameNewWay")}</h2>
+          <p>{puzzle.answer.map((id) => cards[id].name).join(" + ")}</p>
+          {round < 4 ? (
+            <button className="button" onClick={() => { setRound(round + 1); setHistory([]); setChoices([]); }}>
+              {t("pages.nextPuzzle")} <ArrowRight size={15} />
+            </button>
+          ) : (
+            <a className="button" href="/guidebook">{t("pages.exploreGuidebook")}</a>
+          )}
+        </div>
+      )}
+      <p role="status">{message}</p>
+      <CardPicker
+        open={picker !== null}
+        onClose={() => setPicker(null)}
+        exclude={choices}
+        onSelect={(id) => setChoices((value) => { const next = [...value]; next[picker ?? 0] = id; return next; })}
+      />
+      <Dialog open={rules} onOpenChange={setRules}>
+        <DialogContent>
+          <DialogTitle>{t("pages.gameRulesTitle")}</DialogTitle>
+          <DialogDescription>{t("pages.gameRulesText")}</DialogDescription>
+          <button className="button black" onClick={() => setRules(false)}>{t("pages.gamePlay")}</button>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function Journal({ user }: { user: any }) {
+  const { t, locale } = useLanguage();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [picker, setPicker] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [notes, setNotes] = useState("");
+  const [chosen, setChosen] = useState<{ id: number; reversed: boolean }[]>([]);
+  const [edit, setEdit] = useState<string | undefined>();
+  const [busy, setBusy] = useState(false);
+  async function load() {
+    try {
+      const result = await api("records?kind=journal");
+      setItems(result.items);
+    } catch (error: any) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => { if (user) load(); }, [user]);
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      await api("records", { id: edit, kind: "journal", data: { question, notes, cards: chosen } });
+      setOpen(false);
+      setMessage(t("pages.savedReflection"));
+      await load();
+    } catch (error: any) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (!user) return <SignIn />;
+  return (
+    <>
+      <div className="journal-head">
+        <Header title={t("pages.yourJournal")} text={t("pages.journalText")} />
+        <button className="button" onClick={() => { setEdit(undefined); setQuestion(""); setNotes(""); setChosen([]); setOpen(true); }}>
+          {t("pages.physicalEntry")}
+        </button>
+      </div>
+      <p role="status" className="status">{message}</p>
+      {loading ? (
+        <p className="empty">{t("pages.openingJournal")}</p>
+      ) : items.length === 0 ? (
+        <div className="empty">
+          <BookOpen size={36} />
+          <h2>{t("pages.nextChapter")}</h2>
+          <p>{t("pages.journalEmpty")}</p>
+          <a className="button black" href="/room">{t("common.openRoom")}</a>
+        </div>
+      ) : (
+        <div className="journal-grid">
+          {items.map((item) => (
+            <button className="journal-entry" key={item.id} onClick={() => { setEdit(item.id); setQuestion(item.question); setNotes(item.notes); setChosen(item.cards); setOpen(true); }}>
+              <time>{new Date(item.created).toLocaleDateString(locale === "vi" ? "vi-VN" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}</time>
+              <h2>{item.question}</h2>
+              <div className="mini-cards">{item.cards.map((card: any) => <CardFace key={card.id} card={cards[card.id]} reversed={card.reversed} />)}</div>
+              <p>{item.notes}</p>
+              <span>{t("pages.openReflection")}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="journal-dialog">
+          <DialogTitle>{edit ? t("pages.yourReflection") : t("pages.physicalQuestion")}</DialogTitle>
+          <DialogDescription>{t("pages.keepCards")}</DialogDescription>
+          <form onSubmit={save}>
+            <label>{t("pages.questionSit")}<input required maxLength={500} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={t("pages.journalQuestionPlaceholder")} /></label>
+            <label>{t("pages.reflection")}<textarea rows={5} value={notes} onChange={(event) => setNotes(event.target.value)} placeholder={t("pages.journalReflectionPlaceholder")} /></label>
+            <label>{t("pages.cardsCount")} ({chosen.length}/10)</label>
+            <div className="chosen-cards">
+              {chosen.map((card, index) => (
+                <div key={card.id + "-" + index}>
+                  <CardFace card={cards[card.id]} reversed={card.reversed} />
+                  <button type="button" onClick={() => setChosen((value) => value.map((item, i) => i === index ? { ...item, reversed: !item.reversed } : item))}>{t("common.reverse")}</button>
+                  <button type="button" onClick={() => setChosen((value) => value.filter((_, i) => i !== index))}>{t("common.remove")}</button>
+                </div>
+              ))}
+              {chosen.length < 10 && <button type="button" className="button" onClick={() => setPicker(true)}><Plus size={16} /> {t("pages.addCard")}</button>}
+            </div>
+            <p role="status">{message}</p>
+            <div className="form-actions">
+              <button type="button" className="button" onClick={() => setOpen(false)}>{t("common.cancel")}</button>
+              <button className="button black" disabled={busy}>{busy ? t("common.saving") : t("common.save")}</button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <CardPicker open={picker} onClose={() => setPicker(false)} exclude={chosen.map((card) => card.id)} onSelect={(id) => setChosen((value) => [...value, { id, reversed: false }])} />
+    </>
+  );
+}
+
+function Practice({ user }: { user: any }) {
+  const { t } = useLanguage();
+  const [id, setId] = useState(0);
+  const [shown, setShown] = useState(false);
+  const [text, setText] = useState("");
+  const [message, setMessage] = useState("");
+  useEffect(() => setId(shuffleDeck()[0]), []);
+  return (
+    <>
+      <Header title={t("pages.practiceTitle")} text={t("pages.practiceText")} />
+      <div className="practice-panel">
+        <div>
+          <CardFace card={cards[id]} />
+          <button className="button" onClick={() => { setId(shuffleDeck()[0]); setText(""); setShown(false); setMessage(""); }}>{t("pages.practiceAnother")}</button>
+        </div>
+        <div>
+          <h2>{t("pages.standsOut")}</h2>
+          <p>{t("pages.practicePrompt")}</p>
+          <textarea aria-label={t("pages.interpretation")} rows={6} value={text} onChange={(event) => setText(event.target.value)} placeholder={t("pages.writeInterpretation")} />
+          <div className="form-actions">
+            <button className="button" onClick={() => setShown(!shown)}>{shown ? t("pages.hideMeaning") : t("pages.revealMeaning")}</button>
+            <button className="button black" disabled={!text.trim()} onClick={async () => {
+              try {
+                await api("records", { kind: "journal", data: { question: "Practice: " + cards[id].name, notes: text, cards: [{ id, reversed: false }] } });
+                setMessage(t("pages.saveStatus"));
+              } catch (error: any) { setMessage(error.message); }
+            }}>{t("pages.saveReflection")}</button>
+          </div>
+          {shown && <div className="meaning-block"><h2>{cards[id].name}</h2><p>{cards[id].upright}</p></div>}
+          <p role="status">{message}</p>
+        </div>
+      </div>
+      <div className="empty">
+        <h2>{t("pages.readTogether")}</h2>
+        <p>{t("pages.readTogetherText")}</p>
+        <a className="button" href="/room">{t("pages.createRoom")}</a>
+      </div>
+    </>
+  );
+}
+
+function Profile({ user }: { user: any }) {
+  const { t, locale, setLocale } = useLanguage();
+  const [name, setName] = useState(user?.name || "");
+  const [bio, setBio] = useState("");
+  const [timezone, setTimezone] = useState("Asia/Ho_Chi_Minh");
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (user)
+      api("records?kind=profile")
+        .then((result) => {
+          if (result.items[0]) {
+            const profile = result.items[0];
+            setName(profile.name);
+            setBio(profile.bio);
+            setTimezone(profile.timezone);
+          }
+        })
+        .catch((error) => setMessage(error.message));
+  }, [user]);
+  if (!user) return <SignIn />;
+  return (
+    <>
+      <Header title={t("pages.yourSpace")} text={t("pages.yourSpaceText")} />
+      <form className="profile-form" onSubmit={async (event) => {
+        event.preventDefault();
+        setBusy(true);
+        try {
+          await api("records", { kind: "profile", data: { name, bio, timezone, language: locale === "vi" ? "Tiếng Việt" : "English" } });
+          setMessage(t("pages.profileSaved"));
+        } catch (error: any) { setMessage(error.message); }
+        finally { setBusy(false); }
+      }}>
+        <div className="profile-avatar"><Moon size={43} /></div>
+        <label>{t("pages.displayName")}<input value={name} required maxLength={80} onChange={(event) => setName(event.target.value)} /></label>
+        <label>{t("pages.email")}<input readOnly value={user.email} /></label>
+        <label>{t("pages.aboutYou")}<textarea value={bio} rows={4} onChange={(event) => setBio(event.target.value)} /></label>
+        <label>{t("common.language")}<select value={locale} onChange={(event) => setLocale(event.target.value === "vi" ? "vi" : "en")}><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label>
+        <label>{t("pages.timezone")}<select value={timezone} onChange={(event) => setTimezone(event.target.value)}>{["Asia/Ho_Chi_Minh", "Asia/Bangkok", "Asia/Singapore", "Europe/London", "America/New_York", "America/Los_Angeles", "UTC"].map((zone) => <option key={zone}>{zone}</option>)}</select></label>
+        <button className="button black" disabled={busy}>{busy ? t("common.saving") : t("pages.saveProfile")}</button>
+        <p role="status">{message}</p>
+      </form>
+      <div className="service-status">
+        <h2>{t("pages.services")}</h2>
+        <p><Check size={16} />{t("pages.tarotService")}</p>
+        <p><span className="pending-dot" />{t("pages.videoPending")}</p>
+        <p><span className="pending-dot" />{t("pages.paymentPending")}</p>
+        <p><span className="pending-dot" />{t("pages.emailPending")}</p>
+        <p><span className="pending-dot" />{t("pages.membersPending")}</p>
+      </div>
+    </>
+  );
+}
+
+function Book() {
+  const { t, locale } = useLanguage();
+  const [date, setDate] = useState<Date | undefined>();
+  const [open, setOpen] = useState(false);
+  const sessions = [
+    [t("pages.sessionFresh"), t("pages.minutes30")],
+    [t("pages.sessionDeep"), t("pages.minutes60")],
+    [t("pages.sessionLearn"), t("pages.minutes60")],
+  ];
+  return (
+    <>
+      <section className="booking-hero">
+        <div>
+          <h1>{t("pages.bookingHero")}<br />{t("pages.bookingHeroLine")}</h1>
+          <p>{t("pages.bookingIntro")}</p>
+          <button className="button black" onClick={() => setOpen(true)}>{t("pages.exploreSessions")}</button>
+        </div>
+        <div className="booking-illustration">
+          <div className="tiny-top">VinTarot <span>{t("pages.yourTarotRoom")}</span></div>
+          <div className="tiny-avatars"><Moon /><User /></div>
+          <div className="tiny-spread">{[2, 17, 19].map((id) => <CardFace key={id} card={cards[id]} />)}</div>
+        </div>
+      </section>
+      <div className="empty">
+        <h2>{t("pages.readingRoomReady")}</h2>
+        <p>{t("pages.bookingClosedText")}</p>
+        <a className="button" href="/room">{t("pages.startOwnRoom")}</a>
+      </div>
+      <div className="session-options">
+        {sessions.map(([name, duration]) => <button key={name} onClick={() => setOpen(true)}><Video size={22} /><h2>{name}</h2><p>{duration}</p><span>{t("pages.exploreSession")}</span></button>)}
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="booking-dialog">
+          <DialogTitle>{t("pages.planReading")}</DialogTitle>
+          <DialogDescription>{t("pages.calendarPreview")}</DialogDescription>
+          <Calendar mode="single" selected={date} onSelect={setDate} disabled={(day) => day < new Date(new Date().setHours(0, 0, 0, 0))} />
+          <p>{date ? date.toLocaleDateString(locale === "vi" ? "vi-VN" : "en-GB", { dateStyle: "full" }) : t("pages.chooseDay")}</p>
+          <p className="notice">{t("pages.bookingNotice")}</p>
+          <button disabled className="button black">{t("pages.bookingNotOpen")}</button>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function Invites() {
+  const { t, locale } = useLanguage();
+  const [items, setItems] = useState<any[]>([]);
+  const [message, setMessage] = useState("");
+  useEffect(() => { api("rooms").then((result) => setItems(result.items)).catch((error) => setMessage(error.message)); }, []);
+  return (
+    <>
+      <Header title={t("pages.yourRooms")} text={t("pages.yourRoomsText")} />
+      <p className="notice">{t("pages.privateSite")}</p>
+      <p role="status">{message}</p>
+      {items.length ? (
+        <div className="room-list">
+          {items.map((room) => <a key={room.id} href={"/room?id=" + room.id}><Moon size={24} /><div><h2>{room.state.question || t("pages.roomsFallback")}</h2><p>{room.state.cards.length} {t("pages.roomCards")} · {new Date(room.updated).toLocaleDateString(locale === "vi" ? "vi-VN" : undefined)}</p></div><ArrowRight size={20} /></a>)}
+        </div>
+      ) : (
+        <div className="empty">
+          <Moon size={34} />
+          <h2>{t("pages.sharedRitual")}</h2>
+          <p>{t("pages.roomsEmpty")}</p>
+          <a className="button black" href="/room">{t("pages.createRoom")}</a>
+        </div>
+      )}
+    </>
+  );
+}

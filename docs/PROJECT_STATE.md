@@ -9,6 +9,7 @@ Moonlight-inspired tarot website. Preserve reference interactions, smooth motion
 ## Latest feature
 /create now offers a custom question, six topics with four suggestions each, and skip/back controls. Create and +Room link here. A one-use sessionStorage draft (1h expiry) transfers question into room state without exposing question in URL; existing D1 room and journal persistence retains it. Work prompts were observed in reference; other prompts are VinTarot-authored.
 Deck tap starts, second tap pauses all CSS animation layers in place, next tap resumes. Done shuffling exits current pose and opens fan. Pause is local UI state, not shared across participants.
+The interface now supports English and Tiếng Việt through a shared client locale provider. The selector is available in the site header and Room, with a profile selector for signed-in users. The choice is stored in localStorage and mirrored to the D1 profile record; visible navigation, Create questions, Room controls, guidebook, daily spread, journal, practice, profile, booking and invite copy are translated while Tarot card names and stored room data remain unchanged.
 
 ## Remaining work
 Continue reference fidelity review, mobile motion tuning and provision real service accounts. Full cross-device smoothness not yet established.
@@ -20,4 +21,4 @@ Baseline commit 64fca6d, tag baseline-before-skills-2026-09-16. GitHub origin: h
 Existing Sites project lookup returned project_not_found. No production deployment succeeded. Do not create duplicate projects or expose stored credentials.
 
 ## Verification
-Prior app TypeScript and production build passed; shuffle and card selection checked in browser. Full fidelity and production integrations remain incomplete.
+`npx tsc --noEmit`, `npm run build`, `npx tsx --test tests/i18n.test.ts`, and `git diff --check` pass for the locale work. Browser checks covered English/Vietnamese switching, persistence across routes, Create topic suggestions, Room shuffle pause/resume/finish, fan draw, card flip and translated spread controls. Full fidelity and production integrations remain incomplete.
