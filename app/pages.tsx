@@ -3,7 +3,7 @@
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
 import { useEffect, useState, type FormEvent } from "react";
-import { cardMeaning, cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
+import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import {
   Dialog,
@@ -66,6 +66,7 @@ export function CardDetail({
   const [reverse, setReverse] = useState(false);
   useEffect(() => setReverse(false), [card]);
   const localized = card ? cardMeaning(card, locale) : null;
+  const narrative = card ? cardNarrative(card, locale) : null;
   const close = () => {
     if (closeHref) {
       location.href = closeHref;
@@ -102,6 +103,17 @@ export function CardDetail({
                 <p>{t("pages.recognize")}</p>
               </div>
             </div>
+            {narrative && (
+              <div className="card-narrative">
+                <p className="card-summary">{narrative.summary}</p>
+                {narrative.sections.map((section) => (
+                  <section className="card-narrative-section" key={section.key}>
+                    <h3>{section.title}</h3>
+                    <p>{section.body}</p>
+                  </section>
+                ))}
+              </div>
+            )}
             <a href={"/room?card=" + card.id} className="button black">
               {t("pages.exploreRoom")}
             </a>
