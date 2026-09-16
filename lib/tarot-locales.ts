@@ -200,7 +200,7 @@ function minorMeaning(card: CardMeaningSource): TarotMeaning | undefined {
   if (!theme) return undefined;
   return {
     keywords: theme,
-    upright: `Lá bài này hướng sự chú ý đến ${theme}. Hãy xem chủ đề này xuất hiện ở đâu trong hoàn cảnh của bạn và bước tiếp theo sáng suốt nào đang mở ra.`,
+    upright: `Lá bài này hướng sự chú ý đến ${theme}. Hãy xem chủ đề này xuất hiện ở đâu trong hoàn cảnh của bạn và bước tiếp theo phù hợp nào đang mở ra.`,
     reversed: `Hãy nhìn sâu vào ${theme}. Năng lượng có thể đang bị chặn, đi quá mức hoặc cần được thể hiện theo một cách khác. Điều gì cần một cách tiếp cận nhẹ nhàng và cân bằng hơn?`,
   };
 }
