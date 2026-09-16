@@ -1,0 +1,4 @@
+import Room from './room';
+import {getChatGPTUser} from '../chatgpt-auth';
+export const dynamic='force-dynamic';
+export default async function Page(){const u=await getChatGPTUser();return <Room user={u?{name:u.fullName||u.email.split('@')[0],email:u.email}:null}/>}

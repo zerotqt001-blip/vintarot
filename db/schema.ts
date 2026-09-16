@@ -1,0 +1,4 @@
+import {sqliteTable,text,integer,index,uniqueIndex} from 'drizzle-orm/sqlite-core';
+export const records=sqliteTable('records',{id:text('id').primaryKey(),owner:text('owner').notNull(),kind:text('kind').notNull(),data:text('data').notNull(),created:integer('created').notNull(),updated:integer('updated').notNull() },t=>[index('idx_records_owner_kind').on(t.owner,t.kind)]);
+export const rooms=sqliteTable('rooms',{id:text('id').primaryKey(),owner:text('owner').notNull(),state:text('state').notNull(),revision:integer('revision').notNull().default(0),invite:text('invite').notNull(),created:integer('created').notNull(),updated:integer('updated').notNull()},t=>[index('idx_rooms_owner').on(t.owner),uniqueIndex('idx_rooms_invite').on(t.invite)]);
+export const members=sqliteTable('room_members',{id:text('id').primaryKey(),room:text('room').notNull(),user:text('user').notNull(),name:text('name').notNull()},t=>[uniqueIndex('idx_members_room_user').on(t.room,t.user)]);

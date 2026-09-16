@@ -1,0 +1,1 @@
+export default function CardMark(){return <svg className="card-mark" viewBox="0 0 100 140" aria-hidden="true"><g stroke="currentColor" strokeWidth="1.15" fill="none"><path d="M50 5V135M10 70H90M17 37L83 103M20 103L80 37M34 21L66 119M7 53L93 87M9 87L91 53M35 120L65 20"/></g></svg>}
