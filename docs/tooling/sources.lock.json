@@ -1,0 +1,27 @@
+[
+  {
+    "repository": "https://github.com/vercel-labs/skills",
+    "revision": "d6b37f62ae23c3825b0ed16c73e123eee0a41fdc",
+    "status": "installed"
+  },
+  {
+    "repository": "https://github.com/obra/superpowers",
+    "revision": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+    "status": "installed"
+  },
+  {
+    "repository": "https://github.com/thedotmack/claude-mem",
+    "revision": "dcfc44221deabc228b0698a0012f87ed2fe6bbe7",
+    "status": "source-only; recording disabled"
+  },
+  {
+    "repository": "https://github.com/pbakaus/impeccable",
+    "revision": "0a4e72a254f3b175c95b36b82e5f2e60fa63f116",
+    "status": "installed"
+  },
+  {
+    "repository": "https://github.com/rebelytics/one-skill-to-rule-them-all",
+    "revision": "7518a858cf5b550bf3dc61b1b625f4cb0b5fa87f",
+    "status": "installed; activation next session"
+  }
+]

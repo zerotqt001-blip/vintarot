@@ -49,6 +49,9 @@ next-env.d.ts
 !/.codex/
 /.codex/*
 !/.codex/skills/
-/.codex/skills/*
-!/.codex/skills/clone-website/
+!/.codex/skills/**
 *.tsbuildinfo
+
+# Private task observations and memory stores
+/skill-observations/
+/.claude-mem/
