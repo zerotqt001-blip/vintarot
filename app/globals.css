@@ -138,3 +138,17 @@
 .table-layout{will-change:transform}
 @media(max-width:700px){.camera-nav{top:91px;right:8px;scale:.82;transform-origin:top right}.card-prompt{max-width:180px;font-size:10px}.card-hover-shell{transition-duration:.4s}}
 @media(prefers-reduced-motion:reduce){.card-hover-shell,.card-prompt{transition:none!important}.drawn-card.is-card-active .card-prompt{transform:translate(-50%,0)}}
+
+/* Cosmic reading table: the supplied celestial artwork becomes a quiet 3D stage for the spread. */
+.room-page .tabletop{background:#061525;perspective:1400px;transform-style:preserve-3d;isolation:isolate;box-shadow:inset 0 30px 90px #02091466,inset 0 -40px 110px #02091499}
+.room-page .tabletop::before{content:"";position:absolute;inset:-7%;z-index:-1;background:url('/room/vintarot-cosmic-table.png') center/cover no-repeat;filter:saturate(1.06) contrast(1.04) brightness(.82);transform:translate3d(0,0,-70px) scale(1.12) rotateX(1deg);transform-origin:center 58%;animation:room-cosmic-drift 26s ease-in-out infinite alternate;will-change:transform,background-position;pointer-events:none}
+.room-page .tabletop::after{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 50% 42%,#57b8ff26,transparent 38%),linear-gradient(180deg,#0209142e 0%,#02091412 42%,#02091473 100%);mix-blend-mode:screen;pointer-events:none}
+.room-page .shuffle-deck,.room-page .table-layout,.room-page .drawing-layer{z-index:2}
+.room-page .card-fan{z-index:3;filter:drop-shadow(0 -10px 24px #02091499)}
+.room-page .spread-slot{background:#04142645;border-color:#f3d9b080;box-shadow:inset 0 0 0 1px #ffffff12,0 18px 42px #02091480;backdrop-filter:blur(2px)}
+.room-page .spread-slot>span{color:#fff;text-shadow:0 2px 12px #020914,0 1px 2px #020914}
+.room-page .room-question{color:#fff;text-shadow:0 2px 14px #020914,0 1px 3px #020914}
+.room-page .card-prompt{box-shadow:0 8px 22px #02091499}
+@keyframes room-cosmic-drift{from{transform:translate3d(-.6%,.2%,-70px) scale(1.12) rotateX(1deg);background-position:49% 48%}to{transform:translate3d(.8%,-1.2%,-70px) scale(1.16) rotateX(2deg);background-position:51% 53%}}
+@media(max-width:700px){.room-page .tabletop::before{inset:-12%;transform:translate3d(0,0,-60px) scale(1.2) rotateX(1deg);animation-duration:32s}.room-page .spread-slot{background:#04142666;backdrop-filter:blur(1px)}.room-page .room-question{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.room-page .tabletop::before{animation:none;transform:translate3d(0,0,-70px) scale(1.12) rotateX(1deg)}}
