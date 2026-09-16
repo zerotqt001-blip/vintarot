@@ -6,8 +6,12 @@ Moonlight-inspired tarot website. Preserve reference interactions, smooth motion
 ## Existing implementation
 78 public-domain tarot images, room drawing/shuffling/dragging, guidebook, daily cards, journal, D1 persistence. Local preview on port 5173. Integrations visibly unavailable until configured.
 
-## Immediate unfinished work
-Create a ritual currently enters room directly. Must add Ask a question (custom input, Work, Relationships, Life changes, Creativity, Inner magic, IDK, Skip theme), then topic question suggestions (Anything in mind?, Skip question), passing selection into room state and journal. Original Work suggestions observed: What's next in my career?; What wants to come alive in my work?; What should I know about this opportunity?; What is emerging with this launch? Inspect other topics before implementing. User screenshot shows purple aura, pill input, 3x2 topic buttons and back arrow.
+## Latest feature
+/create now offers a custom question, six topics with four suggestions each, and skip/back controls. Create and +Room link here. A one-use sessionStorage draft (1h expiry) transfers question into room state without exposing question in URL; existing D1 room and journal persistence retains it. Work prompts were observed in reference; other prompts are VinTarot-authored.
+Deck tap starts, second tap pauses all CSS animation layers in place, next tap resumes. Done shuffling exits current pose and opens fan. Pause is local UI state, not shared across participants.
+
+## Remaining work
+Continue reference fidelity review, mobile motion tuning and provision real service accounts. Full cross-device smoothness not yet established.
 
 ## Versioning
 Baseline commit 64fca6d, tag baseline-before-skills-2026-09-16. GitHub origin: https://github.com/zerotqt001-blip/vintarot (private). Baseline is on main; tooling is on codex/tooling-and-version-history. Push completed changes and verify remote refs; report any failures.

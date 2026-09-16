@@ -68,3 +68,34 @@
 @keyframes leaf-gather{from{transform:translateY(calc((var(--index) - 16)*5px)) translateZ(calc(var(--index)*2px))}to{transform:translateZ(calc(var(--index)*1.3px))}}
 /* Cards extend beyond the viewport; focus must never scroll the fixed table. */
 .room-page{overflow:clip}
+.question-flow{position:relative;min-height:620px;max-width:720px;margin:0 auto;padding:94px 36px 70px;text-align:center;isolation:isolate}
+.question-glow{position:absolute;z-index:-1;inset:90px 15% 90px;background:radial-gradient(ellipse,#e9bcfa99,transparent 68%);pointer-events:none}
+.question-back{position:absolute;left:20px;top:36px;padding:8px}
+.question-step{animation:copy-in .45s cubic-bezier(.22,.61,.36,1)}
+.question-step h1{font-size:58px;line-height:1.15;margin:0 0 32px;font-weight:400}
+.question-input{display:flex;align-items:center;background:white;border:1px solid #111;border-radius:50px;padding:0 18px;min-height:58px;width:100%;max-width:520px;margin:auto}
+.question-input input{background:transparent;border:0!important;box-shadow:none!important;outline:0;min-width:0;flex:1;margin:0;padding:16px 6px;border-radius:40px;font-size:15px}
+.question-input input::placeholder{font-style:italic;color:#555}
+.question-input:focus-within{outline:2px solid #a87fc0;outline-offset:4px}
+.question-input button{padding:8px;border-radius:50%}
+.question-step h2{font-size:29px;font-weight:400;margin:60px 0 30px}
+.question-topics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px;max-width:520px;margin:auto}
+.question-topics button{border:1px solid #111;box-shadow:0 3px 0 #111;border-radius:40px;min-height:43px;padding:9px 8px;font-size:12px;background:#f8f8f8b3;transition:transform .18s ease,box-shadow .18s ease}
+.question-topics button:hover{transform:translateY(-2px);box-shadow:0 5px 0 #111}
+.question-topics button:active{transform:translateY(2px);box-shadow:0 1px 0 #111}
+.question-skip{display:block;margin:44px auto 0;text-decoration:underline;text-underline-offset:3px;font-size:14px;padding:10px}
+.question-suggestions{display:grid;gap:12px;max-width:520px;margin:auto}
+.question-suggestions button{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;min-height:54px;border:1px solid #b3b3b3;border-radius:32px;padding:13px 24px;background:#ffffff70;font-size:14px;transition:background .2s,border-color .2s,transform .2s}
+.question-suggestions button svg{opacity:0;transition:opacity .2s}
+.question-suggestions button:hover{background:white;border-color:#111;transform:translateX(3px)}
+.question-suggestions button:hover svg{opacity:1}
+.question-flow button:focus-visible{outline:2px solid #9360b2;outline-offset:5px}
+.is-paused .shuffle-orbit,.is-paused .shuffle-leaf,.is-paused .shuffle-plane{animation-play-state:paused}
+@media(max-width:700px){.question-flow{padding:90px 8px 60px;min-height:600px}.question-step h1{font-size:40px}.question-back{left:0;top:22px}.question-step h2{margin-top:45px;font-size:26px}.question-topics{grid-template-columns:repeat(2,1fr);gap:14px 10px}.question-topics button{font-size:10px;min-height:44px}.question-input{padding:0 10px}.question-input input{font-size:14px}.question-suggestions button{padding:13px 16px}.question-glow{inset:90px -10% 100px}}
+/* Finish from the current pose instead of snapping every card to a new orbit. */
+.is-mixing.is-gathering .shuffle-orbit{animation:deck-orbit 7s linear infinite;animation-play-state:paused;transition:none}
+.is-mixing.is-gathering .shuffle-leaf{animation:leaf-orbit 1.76s linear infinite;animation-delay:var(--delay);animation-play-state:paused}
+.is-mixing.is-gathering .shuffle-plane{animation:leaf-counter 1.76s linear infinite;animation-delay:var(--delay);animation-play-state:paused;transition:none}
+.shuffle-deck.is-gathering{animation:shuffle-exit .48s cubic-bezier(.65,0,.35,1) both;pointer-events:none}
+@keyframes shuffle-exit{0%{opacity:1;translate:0 0}100%{opacity:0;translate:0 65px}}
+.shuffle-orbit,.shuffle-leaf,.shuffle-plane{will-change:transform}
