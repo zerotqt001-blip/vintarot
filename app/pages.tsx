@@ -66,7 +66,7 @@ export function CardDetail({
   const [reverse, setReverse] = useState(false);
   useEffect(() => setReverse(false), [card]);
   const localized = card ? cardMeaning(card, locale) : null;
-  const narrative = card ? cardNarrative(card, locale) : null;
+  const narrative = card ? cardNarrative(card, locale, reverse ? "reversed" : "upright") : null;
   const close = () => {
     if (closeHref) {
       location.href = closeHref;

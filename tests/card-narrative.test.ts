@@ -44,3 +44,23 @@ test("The Fool has a localized long form guidebook entry", () => {
   assert.match(vietnamese.summary, /khởi đầu|mới/i);
   assert.doesNotMatch(vietnamese.summary, /The chaotic/i);
 });
+
+test("reversed readings have their own long-form guidance", () => {
+  for (const card of cards) {
+    const upright = cardNarrative(card, "en", "upright");
+    const reversed = cardNarrative(card, "en", "reversed");
+    assert.notEqual(reversed.summary, upright.summary, `${card.name} summary`);
+    assert.notEqual(reversed.sections[0].body, upright.sections[0].body, `${card.name} energy`);
+    assert.notEqual(reversed.sections[1].body, upright.sections[1].body, `${card.name} actions`);
+  }
+});
+
+test("The Fool reversed narrative is localized", () => {
+  const reversedEnglish = cardNarrative(cards[0], "en", "reversed");
+  const reversedVietnamese = cardNarrative(cards[0], "vi", "reversed");
+  assert.match(reversedEnglish.summary, /pause|slow|recalibrat/i);
+  assert.match(reversedEnglish.sections[0].body, /reversed|hesitat|motion/i);
+  assert.equal(reversedVietnamese.sections[0].title, "Năng lượng");
+  assert.match(reversedVietnamese.summary, /khoảng dừng|chậm|điều chỉnh/i);
+  assert.doesNotMatch(reversedVietnamese.summary, /The Fool|The chaotic/i);
+});
