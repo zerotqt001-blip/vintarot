@@ -5,7 +5,7 @@ import WebMCP from "./webmcp";
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
 export const metadata: Metadata = {
-  title: "VinTarot — A new place for tarot",
+  title: "NaTarot — A space between you and the cards",
   description: "Create your tarot ritual. Explore 78 cards, reflect in your journal, and read together.",
   other: {
     "codex-preview": "development",

@@ -870,7 +870,7 @@ function Book() {
           <button className="button black" onClick={() => setOpen(true)}>{t("pages.exploreSessions")}</button>
         </div>
         <div className="booking-illustration">
-          <div className="tiny-top">VinTarot <span>{t("pages.yourTarotRoom")}</span></div>
+          <div className="tiny-top">NaTarot <span>{t("pages.yourTarotRoom")}</span></div>
           <div className="tiny-avatars"><Moon /><User /></div>
           <div className="tiny-spread">{[2, 17, 19].map((id) => <CardFace key={id} card={cards[id]} />)}</div>
         </div>

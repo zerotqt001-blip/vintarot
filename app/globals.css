@@ -320,3 +320,127 @@
   .ritual-label{width:180px;height:132px;left:-48px;top:1px}
   .ritual-label text{font-size:8.8px;letter-spacing:.8px}
 }
+
+/* NaTarot celestial homepage: an immersive midnight portal with calm glass UI. */
+.home-shell{
+  --na-bg-deep:#030C18;
+  --na-bg-navy:#061629;
+  --na-bg-blue:#09223A;
+  --na-panel:rgba(5, 20, 38, 0.76);
+  --na-panel-strong:rgba(4, 16, 31, 0.90);
+  --na-panel-soft:rgba(15, 39, 61, 0.58);
+  --na-gold:#C9A66B;
+  --na-gold-light:#E5CB98;
+  --na-gold-bright:#F0D7A5;
+  --na-gold-border:rgba(201, 166, 107, 0.38);
+  --na-gold-subtle:rgba(201, 166, 107, 0.15);
+  --na-ivory:#F0EADF;
+  --na-text:#E9E5DC;
+  --na-text-secondary:#B5BDC5;
+  --na-text-muted:#788898;
+  --na-shadow:rgba(0, 0, 0, 0.38);
+  --mouse-x:0;
+  --mouse-y:0;
+  --scroll-progress:0;
+  position:relative;
+  isolation:isolate;
+  min-height:100svh;
+  width:100%;
+  overflow-x:hidden;
+  background:var(--na-bg-deep);
+  color:var(--na-text);
+}
+.home-shell .cosmic-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--na-bg-deep)}
+.home-shell .cosmic-layer{position:absolute;inset:-5%;will-change:transform;pointer-events:none}
+.home-shell .cosmic-sky{background:linear-gradient(180deg,rgba(3,12,24,.18),rgba(3,12,24,.58)),url('/room/vintarot-cosmic-table.png') center/cover no-repeat;filter:saturate(1.08) contrast(1.06) brightness(.62);transform:translate3d(calc(var(--mouse-x) * 2px),calc(var(--mouse-y) * 2px),0) scale(1.06);animation:na-sky-breathe 26s ease-in-out infinite alternate}
+.home-shell .cosmic-nebula{background:radial-gradient(ellipse at 22% 37%,rgba(86,134,222,.42),transparent 34%),radial-gradient(ellipse at 77% 23%,rgba(123,78,191,.36),transparent 36%),radial-gradient(ellipse at 53% 74%,rgba(35,115,160,.22),transparent 40%);mix-blend-mode:screen;opacity:.72;transform:translate3d(calc(var(--mouse-x) * 4px),calc(var(--mouse-y) * 4px),0);animation:na-nebula-drift 42s ease-in-out infinite alternate}
+.home-shell .cosmic-planets{background:radial-gradient(circle at 12% 18%,rgba(115,166,225,.72) 0 4%,transparent 4.5% 10%,rgba(97,151,211,.22) 10.2% 14%,transparent 14.5%),radial-gradient(circle at 88% 32%,rgba(118,172,228,.42) 0 2.8%,transparent 3.2% 7%,rgba(92,151,224,.16) 7.2% 10%,transparent 10.5%),radial-gradient(circle at 17% 83%,rgba(177,143,219,.28) 0 2%,transparent 2.5% 5%,rgba(132,113,194,.12) 5.2% 8%,transparent 8.5%);opacity:.64;transform:translate3d(calc(var(--mouse-x) * 6px),calc(var(--mouse-y) * 6px),0);animation:na-planets-float 34s ease-in-out infinite alternate}
+.home-shell .cosmic-architecture{background:linear-gradient(90deg,rgba(1,7,17,.68),transparent 17%,transparent 83%,rgba(1,7,17,.7)),url('/room/celestial-observatory.png') center/cover no-repeat;mix-blend-mode:soft-light;opacity:.38;transform:translate3d(calc(var(--mouse-x) * 8px),calc(var(--mouse-y) * 8px),0) scale(1.07)}
+.home-shell .cosmic-floor{inset:45% -10% -15%;background:radial-gradient(ellipse at 50% 8%,rgba(60,120,153,.22),transparent 40%),linear-gradient(180deg,transparent 0%,rgba(2,10,20,.16) 36%,rgba(1,7,16,.8) 100%);transform:translate3d(calc(var(--mouse-x) * 4px),calc(var(--mouse-y) * 4px),0)}
+.home-shell .cosmic-foreground{background:radial-gradient(circle at 50% 45%,transparent 0 34%,rgba(0,5,13,.2) 64%,rgba(0,3,9,.72) 100%),radial-gradient(circle at 50% 4%,rgba(229,203,152,.35) 0 1px,transparent 2px),radial-gradient(circle at 17% 42%,rgba(240,215,165,.3) 0 1px,transparent 2px),radial-gradient(circle at 84% 65%,rgba(240,215,165,.28) 0 1px,transparent 2px);background-size:auto,180px 180px,240px 240px,210px 210px;opacity:.82;transform:translate3d(calc(var(--mouse-x) * 10px),calc(var(--mouse-y) * 10px),0)}
+.home-shell .topbar{height:68px;padding:0 26px;gap:25px;background:rgba(3,12,24,.84);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--na-gold-border);color:var(--na-text);box-shadow:0 10px 35px rgba(0,0,0,.24);z-index:50}
+.home-shell .brand{color:var(--na-gold-light);font:400 29px/1 'Instrument Serif','Times New Roman',serif;letter-spacing:-.03em;text-shadow:0 0 22px rgba(229,203,152,.22)}
+.home-shell .topbar>span{color:var(--na-text-secondary);font-size:12px;letter-spacing:.045em}
+.home-shell .top-actions{gap:8px}
+.home-shell .top-actions>button,.home-shell .top-actions .button,.home-shell .language-select select{min-height:36px;border:1px solid var(--na-gold-border);border-radius:999px;background:rgba(6,22,41,.72);color:var(--na-ivory);transition:background .25s ease,border-color .25s ease,transform .25s ease}
+.home-shell .top-actions>button{min-width:39px;padding:5px 12px}
+.home-shell .top-actions .button{padding:6px 17px;font-size:11px;letter-spacing:.05em}
+.home-shell .top-actions .button.black{background:linear-gradient(135deg,var(--na-gold-light),var(--na-gold));border-color:var(--na-gold-bright);color:#182131;box-shadow:0 6px 18px rgba(201,166,107,.18)}
+.home-shell .top-actions>button:hover,.home-shell .top-actions .button:hover,.home-shell .language-select select:hover{background:rgba(201,166,107,.12);border-color:var(--na-gold-light);transform:translateY(-1px)}
+.home-shell .top-actions .button.black:hover{background:var(--na-gold-bright);color:#121a25}
+.home-shell .language-select select{appearance:none;padding:7px 27px 7px 13px;background-color:rgba(6,22,41,.74);font-size:11px}
+.home-shell .avatar{width:38px;height:38px;margin-left:2px;background:rgba(6,22,41,.74);border:1px solid var(--na-gold-border);color:var(--na-gold-light)}
+.home-shell .site-sidebar{left:20px;top:88px;bottom:82px;width:168px!important;z-index:35}
+.home-shell .site-sidebar [data-slot=sidebar-content]{gap:15px;overflow:visible}
+.home-shell .main-nav,.home-shell .personal-nav{border:1px solid var(--na-gold-border);background:linear-gradient(180deg,rgba(7,25,46,.84),rgba(3,14,28,.78));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:22px;box-shadow:0 20px 45px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.035);color:var(--na-text)}
+.home-shell .main-nav{padding:12px 10px}
+.home-shell .main-nav a{height:88px;margin-bottom:4px;border-radius:15px;color:var(--na-text-secondary)}
+.home-shell .main-nav a.active,.home-shell .main-nav a:hover{background:rgba(201,166,107,.1);color:var(--na-gold-light)}
+.home-shell .nav-orb{background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.12),rgba(4,17,32,.9));border:1px solid rgba(229,203,152,.32);color:var(--na-gold-light);box-shadow:0 0 18px rgba(201,166,107,.08)}
+.home-shell .arc-label text{fill:var(--na-gold-light);font-size:10px;letter-spacing:1px}
+.home-shell .personal-nav{padding:13px 9px}
+.home-shell .personal-nav a{color:var(--na-text-secondary);font-size:12px;padding:9px 6px;border-radius:9px}
+.home-shell .personal-nav a:hover{background:rgba(201,166,107,.1);color:var(--na-ivory)}
+.home-shell .personal-nav .username{color:var(--na-ivory);font-weight:600}
+.home-shell .main{position:relative;z-index:2;width:100%;margin:0;padding:98px 24px 120px;min-height:calc(100svh - 68px);color:var(--na-text);isolation:isolate}
+.home-shell .main::before{content:"";position:absolute;inset:68px 0 0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 24%,rgba(5,21,41,.16) 0%,rgba(3,12,24,.03) 32%,rgba(3,12,24,.32) 74%,rgba(3,12,24,.62) 100%)}
+.home-shell .ritual-hero{height:550px;max-width:900px;padding-top:21px}
+.home-shell .hero-phase{margin:0 auto 22px;color:var(--na-gold-light);font-size:22px;letter-spacing:.42em;text-shadow:0 0 16px rgba(229,203,152,.55);animation:na-phase-pulse 7s ease-in-out infinite}
+.home-shell .ritual-hero h1{margin:0 0 18px;color:var(--na-ivory);font-size:clamp(54px,5.1vw,72px);letter-spacing:-.045em;text-shadow:0 5px 26px rgba(0,0,0,.34)}
+.home-shell .ritual-hero h2{color:var(--na-ivory);font-size:clamp(27px,2.3vw,35px);letter-spacing:-.025em}
+.home-shell .ritual-hero .muted{margin-top:11px;color:var(--na-text-secondary);font-size:13px;letter-spacing:.02em}
+.home-shell .aura{width:470px;height:330px;top:84px;background:radial-gradient(ellipse,rgba(123,156,222,.3) 0%,rgba(71,104,166,.2) 34%,transparent 69%);filter:blur(30px);animation:na-aura-breathe 8s ease-in-out infinite}
+.home-shell .ritual{width:172px;height:172px;margin:47px auto 14px;border:1.5px solid var(--na-gold-light);background:radial-gradient(circle at 36% 24%,rgba(25,51,80,.95),rgba(2,12,25,.96) 70%);color:var(--na-ivory);box-shadow:0 0 0 1px rgba(229,203,152,.12),0 0 36px rgba(201,166,107,.28),inset 0 0 28px rgba(201,166,107,.08);transition:transform .45s var(--motion-settle),box-shadow .45s ease}
+.home-shell .ritual:hover{transform:scale(1.045);box-shadow:0 0 0 1px rgba(229,203,152,.24),0 0 72px rgba(201,166,107,.42),inset 0 0 35px rgba(201,166,107,.12)}
+.home-shell .ritual svg{filter:drop-shadow(0 0 9px rgba(240,215,165,.45))}
+.home-shell .ritual-label{display:none}
+.home-shell .ritual-caption{color:var(--na-gold-light);font-size:10px;letter-spacing:.22em}
+.home-shell .video-caption{margin-top:39px;color:var(--na-text-secondary);font-size:13px;letter-spacing:.025em}
+.home-shell .video-caption svg{color:var(--na-gold-light)}
+.home-shell .daily-panel{position:relative;width:min(680px,calc(100vw - 48px));margin:0 auto 82px;padding:41px 38px 31px;border:1px solid var(--na-gold-border);border-radius:30px;background:linear-gradient(145deg,rgba(9,31,55,.9),rgba(3,15,30,.82));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 28px 65px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.035);text-align:center;color:var(--na-text);animation:na-rise .8s var(--motion-settle) both}
+.home-shell .daily-panel::before{content:"";position:absolute;inset:9px;border:1px solid rgba(229,203,152,.1);border-radius:22px;pointer-events:none}
+.home-shell .daily-panel h2{position:relative;color:var(--na-ivory);font-size:38px;letter-spacing:-.035em}
+.home-shell .daily-panel>p:not(.daily-quote){position:relative;margin:9px 0 22px;color:var(--na-text-secondary);font-size:14px}
+.home-shell .pill{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:10px 19px;border:1px solid var(--na-gold-bright);border-radius:999px;background:linear-gradient(135deg,var(--na-gold-light),var(--na-gold));color:#172131;font-size:10px;letter-spacing:.13em;box-shadow:0 7px 18px rgba(201,166,107,.16);transition:transform .3s ease,filter .3s ease}
+.home-shell .pill:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.home-shell .daily-cards{position:relative;display:flex;justify-content:center;gap:63px;margin:30px 0 17px}
+.home-shell .daily-cards>div{width:150px}
+.home-shell .daily-cards p{min-height:42px;color:var(--na-text-secondary);font-size:12px;line-height:1.35}
+.home-shell .daily-cards .card-back{width:126px;height:202px;margin:auto;border:1px solid var(--na-gold-border);border-radius:9px;box-shadow:0 15px 25px rgba(0,0,0,.38),0 0 18px rgba(201,166,107,.08);transition:transform .42s var(--motion-settle),box-shadow .35s ease}
+.home-shell .daily-cards .card-back:hover{transform:translateY(-9px) rotate(-1deg);box-shadow:0 24px 34px rgba(0,0,0,.5),0 0 26px rgba(201,166,107,.2)}
+.home-shell .daily-quote{position:relative;margin:4px 0 18px!important;color:var(--na-gold-light)!important;font:italic 14px/1.5 'Instrument Serif','Times New Roman',serif!important}
+.home-shell .daily-panel-link{position:relative;display:inline-flex;align-items:center;gap:8px;color:var(--na-gold-light);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-underline-offset:5px;text-decoration:underline;text-decoration-color:rgba(229,203,152,.4);transition:color .25s ease}
+.home-shell .daily-panel-link:hover{color:var(--na-gold-bright)}
+.home-shell .feature-row{position:relative;max-width:900px;min-height:260px;margin:70px auto;padding:35px 42px;border:1px solid rgba(201,166,107,.22);border-radius:28px;background:linear-gradient(145deg,rgba(8,27,47,.68),rgba(4,16,31,.58));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 22px 45px rgba(0,0,0,.2);color:var(--na-text);animation:na-rise .8s var(--motion-settle) both}
+.home-shell .feature-row>div:first-child{flex:1}
+.home-shell .feature-row h2{color:var(--na-ivory);font-size:41px}
+.home-shell .feature-row p{margin:16px 0 22px;color:var(--na-text-secondary);font-size:15px;line-height:1.65;max-width:42ch}
+.home-shell .feature-row .button{border-color:var(--na-gold-border);background:rgba(201,166,107,.13);color:var(--na-gold-light);min-height:40px;padding:8px 15px;font-size:11px}
+.home-shell .feature-row .button:hover{background:rgba(201,166,107,.25);border-color:var(--na-gold-light)}
+.home-shell .feature-cards{width:305px}
+.home-shell .feature-cards .card-back{border-color:var(--na-gold-border);box-shadow:0 15px 25px rgba(0,0,0,.38)}
+.home-shell .feature-row.reversed>svg{color:var(--na-gold-light);filter:drop-shadow(0 0 20px rgba(201,166,107,.2))}
+.home-shell footer{height:59px;padding:0 27px;background:rgba(3,12,24,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--na-gold-border);color:var(--na-text-secondary);z-index:45}
+.home-shell footer a{color:var(--na-gold-light);font-size:11px;letter-spacing:.05em}
+.home-shell .marquee span{color:var(--na-text-muted);letter-spacing:.15em}
+.home-shell .help{right:27px;bottom:72px;width:40px;height:40px;border:1px solid var(--na-gold-border);background:rgba(5,20,38,.82);color:var(--na-gold-light);box-shadow:0 10px 25px rgba(0,0,0,.25)}
+.home-shell [data-slot=dialog-content]{background:var(--na-panel-strong);border-color:var(--na-gold-border);color:var(--na-text);box-shadow:0 25px 80px rgba(0,0,0,.6)}
+.home-shell [data-slot=dialog-title]{color:var(--na-gold-light)}
+.home-shell [data-slot=dialog-description]{color:var(--na-text-secondary)}
+@keyframes na-sky-breathe{from{background-position:49% 48%}to{background-position:51% 52%}}
+@keyframes na-nebula-drift{from{opacity:.58;filter:hue-rotate(0deg)}to{opacity:.8;filter:hue-rotate(9deg)}}
+@keyframes na-planets-float{from{transform:translate3d(calc(var(--mouse-x) * 6px),calc(var(--mouse-y) * 6px),0) scale(1)}to{transform:translate3d(calc(var(--mouse-x) * 6px + 4px),calc(var(--mouse-y) * 6px - 6px),0) scale(1.015)}}
+@keyframes na-phase-pulse{50%{opacity:.68;letter-spacing:.5em}}
+@keyframes na-aura-breathe{50%{opacity:.68;transform:translateX(-50%) scale(1.08)}}
+@keyframes na-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1200px) and (min-width:701px){.home-shell .feature-row{translate:38px 0}}
+@media(max-width:1100px){.home-shell .site-sidebar{left:13px;width:145px!important}.home-shell .main{padding-left:185px}.home-shell .feature-row{max-width:810px}}
+@media(max-width:700px){
+  .home-shell .topbar{height:58px;padding:0 12px;gap:10px}.home-shell .brand{font-size:25px}.home-shell .topbar>span{display:none}.home-shell .top-actions{gap:4px}.home-shell .top-actions>button{min-width:31px;padding:4px 7px}.home-shell .top-actions .button{min-height:31px;padding:4px 10px;font-size:0}.home-shell .top-actions .button.black{font-size:10px}.home-shell .language-select select{width:44px;min-height:31px;padding:6px 3px;font-size:9px}.home-shell .avatar{width:32px;height:32px}
+  .home-shell .site-sidebar{left:8px;top:74px;bottom:66px;width:66px!important}.home-shell .site-sidebar [data-slot=sidebar-content]{gap:9px}.home-shell .main-nav{padding:8px 4px;border-radius:17px}.home-shell .main-nav a{height:70px}.home-shell .main-nav a>span{display:none}.home-shell .nav-orb{width:38px;height:38px}.home-shell .arc-label{width:106px;height:80px;top:-4px}.home-shell .arc-label text{font-size:7.5px;letter-spacing:.55px}.home-shell .personal-nav{display:none}
+  .home-shell .main{padding:78px 12px 92px 87px;min-height:100svh}.home-shell .main::before{inset:58px 0 0}.home-shell .ritual-hero{height:485px;padding-top:17px}.home-shell .hero-phase{font-size:16px;letter-spacing:.28em;margin-bottom:22px}.home-shell .ritual-hero h1{font-size:clamp(43px,11vw,58px);margin-bottom:14px}.home-shell .ritual-hero h2{font-size:24px}.home-shell .ritual-hero .muted{font-size:11px}.home-shell .aura{width:300px;height:270px;top:82px}.home-shell .ritual{width:136px;height:136px;margin:39px auto 13px}.home-shell .ritual-caption{font-size:8px;letter-spacing:.16em}.home-shell .video-caption{margin-top:32px;font-size:11px}
+  .home-shell .daily-panel{width:100%;padding:31px 12px 26px;border-radius:24px;margin-bottom:54px}.home-shell .daily-panel h2{font-size:31px}.home-shell .daily-panel>p:not(.daily-quote){font-size:12px}.home-shell .pill{padding:9px 12px;font-size:8px}.home-shell .daily-cards{gap:12px;margin-top:23px}.home-shell .daily-cards>div{width:93px}.home-shell .daily-cards p{font-size:10px;min-height:42px}.home-shell .daily-cards .card-back{width:86px;height:139px}.home-shell .daily-quote{font-size:12px!important}.home-shell .daily-panel-link{font-size:9px}
+  .home-shell .feature-row,.home-shell .feature-row.reversed{flex-direction:column;gap:28px;min-height:0;margin:44px 0;padding:26px 20px;border-radius:22px;text-align:center;transform:none;translate:none}.home-shell .feature-row p{font-size:12px;margin:13px auto 19px}.home-shell .feature-row h2{font-size:32px}.home-shell .feature-cards{width:230px;scale:.84}.home-shell .feature-row.reversed>svg{width:88px;height:88px}.home-shell footer{height:49px;padding:0 10px;gap:10px}.home-shell footer a{font-size:9px}.home-shell .help{right:10px;bottom:59px;width:35px;height:35px}
+}
+@media(max-width:430px){.home-shell .main{padding-left:76px}.home-shell .site-sidebar{width:57px!important}.home-shell .nav-orb{width:34px;height:34px}.home-shell .main-nav a{height:64px}.home-shell .arc-label{width:94px;height:72px}.home-shell .arc-label text{font-size:6.8px}.home-shell .daily-cards{gap:6px}.home-shell .daily-cards>div{width:86px}.home-shell .daily-cards .card-back{width:78px;height:126px}}
+@media(prefers-reduced-motion:reduce){.home-shell .cosmic-layer,.home-shell .hero-phase,.home-shell .aura,.home-shell .daily-panel,.home-shell .feature-row{animation:none!important;transition:none!important}.home-shell .cosmic-layer{transform:none!important}.home-shell .ritual,.home-shell .daily-cards .card-back,.home-shell .pill{transition:none!important}}
