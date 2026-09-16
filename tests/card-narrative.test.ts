@@ -26,7 +26,7 @@ test("every card has a complete English and Vietnamese guidebook narrative", () 
         `${card.name} ${locale} section order`,
       );
       assert.equal(
-        narrative.sections.some((section) => section.key === "memes"),
+        narrative.sections.some((section) => String(section.key) === "memes"),
         false,
         `${card.name} ${locale} has no Meme section`,
       );
