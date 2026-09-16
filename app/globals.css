@@ -209,3 +209,23 @@
 @media(max-width:700px){.guidebook-library-hero{margin-bottom:14px}.guidebook-map-shell{padding:24px 13px 30px;border-radius:26px}.guidebook-map-shell::after{inset:9px;border-radius:19px}.guidebook-map-heading p{font-size:24px}.guidebook-map{height:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:18px}.guidebook-map-lines{display:none}.guidebook-map-center{position:relative;left:auto;top:auto;grid-column:1/-1;width:min(245px,82vw);height:185px;margin:0 auto 9px;transform:none}.guidebook-map-center strong{font-size:54px}.guidebook-map-center>span:not(.guidebook-map-center-kicker){font-size:23px}.guidebook-map-node,.guidebook-map-node-top,.guidebook-map-node-left,.guidebook-map-node-right,.guidebook-map-node-bottom-left,.guidebook-map-node-bottom-right{position:relative;left:auto;right:auto;top:auto;width:100%;height:auto;min-height:240px;padding:17px 10px 16px;border-radius:28px;transform:none!important}.guidebook-map-node-top{grid-column:1/-1}.guidebook-map-node-art{scale:.9;margin-bottom:0}.guidebook-map-node-copy strong{font-size:26px}.guidebook-map-node-copy small{font-size:10px;max-width:165px}.guidebook-map-hint{margin-top:17px;padding:0 10px;font-size:12px}.guidebook-map-node:hover,.guidebook-map-node:focus-visible{transform:translateY(-3px)!important}}
 @media(max-width:420px){.guidebook-map{grid-template-columns:1fr}.guidebook-map-node-top{grid-column:auto}.guidebook-map-node{min-height:225px}.guidebook-map-node-art{scale:.82;margin-top:-3px;margin-bottom:-8px}}
 @media(prefers-reduced-motion:reduce){.guidebook-map-shell::before{animation:none}.guidebook-map-node,.guidebook-map-node-art img{transition:none}}
+
+/* Curved labels: keep each translated phrase intact while matching Moonlight's circular controls. */
+.site-sidebar [data-slot=sidebar-content],.main-nav,.main-nav a{overflow:visible}
+.main-nav a{position:relative;justify-content:flex-end;gap:0;padding-bottom:3px}
+.main-nav a>span{display:none}
+.main-nav .nav-orb{position:relative;z-index:2;flex:0 0 auto}
+.arc-label{position:absolute;z-index:3;display:block;width:136px;height:100px;left:50%;top:-8px;overflow:visible;transform:translateX(-50%);pointer-events:none}
+.arc-label text{font:500 10px/1 'Work Sans',Arial,sans-serif;letter-spacing:1.05px;fill:#111;text-rendering:geometricPrecision}
+.arc-label textPath{dominant-baseline:middle}
+.ritual-label{width:205px;height:150px;left:-56px;top:-5px;z-index:4;transform:none}
+.ritual-label text{font-size:10px;letter-spacing:1px}
+.ritual>span{display:none}
+@media(max-width:700px){
+  .site-sidebar [data-slot=sidebar-content],.main-nav,.main-nav a{overflow:visible}
+  .main-nav a{height:70px;padding-bottom:2px}
+  .arc-label{width:108px;height:80px;top:-5px}
+  .arc-label text{font-size:7.4px;letter-spacing:.55px}
+  .ritual-label{width:180px;height:132px;left:-48px;top:1px}
+  .ritual-label text{font-size:8.8px;letter-spacing:.8px}
+}
