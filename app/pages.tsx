@@ -2,7 +2,7 @@
 
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
-import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, guidebookMapLayout, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import {
@@ -125,7 +125,7 @@ export function CardDetail({
 }
 
 export function GuidebookCardPage({ card }: { card: Card }) {
-  return <Library section="guidebook" initialCard={card} closeHref="/guidebook" />;
+  return <ImmersiveCardDetail card={card} />;
 }
 
 export function CardPicker({
@@ -265,220 +265,276 @@ const groupElementKeys: Record<GuidebookGroup["suit"], string> = {
 };
 const groupElementKey = (suit: GuidebookGroup["suit"]) => groupElementKeys[suit];
 
-function Library({ section, initialCard = null, closeHref }: { section: string; initialCard?: Card | null; closeHref?: string }) {
+const guidebookGroupSlug = (suit: GuidebookGroup["suit"]) =>
+  suit.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function Library({ section }: { section: string }) {
+  if (section === "decks") return <DigitalDecks />;
+  return <GuidebookLibrary />;
+}
+
+function DigitalDecks() {
   const { t } = useLanguage();
-  const [query, setQuery] = useState("");
-  const [suit, setSuit] = useState("All");
-  const [detail, setDetail] = useState<Card | null>(initialCard);
   const [deck, setDeck] = useState(false);
-  const [openGroup, setOpenGroup] = useState<GuidebookGroup | null>(null);
-  const groups = [
-    ["All", "pages.all"],
-    ["Major Arcana", "pages.majorArcana"],
-    ["Wands", "pages.wands"],
-    ["Cups", "pages.cups"],
-    ["Swords", "pages.swords"],
-    ["Pentacles", "pages.pentacles"],
-  ] as const;
-  const filteredCards = cards.filter(
-    (card) =>
-      (suit === "All" || card.suit === suit) &&
-      card.name.toLowerCase().includes(query.toLowerCase()),
-  );
   return (
     <>
-      <div className={section === "guidebook" ? "library-hero guidebook-library-hero" : "library-hero"}>
-        <Tabs value={section} onValueChange={(value) => (location.href = "/" + value)}>
+      <div className="library-hero">
+        <Tabs value="decks" onValueChange={(value) => (location.href = "/" + value)}>
           <TabsList>
             <TabsTrigger value="guidebook">{t("pages.guidebook")}</TabsTrigger>
             <TabsTrigger value="decks">{t("pages.decks")}</TabsTrigger>
           </TabsList>
         </Tabs>
-        {section === "decks" ? (
-          <div className="library-intro">
-            <div>
-              <h1>{t("pages.digitalDecks")}</h1>
-              <p>{t("pages.digitalDecksText")}</p>
-              <button className="button peach" onClick={() => setDeck(true)}>
-                {t("pages.aboutArtist")}
-              </button>
-            </div>
-            <div className="display-fan">
-              {[2, 17, 19].map((id) => (
-                <CardFace key={id} card={cards[id]} />
-              ))}
-            </div>
+        <div className="library-intro">
+          <div>
+            <h1>{t("pages.digitalDecks")}</h1>
+            <p>{t("pages.digitalDecksText")}</p>
+            <button className="button peach" onClick={() => setDeck(true)}>{t("pages.aboutArtist")}</button>
           </div>
-        ) : (
-          <>
-            <h1>{t("pages.meanings")}</h1>
-            <p className="intro-copy">{t("pages.meaningsText")}</p>
-          </>
-        )}
+          <div className="display-fan">
+            {[2, 17, 19].map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
+          </div>
+        </div>
       </div>
-      {section === "decks" ? (
-        <>
-          <button className="deck-product" onClick={() => setDeck(true)}>
-            <div className="deck-art">
-              {[0, 1, 2].map((id) => (
-                <CardFace key={id} card={cards[id]} />
-              ))}
-            </div>
-            <h2>Rider Waite Smith</h2>
-            <p>Pamela Colman Smith · 78 {t("common.cards")}</p>
-            <span className="included">✓ {t("room.included")}</span>
+      <button className="deck-product" onClick={() => setDeck(true)}>
+        <div className="deck-art">
+          {[0, 1, 2].map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
+        </div>
+        <h2>Rider Waite Smith</h2>
+        <p>Pamela Colman Smith · 78 {t("common.cards")}</p>
+        <span className="included">✓ {t("room.included")}</span>
+      </button>
+      <p className="attribution">
+        {t("pages.artworkAttribution")} <a href="/ATTRIBUTION.md" target="_blank">{t("pages.artworkCredits")}</a>
+      </p>
+      <Dialog open={deck} onOpenChange={setDeck}>
+        <DialogContent>
+          <DialogTitle>Rider Waite Smith</DialogTitle>
+          <DialogDescription>{t("pages.deckArtist")}</DialogDescription>
+          <div className="deck-modal-art">
+            <CardFace card={cards[2]} source="moonlight" />
+            <p>{t("pages.deckDescription")}<br /><br />{t("pages.deckSource")}</p>
+          </div>
+          <a className="button black" href="/room">{t("pages.useDeck")}</a>
+          <a className="button" href="/guidebook">{t("pages.browseGuidebook")}</a>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function GuidebookLibrary() {
+  const section = "guidebook";
+  const { t } = useLanguage();
+  const [view, setView] = useState<"worlds" | "library">("worlds");
+  const [selectedSuit, setSelectedSuit] = useState<GuidebookGroup["suit"] | null>(null);
+  const [query, setQuery] = useState("");
+  const [orientation, setOrientation] = useState<"all" | "upright" | "reversed">("all");
+  const [sort, setSort] = useState<"classic" | "alphabetical">("classic");
+
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const groupParam = new URLSearchParams(window.location.search).get("group");
+      if (!groupParam) {
+        setSelectedSuit(null);
+        setView("worlds");
+        return;
+      }
+      const group = guidebookGroups.find((item) => guidebookGroupSlug(item.suit) === groupParam);
+      setSelectedSuit(group?.suit ?? null);
+      setView("library");
+    };
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
+
+  const selectGroup = (group: GuidebookGroup | null) => {
+    setSelectedSuit(group?.suit ?? null);
+    setView("library");
+    window.history.pushState({}, "", `/guidebook?group=${group ? guidebookGroupSlug(group.suit) : "all"}`);
+  };
+  const selectedGroup = selectedSuit ? guidebookGroups.find((group) => group.suit === selectedSuit) ?? null : null;
+  const baseCards = selectedGroup ? selectedGroup.cardIds.map((id) => cards[id]) : cards;
+  const filteredCards = baseCards
+    .filter((card) => card.name.toLowerCase().includes(query.trim().toLowerCase()))
+    .sort((a, b) => sort === "alphabetical" ? a.name.localeCompare(b.name) : a.id - b.id);
+  const cardHref = (card: Card) => `/guidebook/${cardSlug(card)}?group=${selectedGroup ? guidebookGroupSlug(selectedGroup.suit) : "all"}`;
+
+  if (view === "library") {
+    return (
+      <div className="guidebook-cosmic-page guidebook-library-page" data-section={section}>
+        <div className="guidebook-page-topline">
+          <button className="guidebook-back-link" type="button" onClick={() => { setView("worlds"); setSelectedSuit(null); window.history.pushState({}, "", "/guidebook"); }}>
+            <ArrowLeft size={16} /> {t("pages.backToFamilies")}
           </button>
-          <p className="attribution">
-            {t("pages.artworkAttribution")}{" "}
-            <a href="/ATTRIBUTION.md" target="_blank">
-              {t("pages.artworkCredits")}
-            </a>
-          </p>
-          <Dialog open={deck} onOpenChange={setDeck}>
-            <DialogContent>
-              <DialogTitle>Rider Waite Smith</DialogTitle>
-              <DialogDescription>{t("pages.deckArtist")}</DialogDescription>
-              <div className="deck-modal-art">
-                <CardFace card={cards[2]} />
-                <p>
-                  {t("pages.deckDescription")}
-                  <br />
-                  <br />
-                  {t("pages.deckSource")}
-                </p>
-              </div>
-              <a className="button black" href="/room">
-                {t("pages.useDeck")}
-              </a>
-              <a className="button" href="/guidebook">
-                {t("pages.browseGuidebook")}
-              </a>
-            </DialogContent>
-          </Dialog>
-        </>
-      ) : (
-        <>
-          {section === "guidebook" ? (
-            <>
-              <div className="guidebook-map-shell">
-                <div className="guidebook-map-heading">
-                  <span>VIN TAROT · 78 {t("common.cards").toUpperCase()}</span>
-                  <p>{t("pages.chooseGroup")}</p>
-                </div>
-                <div className="guidebook-map" aria-label={t("pages.chooseGroup")}>
-                  <svg className="guidebook-map-lines" viewBox="0 0 1000 720" aria-hidden="true" focusable="false">
-                    <defs>
-                      <radialGradient id="guidebook-map-glow">
-                        <stop offset="0" stopColor="#f4cf83" stopOpacity=".8" />
-                        <stop offset="1" stopColor="#f4cf83" stopOpacity="0" />
-                      </radialGradient>
-                    </defs>
-                    <circle cx="500" cy="360" r="285" className="guidebook-map-orbit guidebook-map-orbit-outer" />
-                    <circle cx="500" cy="360" r="220" className="guidebook-map-orbit guidebook-map-orbit-inner" />
-                    <path d="M500 360 L500 82 M500 360 L155 288 M500 360 L845 288 M500 360 L300 640 M500 360 L700 640" className="guidebook-map-connector" />
-                    <circle cx="500" cy="360" r="72" fill="url(#guidebook-map-glow)" />
-                    <g className="guidebook-map-stars">
-                      <circle cx="500" cy="70" r="3" />
-                      <circle cx="150" cy="285" r="2" />
-                      <circle cx="850" cy="285" r="2" />
-                      <circle cx="295" cy="642" r="2" />
-                      <circle cx="705" cy="642" r="2" />
-                    </g>
-                  </svg>
-                  <div className="guidebook-map-center">
-                    <span className="guidebook-map-center-kicker">VIN TAROT</span>
-                    <strong>5</strong>
-                    <span>{t("pages.chooseGroup")}</span>
-                    <small>78 {t("common.cards")}</small>
-                  </div>
-                  {guidebookMapLayout.map((layout) => {
-                    const group = guidebookGroups.find((item) => item.suit === layout.suit);
-                    if (!group) return null;
-                    return (
-                      <button
-                        className={`guidebook-map-node guidebook-map-node-${layout.position}`}
-                        key={group.suit}
-                        style={{ "--map-accent": layout.accent } as CSSProperties}
-                        onClick={() => setOpenGroup(group)}
-                        aria-label={`${t(groupLabelKey(group.suit))}: ${group.cardIds.length} ${t("common.cards")}`}
-                      >
-                        <span className="guidebook-map-node-art" aria-hidden="true">
-                          {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
-                        </span>
-                        <span className="guidebook-map-node-copy">
-                          <strong>{t(groupLabelKey(group.suit))}</strong>
-                          <small>{t(groupDescriptionKey(group.suit))}</small>
-                          <em>{group.cardIds.length} {t("common.cards")} · {t(groupElementKey(group.suit)).toUpperCase()}</em>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="guidebook-map-hint">{t("pages.meaningsText")}</p>
-              </div>
-              <Dialog open={!!openGroup} onOpenChange={() => setOpenGroup(null)}>
-                <DialogContent className="guidebook-group-dialog">
-                  <DialogTitle>{openGroup && t(groupLabelKey(openGroup.suit))}</DialogTitle>
-                  <DialogDescription>{openGroup && t(groupDescriptionKey(openGroup.suit))}</DialogDescription>
-                  <div className="guidebook-card-grid">
-                    {openGroup?.cardIds.map((id) => {
-                      const card = cards[id];
-                      return (
-                        <a key={card.id} className="guidebook-card-link" href={`/guidebook/${cardSlug(card)}`}>
-                          <CardFace card={card} source="moonlight" />
-                          <span>{card.caption}</span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </>
-          ) : (
-            <>
-              <div className="library-tools">
-                <label className="search">
-                  <Search size={18} />
-                  <input
-                    aria-label={t("pages.searchCards")}
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder={t("pages.findCard")}
-                  />
-                </label>
-                <div className="suit-tabs">
-                  {groups.map(([value, key]) => (
-                    <button
-                      className={suit === value ? "selected" : ""}
-                      onClick={() => setSuit(value)}
-                      key={value}
-                    >
-                      {t(key)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="card-grid">
-                {filteredCards.map((card) => (
-                  <button
-                    key={card.id}
-                    className="library-card"
-                    onClick={() => setDetail(card)}
-                  >
-                    <CardFace card={card} />
-                    <span>{card.name}</span>
-                    <small>{card.suit}</small>
+          <span>{t("pages.libraryKicker")}</span>
+        </div>
+        <section className="guidebook-library-intro">
+          <div>
+            <span className="guidebook-kicker">{selectedGroup ? t(groupElementKey(selectedGroup.suit)).toUpperCase() : t("pages.allCards").toUpperCase()}</span>
+            <h1>{selectedGroup ? t(groupLabelKey(selectedGroup.suit)) : t("pages.allCards")}</h1>
+            <p>{selectedGroup ? t(groupDescriptionKey(selectedGroup.suit)) : t("pages.meaningsText")}</p>
+            <small>{baseCards.length} {t("common.cards")} · {t("pages.deckArtist")}</small>
+          </div>
+          <div className="guidebook-library-fan" aria-hidden="true">
+            {(selectedGroup?.previewIds ?? [0, 17, 19]).map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
+          </div>
+        </section>
+        <div className="guidebook-library-layout">
+          <aside className="guidebook-families" aria-label={t("pages.chooseGroup")}>
+            <span>{t("pages.familyLabel")}</span>
+            <button type="button" className={!selectedGroup ? "selected" : ""} onClick={() => selectGroup(null)}>{t("pages.allCards")} <small>78</small></button>
+            {guidebookGroups.map((group) => (
+              <button type="button" className={selectedSuit === group.suit ? "selected" : ""} onClick={() => selectGroup(group)} key={group.suit}>
+                <span>{t(groupLabelKey(group.suit))}</span><small>{group.cardIds.length}</small>
+              </button>
+            ))}
+            <div className="guidebook-family-quote">“{t("pages.cardsQuote")}”</div>
+          </aside>
+          <section className="guidebook-library-content" aria-label={t("pages.meanings")}>
+            <div className="guidebook-toolbar">
+              <label className="guidebook-search">
+                <Search size={16} />
+                <input aria-label={t("pages.searchCards")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("pages.searchGuidebook")} />
+              </label>
+              <div className="guidebook-filters" role="group" aria-label={t("pages.readingFilter")}>
+                {(["all", "upright", "reversed"] as const).map((value) => (
+                  <button type="button" className={orientation === value ? "selected" : ""} onClick={() => setOrientation(value)} key={value}>
+                    {value === "all" ? t("pages.all") : value === "upright" ? t("pages.upright") : t("pages.reversed")}
                   </button>
                 ))}
               </div>
-              {!filteredCards.length && <div className="empty">{t("pages.noMatch")}</div>}
-              <CardDetail card={detail} onClose={() => setDetail(null)} />
-            </>
-          )}
-          {section === "guidebook" && <CardDetail card={detail} onClose={() => setDetail(null)} closeHref={closeHref} source="moonlight" />}
-        </>
-      )}
-    </>
+              <label className="guidebook-sort">
+                <span className="sr-only">{t("pages.sortCards")}</span>
+                <select aria-label={t("pages.sortCards")} value={sort} onChange={(event) => setSort(event.target.value as "classic" | "alphabetical")}>
+                  <option value="classic">{t("pages.classicOrder")}</option>
+                  <option value="alphabetical">{t("pages.alphabetical")}</option>
+                </select>
+              </label>
+            </div>
+            <p className="guidebook-result-count">{filteredCards.length} / {baseCards.length} {t("common.cards")}</p>
+            <div className="guidebook-card-grid">
+              {filteredCards.map((card) => (
+                <a key={card.id} className="guidebook-card-link" href={cardHref(card)} aria-label={`${card.name} · ${t("pages.openCard")}`}>
+                  <span className="guidebook-card-art"><CardFace card={card} reversed={orientation === "reversed"} source="moonlight" /></span>
+                  <strong>{card.name}</strong>
+                  <small>{card.caption}</small>
+                </a>
+              ))}
+            </div>
+            {!filteredCards.length && <div className="guidebook-empty">{t("pages.noMatch")}</div>}
+          </section>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="guidebook-cosmic-page guidebook-worlds-page" data-section={section}>
+      <section className="guidebook-worlds-hero">
+        <span className="guidebook-kicker">{t("pages.cardsHeroKicker")}</span>
+        <h1>{t("pages.cardsHeroTitle")}</h1>
+        <p>{t("pages.cardsHeroDescription")}</p>
+      </section>
+      <div className="guidebook-world-map" aria-label={t("pages.chooseGroup")}>
+        <div className="guidebook-world-orbit guidebook-world-orbit-one" />
+        <div className="guidebook-world-orbit guidebook-world-orbit-two" />
+        <div className="guidebook-world-center">
+          <span>{t("pages.chooseGroup")}</span>
+          <strong>5</strong>
+          <small>78 {t("common.cards")}</small>
+        </div>
+        {guidebookMapLayout.map((layout) => {
+          const group = guidebookGroups.find((item) => item.suit === layout.suit);
+          if (!group) return null;
+          return (
+            <button type="button" className={`guidebook-world-node guidebook-world-node-${layout.position}`} style={{ "--world-accent": layout.accent } as CSSProperties} key={group.suit} onClick={() => selectGroup(group)} aria-label={`${t(groupLabelKey(group.suit))}: ${group.cardIds.length} ${t("common.cards")}`}>
+              <span className="guidebook-world-node-art">{group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}</span>
+              <span className="guidebook-world-node-copy"><strong>{t(groupLabelKey(group.suit))}</strong><small>{t(groupDescriptionKey(group.suit))}</small><em>{group.cardIds.length} {t("common.cards")} · {t(groupElementKey(group.suit))}</em></span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="guidebook-worlds-hint">{t("pages.meaningsText")}</p>
+    </div>
+  );
+}
+
+function ImmersiveCardDetail({ card }: { card: Card }) {
+  const { t, locale } = useLanguage();
+  const familyCards = cards.filter((item) => item.suit === card.suit);
+  const [activeIndex, setActiveIndex] = useState(Math.max(0, familyCards.findIndex((item) => item.id === card.id)));
+  const [reverse, setReverse] = useState(false);
+  const [direction, setDirection] = useState<"next" | "prev" | "">("");
+  const touchStart = useRef<number | null>(null);
+  const activeCard = familyCards[activeIndex] ?? card;
+  const localized = cardMeaning(activeCard, locale);
+  const narrative = cardNarrative(activeCard, locale, reverse ? "reversed" : "upright");
+  const canPrev = activeIndex > 0;
+  const canNext = activeIndex < familyCards.length - 1;
+
+  useEffect(() => {
+    setReverse(false);
+    window.history.replaceState({}, "", `/guidebook/${cardSlug(activeCard)}?group=${guidebookGroupSlug(activeCard.suit as GuidebookGroup["suit"])}`);
+    const timer = window.setTimeout(() => setDirection(""), 520);
+    return () => window.clearTimeout(timer);
+  }, [activeCard, card]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLElement && (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA" || event.target.isContentEditable)) return;
+      if (event.key === "ArrowLeft" && canPrev) { event.preventDefault(); moveCard(-1); }
+      if (event.key === "ArrowRight" && canNext) { event.preventDefault(); moveCard(1); }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
+  function moveCard(step: -1 | 1) {
+    const nextIndex = activeIndex + step;
+    if (nextIndex < 0 || nextIndex >= familyCards.length) return;
+    setDirection(step > 0 ? "next" : "prev");
+    setActiveIndex(nextIndex);
+  }
+
+  return (
+    <div className="guidebook-card-detail-page" onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const start = touchStart.current; const end = event.changedTouches[0]?.clientX ?? start ?? 0; touchStart.current = null; if (start === null || Math.abs(end - start) < 55) return; if (end < start) moveCard(1); else moveCard(-1); }}>
+      <div className="guidebook-detail-topline">
+        <a href={`/guidebook?group=${guidebookGroupSlug(activeCard.suit as GuidebookGroup["suit"])}`}><ArrowLeft size={17} /> {t("pages.backToLibrary")}</a>
+        <span>{t("pages.detailKicker")}</span>
+        <a className="guidebook-detail-close" href={`/guidebook?group=${guidebookGroupSlug(activeCard.suit as GuidebookGroup["suit"])}`} aria-label={t("common.back")}>×</a>
+      </div>
+      <div className={`guidebook-detail-layout ${direction ? `is-${direction}` : ""}`}>
+        <section className="guidebook-detail-visual" aria-label={activeCard.name}>
+          <button type="button" className="guidebook-detail-arrow guidebook-detail-arrow-prev" disabled={!canPrev} onClick={() => moveCard(-1)} aria-label={t("pages.previousCard")}><ArrowLeft size={23} /></button>
+          <div className="guidebook-detail-card-frame"><CardFace card={activeCard} reversed={reverse} source="moonlight" /></div>
+          <button type="button" className="guidebook-detail-arrow guidebook-detail-arrow-next" disabled={!canNext} onClick={() => moveCard(1)} aria-label={t("pages.nextCard")}><ArrowRight size={23} /></button>
+          <div className="guidebook-detail-thumbs" aria-label={t("pages.nearbyCards")}>
+            {familyCards.slice(Math.max(0, activeIndex - 2), activeIndex + 3).map((item) => (
+              <button type="button" className={item.id === activeCard.id ? "selected" : ""} key={item.id} onClick={() => setActiveIndex(familyCards.findIndex((candidate) => candidate.id === item.id))} aria-label={item.name}><CardFace card={item} source="moonlight" /></button>
+            ))}
+          </div>
+        </section>
+        <article className="guidebook-detail-copy">
+          <span className="guidebook-kicker">{t(groupLabelKey(activeCard.suit as GuidebookGroup["suit"]))} · {activeIndex + 1} / {familyCards.length}</span>
+          <h1>{activeCard.name}</h1>
+          <p className="guidebook-detail-keywords">{localized.keywords}</p>
+          <div className="guidebook-orientation" role="tablist" aria-label={t("pages.readingFilter")}>
+            <button type="button" className={!reverse ? "selected" : ""} onClick={() => setReverse(false)} role="tab" aria-selected={!reverse}>{t("pages.upright")}</button>
+            <button type="button" className={reverse ? "selected" : ""} onClick={() => setReverse(true)} role="tab" aria-selected={reverse}>{t("pages.reversed")}</button>
+          </div>
+          <p className="guidebook-detail-meaning">{reverse ? localized.reversed : localized.upright}</p>
+          <div className="guidebook-narrative">
+            <p className="guidebook-summary">{narrative.summary}</p>
+            <div className="guidebook-narrative-grid">
+              {narrative.sections.map((section) => <section key={section.key}><h2>{section.title}</h2><p>{section.body}</p></section>)}
+            </div>
+          </div>
+          <a className="guidebook-reading-cta" href={`/room?card=${activeCard.id}`}>{t("pages.exploreRoom")} <ArrowRight size={16} /></a>
+        </article>
+      </div>
+    </div>
   );
 }
 
