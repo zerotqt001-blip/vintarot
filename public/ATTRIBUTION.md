@@ -5,6 +5,9 @@ Pamela Colman Smith, Rider–Waite–Smith Tarot (1910). Cleaned scan set by Wik
 https://commons.wikimedia.org/wiki/Category:Rider-Waite-Smith_tarot_deck_(Geldard)
 All 78 source image records explicitly declare Public domain; Wikimedia tags PD-old and Public Domain Mark 1.0. API metadata captured in commons.json. Individual source pages and direct original URLs are preserved in cards-manifest.json. Images in web-cards are resized Wikimedia thumbnails transcoded to WebP at quality 88; artwork otherwise unchanged. Attribution is not required by source metadata, but crediting Pamela Colman Smith / Wikimedia Commons is appropriate.
 
+## VinTarot card back
+Custom card-back artwork supplied by the VinTarot project owner and stored at `cards/vintarot-card-back.png`.
+
 ## Work Sans
 Copyright 2019 The Work Sans Project Authors.
 https://github.com/weiweihuanghuang/Work-Sans

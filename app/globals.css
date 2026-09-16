@@ -50,6 +50,8 @@
 .shuffle-leaf{pointer-events:none;transform-origin:50% 50%;will-change:transform,opacity}
 .shuffle-plane{will-change:transform;backface-visibility:visible}
 .shuffle-deck .card-back{width:146px;height:228px;position:absolute;left:41px;top:44px;background:#fff;color:#111;box-shadow:0 2px 4px #0003;border-radius:11px;border:1px solid #222;backface-visibility:visible}
+.card-back,.fan-surface,.shuffle-deck .card-back{background-color:#0b1515!important;background-image:url('/cards/vintarot-card-back.png')!important;background-position:center;background-size:100% 100%;background-repeat:no-repeat;color:transparent}
+.card-back>.card-mark,.fan-surface>.card-mark{display:none}
 .shuffle-deck .shuffle-leaf .card-back{transition:box-shadow .25s ease}
 .is-mixing .shuffle-leaf{will-change:transform,opacity}
 .card-fan .fan-card,.card-fan .fan-card:hover,.card-fan .fan-card:has(+ .fan-card:hover),.card-fan .fan-card:hover + .fan-card{translate:0 var(--lift,0px);transition:translate .24s cubic-bezier(.2,.65,.25,1),transform .55s ease;z-index:auto!important}
