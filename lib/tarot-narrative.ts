@@ -10,7 +10,6 @@ export const narrativeSectionKeys = [
   "home",
   "symbolism",
   "journalQuestions",
-  "memes",
 ] as const;
 
 export type NarrativeSectionKey = (typeof narrativeSectionKeys)[number];
@@ -46,7 +45,6 @@ const titles: Record<NarrativeLocale, Record<NarrativeSectionKey, string>> = {
     home: "Home",
     symbolism: "Symbolism",
     journalQuestions: "Journal Questions",
-    memes: "Memes",
   },
   vi: {
     energy: "Năng lượng",
@@ -58,7 +56,6 @@ const titles: Record<NarrativeLocale, Record<NarrativeSectionKey, string>> = {
     home: "Gia đình",
     symbolism: "Biểu tượng",
     journalQuestions: "Câu hỏi nhật ký",
-    memes: "Meme",
   },
 };
 
@@ -237,7 +234,6 @@ const foolNarrative: Record<NarrativeLocale, TarotNarrative> = {
       { key: "home", title: titles.en.home, body: "Refresh one corner of your space so it can welcome the person you are becoming. A packed bag, an open window, or a cleared table can make a beginning feel tangible. Keep what supports movement and release what belongs to the old chapter." },
       { key: "symbolism", title: titles.en.symbolism, body: "The cliff is the meeting point of risk and possibility; the small companion is instinct reminding you to stay awake. The bright sky suggests that uncertainty is not the same as danger. Read the card as a threshold, not a command to ignore consequences." },
       { key: "journalQuestions", title: titles.en.journalQuestions, body: "Where are you asking for certainty when a first experiment would teach you more? What would you carry into the next chapter, and what can stay behind? Name one gentle risk that your future self would thank you for taking." },
-      { key: "memes", title: titles.en.memes, body: "Meme energy: “I have no idea what I’m doing” — somehow arrives with snacks, a brilliant story, and exactly the right amount of nerve." },
     ],
   },
   vi: {
@@ -252,7 +248,6 @@ const foolNarrative: Record<NarrativeLocale, TarotNarrative> = {
       { key: "home", title: titles.vi.home, body: "Làm mới một góc nhỏ để không gian chào đón con người bạn đang trở thành. Một chiếc túi đã sắp, ô cửa mở hoặc chiếc bàn được dọn có thể khiến khởi đầu trở nên hữu hình. Giữ điều nâng đỡ chuyển động và buông thứ thuộc về chương cũ." },
       { key: "symbolism", title: titles.vi.symbolism, body: "Vách đá là nơi rủi ro gặp khả năng; người bạn nhỏ bên cạnh nhắc trực giác hãy tỉnh thức. Bầu trời sáng cho thấy bất định không đồng nghĩa với nguy hiểm. Hãy đọc lá bài như một ngưỡng cửa, không phải mệnh lệnh bỏ qua hệ quả." },
       { key: "journalQuestions", title: titles.vi.journalQuestions, body: "Bạn đang đòi hỏi sự chắc chắn ở đâu trong khi một thử nghiệm đầu tiên sẽ dạy bạn nhiều hơn? Bạn muốn mang điều gì vào chương mới, và điều gì có thể để lại phía sau? Hãy gọi tên một rủi ro dịu dàng mà phiên bản tương lai sẽ cảm ơn bạn đã chọn." },
-      { key: "memes", title: titles.vi.memes, body: "Năng lượng meme: “Tôi chẳng biết mình đang làm gì” — vậy mà vẫn đến nơi với đồ ăn nhẹ, một câu chuyện hay và lượng can đảm vừa đủ." },
     ],
   },
 };
@@ -270,7 +265,6 @@ const foolReversedNarrative: Record<NarrativeLocale, TarotNarrative> = {
       { key: "home", title: titles.en.home, body: "Look for the physical signs of rushing: the half-packed room, the forgotten bill, the doorway crowded with decisions. Clear one small surface and make the next morning easier. Grounding is a form of forward motion." },
       { key: "symbolism", title: titles.en.symbolism, body: "The cliff now highlights the difference between a brave threshold and an avoidable drop. The companion’s warning is not shame; it is attention. Read the reversed card as an invitation to bring instinct, evidence, and care into the same frame." },
       { key: "journalQuestions", title: titles.en.journalQuestions, body: "Where are you calling impulse ‘intuition’? What fact, conversation, or boundary would make this beginning safer? If you waited one honest day, what would you choose differently?" },
-      { key: "memes", title: titles.en.memes, body: "Meme energy: “New era starts Monday” — spends Sunday finding the charger, reading the fine print, and discovering that preparation is actually self-respect." },
     ],
   },
   vi: {
@@ -285,7 +279,6 @@ const foolReversedNarrative: Record<NarrativeLocale, TarotNarrative> = {
       { key: "home", title: titles.vi.home, body: "Hãy nhìn những dấu hiệu vật chất của việc vội vàng: căn phòng dọn nửa chừng, hóa đơn quên thanh toán, lối vào chất đầy quyết định. Dọn một mặt bàn nhỏ và làm buổi sáng mai nhẹ hơn. Tạo nền cũng là một kiểu tiến về phía trước." },
       { key: "symbolism", title: titles.vi.symbolism, body: "Vách đá lúc này nhấn mạnh khác biệt giữa một ngưỡng cửa can đảm và cú rơi có thể tránh. Người bạn nhỏ không lên án; nó gọi bạn trở về với sự chú ý. Hãy đọc lá đảo như lời mời đặt trực giác, bằng chứng và sự chăm sóc trong cùng một khung hình." },
       { key: "journalQuestions", title: titles.vi.journalQuestions, body: "Bạn đang gọi sự bốc đồng là ‘trực giác’ ở đâu? Sự thật, cuộc trò chuyện hoặc ranh giới nào sẽ khiến khởi đầu này an toàn hơn? Nếu chờ một ngày thành thật, bạn sẽ chọn khác đi điều gì?" },
-      { key: "memes", title: titles.vi.memes, body: "Năng lượng meme: “Kỷ nguyên mới bắt đầu thứ Hai” — dành cả Chủ nhật tìm sạc, đọc kỹ điều khoản và nhận ra chuẩn bị cũng là một cách tôn trọng chính mình." },
     ],
   },
 };
@@ -330,7 +323,6 @@ function cardNarrativeTemplate(card: NarrativeCard, locale: NarrativeLocale, mea
           home: `When reversed, ${copy.home}. Reduce one piece of physical or mental clutter so ${theme} has somewhere calmer to land.`,
           symbolism: `In a reversed reading, the ${card.suit} current points to ${copy.symbol}. The image of ${keywords.split(" · ")[0]} asks what needs to be turned down, repaired, or seen from a safer distance.`,
           journalQuestions: `What would change if you treated ${firstReversed.toLowerCase()} as information rather than a flaw? Where do you need a boundary, a pause, or a second look before moving?`,
-          memes: `Reversed meme energy: “${firstReversed}” — closes the laptop, drinks water, and calls that a strategic retreat.`,
         }
       : {
           energy: `${card.name} carries ${keywords}. ${meaning.upright} ${stageText.en.invitation}`,
@@ -342,7 +334,6 @@ function cardNarrativeTemplate(card: NarrativeCard, locale: NarrativeLocale, mea
           home: `At home, ${copy.home}. A simple change in your surroundings can help ${theme} become something you can feel, not just something you think about.`,
           symbolism: `The ${card.suit} current points to ${copy.symbol}. The repeated image of ${keywords.split(" · ")[0]} is a mirror: it shows where attention is ready to become a choice.`,
           journalQuestions: `${stageText.en.question} Where do you notice ${keywords} in your body, calendar, or conversations? What would a kind next step look like if it did not need to prove anything?`,
-          memes: `Meme energy: “${firstUpright}” — with just enough self-awareness to laugh, reset, and try again.`,
         }
     : reversed
       ? {
@@ -355,7 +346,6 @@ function cardNarrativeTemplate(card: NarrativeCard, locale: NarrativeLocale, mea
           home: `Khi đảo chiều, ${copy.home}. Giảm một phần lộn xộn vật chất hoặc tinh thần để ${theme} có một nơi yên hơn để đáp xuống.`,
           symbolism: `Trong trải bài đảo, dòng chảy ${suitNamesVi[card.suit] ?? card.suit} gợi về ${copy.symbol}. Hình ảnh ${keywords.split(" · ")[0]} hỏi điều gì cần được hạ xuống, sửa lại hoặc nhìn từ một khoảng cách an toàn hơn.`,
           journalQuestions: `Điều gì thay đổi nếu bạn xem ${firstReversed.toLowerCase()} là thông tin thay vì khuyết điểm? Bạn cần một ranh giới, khoảng dừng hoặc lần nhìn lại ở đâu trước khi bước tiếp?`,
-          memes: `Năng lượng meme đảo chiều: “${firstReversed}” — đóng laptop, uống nước và gọi đó là một lần rút lui có chiến lược.`,
         }
       : {
           energy: `Lá bài này mang năng lượng ${keywords}. ${meaning.upright} ${stageText.vi.invitation}`,
@@ -367,7 +357,6 @@ function cardNarrativeTemplate(card: NarrativeCard, locale: NarrativeLocale, mea
           home: `Ở nhà, ${copy.home}. Một thay đổi giản dị trong môi trường có thể giúp ${theme} trở thành điều bạn cảm nhận được, không chỉ là điều bạn nghĩ về.`,
           symbolism: `Dòng chảy ${suitNamesVi[card.suit] ?? card.suit} gợi về ${copy.symbol}. Hình ảnh lặp lại của ${keywords.split(" · ")[0]} là một tấm gương: nó cho thấy nơi sự chú tâm đã sẵn sàng trở thành lựa chọn.`,
           journalQuestions: `${stageText.vi.question} Bạn nhận ra ${keywords} ở đâu trong cơ thể, lịch trình hoặc những cuộc trò chuyện? Bước tiếp theo tử tế sẽ trông như thế nào nếu nó không cần chứng minh điều gì?`,
-          memes: `Năng lượng meme: “${firstUpright}” — đủ tự nhận biết để bật cười, chỉnh lại và thử thêm lần nữa.`,
         };
   const sections: TarotNarrativeSection[] = narrativeSectionKeys.map((key) => ({ key, title: titles[locale][key], body: bodies[key] }));
   return { summary, sections };

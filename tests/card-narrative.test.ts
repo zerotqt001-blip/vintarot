@@ -13,7 +13,6 @@ const sectionKeys = [
   "home",
   "symbolism",
   "journalQuestions",
-  "memes",
 ] as const;
 
 test("every card has a complete English and Vietnamese guidebook narrative", () => {
@@ -25,6 +24,11 @@ test("every card has a complete English and Vietnamese guidebook narrative", () 
         narrative.sections.map((section) => section.key),
         sectionKeys,
         `${card.name} ${locale} section order`,
+      );
+      assert.equal(
+        narrative.sections.some((section) => section.key === "memes"),
+        false,
+        `${card.name} ${locale} has no Meme section`,
       );
       for (const section of narrative.sections) {
         assert.ok(section.title.trim(), `${card.name} ${locale} ${section.key} title`);
