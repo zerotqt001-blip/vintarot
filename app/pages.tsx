@@ -29,17 +29,24 @@ import {
 export function CardFace({
   card,
   reversed = false,
+  source = "moonlight",
 }: {
   card: Card;
   reversed?: boolean;
+  source?: "local" | "moonlight";
 }) {
   return (
     <img
       className={"tarot-face" + (reversed ? " reversed-card" : "")}
-      src={card.image}
+      src={source === "moonlight" ? card.moonlightImage : card.image}
       alt={card.name + (reversed ? " reversed" : "")}
       loading="lazy"
       draggable={false}
+      onError={(event) => {
+        if (source !== "moonlight") return;
+        event.currentTarget.onerror = null;
+        event.currentTarget.src = card.image;
+      }}
     />
   );
 }
@@ -48,10 +55,12 @@ export function CardDetail({
   card,
   onClose,
   closeHref,
+  source = "local",
 }: {
   card: Card | null;
   onClose: () => void;
   closeHref?: string;
+  source?: "local" | "moonlight";
 }) {
   const { t } = useLanguage();
   const [reverse, setReverse] = useState(false);
@@ -76,7 +85,7 @@ export function CardDetail({
         {card && (
           <>
             <div className="card-reading">
-              <CardFace card={card} reversed={reverse} />
+              <CardFace card={card} reversed={reverse} source={source} />
               <div>
                 <Tabs
                   value={reverse ? "reverse" : "upright"}
@@ -146,8 +155,8 @@ export function CardPicker({
                   onClose();
                 }}
               >
-                <CardFace card={card} />
-                <span>{card.name}</span>
+                <CardFace card={card} source="moonlight" />
+                <span>{card.caption}</span>
               </button>
             ))}
         </div>
@@ -342,7 +351,7 @@ function Library({ section, initialCard = null, closeHref }: { section: string; 
                 {guidebookGroups.map((group) => (
                   <button className="guidebook-group-card" key={group.suit} onClick={() => setOpenGroup(group)}>
                     <div className="guidebook-group-art" aria-hidden="true">
-                      {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} />)}
+                      {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
                     </div>
                     <h2>{t(groupLabelKey(group.suit))}</h2>
                     <p>{t(groupDescriptionKey(group.suit))}</p>
@@ -359,8 +368,8 @@ function Library({ section, initialCard = null, closeHref }: { section: string; 
                       const card = cards[id];
                       return (
                         <a key={card.id} className="guidebook-card-link" href={`/guidebook/${cardSlug(card)}`}>
-                          <CardFace card={card} />
-                          <span>{card.name}</span>
+                          <CardFace card={card} source="moonlight" />
+                          <span>{card.caption}</span>
                         </a>
                       );
                     })}
@@ -409,7 +418,7 @@ function Library({ section, initialCard = null, closeHref }: { section: string; 
               <CardDetail card={detail} onClose={() => setDetail(null)} />
             </>
           )}
-          {section === "guidebook" && <CardDetail card={detail} onClose={() => setDetail(null)} closeHref={closeHref} />}
+          {section === "guidebook" && <CardDetail card={detail} onClose={() => setDetail(null)} closeHref={closeHref} source="moonlight" />}
         </>
       )}
     </>

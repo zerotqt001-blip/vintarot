@@ -29,3 +29,19 @@ test("every card has distinct upright and reversed meaning copy", () => {
     assert.notEqual(card.upright, card.reversed);
   }
 });
+
+test("guidebook cards carry Moonlight artwork URLs and short captions", () => {
+  assert.equal(
+    cards[0].moonlightImage,
+    "https://moonlightcdn.imgix.net/decks/rider-waite/00-TheFool.png?w=400&auto=format",
+  );
+  assert.equal(cards[0].caption, "The Fool (0)");
+  assert.equal(
+    cards[22].moonlightImage,
+    "https://moonlightcdn.imgix.net/decks/rider-waite/Wands01.png?w=400&auto=format",
+  );
+  assert.equal(cards[22].caption, "Ace of Wands");
+  assert.equal(cards[23].caption, "2 of Wands");
+  assert.ok(cards.every((card) => card.moonlightImage.includes("moonlightcdn.imgix.net/decks/rider-waite/")));
+  assert.ok(cards.every((card) => card.caption.trim()));
+});
