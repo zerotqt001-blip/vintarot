@@ -3,7 +3,7 @@
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
 import { useEffect, useState, type FormEvent } from "react";
-import { cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
+import { cardMeaning, cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import {
   Dialog,
@@ -62,9 +62,10 @@ export function CardDetail({
   closeHref?: string;
   source?: "local" | "moonlight";
 }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [reverse, setReverse] = useState(false);
   useEffect(() => setReverse(false), [card]);
+  const localized = card ? cardMeaning(card, locale) : null;
   const close = () => {
     if (closeHref) {
       location.href = closeHref;
@@ -78,7 +79,7 @@ export function CardDetail({
         <div className="card-detail-head">
           <div>
             <DialogTitle>{card && (reverse ? `${card.name} (${t("pages.reversed")})` : card.name)}</DialogTitle>
-            <DialogDescription>{card?.keywords}</DialogDescription>
+            <DialogDescription>{localized?.keywords}</DialogDescription>
           </div>
           {closeHref && <a className="card-detail-back" href={closeHref}>{t("common.back")}</a>}
         </div>
@@ -96,7 +97,7 @@ export function CardDetail({
                     <TabsTrigger value="reverse">{t("pages.reversed")}</TabsTrigger>
                   </TabsList>
                 </Tabs>
-                <p>{reverse ? card.reversed : card.upright}</p>
+                <p>{localized && (reverse ? localized.reversed : localized.upright)}</p>
                 <h3>{t("pages.questionSit")}</h3>
                 <p>{t("pages.recognize")}</p>
               </div>
@@ -701,7 +702,7 @@ function Journal({ user }: { user: any }) {
 }
 
 function Practice({ user }: { user: any }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [id, setId] = useState(0);
   const [shown, setShown] = useState(false);
   const [text, setText] = useState("");
@@ -728,7 +729,7 @@ function Practice({ user }: { user: any }) {
               } catch (error: any) { setMessage(error.message); }
             }}>{t("pages.saveReflection")}</button>
           </div>
-          {shown && <div className="meaning-block"><h2>{cards[id].name}</h2><p>{cards[id].upright}</p></div>}
+          {shown && <div className="meaning-block"><h2>{cards[id].name}</h2><p>{cardMeaning(cards[id], locale).upright}</p></div>}
           <p role="status">{message}</p>
         </div>
       </div>
