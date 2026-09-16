@@ -5,5 +5,20 @@ const meanings:Record<string,string[]>={Wands:['a fresh creative spark','plannin
 export type Card={id:number,name:string,suit:string,image:string,keywords:string,upright:string,reversed:string};
 const imageFor=(name:string)=> (images as Record<string,string>)[name]||'';
 export const cards:Card[]=[...majors.map((m,id)=>({id,name:m[0],suit:'Major Arcana',image:imageFor(m[0]),keywords:m[1],upright:m[2],reversed:m[3]})),...Object.entries(meanings).flatMap(([suit,items],s)=>ranks.map((rank,r)=>({id:22+s*14+r,name:`${rank} of ${suit}`,suit,image:imageFor(`${rank} of ${suit}`),keywords:items[r].split(' and ').join(' · '),upright:`This card brings attention to ${items[r]}. Consider where this theme appears in your situation and what a thoughtful next step could be.`,reversed:`Look inward at ${items[r]}. The energy may be blocked, overextended, or ready to be expressed in a different way. What needs a gentler or more balanced approach?`})))]
+export type GuidebookGroup={suit:Card['suit'];description:string;element:string;previewIds:number[];cardIds:number[]};
+const groupDetails:Record<Card['suit'],{description:string;element:string;previewIds:number[]}>= {
+  'Major Arcana':{description:'transitions · influences · big picture',element:"hero's journey",previewIds:[0,6,13]},
+  Wands:{description:'inspiration · energy · passion',element:'fire',previewIds:[22,24,28]},
+  Cups:{description:'emotions · feelings · moods',element:'water',previewIds:[36,38,42]},
+  Swords:{description:'intellect · thoughts · words',element:'air',previewIds:[50,52,56]},
+  Pentacles:{description:'materials · resources · physicality',element:'earth',previewIds:[64,66,70]},
+};
+export const guidebookGroups:GuidebookGroup[]=(['Major Arcana','Wands','Cups','Swords','Pentacles'] as const).map((suit)=>({
+  suit,
+  ...groupDetails[suit],
+  cardIds:cards.filter((card)=>card.suit===suit).map((card)=>card.id),
+}));
+export function cardSlug(card:Pick<Card,'name'>){return card.name.toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+export function cardBySlug(slug:string){const normalized=slug.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return cards.find((card)=>cardSlug(card)===normalized)}
 export const spreads:Record<string,string[]>={'Three-card insight':['Persona','Obstacle','Solution'],'Past · Present · Future':['Past','Present','Future'],'One small step':['Your focus'],'Social battery check':['How I feel','What I need'],'Relationship check-in':['You','Connection','Them'],'Celtic cross':['The present','The challenge','Foundation','Recent past','Possibility','Near future','Your approach','Your surroundings','Hopes and fears','Direction']};
 export function shuffleDeck(){const a=cards.map(c=>c.id);for(let i=a.length-1;i>0;i--){const n=new Uint32Array(1);crypto.getRandomValues(n);const j=n[0]%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}

@@ -3,7 +3,7 @@
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
 import { useEffect, useState, type FormEvent } from "react";
-import { cards, shuffleDeck, type Card } from "@/lib/tarot";
+import { cardSlug, cards, guidebookGroups, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import {
   Dialog,
@@ -47,18 +47,32 @@ export function CardFace({
 export function CardDetail({
   card,
   onClose,
+  closeHref,
 }: {
   card: Card | null;
   onClose: () => void;
+  closeHref?: string;
 }) {
   const { t } = useLanguage();
   const [reverse, setReverse] = useState(false);
   useEffect(() => setReverse(false), [card]);
+  const close = () => {
+    if (closeHref) {
+      location.href = closeHref;
+      return;
+    }
+    onClose();
+  };
   return (
-    <Dialog open={!!card} onOpenChange={onClose}>
+    <Dialog open={!!card} onOpenChange={close}>
       <DialogContent className="card-detail">
-        <DialogTitle>{card?.name}</DialogTitle>
-        <DialogDescription>{card?.keywords}</DialogDescription>
+        <div className="card-detail-head">
+          <div>
+            <DialogTitle>{card && (reverse ? `${card.name} (${t("pages.reversed")})` : card.name)}</DialogTitle>
+            <DialogDescription>{card?.keywords}</DialogDescription>
+          </div>
+          {closeHref && <a className="card-detail-back" href={closeHref}>{t("common.back")}</a>}
+        </div>
         {card && (
           <>
             <div className="card-reading">
@@ -86,6 +100,10 @@ export function CardDetail({
       </DialogContent>
     </Dialog>
   );
+}
+
+export function GuidebookCardPage({ card }: { card: Card }) {
+  return <Library section="guidebook" initialCard={card} closeHref="/guidebook" />;
 }
 
 export function CardPicker({
@@ -198,12 +216,40 @@ function Header({ title, text }: { title: string; text?: string }) {
   );
 }
 
-function Library({ section }: { section: string }) {
+const groupLabelKeys: Record<GuidebookGroup["suit"], string> = {
+  "Major Arcana": "pages.majorArcana",
+  Wands: "pages.wands",
+  Cups: "pages.cups",
+  Swords: "pages.swords",
+  Pentacles: "pages.pentacles",
+};
+const groupLabelKey = (suit: GuidebookGroup["suit"]) => groupLabelKeys[suit];
+
+const groupDescriptionKeys: Record<GuidebookGroup["suit"], string> = {
+  "Major Arcana": "pages.majorDescription",
+  Wands: "pages.wandsDescription",
+  Cups: "pages.cupsDescription",
+  Swords: "pages.swordsDescription",
+  Pentacles: "pages.pentaclesDescription",
+};
+const groupDescriptionKey = (suit: GuidebookGroup["suit"]) => groupDescriptionKeys[suit];
+
+const groupElementKeys: Record<GuidebookGroup["suit"], string> = {
+  "Major Arcana": "pages.heroJourney",
+  Wands: "pages.fire",
+  Cups: "pages.water",
+  Swords: "pages.air",
+  Pentacles: "pages.earth",
+};
+const groupElementKey = (suit: GuidebookGroup["suit"]) => groupElementKeys[suit];
+
+function Library({ section, initialCard = null, closeHref }: { section: string; initialCard?: Card | null; closeHref?: string }) {
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [suit, setSuit] = useState("All");
-  const [detail, setDetail] = useState<Card | null>(null);
+  const [detail, setDetail] = useState<Card | null>(initialCard);
   const [deck, setDeck] = useState(false);
+  const [openGroup, setOpenGroup] = useState<GuidebookGroup | null>(null);
   const groups = [
     ["All", "pages.all"],
     ["Major Arcana", "pages.majorArcana"],
@@ -290,43 +336,80 @@ function Library({ section }: { section: string }) {
         </>
       ) : (
         <>
-          <div className="library-tools">
-            <label className="search">
-              <Search size={18} />
-              <input
-                aria-label={t("pages.searchCards")}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={t("pages.findCard")}
-              />
-            </label>
-            <div className="suit-tabs">
-              {groups.map(([value, key]) => (
-                <button
-                  className={suit === value ? "selected" : ""}
-                  onClick={() => setSuit(value)}
-                  key={value}
-                >
-                  {t(key)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="card-grid">
-            {filteredCards.map((card) => (
-              <button
-                key={card.id}
-                className="library-card"
-                onClick={() => setDetail(card)}
-              >
-                <CardFace card={card} />
-                <span>{card.name}</span>
-                <small>{card.suit}</small>
-              </button>
-            ))}
-          </div>
-          {!filteredCards.length && <div className="empty">{t("pages.noMatch")}</div>}
-          <CardDetail card={detail} onClose={() => setDetail(null)} />
+          {section === "guidebook" ? (
+            <>
+              <div className="guidebook-groups" aria-label={t("pages.chooseGroup")}>
+                {guidebookGroups.map((group) => (
+                  <button className="guidebook-group-card" key={group.suit} onClick={() => setOpenGroup(group)}>
+                    <div className="guidebook-group-art" aria-hidden="true">
+                      {group.previewIds.map((id) => <CardFace key={id} card={cards[id]} />)}
+                    </div>
+                    <h2>{t(groupLabelKey(group.suit))}</h2>
+                    <p>{t(groupDescriptionKey(group.suit))}</p>
+                    <small>{t(groupElementKey(group.suit)).toUpperCase()}</small>
+                  </button>
+                ))}
+              </div>
+              <Dialog open={!!openGroup} onOpenChange={() => setOpenGroup(null)}>
+                <DialogContent className="guidebook-group-dialog">
+                  <DialogTitle>{openGroup && t(groupLabelKey(openGroup.suit))}</DialogTitle>
+                  <DialogDescription>{openGroup && t(groupDescriptionKey(openGroup.suit))}</DialogDescription>
+                  <div className="guidebook-card-grid">
+                    {openGroup?.cardIds.map((id) => {
+                      const card = cards[id];
+                      return (
+                        <a key={card.id} className="guidebook-card-link" href={`/guidebook/${cardSlug(card)}`}>
+                          <CardFace card={card} />
+                          <span>{card.name}</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </>
+          ) : (
+            <>
+              <div className="library-tools">
+                <label className="search">
+                  <Search size={18} />
+                  <input
+                    aria-label={t("pages.searchCards")}
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder={t("pages.findCard")}
+                  />
+                </label>
+                <div className="suit-tabs">
+                  {groups.map(([value, key]) => (
+                    <button
+                      className={suit === value ? "selected" : ""}
+                      onClick={() => setSuit(value)}
+                      key={value}
+                    >
+                      {t(key)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="card-grid">
+                {filteredCards.map((card) => (
+                  <button
+                    key={card.id}
+                    className="library-card"
+                    onClick={() => setDetail(card)}
+                  >
+                    <CardFace card={card} />
+                    <span>{card.name}</span>
+                    <small>{card.suit}</small>
+                  </button>
+                ))}
+              </div>
+              {!filteredCards.length && <div className="empty">{t("pages.noMatch")}</div>}
+              <CardDetail card={detail} onClose={() => setDetail(null)} />
+            </>
+          )}
+          {section === "guidebook" && <CardDetail card={detail} onClose={() => setDetail(null)} closeHref={closeHref} />}
         </>
       )}
     </>
