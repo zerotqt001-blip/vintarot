@@ -29,3 +29,17 @@ test("Room reflection surface exposes interpretation and dynamic session data", 
   assert.match(roomSource, /local-fallback|reading\.disclaimer/);
   assert.match(roomSource, /cardId/);
 });
+
+test("shuffle completion keeps the prepared dynamic deck order for the fan", () => {
+  assert.match(roomSource, /Promise<RoomPlanCard\[\]\|null>/);
+  assert.match(roomSource, /const plan=preparing\.current\?await preparing\.current:await prepareReadingPlan\(\)/);
+  assert.doesNotMatch(roomSource, /setDeckOrder\(current\.drawPlan\?\.map\(card=>card\.cardNumber\)\|\|shuffleDeck\(\)\)/);
+});
+
+test("completed readings expose the reference CTA and interpretation panel", () => {
+  assert.match(roomSource, /readingComplete/);
+  assert.match(roomSource, /room-reading-actions/);
+  assert.match(roomSource, /interpretationOverviewTab/);
+  assert.match(roomSource, /interpretationPositionDetails/);
+  assert.match(roomSource, /redrawReading/);
+});
