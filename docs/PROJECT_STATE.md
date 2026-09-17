@@ -32,6 +32,8 @@ The latest Room mobile pass additionally passed the tracked test suite plus `tes
 
 The latest Room simplification was verified at 390px and desktop: the avatar and reader names are absent, Persona/Obstacle/Solution remain without hint copy, and the `NaTarot.com` watermark is subdued.
 
+The 2026-09-17 mobile navigation pass moves the four primary links (Home, Cards, Practice and Book session) from the vertical sidebar into a fixed, full-width bottom bar on the homepage and non-Room shells. The bar uses safe-area spacing, readable mobile labels, preserved desktop rail styling and extra content clearance; the redundant mobile footer and secondary personal links are hidden. Room keeps its dedicated tabletop controls and bottom deck toolbar. The tracked suite (49/49), production build and diff check pass; local browser checks confirm the desktop rail, `/create` shell and Room controls remain intact. Lint still reports pre-existing generated-skill/runtime and legacy anchor-rule errors, and the two untracked homepage assertion files remain outside this change.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
