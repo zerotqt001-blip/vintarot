@@ -148,3 +148,118 @@ These are the same route/Room/repository errors recorded in the Task 1 report. P
 - API keys exist only in adapter closures and outbound authorization headers. Provider objects expose only `id`, `model`, and `generateReading`.
 - Retry behavior is intentionally immediate and exactly once; no backoff, provider switching, SDK dependency, logging, or orchestration-layer retry was added in this slice.
 - The timeout regression takes approximately two seconds because the required minimum is 1,000ms and timeout failures are retried exactly once.
+
+## Round 1/5 critical fix report
+
+status: DONE
+
+### Critical finding addressed
+
+The shared HTTP helper previously returned a successful `Response` from inside its per-attempt `try/finally`. That return cleared the timeout before the adapter called `response.json()`, so successful-body consumption was outside both the timeout and retry boundary. A stalled body could exceed the configured bound, and a body-stream network failure was converted by the adapter to `invalid_response` without retrying.
+
+`createTarotHTTPClient` now consumes and parses successful JSON before the per-attempt timer is cleared and returns parsed `unknown` JSON to adapters. The same controller therefore covers fetch plus body consumption. Abort during body parsing is classified as a retryable timeout, body-stream/network failure is retried exactly once and becomes a safe retryable upstream error if exhausted, malformed envelope JSON remains a safe `invalid_response`, and ordinary 4xx behavior remains non-retryable. Adapters now extract provider content from the parsed envelope returned by the helper.
+
+### Files changed
+
+- `lib/ai/http.ts`
+- `lib/ai/openai.ts`
+- `lib/ai/gemini.ts`
+- `lib/ai/deepseek.ts`
+- `tests/tarot-ai.test.ts`
+- This report
+
+No Task 3-6 route, draw, Room, persistence, or UI files were changed. Concurrent unrelated workspace changes were preserved and excluded from this fix.
+
+### TDD RED evidence
+
+Command:
+
+```text
+npx tsx --test --test-name-pattern='response JSON parsing|response body network failure' tests/tarot-ai.test.ts
+```
+
+Output before the fix:
+
+```text
+not ok 1 - keeps the timeout active through response JSON parsing and retries a stalled body
+error: Expected values to be strictly equal: 1 !== 2
+not ok 2 - retries a response body network failure exactly once
+error: OpenAI returned an invalid response.
+code: invalid_response
+1..2
+# tests 2
+# pass 0
+# fail 2
+```
+
+### Focused GREEN evidence
+
+Command:
+
+```text
+npx tsx --test --test-name-pattern='response JSON parsing|response body network failure' tests/tarot-ai.test.ts
+```
+
+Output:
+
+```text
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2286.771917
+```
+
+### Final covering tests and verification
+
+Command:
+
+```text
+npx tsx --test tests/tarot-ai.test.ts tests/tarot-interpretation.test.ts
+```
+
+Output:
+
+```text
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4266.835417
+```
+
+Command:
+
+```text
+npx eslint lib/ai/provider.ts lib/ai/http.ts lib/ai/openai.ts lib/ai/gemini.ts lib/ai/deepseek.ts lib/ai/factory.ts tests/tarot-ai.test.ts
+```
+
+Output: no output; exit code 0.
+
+Command:
+
+```text
+git diff --check
+```
+
+Output: no output; exit code 0.
+
+### Self-review
+
+- The timeout timer is cleared only after successful JSON parsing returns or a failed attempt is classified.
+- Both regression tests use injected fetch responses and deterministic abort/body-reader behavior; no live provider or credential is involved.
+- Error construction still discards body-stream exception messages and raw bodies, so API keys and provider content do not enter exposed errors.
+- Existing tests continue to prove exactly one retry for fetch/network/408/429/500/502/503/504 and no retry for ordinary 400/401/403/404 responses.
+- The deferred minor was not included because it is unnecessary to resolve this critical boundary defect.
+
+### Fix commit
+
+Pending at report-write time; the fix and this appended report are committed together immediately after final verification.

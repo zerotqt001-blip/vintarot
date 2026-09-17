@@ -24,7 +24,7 @@ export function createGeminiProvider(
     id: "gemini",
     model,
     async generateReading(input) {
-      const response = await request(url, {
+      const envelope = await request(url, {
         method: "POST",
         headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
         body: JSON.stringify({
@@ -38,12 +38,6 @@ export function createGeminiProvider(
         }),
       });
 
-      let envelope: unknown;
-      try {
-        envelope = await response.json();
-      } catch {
-        throw new TarotAIError("invalid_response", "Gemini returned an invalid response.", { retryable: true });
-      }
       const content = extractCandidateText(envelope);
       if (content === null) throw new TarotAIError("invalid_response", "Gemini returned an invalid response.", { retryable: true });
       return parseTarotProviderContent(content, input);

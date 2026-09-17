@@ -31,28 +31,33 @@ export function createTarotHTTPClient(dependencies: TarotHTTPDependencies = {}) 
     );
   }
 
-  return async function request(input: string | URL | Request, init: RequestInit): Promise<Response> {
+  return async function request(input: string | URL | Request, init: RequestInit): Promise<unknown> {
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
         const response = await fetchFn(input, { ...init, signal: controller.signal });
-        if (response.ok) return response;
+        if (!response.ok) {
+          await consumeResponse(response);
+          const retryable = RETRYABLE_STATUSES.has(response.status);
+          if (retryable && attempt === 0) continue;
 
-        await consumeResponse(response);
-        const retryable = RETRYABLE_STATUSES.has(response.status);
-        if (retryable && attempt === 0) continue;
+          throw new TarotAIError(
+            "upstream",
+            `Tarot AI provider request failed with status ${response.status}.`,
+            { retryable },
+          );
+        }
 
-        throw new TarotAIError(
-          "upstream",
-          `Tarot AI provider request failed with status ${response.status}.`,
-          { retryable },
-        );
+        return await response.json();
       } catch (error) {
         if (error instanceof TarotAIError) throw error;
 
         const timedOut = controller.signal.aborted;
+        if (!timedOut && error instanceof SyntaxError) {
+          throw new TarotAIError("invalid_response", "Tarot AI provider returned invalid JSON.", { retryable: true });
+        }
         if (attempt === 0) continue;
 
         throw new TarotAIError(

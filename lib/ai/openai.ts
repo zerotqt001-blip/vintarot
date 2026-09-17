@@ -33,7 +33,7 @@ export function createOpenAIProvider(
     id: "openai",
     model,
     async generateReading(input) {
-      const response = await request(OPENAI_RESPONSES_URL, {
+      const envelope = await request(OPENAI_RESPONSES_URL, {
         method: "POST",
         headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
         body: JSON.stringify({
@@ -54,12 +54,6 @@ export function createOpenAIProvider(
         }),
       });
 
-      let envelope: unknown;
-      try {
-        envelope = await response.json();
-      } catch {
-        throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true });
-      }
       const content = extractOutputText(envelope);
       if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true });
       return parseTarotProviderContent(content, input);

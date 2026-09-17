@@ -25,7 +25,7 @@ export function createDeepSeekProvider(
     id: "deepseek",
     model,
     async generateReading(input) {
-      const response = await request(DEEPSEEK_CHAT_URL, {
+      const envelope = await request(DEEPSEEK_CHAT_URL, {
         method: "POST",
         headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
         body: JSON.stringify({
@@ -39,12 +39,6 @@ export function createDeepSeekProvider(
         }),
       });
 
-      let envelope: unknown;
-      try {
-        envelope = await response.json();
-      } catch {
-        throw new TarotAIError("invalid_response", "DeepSeek returned an invalid response.", { retryable: true });
-      }
       const content = extractMessageContent(envelope);
       if (content === null) throw new TarotAIError("invalid_response", "DeepSeek returned an invalid response.", { retryable: true });
       return parseTarotProviderContent(content, input);

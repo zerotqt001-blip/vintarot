@@ -129,6 +129,10 @@ function jsonResponse(value: unknown, status = 200): Response {
   });
 }
 
+function jsonReaderResponse(read: () => Promise<unknown>): Response {
+  return { ok: true, status: 200, json: read } as Response;
+}
+
 function providerEnvelope(provider: "openai" | "gemini" | "deepseek", output: unknown = providerOutput()) {
   const content = JSON.stringify(output);
   if (provider === "openai") return { output: [{ content: [{ type: "output_text", text: content }] }] };
@@ -330,6 +334,52 @@ test("times out each attempt, retries once, and returns a safe timeout error", a
       && !error.message.includes("timeout-secret-key"),
   );
   assert.equal(attempts, 2);
+});
+
+test("keeps the timeout active through response JSON parsing and classifies a stalled body", async () => {
+  let attempts = 0;
+  const provider = createTarotAIProvider(providerEnv("openai", "body-timeout-secret-key"), {
+    timeoutMs: 1_000,
+    fetch: async (_input, init) => {
+      attempts += 1;
+      return jsonReaderResponse(() => new Promise((resolve, reject) => {
+        const delayedBody = setTimeout(() => resolve(providerEnvelope("openai")), 1_500);
+        init?.signal?.addEventListener("abort", () => {
+          clearTimeout(delayedBody);
+          reject(new DOMException("body-timeout-secret-key", "AbortError"));
+        }, { once: true });
+      }));
+    },
+  });
+
+  await assert.rejects(
+    provider.generateReading(tarotReadingQualityFixture),
+    (error) => error instanceof TarotAIError
+      && error.code === "timeout"
+      && error.retryable
+      && !error.message.includes("body-timeout-secret-key"),
+  );
+  assert.equal(attempts, 2);
+});
+
+test("retries a response body network failure exactly once", async () => {
+  let attempts = 0;
+  const provider = createTarotAIProvider(providerEnv("openai", "body-network-secret-key"), {
+    fetch: async () => {
+      attempts += 1;
+      if (attempts === 1) {
+        return jsonReaderResponse(async () => {
+          throw new TypeError("body-network-secret-key and raw body internals");
+        });
+      }
+      return jsonResponse(providerEnvelope("openai"));
+    },
+  });
+
+  const reading = await provider.generateReading(tarotReadingQualityFixture);
+
+  assert.equal(attempts, 2);
+  assert.deepEqual(reading.cards.map((card) => card.reading_card_id), tarotReadingQualityAssertions.cardIds);
 });
 
 test("rejects malformed provider JSON without retrying or exposing raw content", async () => {
