@@ -24,6 +24,12 @@ export type DynamicRoomCard = {
   y: number;
 };
 
+export type RoomRequestStamp = { epoch: number; id: string };
+
+export function isRoomRequestCurrent(request: RoomRequestStamp, current: RoomRequestStamp): boolean {
+  return request.epoch === current.epoch && request.id === current.id;
+}
+
 function labelsForTemplate(template: LegacySpreadMatch | TarotCatalogTemplate): string[] {
   return template.positions.map((position) => typeof position.label === "string" ? position.label : position.label.en);
 }

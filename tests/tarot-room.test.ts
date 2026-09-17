@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { spreadCardPosition } from "../lib/room-motion";
-import { consumeDrawPlan, hydrateLegacySpread, roomPositionLabels } from "../lib/tarot-room";
+import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, roomPositionLabels } from "../lib/tarot-room";
 
 const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
 
@@ -42,4 +42,11 @@ test("completed readings expose the reference CTA and interpretation panel", () 
   assert.match(roomSource, /interpretationOverviewTab/);
   assert.match(roomSource, /interpretationPositionDetails/);
   assert.match(roomSource, /redrawReading/);
+});
+
+test("stale room requests cannot commit after a newer reading starts", () => {
+  assert.equal(isRoomRequestCurrent({ epoch: 3, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
+  assert.equal(isRoomRequestCurrent({ epoch: 4, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
+  assert.equal(isRoomRequestCurrent({ epoch: 4, id: "new-reading" }, { epoch: 4, id: "new-reading" }), true);
+  assert.match(roomSource, /isRoomRequestCurrent/);
 });
