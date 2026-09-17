@@ -44,6 +44,8 @@ The latest Room draw refinement removes the post-selection `deal-in` and `fan-re
 
 The 2026-09-18 Room mobile-first pass keeps the existing observatory, shuffle, draw, persistence and desktop toolbar behavior while adding a compact mobile header with NaTarot home navigation, locale, theme and menu actions. At widths up to 768px, the permanent media, zoom, pan and editor rails are hidden from the reading surface and remain available through Radix dialog bottom sheets; the sheet includes the existing drawing, text, theme, reversal, spread, card finder, return, guidebook, save, reset, media, fullscreen, zoom and pan actions. The welcome guide becomes a restrained mobile hint, the question/card/CTA composition uses the device viewport and safe-area insets, and the bottom deck summary remains visible. English and Vietnamese labels were added for the new menu surfaces. The focused mobile-first tests (3/3), tracked suite (54/54), `npx tsc --noEmit`, production build and `git diff --check` pass. Local browser render was checked on the retained desktop preview; mobile breakpoint coverage is enforced by source/CSS tests and still needs physical-device confirmation.
 
+The mobile-first source is committed and pushed as `b9d5a25`, but the current Sites connector cannot resolve the existing project ID and lists no accessible Sites project. The public Site therefore remains on version 5 until Site access is restored; do not create a second Site or change the public URL as a workaround.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
