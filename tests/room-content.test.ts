@@ -22,3 +22,11 @@ test("Room removes the reader avatar and uses a subdued NaTarot watermark", () =
   assert.match(css, /\.room-page \.deck-instruction\{[^}]*text-transform:none/);
   assert.match(css, /\.room-page \.deck-instruction\{[^}]*opacity:/);
 });
+
+test("Room promotes the question into the former Tarot Reading header position", () => {
+  assert.doesNotMatch(source, /readingOverview|room-question-kicker|room-question-rule/);
+  assert.match(source, /className="room-question"><span className="room-question-copy">\{s\.question\}<\/span><\/div>/);
+  assert.doesNotMatch(css, /room-question-kicker|room-question-rule/);
+  assert.match(css, /\.room-page \.room-question\{[^}]*top:148px;[^}]*gap:0/);
+  assert.match(css, /\.room-page \.room-question-copy\{[^}]*display:block/);
+});

@@ -38,6 +38,8 @@ The 2026-09-17 Room parity pass brings the visible Moonlight Room tools into the
 
 The 2026-09-17 Create shell refinement removes the rectangular border and shadow chrome from the desktop Create shell and its two left navigation panels so the cosmic background reads more openly. The translucent surfaces, circular topic controls and capsule question input remain unchanged; the mobile bottom navigation keeps its existing border and shadow treatment. The focused regression test, tracked suite (51/51), production build and local Create/Room visual checks pass. The public Site remains public and is live at version 4 from the exact published source commit.
 
+The 2026-09-17 Room header refinement removes the `TAROT READING` kicker and its separator, promoting the user's question into that upper header position on desktop and mobile. The existing cosmic background, controls and question typography remain unchanged.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
