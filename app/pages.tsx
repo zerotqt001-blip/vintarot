@@ -207,7 +207,7 @@ export default function Pages({
   user: { name: string; email: string } | null;
 }) {
   const { t } = useLanguage();
-  if (section === "decks" || section === "guidebook") return <Library section={section} />;
+  if (section === "decks" || section === "guidebook") return <Library />;
   if (section === "daily-spread") return <Daily user={user} />;
   if (section === "game") return <Game user={user} />;
   if (section === "journal") return <Journal user={user} />;
@@ -271,59 +271,8 @@ const groupElementKey = (suit: GuidebookGroup["suit"]) => groupElementKeys[suit]
 const guidebookGroupSlug = (suit: GuidebookGroup["suit"]) =>
   suit.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-function Library({ section }: { section: string }) {
-  if (section === "decks") return <DigitalDecks />;
+function Library() {
   return <GuidebookLibrary />;
-}
-
-function DigitalDecks() {
-  const { t } = useLanguage();
-  const [deck, setDeck] = useState(false);
-  return (
-    <>
-      <div className="library-hero">
-        <Tabs value="decks" onValueChange={(value) => (location.href = "/" + value)}>
-          <TabsList>
-            <TabsTrigger value="guidebook">{t("pages.guidebook")}</TabsTrigger>
-            <TabsTrigger value="decks">{t("pages.decks")}</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="library-intro">
-          <div>
-            <h1>{t("pages.digitalDecks")}</h1>
-            <p>{t("pages.digitalDecksText")}</p>
-            <button className="button peach" onClick={() => setDeck(true)}>{t("pages.aboutArtist")}</button>
-          </div>
-          <div className="display-fan">
-            {[2, 17, 19].map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
-          </div>
-        </div>
-      </div>
-      <button className="deck-product" onClick={() => setDeck(true)}>
-        <div className="deck-art">
-          {[0, 1, 2].map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}
-        </div>
-        <h2>Rider Waite Smith</h2>
-        <p>Pamela Colman Smith · 78 {t("common.cards")}</p>
-        <span className="included">✓ {t("room.included")}</span>
-      </button>
-      <p className="attribution">
-        {t("pages.artworkAttribution")} <a href="/ATTRIBUTION.md" target="_blank">{t("pages.artworkCredits")}</a>
-      </p>
-      <Dialog open={deck} onOpenChange={setDeck}>
-        <DialogContent>
-          <DialogTitle>Rider Waite Smith</DialogTitle>
-          <DialogDescription>{t("pages.deckArtist")}</DialogDescription>
-          <div className="deck-modal-art">
-            <CardFace card={cards[2]} source="moonlight" />
-            <p>{t("pages.deckDescription")}<br /><br />{t("pages.deckSource")}</p>
-          </div>
-          <a className="button black" href="/room">{t("pages.useDeck")}</a>
-          <a className="button" href="/guidebook">{t("pages.browseGuidebook")}</a>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
 }
 
 function GuidebookLibrary() {

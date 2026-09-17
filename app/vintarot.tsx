@@ -46,8 +46,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isCreate = path === "/create";
   const isPractice = path === "/community";
   const shellRef = useRef<HTMLDivElement>(null);
-  const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/decks"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
-  const topNav = [["nav.home", "/"], ["nav.decks", "/decks"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
+  const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
+  const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
   const personal = [["nav.journal", AlignLeft, "/journal"], ["nav.game", Layers, "/game"], ["nav.spread", Sparkles, "/daily-spread"], ["nav.bookings", CalendarDays, "/bookings"], ["nav.invites", Gift, "/invites"]] as const;
   const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
   const modalDescription = modal === "notifications" ? t("header.caughtUp") : modal === "collection" ? t("header.collectionText") : t("header.helpText");
@@ -91,7 +91,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       <a className="brand" href="/">NaTarot</a>
       <span>{t("header.tagline")}</span>
       <nav className="topbar-nav" aria-label={t("nav.decks")}>
-        {topNav.map(([key, href]) => <a className={(href === path || (href === "/decks" && path === "/guidebook")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
+        {topNav.map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav>
       <div className="top-actions">
         <LanguageSelect />
@@ -102,14 +102,14 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       </div>
     </header>
     <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-      <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/decks" && path === "/guidebook")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /></a>)}</nav>
+      <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /></a>)}</nav>
       <nav className="personal-nav"><a className="username" href="/profile">{user?.name || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
     </SidebarContent></Sidebar>
     <main className="main">{children || <>
       <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><Plus size={28} /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} />{t("home.video")}</p></section>
       <section className="daily-panel"><h2>{t("home.daily")}</h2><p>{t("home.dailyText")}</p><a className="pill" href="/daily-spread">{t("home.social")} <ArrowRight size={15} /></a><div className="daily-cards">{[["home.feel", "feel"], ["home.need", "need"]].map(([key, id]) => <div key={id}><p>{t(key)}:</p><a href="/daily-spread" className="card-back" aria-label={t("home.pull")}><CardMark /></a></div>)}</div><p className="daily-quote">“{t("home.dailyQuote")}”</p><a href="/daily-spread" className="daily-panel-link">{t("home.pull")} <ArrowUpRight size={16} /></a></section>
       <section className="feature-row"><div><h2>{t("home.rhythm")}</h2><p>{t("home.rhythmText")}</p><a href="/community" className="button peach">{t("home.practice")} <ArrowUpRight size={16} /></a></div><div className="feature-cards"><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div></div></section>
-      <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/decks">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
+      <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/guidebook">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
     </>}</main>
     <footer><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></footer>
     <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
