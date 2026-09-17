@@ -6,6 +6,7 @@ const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("mobile primary navigation exposes readable labels and preserves Room's dedicated controls", () => {
+  assert.match(shell, /const isRoom = path === "\/room";/);
   assert.match(shell, /isRoom \? "site-shell room-shell"/);
   assert.match(shell, /className="mobile-nav-label">\{t\(key\)\}<\/span>/);
 });
@@ -16,8 +17,9 @@ test("mobile primary navigation moves to a full-width bottom bar with safe-area 
   assert.match(styles, /bottom:0!important/);
   assert.match(styles, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(styles, /min-height:44px/);
-    assert.match(styles, /padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)!important/);
-    assert.match(styles, /\.mobile-nav-label\{display:block/);
+  assert.match(styles, /\.home-shell \.topbar-nav,\.site-shell:not\(\.room-shell\) \.topbar-nav\{display:none\}/);
+  assert.match(styles, /padding-bottom:calc\(104px \+ env\(safe-area-inset-bottom\)\)!important/);
+  assert.match(styles, /\.mobile-nav-label\{display:block/);
 });
 
 test("mobile bottom navigation clears the old fixed footer and keeps the page content reachable", () => {
