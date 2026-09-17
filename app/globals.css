@@ -325,6 +325,11 @@
 }
 @media(prefers-reduced-motion:reduce){.room-page .deal-wrap.fan-release{animation:none!important}.room-page .fan-card.is-swipe-source{opacity:1}}
 
+/* Room reading simplification: keep the three position names and let the fan carry the focus. */
+.room-page .deck-instruction{font-family:'Instrument Serif','Times New Roman',serif;font-size:15px;font-weight:400;letter-spacing:.26em;text-transform:none;opacity:.42}
+.room-page .spread-slot>span small{display:none}
+@media(max-width:700px){.room-page .deck-instruction{font-size:12px;letter-spacing:.18em;opacity:.34}}
+
 /* Curved labels: keep each translated phrase intact while matching Moonlight's circular controls. */
 .site-sidebar [data-slot=sidebar-content],.main-nav,.main-nav a{overflow:visible}
 .main-nav a{position:relative;justify-content:flex-end;gap:0;padding-bottom:3px}
