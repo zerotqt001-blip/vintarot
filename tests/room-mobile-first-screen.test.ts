@@ -32,5 +32,5 @@ test("mobile Room hides the permanent desktop utilities and protects the first-s
 });
 
 test("mobile sheets reset the dialog centering translation", () => {
-  assert.match(css, /\.room-mobile-sheet\{[^}]*translate:0 0!important/);
+  assert.match(css, /\.room-mobile-sheet\{[^}]*--tw-translate-x:0!important;--tw-translate-y:0!important/);
 });

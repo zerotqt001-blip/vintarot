@@ -868,10 +868,23 @@
   .room-page .card-fan{left:0;right:0;bottom:calc(82px + env(safe-area-inset-bottom) + 4px);width:100%;height:clamp(112px,30vw,150px);max-width:100vw}.room-page .fan-card{width:clamp(54px,16vw,82px);height:100%}.room-page .fan-surface{height:100%}.room-page .deck-instruction{bottom:calc(82px + env(safe-area-inset-bottom) + clamp(150px,24vw,178px));font-size:12px}
   .room-page .room-spread-panel{top:auto;right:16px;bottom:calc(82px + env(safe-area-inset-bottom) + 8px);left:16px;width:auto;max-height:62dvh}
   .room-page .room-dialog{max-height:calc(100dvh - 24px)}
-  .room-mobile-sheet{top:auto!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;max-width:none!important;max-height:min(82dvh,680px);padding:21px 16px max(20px,env(safe-area-inset-bottom));border:1px solid rgba(199,166,106,.42);border-bottom:0;border-radius:22px 22px 0 0;background:rgba(5,18,32,.97);box-shadow:0 -18px 60px rgba(2,8,18,.62);transform:none!important;translate:0 0!important}
+  .room-mobile-sheet{top:auto!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;max-width:none!important;--tw-translate-x:0!important;--tw-translate-y:0!important;max-height:min(82dvh,680px);padding:21px 16px max(20px,env(safe-area-inset-bottom));border:1px solid rgba(199,166,106,.42);border-bottom:0;border-radius:22px 22px 0 0;background:rgba(5,18,32,.97);box-shadow:0 -18px 60px rgba(2,8,18,.62);transform:none!important;translate:0 0!important}
   .room-mobile-sheet [data-slot=dialog-title]{padding-right:34px;color:var(--tarot-gold-light);font-size:28px}.room-mobile-sheet [data-slot=dialog-description]{max-width:42ch;color:var(--tarot-text-secondary);font-size:12px;line-height:1.5}
 }
 @media(max-width:380px){.room-page .topbar{gap:7px}.room-page .brand{font-size:23px}.room-page .room-mobile-actions .language-select select{width:62px;padding-inline:5px;font-size:9px}.room-page .room-mobile-theme,.room-page .room-mobile-menu-trigger{width:42px;height:42px}.room-page .room-guide{right:12px;bottom:calc(82px + env(safe-area-inset-bottom) + 70px);left:12px;padding:13px 14px}.room-page .room-guide h2{font-size:18px}.room-page .room-bottom{padding-inline:12px}.room-page .room-bottom .button{padding-inline:7px;font-size:9px}.room-page .room-deck-summary strong{font-size:10px}}
 @media(min-width:769px){.room-page .room-mobile-actions{display:none!important}.room-mobile-sheet{display:none}}
 @media(max-height:700px) and (max-width:768px){.room-page .room-question{top:calc(64px + env(safe-area-inset-top) + 12px)}.room-page .room-question-copy{font-size:clamp(28px,7.5vw,36px)}.room-page .room-guide{max-height:112px;bottom:calc(82px + env(safe-area-inset-bottom) + 68px)}.room-page .room-guide p:nth-of-type(2){display:none}.room-page .shuffle-deck{top:49%;scale:.68}.room-page .shuffle-control{bottom:calc(82px + env(safe-area-inset-bottom) + 10px)}.room-page .room-mobile-sheet{max-height:88dvh}}
 @media(prefers-reduced-motion:reduce){.room-page .room-mobile-menu-item,.room-page .room-mobile-tool-grid button,.room-page .room-mobile-theme,.room-page .room-mobile-menu-trigger{transition:none!important}}
+.room-page .room-interpretation{margin:16px 0 8px;padding:14px;border:1px solid rgba(199,166,106,.28);border-radius:14px;background:rgba(8,24,40,.5);max-height:min(42vh,430px);overflow:auto;color:var(--tarot-text-secondary)}
+.room-page .room-interpretation-source{display:inline-flex;margin-bottom:10px;padding:5px 8px;border:1px solid rgba(199,166,106,.35);border-radius:999px;color:var(--tarot-gold-light);font-size:10px;letter-spacing:.04em}
+.room-page .room-interpretation-opening{margin:0 0 14px;color:var(--tarot-ivory);line-height:1.55}
+.room-page .room-interpretation-card{padding:11px 0;border-top:1px solid rgba(199,166,106,.16)}
+.room-page .room-interpretation-card small{color:var(--tarot-gold-light);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.room-page .room-interpretation-card p{margin:7px 0;line-height:1.5}
+.room-page .room-interpretation-prompt{color:var(--tarot-ivory);font-style:italic}
+.room-page .room-interpretation h3{margin:16px 0 5px;color:var(--tarot-ivory);font:400 18px/1 'Instrument Serif','Times New Roman',serif}
+.room-page .room-interpretation-disclaimer{margin-top:16px;padding-top:10px;border-top:1px solid rgba(199,166,106,.2);color:var(--tarot-text-muted);font-size:10px;line-height:1.45}
+.room-page .interpretation-action{margin-top:4px;width:100%}
+.room-page .room-catalog-status{color:var(--tarot-text-muted);font-size:11px;line-height:1.4}
+@media(max-width:700px){.room-page .room-interpretation{max-height:min(38dvh,360px);padding:11px}.room-page .room-interpretation h3{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.room-page .room-interpretation{scroll-behavior:auto}}

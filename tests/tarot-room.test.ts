@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { spreadCardPosition } from "../lib/room-motion";
 import { consumeDrawPlan, hydrateLegacySpread, roomPositionLabels } from "../lib/tarot-room";
+
+const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
 
 test("legacy spread labels hydrate without changing their order", () => {
   const result = hydrateLegacySpread(["Persona", "Obstacle", "Solution"]);
@@ -18,4 +21,11 @@ test("consuming any fan card uses its server position order and prevents duplica
   assert.equal(first?.card.cardNumber, 9);
   assert.deepEqual(first?.position, spreadCardPosition(1, 2));
   assert.equal(consumeDrawPlan(plan, [first!.card], 9, 2), null);
+});
+
+test("Room reflection surface exposes interpretation and dynamic session data", () => {
+  assert.match(roomSource, /api\(['"]tarot\/interpret/);
+  assert.match(roomSource, /sessionId/);
+  assert.match(roomSource, /local-fallback|reading\.disclaimer/);
+  assert.match(roomSource, /cardId/);
 });
