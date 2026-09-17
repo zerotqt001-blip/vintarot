@@ -52,7 +52,7 @@ export function buildSeedSql(seed: TarotSeed, now = Date.now()): string {
 /** Build an idempotent catalog-only migration for an already seeded database. */
 export function buildSpreadCatalogMigrationSql(seed: TarotSeed, now = Date.now()): string {
   validateTarotSeed(seed);
-  const statements: string[] = ["PRAGMA foreign_keys=ON;", "BEGIN;"];
+  const statements: string[] = [];
   const templateIds = seed.templates.map((template) => template.id);
   const legacyTemplateIds = [
     "spread-planning-one-small-step",
@@ -73,7 +73,6 @@ export function buildSpreadCatalogMigrationSql(seed: TarotSeed, now = Date.now()
   for (const position of seed.positions) {
     statements.push(upsert("spread_positions", ["id", "spread_template_id", "position_key", "position_order", "label_en", "label_vi", "description_en", "description_vi", "prompt_en", "prompt_vi", "created_at", "updated_at"], [position.id, position.templateId, position.key, position.order, position.label.en, position.label.vi, position.description.en, position.description.vi, position.prompt.en, position.prompt.vi, now, now]));
   }
-  statements.push("COMMIT;");
   return `${statements.join("\n")}\n`;
 }
 
