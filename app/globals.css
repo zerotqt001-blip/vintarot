@@ -301,6 +301,30 @@
 @media(max-width:700px){.room-page .topbar{height:56px;padding:0 10px}.room-page .brand{font-size:24px}.room-page .top-actions{gap:4px}.room-page .top-actions .button,.room-page .top-actions>button{min-height:30px;padding:4px 9px;font-size:10px}.room-page .top-actions .button:not(.host-button){font-size:0;width:30px;padding:0}.room-page .top-actions .button:not(.host-button)::after{content:'×';font-size:16px}.room-page .avatar{width:32px;height:32px}.room-page .media-tools{top:68px;left:8px}.room-page .room-avatar{top:68px;width:64px;height:64px}.room-page .room-avatar svg{width:30px}.room-page .zoom-tools{top:68px;right:8px}.room-page .camera-nav{top:106px;right:8px;scale:.82;transform-origin:top right}.room-page .room-question{top:123px;left:10%;right:10%;gap:7px}.room-page .room-question-kicker{font-size:8px;letter-spacing:.18em}.room-page .room-question-copy{font-size:clamp(25px,7vw,36px);max-width:340px}.room-page .room-question-user{font-size:10px}.room-page .tabletop{inset:56px 0 50px}.room-page .table-layout{top:43%;scale:.43;transform-origin:0 0}.room-page .room-guide{top:auto;bottom:137px;left:8px;width:166px;max-height:170px;padding:18px 13px;border-radius:14px}.room-page .room-guide h2{font-size:19px}.room-page .room-guide p{font-size:10px}.room-page .room-toolbar{right:8px;top:148px;padding:6px;gap:6px;border-radius:15px}.room-page .room-toolbar>div{gap:2px}.room-page .room-toolbar>button,.room-page .room-toolbar button{width:32px;height:31px}.room-page .room-toolbar svg{width:16px}.room-page .deck-instruction{bottom:169px;font-size:8px;letter-spacing:.1em}.room-page .card-fan{left:2%;right:2%;bottom:4px}.room-page .room-status{bottom:61px;left:8px;max-width:175px;font-size:9px}.room-page .room-bottom{height:50px;padding:5px 7px}.room-page .room-bottom .button{padding:5px 9px;font-size:10px}.room-page .room-bottom strong{font-size:10px}.room-page .room-bottom small{font-size:9px}.room-page .spread-slot>span strong{font-size:24px}.room-page .spread-slot>span small{font-size:11px}.room-page .room-dialog{max-height:90vh}}
 @media(prefers-reduced-motion:reduce){.room-page .tabletop::before{animation:none!important}.room-page .card-hover-shell,.room-page .room-question,.room-page .deck-instruction{animation:none!important}.room-page .spread-slot,.room-page .drawn-card,.room-page .fan-card{transition:none!important}}
 
+/* Room mobile balance: keep the 900px tabletop centered while scaling it from its own center. */
+.room-page .table-layout{left:50%;transform-origin:center;transform:translate(calc(-50% + var(--table-pan-x,0px)),calc(-50% + var(--table-pan-y,0px))) scale(calc(var(--room-scale,1) * var(--table-zoom,1)));scale:1!important}
+.room-page .room-deck-summary{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.room-page .room-deck-summary>div{min-width:0}
+.room-page .deal-wrap.fan-release{animation:fan-release .72s cubic-bezier(.22,.72,.25,1) both}
+@keyframes fan-release{from{opacity:.72;translate:var(--deal-x,0px) var(--deal-y,260px);scale:var(--deal-scale,.58);rotate:-3deg}55%{opacity:1}to{opacity:1;translate:0 0;scale:1;rotate:0deg}}
+@media(max-width:700px){
+  .room-page{width:100%;max-width:100dvw;overflow:hidden}
+  .room-page .tabletop{inset:56px 0 calc(50px + env(safe-area-inset-bottom));width:100%;max-width:100dvw}
+  .room-page .table-layout{top:43%;--room-scale:min(.43,calc(100vw / 900px))}
+  .room-page .card-fan{left:0;right:0;bottom:calc(62px + env(safe-area-inset-bottom) + 4px);width:100%;height:clamp(112px,30vw,150px);max-width:100dvw}
+  .room-page .fan-card{width:clamp(54px,16vw,82px);height:100%}
+  .room-page .fan-surface{height:100%}
+  .room-page .deck-instruction{left:50%;bottom:calc(212px + env(safe-area-inset-bottom));max-width:calc(100vw - 32px);text-align:center;white-space:normal}
+  .room-page .room-bottom{height:auto;min-height:62px;padding:8px 10px max(8px,env(safe-area-inset-bottom));gap:8px}
+  .room-page .room-bottom .button{min-width:44px;min-height:44px;padding:5px 9px;display:inline-flex;align-items:center;justify-content:center}
+  .room-page .room-deck-summary{gap:7px;overflow:hidden}
+  .room-page .room-deck-summary strong,.room-page .room-deck-summary small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .room-page .room-deck-summary img{flex:0 0 20px}
+  .room-page .fan-card.is-swipe-source{opacity:0;transition:opacity .16s ease}
+  .room-page .fan-ghost{width:clamp(70px,18vw,100px);height:clamp(118px,36vw,175px)}
+}
+@media(prefers-reduced-motion:reduce){.room-page .deal-wrap.fan-release{animation:none!important}.room-page .fan-card.is-swipe-source{opacity:1}}
+
 /* Curved labels: keep each translated phrase intact while matching Moonlight's circular controls. */
 .site-sidebar [data-slot=sidebar-content],.main-nav,.main-nav a{overflow:visible}
 .main-nav a{position:relative;justify-content:flex-end;gap:0;padding-bottom:3px}

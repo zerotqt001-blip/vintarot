@@ -4,6 +4,14 @@ export type CardPosition = { x: number; y: number };
 
 export type PointerPoint = { x: number; y: number };
 
+export type FanSwipeProgress = {
+  dx: number;
+  dy: number;
+  distance: number;
+  active: boolean;
+  progress: number;
+};
+
 export type SpreadCardPose = {
   tilt: number;
   lift: number;
@@ -51,6 +59,21 @@ export function pointerDistance(a: PointerPoint, b: PointerPoint): number {
 
 export function pointerCenter(a: PointerPoint, b: PointerPoint): PointerPoint {
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
+/** Normalize a fan gesture so touch movement can share one release threshold. */
+export function fanSwipeProgress(start: PointerPoint, current: PointerPoint, threshold = 18): FanSwipeProgress {
+  const dx = current.x - start.x;
+  const dy = current.y - start.y;
+  const distance = Number(Math.hypot(dx, dy).toFixed(2));
+  const safeThreshold = Math.max(1, threshold);
+  return {
+    dx,
+    dy,
+    distance,
+    active: distance >= safeThreshold,
+    progress: Number(Math.min(1, distance / safeThreshold).toFixed(2)),
+  };
 }
 
 /** Scale a pinch gesture from its starting distance while respecting zoom bounds. */

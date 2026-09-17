@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { clampPan, clampZoom, pointerCenter, pointerDistance, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
+import { clampPan, clampZoom, fanSwipeProgress, pointerCenter, pointerDistance, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
 
 test("focused spread cards lift with a symmetric 3D tilt", () => {
   const left = spreadCardPose(0, 3, false);
@@ -48,4 +48,21 @@ test("pinch zoom follows the two-finger distance and stays bounded", () => {
   assert.equal(zoomFromPinch(1.2, 0, 150), 1.2);
   assert.deepEqual(pointerCenter({ x: 10, y: 20 }, { x: 30, y: 60 }), { x: 20, y: 40 });
   assert.equal(pointerDistance({ x: 10, y: 20 }, { x: 13, y: 24 }), 5);
+});
+
+test("fan swipe progress distinguishes a touch drag from a tap", () => {
+  assert.deepEqual(fanSwipeProgress({ x: 120, y: 700 }, { x: 124, y: 706 }), {
+    dx: 4,
+    dy: 6,
+    distance: 7.21,
+    active: false,
+    progress: 0.4,
+  });
+  assert.deepEqual(fanSwipeProgress({ x: 120, y: 700 }, { x: 180, y: 640 }), {
+    dx: 60,
+    dy: -60,
+    distance: 84.85,
+    active: true,
+    progress: 1,
+  });
 });
