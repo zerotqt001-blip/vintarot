@@ -5,6 +5,7 @@ import { buildSeedSql } from "../scripts/generate-tarot-seed";
 import { buildTarotSeed } from "../db/tarot-seed";
 
 const schema = readFileSync(new URL("../db/schema.ts", import.meta.url), "utf8");
+const drawRoute = readFileSync(new URL("../app/api/tarot/draw/route.ts", import.meta.url), "utf8");
 
 test("Drizzle schema declares every normalized Tarot table", () => {
   for (const table of [
@@ -28,4 +29,11 @@ test("seed SQL is idempotent and contains every canonical card and meaning row",
   assert.equal((sql.match(/INSERT INTO `card_meanings`/g) || []).length, 312);
   assert.match(sql, /ON CONFLICT\(`id`\) DO UPDATE SET/);
   assert.match(sql, /BEGIN;[\s\S]*COMMIT;/);
+});
+
+test("dynamic draw route returns session metadata and an array without fixed positions", () => {
+  assert.match(drawRoute, /session_id/);
+  assert.match(drawRoute, /cards: responseCards/);
+  assert.match(drawRoute, /makeDrawPlan/);
+  assert.doesNotMatch(drawRoute, /portraitCard|obstacleCard|solutionCard/);
 });

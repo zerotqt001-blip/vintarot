@@ -5,6 +5,7 @@ import type {
   TarotCatalogTemplate,
   TarotLocale,
 } from "./tarot-catalog";
+import type { ReadingOwner } from "./tarot-guest";
 
 export type CatalogCategoryRow = {
   id: string;
@@ -54,6 +55,80 @@ export type CatalogRows = {
 
 export type TarotRepository = {
   listCatalog(locale: TarotLocale): Promise<TarotCatalog>;
+  getActiveDeck(deckId: string): Promise<DeckRow | null>;
+  getActiveTemplate(categoryId: string, templateId: string): Promise<ActiveTemplate | null>;
+  listCards(deckId: string): Promise<CardRow[]>;
+  createReadingSession(input: NewReadingSession): Promise<string>;
+  createReadingCards(rows: NewReadingCard[]): Promise<void>;
+  getSessionForOwner(sessionId: string, owner: ReadingOwner): Promise<ReadingSessionWithCards | null>;
+};
+
+export type DeckRow = {
+  id: string;
+  slug: string;
+  name: string;
+  artist: string;
+  description: string;
+};
+
+export type CardRow = {
+  id: string;
+  deckId: string;
+  cardNumber: number;
+  slug: string;
+  nameEn: string;
+  nameVi: string;
+  arcana: string;
+  suit: string;
+  imageUrl: string;
+};
+
+export type ActiveTemplate = {
+  category: CatalogCategoryRow;
+  template: CatalogTemplateRow;
+  positions: CatalogPositionRow[];
+};
+
+export type NewReadingSession = {
+  id: string;
+  owner: ReadingOwner;
+  question: string;
+  optionalContext: string;
+  categoryId: string;
+  spreadTemplateId: string;
+  spreadType: string;
+  cardCount: number;
+  locale: TarotLocale;
+  status: string;
+};
+
+export type NewReadingCard = {
+  id: string;
+  sessionId: string;
+  cardId: string;
+  spreadPositionId: string;
+  positionKey: string;
+  positionOrder: number;
+  positionLabel: string;
+  orientation: string;
+  cardOrder: number;
+};
+
+export type ReadingSessionWithCards = {
+  session: {
+    id: string;
+    userId: string | null;
+    guestId: string | null;
+    question: string;
+    optionalContext: string;
+    categoryId: string;
+    spreadTemplateId: string;
+    spreadType: string;
+    cardCount: number;
+    locale: TarotLocale;
+    status: string;
+  };
+  cards: Array<NewReadingCard & CardRow>;
 };
 
 function active(value: boolean | number): boolean {
@@ -116,9 +191,14 @@ export function mapCatalogRows(rows: CatalogRows, locale: TarotLocale): TarotCat
   return { locale, categories: mappedCategories };
 }
 
-async function rows<T>(database: D1Database, statement: string): Promise<T[]> {
-  const result = await database.prepare(statement).all();
+async function rows<T>(database: D1Database, statement: string, ...values: unknown[]): Promise<T[]> {
+  const result = await database.prepare(statement).bind(...values).all();
   return result.results as unknown as T[];
+}
+
+async function first<T>(database: D1Database, statement: string, ...values: unknown[]): Promise<T | null> {
+  const result = await database.prepare(statement).bind(...values).first();
+  return (result as T | null) || null;
 }
 
 export function getTarotRepository(database: D1Database): TarotRepository {
@@ -130,6 +210,38 @@ export function getTarotRepository(database: D1Database): TarotRepository {
         positions: await rows<CatalogPositionRow>(database, "SELECT id, spread_template_id AS templateId, position_key AS key, position_order AS \"order\", label_en AS labelEn, label_vi AS labelVi, description_en AS descriptionEn, description_vi AS descriptionVi, prompt_en AS promptEn, prompt_vi AS promptVi FROM spread_positions ORDER BY spread_template_id, position_order, id"),
       };
       return mapCatalogRows(catalogRows, locale);
+    },
+    async getActiveDeck(deckId) {
+      return first<DeckRow>(database, "SELECT id, slug, name, artist, description FROM decks WHERE id = ? AND active = 1", deckId);
+    },
+    async getActiveTemplate(categoryId, templateId) {
+      const category = await first<CatalogCategoryRow>(database, "SELECT id, slug, name_en AS nameEn, name_vi AS nameVi, description_en AS descriptionEn, description_vi AS descriptionVi, icon, image_url AS imageUrl, display_order AS displayOrder, active FROM spread_categories WHERE id = ? AND active = 1", categoryId);
+      const template = await first<CatalogTemplateRow>(database, "SELECT id, category_id AS categoryId, slug, name_en AS nameEn, name_vi AS nameVi, description_en AS descriptionEn, description_vi AS descriptionVi, card_count AS cardCount, spread_type AS spreadType, display_order AS displayOrder, active FROM spread_templates WHERE id = ? AND category_id = ? AND active = 1", templateId, categoryId);
+      if (!category || !template) return null;
+      const positions = await rows<CatalogPositionRow>(database, "SELECT id, spread_template_id AS templateId, position_key AS key, position_order AS \"order\", label_en AS labelEn, label_vi AS labelVi, description_en AS descriptionEn, description_vi AS descriptionVi, prompt_en AS promptEn, prompt_vi AS promptVi FROM spread_positions WHERE spread_template_id = ? ORDER BY position_order, id", templateId);
+      return { category, template, positions };
+    },
+    async listCards(deckId) {
+      return rows<CardRow>(database, "SELECT id, deck_id AS deckId, card_number AS cardNumber, slug, name_en AS nameEn, name_vi AS nameVi, arcana, suit, image_url AS imageUrl FROM tarot_cards WHERE deck_id = ? ORDER BY display_order, id", deckId);
+    },
+    async createReadingSession(input) {
+      const now = Date.now();
+      await database.prepare("INSERT INTO reading_sessions (id, user_id, guest_id, question, optional_context, category_id, spread_template_id, spread_type, card_count, locale, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(input.id, input.owner.kind === "user" ? input.owner.userId : null, input.owner.kind === "guest" ? input.owner.guestId : null, input.question, input.optionalContext, input.categoryId, input.spreadTemplateId, input.spreadType, input.cardCount, input.locale, input.status, now, now)
+        .run();
+      return input.id;
+    },
+    async createReadingCards(readingCards) {
+      if (!readingCards.length) return;
+      const now = Date.now();
+      await database.batch(readingCards.map((card) => database.prepare("INSERT INTO reading_cards (id, session_id, card_id, spread_position_id, position_key, position_order, position_label, orientation, card_order, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(card.id, card.sessionId, card.cardId, card.spreadPositionId, card.positionKey, card.positionOrder, card.positionLabel, card.orientation, card.cardOrder, now)));
+    },
+    async getSessionForOwner(sessionId, owner) {
+      const ownerColumn = owner.kind === "user" ? "s.user_id" : "s.guest_id";
+      const session = await first<ReadingSessionWithCards["session"]>(database, `SELECT s.id, s.user_id AS userId, s.guest_id AS guestId, s.question, s.optional_context AS optionalContext, s.category_id AS categoryId, s.spread_template_id AS spreadTemplateId, s.spread_type AS spreadType, s.card_count AS cardCount, s.locale, s.status FROM reading_sessions s WHERE s.id = ? AND ${ownerColumn} = ?`, sessionId, owner.kind === "user" ? owner.userId : owner.guestId);
+      if (!session) return null;
+      const cards = await rows<NewReadingCard & CardRow>(database, "SELECT rc.id, rc.session_id AS sessionId, rc.card_id AS cardId, rc.spread_position_id AS spreadPositionId, rc.position_key AS positionKey, rc.position_order AS positionOrder, rc.position_label AS positionLabel, rc.orientation, rc.card_order AS cardOrder, tc.deck_id AS deckId, tc.card_number AS cardNumber, tc.slug, tc.name_en AS nameEn, tc.name_vi AS nameVi, tc.arcana, tc.suit, tc.image_url AS imageUrl FROM reading_cards rc JOIN tarot_cards tc ON tc.id = rc.card_id WHERE rc.session_id = ? ORDER BY rc.card_order, rc.id", sessionId);
+      return { session, cards };
     },
   };
 }
