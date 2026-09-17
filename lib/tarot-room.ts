@@ -30,6 +30,12 @@ export function isRoomRequestCurrent(request: RoomRequestStamp, current: RoomReq
   return request.epoch === current.epoch && request.id === current.id;
 }
 
+/** Keep the complete shuffled fan visible and remove only cards already selected. */
+export function remainingFanCardNumbers(deckOrder: number[], drawn: Array<Pick<DynamicRoomCard, "id" | "cardNumber">>): number[] {
+  const drawnNumbers = new Set(drawn.map((card) => card.cardNumber ?? card.id));
+  return deckOrder.filter((cardNumber) => !drawnNumbers.has(cardNumber));
+}
+
 function labelsForTemplate(template: LegacySpreadMatch | TarotCatalogTemplate): string[] {
   return template.positions.map((position) => typeof position.label === "string" ? position.label : position.label.en);
 }

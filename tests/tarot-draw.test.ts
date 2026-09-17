@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { makeDrawPlan, parseDrawRequest } from "../lib/tarot-draw";
+import { makeDrawPlan, makeSelectedDrawPlan, parseDrawRequest } from "../lib/tarot-draw";
 
 const cards = Array.from({ length: 10 }, (_, cardNumber) => ({
   id: `card-${cardNumber}`,
@@ -19,6 +19,45 @@ test("draw plan has the exact dynamic count, unique cards, ordered positions, an
   assert.equal(new Set(plan.map((card) => card.cardId)).size, 3);
   assert.deepEqual(plan.map((card) => card.positionOrder), [0, 1, 2]);
   assert.ok(plan.every((card) => card.orientation === "upright" || card.orientation === "reversed"));
+});
+
+test("selected draw plan preserves the cards and order chosen by the customer", () => {
+  const plan = makeSelectedDrawPlan({
+    cards,
+    positions,
+    reversals: true,
+    selections: [
+      { cardNumber: 7, orientation: "reversed" },
+      { cardNumber: 2, orientation: "upright" },
+      { cardNumber: 9, orientation: "reversed" },
+    ],
+  });
+  assert.deepEqual(plan.map((card) => card.cardNumber), [7, 2, 9]);
+  assert.deepEqual(plan.map((card) => card.positionOrder), [0, 1, 2]);
+  assert.deepEqual(plan.map((card) => card.orientation), ["reversed", "upright", "reversed"]);
+});
+
+test("selected draw plan rejects duplicate or unknown customer selections", () => {
+  assert.throws(() => makeSelectedDrawPlan({
+    cards,
+    positions,
+    reversals: true,
+    selections: [
+      { cardNumber: 7, orientation: "upright" },
+      { cardNumber: 7, orientation: "upright" },
+      { cardNumber: 9, orientation: "upright" },
+    ],
+  }), /unique/i);
+  assert.throws(() => makeSelectedDrawPlan({
+    cards,
+    positions,
+    reversals: true,
+    selections: [
+      { cardNumber: 7, orientation: "upright" },
+      { cardNumber: 2, orientation: "upright" },
+      { cardNumber: 77, orientation: "upright" },
+    ],
+  }), /not found/i);
 });
 
 test("disabled reversals force upright cards", () => {

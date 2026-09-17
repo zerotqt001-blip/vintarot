@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { spreadCardPosition } from "../lib/room-motion";
-import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, roomPositionLabels } from "../lib/tarot-room";
+import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, remainingFanCardNumbers, roomPositionLabels } from "../lib/tarot-room";
 
 const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
 
@@ -30,10 +30,19 @@ test("Room reflection surface exposes interpretation and dynamic session data", 
   assert.match(roomSource, /cardId/);
 });
 
-test("shuffle completion keeps the prepared dynamic deck order for the fan", () => {
-  assert.match(roomSource, /Promise<RoomPlanCard\[\]\|null>/);
-  assert.match(roomSource, /const plan=preparing\.current\?await preparing\.current:await prepareReadingPlan\(\)/);
-  assert.doesNotMatch(roomSource, /setDeckOrder\(current\.drawPlan\?\.map\(card=>card\.cardNumber\)\|\|shuffleDeck\(\)\)/);
+test("fan keeps all 78 cards until the customer selects a card", () => {
+  const deck = Array.from({ length: 78 }, (_, id) => id);
+  assert.equal(remainingFanCardNumbers(deck, []).length, 78);
+  assert.equal(remainingFanCardNumbers(deck, [{ id: 17, cardNumber: 17 }]).length, 77);
+  assert.equal(remainingFanCardNumbers(deck, [{ id: 17, cardNumber: 17 }, { id: 42, cardNumber: 42 }]).length, 76);
+});
+
+test("room shuffles a full fan and submits only the customer's selected cards", () => {
+  assert.match(roomSource, /setDeckOrder\(shuffleDeck\(\)\)/);
+  assert.match(roomSource, /selected_cards/);
+  assert.match(roomSource, /nextCards\.length===current\.spread\.length/);
+  assert.doesNotMatch(roomSource, /void prepareReadingPlan\(\)/);
+  assert.doesNotMatch(roomSource, /setDeckOrder\(plan\.map\(card=>card\.cardNumber\)\)/);
 });
 
 test("completed readings expose the reference CTA and interpretation panel", () => {

@@ -37,6 +37,8 @@ test("dynamic draw route returns session metadata and an array without fixed pos
   assert.match(drawRoute, /session_id/);
   assert.match(drawRoute, /cards: responseCards/);
   assert.match(drawRoute, /makeDrawPlan/);
+  assert.match(drawRoute, /makeSelectedDrawPlan/);
+  assert.match(drawRoute, /selected_cards/);
   assert.doesNotMatch(drawRoute, /portraitCard|obstacleCard|solutionCard/);
 });
 

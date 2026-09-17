@@ -1,6 +1,6 @@
 import { boundary, db, json, originCheck } from "@/lib/server";
 import { getTarotRepository } from "@/lib/tarot-repository";
-import { drawRequestSchema, makeDrawPlan } from "@/lib/tarot-draw";
+import { drawRequestSchema, makeDrawPlan, makeSelectedDrawPlan } from "@/lib/tarot-draw";
 import { readOptionalOwner } from "@/lib/tarot-guest";
 
 export async function POST(req: Request) {
@@ -28,7 +28,19 @@ export async function POST(req: Request) {
       label: parsed.locale === "vi" ? position.labelVi : position.labelEn,
     }));
     const cards = await repository.listCards(parsed.deck_id);
-    const plan = makeDrawPlan({ cards, positions, reversals: parsed.reversals });
+    let plan;
+    try {
+      plan = parsed.selected_cards
+        ? makeSelectedDrawPlan({
+            cards,
+            positions,
+            reversals: parsed.reversals,
+            selections: parsed.selected_cards.map((selection) => ({ cardNumber: selection.card_number, orientation: selection.orientation })),
+          })
+        : makeDrawPlan({ cards, positions, reversals: parsed.reversals });
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : "Selected cards are invalid." }, { status: 400 });
+    }
     const sessionId = globalThis.crypto.randomUUID();
     await repository.createReadingSession({
       id: sessionId,
