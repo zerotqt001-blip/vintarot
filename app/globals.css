@@ -795,4 +795,7 @@
   .home-shell .main-nav .nav-orb,.site-shell:not(.room-shell) .main-nav .nav-orb{width:36px;height:36px}
   .home-shell .main-nav .mobile-nav-label,.site-shell:not(.room-shell) .main-nav .mobile-nav-label{font-size:9px}
 }
+
+/* Create surfaces: keep the glass contrast, but let the cosmic scene breathe. */
+.create-shell .main-nav,.create-shell .personal-nav,.create-shell .create-flow-shell{border:0;box-shadow:none}
 @media(prefers-reduced-motion:reduce){.create-transition-orchestrator::after{filter:none}.create-step-panel,.create-topic-orb,.create-suggestion-card,.create-flow-shell .question-back{animation:none!important;transition:none!important}.create-step-panel{filter:none!important}.create-topic-orb:hover,.create-topic-orb:focus-visible,.create-topic-orb[aria-pressed=true],.create-topic-choice:hover .create-topic-orb,.create-topic-choice:focus-visible .create-topic-orb,.create-topic-choice[aria-pressed=true] .create-topic-orb,.create-suggestion-card:hover,.create-suggestion-card:focus-visible,.create-flow-shell .question-back:hover{transform:none!important}}
