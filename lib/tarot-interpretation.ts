@@ -154,8 +154,16 @@ export function buildProviderPrompt(input: ProviderRequest): string {
   ].join("\n");
 }
 
-function providerJson(value: any): unknown {
-  const content = value?.choices?.[0]?.message?.content ?? value?.output ?? value;
+function providerJson(value: unknown): unknown {
+  const record = value && typeof value === "object" ? value as Record<string, unknown> : null;
+  const choices = record?.choices;
+  const firstChoice = Array.isArray(choices) && choices[0] && typeof choices[0] === "object"
+    ? choices[0] as Record<string, unknown>
+    : null;
+  const message = firstChoice?.message && typeof firstChoice.message === "object"
+    ? firstChoice.message as Record<string, unknown>
+    : null;
+  const content = message?.content ?? record?.output ?? value;
   if (typeof content !== "string") return content;
   const fenced = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/i)?.[1] || content;
   return JSON.parse(fenced);
@@ -180,4 +188,3 @@ export function createInterpretationProvider(config?: InterpretationProviderConf
     }
   };
 }
-
