@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { tarotReadingQualityAssertions, tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import { buildTarotPromptContext, TAROT_PROMPT_VERSION, TAROT_RESPONSE_SCHEMA, TAROT_SYSTEM_PROMPT } from "../lib/ai/prompts/tarot-reading";
+import { createTarotAIProvider } from "../lib/ai/factory";
+import { TarotAIError } from "../lib/ai/provider";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
 
 function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
@@ -116,4 +118,236 @@ test("publishes the versioned strict prompt contract", () => {
   assert.deepEqual(TAROT_RESPONSE_SCHEMA.required, ["overview", "cards", "connections", "guidance", "closing"]);
   const cardsSchema = TAROT_RESPONSE_SCHEMA.properties.cards as Record<string, unknown>;
   assert.equal((cardsSchema.items as Record<string, unknown>).additionalProperties, false);
+});
+
+type FetchCall = { input: string | URL | Request; init?: RequestInit };
+
+function jsonResponse(value: unknown, status = 200): Response {
+  return new Response(JSON.stringify(value), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function providerEnvelope(provider: "openai" | "gemini" | "deepseek", output: unknown = providerOutput()) {
+  const content = JSON.stringify(output);
+  if (provider === "openai") return { output: [{ content: [{ type: "output_text", text: content }] }] };
+  if (provider === "gemini") return { candidates: [{ content: { parts: [{ text: content }] } }] };
+  return { choices: [{ message: { content } }] };
+}
+
+function providerEnv(provider: "openai" | "gemini" | "deepseek", apiKey = "test-provider-key") {
+  return {
+    TAROT_AI_PROVIDER: provider,
+    [`${provider.toUpperCase()}_API_KEY`]: apiKey,
+    [`${provider.toUpperCase()}_TAROT_MODEL`]: `${provider}-tarot-model`,
+  };
+}
+
+function headerValue(headers: HeadersInit | undefined, name: string): string | null {
+  return new Headers(headers).get(name);
+}
+
+for (const providerId of ["openai", "gemini", "deepseek"] as const) {
+  test(`${providerId} sends its native structured request and normalizes extracted JSON`, async () => {
+    const calls: FetchCall[] = [];
+    const fakeFetch: typeof fetch = async (input, init) => {
+      calls.push({ input, init });
+      return jsonResponse(providerEnvelope(providerId));
+    };
+    const provider = createTarotAIProvider(providerEnv(providerId), { fetch: fakeFetch, timeoutMs: 1_000 });
+
+    const reading = await provider.generateReading(tarotReadingQualityFixture);
+
+    assert.equal(provider.id, providerId);
+    assert.equal(provider.model, `${providerId}-tarot-model`);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].init?.method, "POST");
+    assert.equal(headerValue(calls[0].init?.headers, "content-type"), "application/json");
+    assert.deepEqual(reading.cards.map((card) => card.reading_card_id), tarotReadingQualityAssertions.cardIds);
+    const url = String(calls[0].input);
+    const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
+
+    if (providerId === "openai") {
+      assert.equal(url, "https://api.openai.com/v1/responses");
+      assert.equal(headerValue(calls[0].init?.headers, "authorization"), "Bearer test-provider-key");
+      assert.deepEqual(body, {
+        model: "openai-tarot-model",
+        instructions: TAROT_SYSTEM_PROMPT,
+        input: buildTarotPromptContext(tarotReadingQualityFixture),
+        store: false,
+        temperature: 0.35,
+        max_output_tokens: 5000,
+        text: {
+          format: {
+            type: "json_schema",
+            name: "tarot_reading",
+            strict: true,
+            schema: TAROT_RESPONSE_SCHEMA,
+          },
+        },
+      });
+    } else if (providerId === "gemini") {
+      assert.equal(url, "https://generativelanguage.googleapis.com/v1beta/models/gemini-tarot-model:generateContent");
+      assert.equal(headerValue(calls[0].init?.headers, "x-goog-api-key"), "test-provider-key");
+      assert.equal(headerValue(calls[0].init?.headers, "authorization"), null);
+      assert.doesNotMatch(url, /key=/);
+      assert.deepEqual(body, {
+        systemInstruction: { parts: [{ text: TAROT_SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: [{ text: buildTarotPromptContext(tarotReadingQualityFixture) }] }],
+        generationConfig: {
+          temperature: 0.35,
+          responseMimeType: "application/json",
+          responseSchema: TAROT_RESPONSE_SCHEMA,
+        },
+      });
+    } else {
+      assert.equal(url, "https://api.deepseek.com/chat/completions");
+      assert.equal(headerValue(calls[0].init?.headers, "authorization"), "Bearer test-provider-key");
+      assert.deepEqual(body, {
+        model: "deepseek-tarot-model",
+        temperature: 0.35,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: TAROT_SYSTEM_PROMPT },
+          { role: "user", content: buildTarotPromptContext(tarotReadingQualityFixture) },
+        ],
+      });
+    }
+    assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
+  });
+}
+
+test("factory rejects absent, unsupported, and incomplete selected-provider configuration", () => {
+  for (const env of [
+    {},
+    { TAROT_AI_PROVIDER: "anthropic" },
+    { TAROT_AI_PROVIDER: "openai", OPENAI_TAROT_MODEL: "model" },
+    { TAROT_AI_PROVIDER: "gemini", GEMINI_API_KEY: "key" },
+    { TAROT_AI_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "key", OPENAI_TAROT_MODEL: "wrong-provider-model" },
+  ]) {
+    assert.throws(
+      () => createTarotAIProvider(env),
+      (error) => error instanceof TarotAIError && error.code === "configuration",
+    );
+  }
+});
+
+test("factory enforces the bounded timeout range", () => {
+  const env = providerEnv("openai");
+  for (const timeoutMs of [999, 20_001]) {
+    assert.throws(
+      () => createTarotAIProvider(env, { timeoutMs }),
+      (error) => error instanceof TarotAIError && error.code === "configuration",
+    );
+  }
+});
+
+for (const status of [408, 429, 500, 502, 503, 504]) {
+  test(`retries status ${status} exactly once`, async () => {
+    let attempts = 0;
+    const fakeFetch: typeof fetch = async () => {
+      attempts += 1;
+      return attempts === 1 ? new Response("transient raw body", { status }) : jsonResponse(providerEnvelope("openai"));
+    };
+    const provider = createTarotAIProvider(providerEnv("openai"), { fetch: fakeFetch });
+
+    await provider.generateReading(tarotReadingQualityFixture);
+
+    assert.equal(attempts, 2);
+  });
+}
+
+test("retries a network failure exactly once and reports exhausted failures safely", async () => {
+  let recoveredAttempts = 0;
+  const recovered = createTarotAIProvider(providerEnv("openai"), {
+    fetch: async () => {
+      recoveredAttempts += 1;
+      if (recoveredAttempts === 1) throw new TypeError("socket failed with secret detail");
+      return jsonResponse(providerEnvelope("openai"));
+    },
+  });
+  await recovered.generateReading(tarotReadingQualityFixture);
+  assert.equal(recoveredAttempts, 2);
+
+  let failedAttempts = 0;
+  const failed = createTarotAIProvider(providerEnv("openai", "network-secret-key"), {
+    fetch: async () => {
+      failedAttempts += 1;
+      throw new TypeError("network-secret-key and upstream internals");
+    },
+  });
+  await assert.rejects(
+    failed.generateReading(tarotReadingQualityFixture),
+    (error) => error instanceof TarotAIError
+      && error.code === "upstream"
+      && error.retryable
+      && !error.message.includes("network-secret-key")
+      && !error.message.includes("upstream internals"),
+  );
+  assert.equal(failedAttempts, 2);
+});
+
+for (const status of [400, 401, 403, 404]) {
+  test(`does not retry ordinary status ${status} or expose the upstream body`, async () => {
+    let attempts = 0;
+    const apiKey = `ordinary-${status}-secret-key`;
+    const rawBody = `raw-${status}-provider-body`;
+    const provider = createTarotAIProvider(providerEnv("openai", apiKey), {
+      fetch: async () => {
+        attempts += 1;
+        return new Response(rawBody, { status });
+      },
+    });
+
+    await assert.rejects(
+      provider.generateReading(tarotReadingQualityFixture),
+      (error) => error instanceof TarotAIError
+        && error.code === "upstream"
+        && !error.retryable
+        && !error.message.includes(apiKey)
+        && !error.message.includes(rawBody),
+    );
+    assert.equal(attempts, 1);
+  });
+}
+
+test("times out each attempt, retries once, and returns a safe timeout error", async () => {
+  let attempts = 0;
+  const provider = createTarotAIProvider(providerEnv("openai", "timeout-secret-key"), {
+    timeoutMs: 1_000,
+    fetch: (_input, init) => new Promise((_resolve, reject) => {
+      attempts += 1;
+      init?.signal?.addEventListener("abort", () => reject(new DOMException("timeout-secret-key", "AbortError")), { once: true });
+    }),
+  });
+
+  await assert.rejects(
+    provider.generateReading(tarotReadingQualityFixture),
+    (error) => error instanceof TarotAIError
+      && error.code === "timeout"
+      && error.retryable
+      && !error.message.includes("timeout-secret-key"),
+  );
+  assert.equal(attempts, 2);
+});
+
+test("rejects malformed provider JSON without retrying or exposing raw content", async () => {
+  let attempts = 0;
+  const rawContent = "not-json raw private upstream content";
+  const provider = createTarotAIProvider(providerEnv("deepseek", "malformed-secret-key"), {
+    fetch: async () => {
+      attempts += 1;
+      return jsonResponse({ choices: [{ message: { content: rawContent } }] });
+    },
+  });
+
+  await assert.rejects(
+    provider.generateReading(tarotReadingQualityFixture),
+    (error) => error instanceof TarotAIError
+      && error.code === "invalid_response"
+      && !error.message.includes("malformed-secret-key")
+      && !error.message.includes(rawContent),
+  );
+  assert.equal(attempts, 1);
 });
