@@ -4,6 +4,10 @@ export type CardPosition = { x: number; y: number };
 
 export type PointerPoint = { x: number; y: number };
 
+export type RoomRect = { left: number; top: number; width: number; height: number };
+
+export type FanReleaseOrigin = { x: number; y: number; scale: number };
+
 export type FanSwipeProgress = {
   dx: number;
   dy: number;
@@ -50,6 +54,24 @@ export function spreadCardPosition(index: number, spreadCount: number): CardPosi
   return {
     x: (column - (columns - 1) / 2) * CARD_X_STEP,
     y: row * CARD_Y_STEP,
+  };
+}
+
+/** Measure the selected fan card's starting pose relative to its fixed spread slot. */
+export function fanReleaseOrigin(
+  source: RoomRect,
+  table: RoomRect,
+  target: CardPosition,
+  factor: number,
+  dropPoint?: PointerPoint,
+): FanReleaseOrigin {
+  const safeFactor = Number.isFinite(factor) && factor > 0 ? factor : 1;
+  const releaseX = dropPoint ? dropPoint.x : source.left + source.width / 2;
+  const releaseTop = dropPoint ? dropPoint.y - source.height / 2 : source.top;
+  return {
+    x: Number(((releaseX - table.left - table.width / 2) / safeFactor - target.x).toFixed(2)),
+    y: Number(((releaseTop - table.top) / safeFactor - 12 - target.y).toFixed(2)),
+    scale: Number((source.width / (220 * safeFactor)).toFixed(3)),
   };
 }
 
