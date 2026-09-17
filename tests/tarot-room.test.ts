@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { shuffleDeck } from "../lib/tarot";
 import { spreadCardPosition } from "../lib/room-motion";
 import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, remainingFanCardNumbers, roomPositionLabels } from "../lib/tarot-room";
 
@@ -35,6 +36,15 @@ test("fan keeps all 78 cards until the customer selects a card", () => {
   assert.equal(remainingFanCardNumbers(deck, []).length, 78);
   assert.equal(remainingFanCardNumbers(deck, [{ id: 17, cardNumber: 17 }]).length, 77);
   assert.equal(remainingFanCardNumbers(deck, [{ id: 17, cardNumber: 17 }, { id: 42, cardNumber: 42 }]).length, 76);
+});
+
+test("every shuffle creates a complete unique 78-card order", () => {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const deck = shuffleDeck();
+    assert.equal(deck.length, 78);
+    assert.equal(new Set(deck).size, 78);
+    assert.deepEqual([...deck].sort((left, right) => left - right), Array.from({ length: 78 }, (_, id) => id));
+  }
 });
 
 test("room shuffles a full fan and submits only the customer's selected cards", () => {
