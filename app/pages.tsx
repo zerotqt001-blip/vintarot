@@ -24,6 +24,9 @@ import {
   CalendarDays,
   Video,
   User,
+  RotateCcw,
+  Sparkles,
+  Users,
 } from "lucide-react";
 
 export function CardFace({
@@ -819,38 +822,93 @@ function Practice({ user }: { user: any }) {
   const [shown, setShown] = useState(false);
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
+  const [cardChanging, setCardChanging] = useState(false);
+  const changeTimer = useRef<number | undefined>(undefined);
   useEffect(() => setId(shuffleDeck()[0]), []);
+  useEffect(() => () => {
+    if (changeTimer.current !== undefined) window.clearTimeout(changeTimer.current);
+  }, []);
+
+  function changeCard() {
+    if (cardChanging) return;
+    setCardChanging(true);
+    changeTimer.current = window.setTimeout(() => {
+      setId(shuffleDeck()[0]);
+      setText("");
+      setShown(false);
+      setMessage("");
+      window.requestAnimationFrame(() => setCardChanging(false));
+    }, 250);
+  }
+
   return (
-    <>
-      <Header title={t("pages.practiceTitle")} text={t("pages.practiceText")} />
-      <div className="practice-panel">
-        <div>
-          <CardFace card={cards[id]} />
-          <button className="button" onClick={() => { setId(shuffleDeck()[0]); setText(""); setShown(false); setMessage(""); }}>{t("pages.practiceAnother")}</button>
+    <section className="practice-cosmic-page" aria-label={t("pages.practiceTitle")}>
+      <div className="practice-celestial-scene" aria-hidden="true">
+        <div className="practice-scene-layer practice-scene-sky" />
+        <div className="practice-scene-layer practice-scene-stars" />
+        <div className="practice-scene-layer practice-scene-nebula" />
+        <div className="practice-scene-layer practice-scene-architecture" />
+        <div className="practice-scene-layer practice-scene-floor" />
+        <div className="practice-scene-layer practice-scene-vignette" />
+      </div>
+      <div className="practice-content">
+        <div className="practice-hero">
+          <div className="practice-moon-phases" aria-hidden="true"><span>☾</span><span>◐</span><span>●</span><span>◑</span><span>☽</span></div>
+          <Header title={t("pages.practiceTitle")} text={t("pages.practiceText")} />
+          <div className="practice-divider" aria-hidden="true"><span />✦<span /></div>
         </div>
-        <div>
-          <h2>{t("pages.standsOut")}</h2>
-          <p>{t("pages.practicePrompt")}</p>
-          <textarea aria-label={t("pages.interpretation")} rows={6} value={text} onChange={(event) => setText(event.target.value)} placeholder={t("pages.writeInterpretation")} />
-          <div className="form-actions">
-            <button className="button" onClick={() => setShown(!shown)}>{shown ? t("pages.hideMeaning") : t("pages.revealMeaning")}</button>
-            <button className="button black" disabled={!text.trim()} onClick={async () => {
-              try {
-                await api("records", { kind: "journal", data: { question: "Practice: " + cards[id].name, notes: text, cards: [{ id, reversed: false }] } });
-                setMessage(t("pages.saveStatus"));
-              } catch (error: any) { setMessage(error.message); }
-            }}>{t("pages.saveReflection")}</button>
+        <div className="practice-panel practice-composition">
+          <div className={`practice-card-stage ${cardChanging ? "practice-card-swap" : ""}`} aria-live="polite">
+            <div className="practice-card-geometry" aria-hidden="true"><span /><span /><span /><i>✦</i><b>✦</b></div>
+            <div key={id} className="practice-card-frame">
+              <CardFace card={cards[id]} />
+            </div>
+            <button className="button practice-change-card" disabled={cardChanging} onClick={changeCard}>
+              <RotateCcw size={16} strokeWidth={1.4} />
+              {t("pages.practiceAnother")}
+            </button>
           </div>
-          {shown && <div className="meaning-block"><h2>{cards[id].name}</h2><p>{cardMeaning(cards[id], locale).upright}</p></div>}
-          <p role="status">{message}</p>
+          <div className="practice-reflection">
+            <p className="practice-eyebrow">{t("pages.practiceTitle")}</p>
+            <div className="practice-heading-row"><h2>{t("pages.standsOut")}</h2><span aria-hidden="true">✦</span></div>
+            <p className="practice-prompt">{t("pages.practicePrompt")}</p>
+            <div className="practice-textarea-wrap">
+              <textarea aria-label={t("pages.interpretation")} maxLength={500} rows={6} value={text} onChange={(event) => setText(event.target.value)} placeholder={t("pages.writeInterpretation")} />
+              <span aria-hidden="true">{text.length}/500</span>
+            </div>
+            <div className="form-actions practice-actions">
+              <button className="button practice-reveal" type="button" aria-expanded={shown} onClick={() => setShown(!shown)}>
+                <BookOpen size={17} strokeWidth={1.35} />
+                {shown ? t("pages.hideMeaning") : t("pages.revealMeaning")}
+              </button>
+              <button className="button black practice-save" type="button" disabled={!text.trim()} onClick={async () => {
+                try {
+                  await api("records", { kind: "journal", data: { question: "Practice: " + cards[id].name, notes: text, cards: [{ id, reversed: false }] } });
+                  setMessage(t("pages.saveStatus"));
+                } catch (error: any) { setMessage(error.message); }
+              }}>
+                <Sparkles size={17} strokeWidth={1.35} />
+                {t("pages.saveReflection")}
+              </button>
+            </div>
+            {shown && <div className="meaning-block practice-interpretation"><h2>{cards[id].name}</h2><p>{cardMeaning(cards[id], locale).upright}</p></div>}
+            <p role="status" className="practice-status">{message}</p>
+          </div>
+        </div>
+        <div className="practice-community-card">
+          <div className="practice-community-visual" aria-hidden="true">
+            <div className="practice-community-orbit"><span>✦</span><i>✦</i></div>
+            <BookOpen size={74} strokeWidth={0.75} />
+          </div>
+          <div className="practice-community-copy">
+            <p className="practice-eyebrow">{t("pages.readTogether")}</p>
+            <h2>{t("pages.readTogether")}</h2>
+            <p>{t("pages.readTogetherText")}</p>
+            <a className="button practice-room-cta" href="/room"><Users size={17} strokeWidth={1.35} />{t("pages.createRoom")}</a>
+          </div>
         </div>
       </div>
-      <div className="empty">
-        <h2>{t("pages.readTogether")}</h2>
-        <p>{t("pages.readTogetherText")}</p>
-        <a className="button" href="/room">{t("pages.createRoom")}</a>
-      </div>
-    </>
+    </section>
   );
 }
 
