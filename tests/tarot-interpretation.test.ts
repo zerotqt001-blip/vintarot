@@ -1,48 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildLocalReading, parseReadingPayload } from "../lib/tarot-interpretation";
+import { tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
+import { parseReadingPayload } from "../lib/tarot-interpretation";
 
-test("local fallback returns one localized card reading per ordered position", () => {
-  const result = buildLocalReading({
-    locale: "vi",
-    question: "Bước tiếp theo của tôi là gì?",
-    cards: [{
-      readingCardId: "r1",
-      positionKey: "next_step",
-      positionLabel: "Bước tiếp theo",
-      positionPrompt: "Tôi có thể làm gì tiếp theo?",
-      orientation: "upright",
-      meaning: { summary: "Tóm tắt", actions: "Hành động", journalQuestions: ["Câu hỏi"] },
-    }],
-  });
-  assert.equal(result.source, "local-fallback");
-  assert.equal(result.reading.card_readings.length, 1);
-  assert.equal(result.reading.card_readings[0].reading_card_id, "r1");
-  assert.match(result.reading.disclaimer, /phản chiếu|không phải/i);
+const providerOutput = {
+  overview: "overview",
+  cards: tarotReadingQualityFixture.cards.map((card, index) => ({ reading_card_id: card.readingCardId, position_key: card.position.key, interpretation: `interpretation ${index}`, reflection_prompt: `reflection ${index}` })),
+  connections: "connections",
+  guidance: "guidance",
+  closing: "closing",
+};
+
+test("provider output is normalized in ordered session-card order", () => {
+  const result = parseReadingPayload({ ...providerOutput, cards: [...providerOutput.cards].reverse() }, tarotReadingQualityFixture.cards, "en");
+  assert.deepEqual(result.cards.map((card) => card.reading_card_id), tarotReadingQualityFixture.cards.map((card) => card.readingCardId));
+  assert.deepEqual(result.cards[0].position, tarotReadingQualityFixture.cards[0].position);
+  assert.deepEqual(result.cards[0].card, tarotReadingQualityFixture.cards[0].card);
+  assert.equal(result.cards[0].orientation, tarotReadingQualityFixture.cards[0].orientation);
+  assert.match(result.disclaimer, /reflective reading/i);
 });
 
-test("provider-shaped JSON is rejected when it omits a card reading", () => {
-  assert.throws(() => parseReadingPayload({
-    opening: "x",
-    card_readings: [],
-    synthesis: "x",
-    advice: "x",
-    closing: "x",
-    disclaimer: "x",
-  }, ["r1"]), /card_readings/i);
+test("strict parsing rejects omitted card output", () => {
+  assert.throws(() => parseReadingPayload({ ...providerOutput, cards: [] }, tarotReadingQualityFixture.cards, "en"), /provider output|cards/i);
 });
 
-test("provider card readings are reordered to match the session draw order", () => {
-  const result = parseReadingPayload({
-    opening: "opening",
-    card_readings: [
-      { reading_card_id: "r2", position_key: "present", interpretation: "second", reflection_prompt: "prompt 2" },
-      { reading_card_id: "r1", position_key: "past", interpretation: "first", reflection_prompt: "prompt 1" },
-    ],
-    synthesis: "synthesis",
-    advice: "advice",
-    closing: "closing",
-    disclaimer: "disclaimer",
-  }, ["r1", "r2"]);
-  assert.deepEqual(result.card_readings.map((reading) => reading.reading_card_id), ["r1", "r2"]);
+test("strict parsing rejects arbitrary provider metadata", () => {
+  assert.throws(() => parseReadingPayload({ ...providerOutput, unexpected: "not trusted" }, tarotReadingQualityFixture.cards, "en"), /provider output|unexpected/i);
 });
