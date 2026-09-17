@@ -43,6 +43,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const [modal, setModal] = useState<"" | "collection" | "notifications" | "help">("");
   const isHome = path === "/" && !children;
   const isGuidebook = path === "/guidebook" || path === "/decks";
+  const isCreate = path === "/create";
   const shellRef = useRef<HTMLDivElement>(null);
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/decks"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/decks"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
@@ -83,7 +84,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
-  return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isGuidebook ? "site-shell guidebook-shell" : "site-shell"}>
+  return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : "site-shell"}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <a className="brand" href="/">NaTarot</a>

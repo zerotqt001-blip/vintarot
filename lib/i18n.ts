@@ -67,8 +67,11 @@ export const messages = {
     },
     create: {
       ask: "Ask a question",
+      questionTitle: "What are you wanting to ask?",
+      questionSubtitle: "An honest question can open a new perspective.",
       placeholder: "Type your question or scenario...",
       chooseTopic: "Or choose a topic.",
+      topicInstruction: "Choose a question close to what you want to explore.",
       skipTheme: "Skip theme",
       anything: "Anything in mind?",
       skipQuestion: "Skip question",
@@ -444,8 +447,11 @@ export const messages = {
     },
     create: {
       ask: "Đặt một câu hỏi",
+      questionTitle: "Bạn đang muốn hỏi điều gì?",
+      questionSubtitle: "Một câu hỏi chân thành có thể mở ra những góc nhìn mới.",
       placeholder: "Nhập câu hỏi hoặc hoàn cảnh của bạn...",
       chooseTopic: "Hoặc chọn một chủ đề.",
+      topicInstruction: "Chọn một câu hỏi gần với điều bạn đang muốn khám phá.",
       skipTheme: "Bỏ qua chủ đề",
       anything: "Bạn đang nghĩ gì?",
       skipQuestion: "Bỏ qua câu hỏi",
