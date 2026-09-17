@@ -43,9 +43,12 @@ test("catalog migration upgrades existing Room data with all Moonlight spread la
   assert.match(spreadMigration, /'triangle'/);
   assert.match(spreadMigration, /'yes-no'/);
   assert.match(spreadMigration, /'celtic-cross'/);
-  assert.match(spreadMigration, /DELETE FROM `spread_positions`/);
+  assert.doesNotMatch(spreadMigration, /DELETE FROM `spread_positions`/);
   assert.doesNotMatch(spreadMigration, /\bBEGIN(?: TRANSACTION)?;/);
   assert.doesNotMatch(spreadMigration, /\bCOMMIT;/);
+  assert.match(spreadMigration, /'spread-relationships-relationship-check-in-you','spread-relationships-relationship-check-in','us_right_now'/);
+  assert.match(spreadMigration, /'spread-relationships-relationship-check-in-connection','spread-relationships-relationship-check-in','needs_work'/);
+  assert.match(spreadMigration, /'spread-relationships-relationship-check-in-them','spread-relationships-relationship-check-in','can_help'/);
 });
 
 test("dynamic draw route returns session metadata and an array without fixed positions", () => {
