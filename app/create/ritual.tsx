@@ -23,6 +23,7 @@ export default function CreateRitual() {
   const [selectedTopic, setSelectedTopic] = useState<TopicKey | null>(null);
   const [lastTopic, setLastTopic] = useState<TopicKey | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState("");
+  const [optionalContext, setOptionalContext] = useState("");
   const [error, setError] = useState("");
   const [opening, setOpening] = useState(false);
   const questionHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -44,7 +45,9 @@ export default function CreateRitual() {
           question: value.trim().slice(0, 500),
           topic: topic,
           currentQuestion: value.trim().slice(0, 500) || null,
+          optionalContext: optionalContext.trim().slice(0, 5000),
           selectedTopic: topic,
+          locale,
           created: timestamp(),
         }),
       );
@@ -132,6 +135,17 @@ export default function CreateRitual() {
                 </button>
               )}
             </form>
+            <label className="create-context-field" htmlFor="create-optional-context">
+              <span>{t("create.contextLabel")}</span>
+              <textarea
+                id="create-optional-context"
+                maxLength={5000}
+                value={optionalContext}
+                onChange={(event) => setOptionalContext(event.target.value)}
+                placeholder={t("create.contextPlaceholder")}
+                rows={2}
+              />
+            </label>
             <div className="create-topic-divider"><span>{t("create.chooseTopic")}</span></div>
             <div
               className="question-topics create-topic-grid create-topic-cluster"
@@ -195,6 +209,17 @@ export default function CreateRitual() {
                 </button>
               ))}
             </div>
+            <label className="create-context-field" htmlFor="create-optional-context">
+              <span>{t("create.contextLabel")}</span>
+              <textarea
+                id="create-optional-context"
+                maxLength={5000}
+                value={optionalContext}
+                onChange={(event) => setOptionalContext(event.target.value)}
+                placeholder={t("create.contextPlaceholder")}
+                rows={2}
+              />
+            </label>
             <button
               className="question-skip"
               type="button"

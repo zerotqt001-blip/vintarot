@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { spreadCardPosition } from "../lib/room-motion";
+import { consumeDrawPlan, hydrateLegacySpread, roomPositionLabels } from "../lib/tarot-room";
+
+test("legacy spread labels hydrate without changing their order", () => {
+  const result = hydrateLegacySpread(["Persona", "Obstacle", "Solution"]);
+  assert.equal(result?.templateSlug, "three-card-insight");
+  assert.deepEqual(roomPositionLabels(result!), ["Persona", "Obstacle", "Solution"]);
+});
+
+test("consuming any fan card uses its server position order and prevents duplicates", () => {
+  const plan = [
+    { readingCardId: "r1", cardId: "card-a", cardNumber: 4, positionId: "p0", positionKey: "past", positionOrder: 0, positionLabel: "Past", orientation: "upright" as const },
+    { readingCardId: "r2", cardId: "card-b", cardNumber: 9, positionId: "p1", positionKey: "present", positionOrder: 1, positionLabel: "Present", orientation: "reversed" as const },
+  ];
+  const first = consumeDrawPlan(plan, [], 9, 2);
+  assert.equal(first?.card.cardNumber, 9);
+  assert.deepEqual(first?.position, spreadCardPosition(1, 2));
+  assert.equal(consumeDrawPlan(plan, [first!.card], 9, 2), null);
+});
