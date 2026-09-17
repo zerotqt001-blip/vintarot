@@ -6,6 +6,7 @@ import type {
   TarotLocale,
 } from "./tarot-catalog";
 import type { ReadingOwner } from "./tarot-guest";
+import type { ReadingPayload } from "./tarot-interpretation";
 
 export type CatalogCategoryRow = {
   id: string;
@@ -61,6 +62,8 @@ export type TarotRepository = {
   createReadingSession(input: NewReadingSession): Promise<string>;
   createReadingCards(rows: NewReadingCard[]): Promise<void>;
   getSessionForOwner(sessionId: string, owner: ReadingOwner): Promise<ReadingSessionWithCards | null>;
+  getMeaning(cardId: string, locale: TarotLocale, orientation: "upright" | "reversed"): Promise<CardMeaningRow | null>;
+  saveReading(input: NewReading): Promise<string>;
 };
 
 export type DeckRow = {
@@ -81,6 +84,23 @@ export type CardRow = {
   arcana: string;
   suit: string;
   imageUrl: string;
+};
+
+export type CardMeaningRow = {
+  id: string;
+  cardId: string;
+  locale: TarotLocale;
+  orientation: "upright" | "reversed";
+  summary: string;
+  energy: string;
+  actions: string;
+  relationships: string;
+  work: string;
+  creativity: string;
+  home: string;
+  symbolism: string;
+  journalQuestions: string[];
+  keywords: string;
 };
 
 export type ActiveTemplate = {
@@ -128,7 +148,15 @@ export type ReadingSessionWithCards = {
     locale: TarotLocale;
     status: string;
   };
-  cards: Array<NewReadingCard & CardRow>;
+  cards: Array<NewReadingCard & CardRow & { positionPrompt: string; positionDescription: string }>;
+};
+
+export type NewReading = {
+  id: string;
+  sessionId: string;
+  reading: ReadingPayload;
+  modelName: string;
+  promptVersion: string;
 };
 
 function active(value: boolean | number): boolean {
@@ -240,8 +268,28 @@ export function getTarotRepository(database: D1Database): TarotRepository {
       const ownerColumn = owner.kind === "user" ? "s.user_id" : "s.guest_id";
       const session = await first<ReadingSessionWithCards["session"]>(database, `SELECT s.id, s.user_id AS userId, s.guest_id AS guestId, s.question, s.optional_context AS optionalContext, s.category_id AS categoryId, s.spread_template_id AS spreadTemplateId, s.spread_type AS spreadType, s.card_count AS cardCount, s.locale, s.status FROM reading_sessions s WHERE s.id = ? AND ${ownerColumn} = ?`, sessionId, owner.kind === "user" ? owner.userId : owner.guestId);
       if (!session) return null;
-      const cards = await rows<NewReadingCard & CardRow>(database, "SELECT rc.id, rc.session_id AS sessionId, rc.card_id AS cardId, rc.spread_position_id AS spreadPositionId, rc.position_key AS positionKey, rc.position_order AS positionOrder, rc.position_label AS positionLabel, rc.orientation, rc.card_order AS cardOrder, tc.deck_id AS deckId, tc.card_number AS cardNumber, tc.slug, tc.name_en AS nameEn, tc.name_vi AS nameVi, tc.arcana, tc.suit, tc.image_url AS imageUrl FROM reading_cards rc JOIN tarot_cards tc ON tc.id = rc.card_id WHERE rc.session_id = ? ORDER BY rc.card_order, rc.id", sessionId);
+      const cardRows = await rows<NewReadingCard & CardRow & { promptEn: string; promptVi: string; descriptionEn: string; descriptionVi: string }>(database, "SELECT rc.id, rc.session_id AS sessionId, rc.card_id AS cardId, rc.spread_position_id AS spreadPositionId, rc.position_key AS positionKey, rc.position_order AS positionOrder, rc.position_label AS positionLabel, rc.orientation, rc.card_order AS cardOrder, tc.deck_id AS deckId, tc.card_number AS cardNumber, tc.slug, tc.name_en AS nameEn, tc.name_vi AS nameVi, tc.arcana, tc.suit, tc.image_url AS imageUrl, sp.prompt_en AS promptEn, sp.prompt_vi AS promptVi, sp.description_en AS descriptionEn, sp.description_vi AS descriptionVi FROM reading_cards rc JOIN tarot_cards tc ON tc.id = rc.card_id JOIN spread_positions sp ON sp.id = rc.spread_position_id WHERE rc.session_id = ? ORDER BY rc.card_order, rc.id", sessionId);
+      const cards = cardRows.map(({ promptEn, promptVi, descriptionEn, descriptionVi, ...card }) => ({ ...card, positionPrompt: session.locale === "vi" ? promptVi : promptEn, positionDescription: session.locale === "vi" ? descriptionVi : descriptionEn }));
       return { session, cards };
+    },
+    async getMeaning(cardId, locale, orientation) {
+      const row = await first<Omit<CardMeaningRow, "journalQuestions"> & { journalQuestions: string }>(database, "SELECT id, card_id AS cardId, locale, orientation, summary, energy, actions, relationships, work, creativity, home, symbolism, journal_questions AS journalQuestions, keywords FROM card_meanings WHERE card_id = ? AND locale = ? AND orientation = ?", cardId, locale, orientation);
+      if (!row) return null;
+      let journalQuestions: string[] = [];
+      try {
+        const value = JSON.parse(row.journalQuestions);
+        if (Array.isArray(value)) journalQuestions = value.filter((item): item is string => typeof item === "string").slice(0, 10);
+      } catch {
+        journalQuestions = [];
+      }
+      return { ...row, journalQuestions };
+    },
+    async saveReading(input) {
+      const now = Date.now();
+      await database.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(input.id, input.sessionId, input.reading.opening, JSON.stringify(input.reading.card_readings), input.reading.synthesis, input.reading.advice, input.reading.closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
+        .run();
+      return input.id;
     },
   };
 }

@@ -6,6 +6,8 @@ import { buildTarotSeed } from "../db/tarot-seed";
 
 const schema = readFileSync(new URL("../db/schema.ts", import.meta.url), "utf8");
 const drawRoute = readFileSync(new URL("../app/api/tarot/draw/route.ts", import.meta.url), "utf8");
+const interpretRoute = readFileSync(new URL("../app/api/tarot/interpret/route.ts", import.meta.url), "utf8");
+const interpretation = readFileSync(new URL("../lib/tarot-interpretation.ts", import.meta.url), "utf8");
 
 test("Drizzle schema declares every normalized Tarot table", () => {
   for (const table of [
@@ -36,4 +38,15 @@ test("dynamic draw route returns session metadata and an array without fixed pos
   assert.match(drawRoute, /cards: responseCards/);
   assert.match(drawRoute, /makeDrawPlan/);
   assert.doesNotMatch(drawRoute, /portraitCard|obstacleCard|solutionCard/);
+});
+
+test("interpretation route is guest-safe, validates ownership, persists source metadata, and falls back locally", () => {
+  assert.match(interpretRoute, /readOptionalOwner/);
+  assert.match(interpretRoute, /getSessionForOwner/);
+  assert.match(interpretRoute, /buildLocalReading/);
+  assert.match(interpretRoute, /saveReading/);
+  assert.match(interpretation, /disclaimer/);
+  assert.match(interpretRoute, /model_name/);
+  assert.match(interpretRoute, /prompt_version/);
+  assert.doesNotMatch(interpretRoute, /portraitCard|obstacleCard|solutionCard/);
 });
