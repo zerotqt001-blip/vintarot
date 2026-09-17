@@ -21,3 +21,11 @@ test("fan drops use the deterministic spread slot helper", () => {
   assert.match(source, /spreadCardPosition\(i,current\.spread\.length\)/);
   assert.match(source, /const i=current\.cards\.length,target=spreadCardPosition/);
 });
+
+test("Room exposes the complete Moonlight picker and semantic spread layout", () => {
+  assert.match(source, /key:'blank'/);
+  assert.match(source, /key:'everyday'/);
+  assert.match(source, /key:'self-care'/);
+  assert.match(source, /resolveSpreadLayout\(/);
+  assert.match(source, /resolveSpreadLayout[^]*spread-slots/);
+});

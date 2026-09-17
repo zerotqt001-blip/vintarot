@@ -49,6 +49,34 @@ export function buildSeedSql(seed: TarotSeed, now = Date.now()): string {
   return `${statements.join("\n")}\n`;
 }
 
+/** Build an idempotent catalog-only migration for an already seeded database. */
+export function buildSpreadCatalogMigrationSql(seed: TarotSeed, now = Date.now()): string {
+  validateTarotSeed(seed);
+  const statements: string[] = ["PRAGMA foreign_keys=ON;", "BEGIN;"];
+  const templateIds = seed.templates.map((template) => template.id);
+  const legacyTemplateIds = [
+    "spread-planning-one-small-step",
+    "spread-moon-phase-three-card-insight",
+    "spread-creativity-social-battery-check",
+    "spread-business-past-present-future",
+    "spread-fools-journey-celtic-cross",
+  ];
+  statements.push(`UPDATE \`spread_templates\` SET \`active\`=0,\`updated_at\`=${now} WHERE \`id\` IN (${legacyTemplateIds.map((id) => quote(id)).join(",")});`);
+  statements.push(`DELETE FROM \`spread_positions\` WHERE \`spread_template_id\` IN (${templateIds.map((id) => quote(id)).join(",")});`);
+
+  for (const category of seed.categories) {
+    statements.push(upsert("spread_categories", ["id", "slug", "name_en", "name_vi", "description_en", "description_vi", "icon", "image_url", "display_order", "active", "created_at", "updated_at"], [category.id, category.slug, category.name.en, category.name.vi, category.description.en, category.description.vi, category.icon, category.imageUrl, category.displayOrder, category.active, now, now]));
+  }
+  for (const template of seed.templates) {
+    statements.push(upsert("spread_templates", ["id", "category_id", "slug", "name_en", "name_vi", "description_en", "description_vi", "card_count", "spread_type", "display_order", "active", "created_at", "updated_at"], [template.id, template.categoryId, template.slug, template.name.en, template.name.vi, template.description.en, template.description.vi, template.cardCount, template.spreadType, template.displayOrder, template.active, now, now]));
+  }
+  for (const position of seed.positions) {
+    statements.push(upsert("spread_positions", ["id", "spread_template_id", "position_key", "position_order", "label_en", "label_vi", "description_en", "description_vi", "prompt_en", "prompt_vi", "created_at", "updated_at"], [position.id, position.templateId, position.key, position.order, position.label.en, position.label.vi, position.description.en, position.description.vi, position.prompt.en, position.prompt.vi, now, now]));
+  }
+  statements.push("COMMIT;");
+  return `${statements.join("\n")}\n`;
+}
+
 function outputPath(args: string[]): string | null {
   const index = args.indexOf("--out");
   if (index === -1) return null;

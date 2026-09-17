@@ -9,7 +9,7 @@ const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url)
 
 test("legacy spread labels hydrate without changing their order", () => {
   const result = hydrateLegacySpread(["Persona", "Obstacle", "Solution"]);
-  assert.equal(result?.templateSlug, "three-card-insight");
+  assert.equal(result?.templateSlug, "persona-obstacle-solution");
   assert.deepEqual(roomPositionLabels(result!), ["Persona", "Obstacle", "Solution"]);
 });
 

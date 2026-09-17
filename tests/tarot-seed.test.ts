@@ -13,11 +13,12 @@ test("canonical seed contains 78 stable cards and four meanings per card", () =>
   assert.ok(seed.cards.every((card) => card.imageUrl.startsWith("/cards/")));
 });
 
-test("spread seed preserves the six Room topics and position counts", () => {
+test("spread seed preserves every Moonlight topic and position counts", () => {
   const seed = buildTarotSeed();
   assert.deepEqual(seed.categories.map((category) => category.slug), [
-    "relationships", "planning", "moon-phase", "creativity", "business", "fools-journey",
+    "blank", "everyday", "self-care", "relationships", "planning", "moon-phase", "creativity", "business", "fools-journey",
   ]);
+  assert.equal(seed.templates.length, 57);
   for (const template of seed.templates) {
     assert.equal(seed.positions.filter((position) => position.templateId === template.id).length, template.cardCount);
   }

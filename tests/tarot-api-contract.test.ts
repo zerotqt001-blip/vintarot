@@ -5,6 +5,7 @@ import { buildSeedSql } from "../scripts/generate-tarot-seed";
 import { buildTarotSeed } from "../db/tarot-seed";
 
 const schema = readFileSync(new URL("../db/schema.ts", import.meta.url), "utf8");
+const spreadMigration = readFileSync(new URL("../drizzle/0003_moonlight_spread_catalog.sql", import.meta.url), "utf8");
 const drawRoute = readFileSync(new URL("../app/api/tarot/draw/route.ts", import.meta.url), "utf8");
 const interpretRoute = readFileSync(new URL("../app/api/tarot/interpret/route.ts", import.meta.url), "utf8");
 const interpretation = readFileSync(new URL("../lib/tarot-interpretation.ts", import.meta.url), "utf8");
@@ -31,6 +32,18 @@ test("seed SQL is idempotent and contains every canonical card and meaning row",
   assert.equal((sql.match(/INSERT INTO `card_meanings`/g) || []).length, 312);
   assert.match(sql, /ON CONFLICT\(`id`\) DO UPDATE SET/);
   assert.match(sql, /BEGIN;[\s\S]*COMMIT;/);
+});
+
+test("catalog migration upgrades existing Room data with all Moonlight spread layouts", () => {
+  assert.match(spreadMigration, /category-blank/);
+  assert.match(spreadMigration, /category-everyday/);
+  assert.match(spreadMigration, /category-self-care/);
+  assert.match(spreadMigration, /'row-4'/);
+  assert.match(spreadMigration, /'row-5'/);
+  assert.match(spreadMigration, /'triangle'/);
+  assert.match(spreadMigration, /'yes-no'/);
+  assert.match(spreadMigration, /'celtic-cross'/);
+  assert.match(spreadMigration, /DELETE FROM `spread_positions`/);
 });
 
 test("dynamic draw route returns session metadata and an array without fixed positions", () => {
