@@ -83,19 +83,19 @@ export type TarotSeed = {
   positions: TarotPositionSeed[];
 };
 
-export type TarotCatalogPosition = TarotPositionSeed & {
+export type TarotCatalogPosition = Omit<TarotPositionSeed, "label" | "description" | "prompt"> & {
   label: string;
   description: string;
   prompt: string;
 };
 
-export type TarotCatalogTemplate = TarotTemplateSeed & {
+export type TarotCatalogTemplate = Omit<TarotTemplateSeed, "name" | "description"> & {
   name: string;
   description: string;
   positions: TarotCatalogPosition[];
 };
 
-export type TarotCatalogCategory = TarotCategorySeed & {
+export type TarotCatalogCategory = Omit<TarotCategorySeed, "name" | "description"> & {
   name: string;
   description: string;
   templates: TarotCatalogTemplate[];
