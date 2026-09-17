@@ -30,3 +30,7 @@ test("mobile Room hides the permanent desktop utilities and protects the first-s
   assert.match(css, /\.room-page\{[^}]*min-height:100dvh/);
   assert.match(css, /\.room-page \.shuffle-control\{[^}]*min-height:56px/);
 });
+
+test("mobile sheets reset the dialog centering translation", () => {
+  assert.match(css, /\.room-mobile-sheet\{[^}]*translate:0 0!important/);
+});
