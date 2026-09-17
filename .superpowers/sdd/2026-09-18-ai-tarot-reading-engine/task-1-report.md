@@ -70,3 +70,51 @@ The task-file secret scan produced no matches for API keys, tokens, or secrets.
 - Provider-authored prose is limited to the five required prose fields and four card prose/identifier fields; arbitrary fields are rejected.
 - English/Vietnamese disclaimer behavior is covered; no credentials or provider responses are present in tests or logs.
 - Concern: the existing production interpretation route still needs the later trusted-context/provider/route migration before the application typecheck and final-reading flow are green. Because the brief explicitly limits this slice to Task 1 and says not to implement Tasks 2–6, that migration remains unfinished rather than being approximated here.
+
+## Round 1/5 fix report
+
+status: DONE
+
+### Changed files
+
+- `lib/ai/prompts/tarot-reading.ts`
+- `tests/tarot-ai.test.ts`
+- This report (appended)
+
+### Fixes
+
+- Added an explicit system-prompt boundary identifying `question` and `optional_context` as untrusted user-provided data, not instructions, and requiring instructions inside them to be ignored.
+- Added deterministic injection-like question/context coverage that verifies both the boundary instruction and data serialization.
+- Added deterministic secret-safety coverage for API-key-like text, artwork paths, a 78-card catalog, raw provider output, and arbitrary metadata.
+- Expanded context assertions across every fixture card for orientation, position meaning/prompt, and upright/reversed knowledge.
+
+### Exact commands and outputs
+
+Command:
+
+```text
+npx tsx --test tests/tarot-ai.test.ts tests/tarot-interpretation.test.ts
+```
+
+Output:
+
+```text
+1..9
+# tests 9
+# pass 9
+# fail 0
+```
+
+Command:
+
+```text
+git diff --check
+```
+
+Output: no output; exit code 0.
+
+The previously reported `npx tsc --noEmit` finding remains unchanged and parked exactly as directed; no Tasks 2–6 route/UI migration was added.
+
+### Fix commit
+
+Pending at report-write time; the commit containing this fix and report is created immediately after verification.
