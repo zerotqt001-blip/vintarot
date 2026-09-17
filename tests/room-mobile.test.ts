@@ -12,10 +12,12 @@ test("mobile Room keeps its main composition centered and the deck summary flexi
   assert.match(css, /\.room-page \.room-bottom[^}]*padding[^}]*env\(safe-area-inset/);
 });
 
-test("mobile fan selection keeps a visible swipe release path", () => {
+test("mobile fan selection keeps swipe-to-draw interaction without a release animation", () => {
   assert.match(source, /fanSwipeProgress\(/);
   assert.match(source, /is-swipe-source/);
   assert.match(source, /onPointerCancel=\{cancelFan\}/);
   assert.match(css, /\.room-page \.fan-card\.is-swipe-source/);
-  assert.match(css, /@keyframes fan-release/);
+  assert.doesNotMatch(source, /fanReleaseOrigin|setDeal|dealTimer/);
+  assert.doesNotMatch(css, /\.deal-wrap\.fan-release|@keyframes fan-release|@keyframes room-fan-release/);
+  assert.doesNotMatch(css, /\.deal-wrap\{[^}]*animation:deal-in/);
 });

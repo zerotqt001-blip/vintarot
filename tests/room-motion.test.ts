@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { clampPan, clampZoom, fanReleaseOrigin, fanSwipeProgress, pointerCenter, pointerDistance, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
+import { clampPan, clampZoom, fanSwipeProgress, pointerCenter, pointerDistance, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
 
 test("focused spread cards lift with a symmetric 3D tilt", () => {
   const left = spreadCardPose(0, 3, false);
@@ -65,27 +65,4 @@ test("fan swipe progress distinguishes a touch drag from a tap", () => {
     active: true,
     progress: 1,
   });
-});
-
-test("fan release origin is measured from the selected card to its fixed spread slot", () => {
-  assert.deepEqual(
-    fanReleaseOrigin(
-      { left: 100, top: 600, width: 80, height: 130 },
-      { left: 0, top: 100, width: 900, height: 600 },
-      { x: -250, y: 0 },
-      1,
-    ),
-    { x: -60, y: 488, scale: 0.364 },
-  );
-
-  assert.deepEqual(
-    fanReleaseOrigin(
-      { left: 100, top: 600, width: 80, height: 130 },
-      { left: 0, top: 100, width: 900, height: 600 },
-      { x: 0, y: 0 },
-      1,
-      { x: 160, y: 500 },
-    ),
-    { x: -290, y: 323, scale: 0.364 },
-  );
 });
