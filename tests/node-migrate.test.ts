@@ -21,7 +21,19 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   const sqlite = new DatabaseSync(dbPath);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get() as { count: number }).count, 78);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get() as { count: number }).count, 312);
-  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 4);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 5);
+  assert.deepEqual(
+    sqlite.prepare("SELECT name FROM natarot_migrations ORDER BY name").all().map((row) => row.name),
+    [
+      "0000_vengeful_ben_urich.sql",
+      "0001_dynamic_tarot.sql",
+      "0002_tarot_seed.sql",
+      "0003_moonlight_spread_catalog.sql",
+      "0004_reading_payload.sql",
+    ],
+  );
+  const columns = sqlite.prepare("PRAGMA table_info(readings)").all() as Array<{ name: string }>;
+  assert.ok(columns.some((column) => column.name === "reading_payload"));
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
 });

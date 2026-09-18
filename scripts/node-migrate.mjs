@@ -18,7 +18,7 @@ try {
     sqlite.prepare("SELECT name FROM natarot_migrations ORDER BY name").all().map((row) => String(row.name)),
   );
   const migrations = readdirSync(migrationDirectory)
-    .filter((name) => /^000[0-3]_.+\.sql$/.test(name))
+    .filter((name) => /^\d{4}_.+\.sql$/.test(name))
     .sort();
 
   for (const name of migrations) {

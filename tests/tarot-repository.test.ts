@@ -4,7 +4,7 @@ import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import test, { type TestContext } from "node:test";
 import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
-import { parseStoredReading } from "../lib/tarot-reading-compat";
+import { parseStoredReading, TarotReadingCompatibilityError } from "../lib/tarot-reading-compat";
 import { buildTarotReadingInput } from "../lib/tarot-reading-context";
 import { getTarotRepository } from "../lib/tarot-repository";
 
@@ -196,4 +196,36 @@ test("repository returns the latest owned reading and hydrates historical rows w
   assert.deepEqual(hydrated.reflectionPrompts, input.cards.map((card) => `Notice ${card.position.key}`));
   assert.equal(hydrated.personalInsights[0]?.body, legacy.synthesis);
   assert.equal(hydrated.nextSteps[0]?.body, legacy.advice);
+});
+
+test("legacy hydration rejects malformed JSON and incomplete card coverage", async (t) => {
+  const { repository, template, cards } = await storedReading(t);
+  const stored = (await repository.getSessionForOwner("guest-session", { kind: "guest", guestId: "owner-guest" }))!;
+  const historical = (await repository.getReadingTemplate(template.id, "en"))!;
+  const meanings = new Map(await Promise.all(cards.map(async (card) => [card.id, (await repository.getMeaningPair(card.id, "en"))!] as const)));
+  const input = buildTarotReadingInput({ ...stored, template: historical, meanings, locale: "en" });
+  const row = {
+    id: "legacy-reading",
+    sessionId: stored.session.id,
+    opening: "Legacy opening",
+    cardReadings: "[]",
+    synthesis: "Legacy synthesis",
+    advice: "Legacy advice",
+    closing: "Legacy closing",
+    disclaimer: "Legacy disclaimer",
+    readingPayload: null,
+    modelName: "legacy/model",
+    promptVersion: "tarot-reading-v2",
+    createdAt: 1,
+    updatedAt: 1,
+  };
+
+  assert.throws(
+    () => parseStoredReading({ ...row, cardReadings: "{malformed" }, input.cards, "en"),
+    (error) => error instanceof TarotReadingCompatibilityError && /valid JSON/i.test(error.message),
+  );
+  assert.throws(
+    () => parseStoredReading({ ...row, cardReadings: JSON.stringify([{ reading_card_id: input.cards[0].readingCardId, position_key: input.cards[0].position.key, interpretation: "Only one card" }]) }, input.cards, "en"),
+    (error) => error instanceof TarotReadingCompatibilityError && /coverage/i.test(error.message),
+  );
 });
