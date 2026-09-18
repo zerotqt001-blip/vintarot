@@ -2,6 +2,7 @@
 
 **Date:** 2026-09-18
 **Audited implementation:** `73280ff2d8a62f272ede1356f89ec83290abfe03` (`feat: connect knowledge v5 tarot readings`)
+**P2 runtime-test closure:** 2026-09-18 follow-up
 
 ## Outcome
 
@@ -53,8 +54,41 @@ Two concrete Task 4 gaps were found and fixed:
 
 `app/api/tarot/interpret/route.ts` was audited but required no change.
 
-## Deferred low-risk item
+## Historical deferred item
 
-The Node test runner cannot directly import the route because of the runtime-only `cloudflare:workers` module scheme. Route validation, aliasing, response metadata, and logging policy therefore remain guarded by the existing source-level API contract test, while the underlying orchestration/error behavior is executed in service/provider tests and the compiled route is validated by the production build. A future Worker-runtime integration harness could exercise the HTTP status/body branches end to end; no runtime defect is currently known in those branches.
+The original audit deferred direct Node coverage of the route's HTTP branches because the Worker module imports `cloudflare:workers`. The P2 follow-up below closes that finding through a runtime-testable extraction without faking the Cloudflare module.
 
 Concurrent user-owned edits outside the Task 4 write set were left untouched and unstaged.
+
+## P2 runtime-test closure
+
+The deferred route-runtime finding is now closed without mocking `cloudflare:workers`. HTTP validation, response/error mapping, canonical response assembly, `Set-Cookie` passthrough, and allowlisted log-event assembly were extracted to `lib/tarot-reading-route.ts`. The Worker route still owns origin checking, request-body loading, Cloudflare environment access, guest/user owner resolution, D1 repository creation, provider creation, service invocation, and the canonical alias remains unchanged.
+
+The focused runtime suite imports the helper directly under Node and exercises real `Response` objects for:
+
+- invalid request `400` responses;
+- provider `configuration`, `upstream`, and `invalid_response` `503` responses;
+- service `not_found` `404`, `incomplete` `409`, and `persistence` `503` responses;
+- canonical success metadata and `Set-Cookie` passthrough; and
+- request-rejection and success/failure log events containing metadata only, with question/context/prompt/key/raw-body/exception sentinels excluded.
+
+### Follow-up TDD evidence
+
+- RED: `npx tsx --test tests/tarot-reading-route.test.ts` exited 1 with 0/5 top-level tests passing (0/5 overall); every failure was the expected assertion that `lib/tarot-reading-route.ts` did not exist.
+- GREEN: `npx tsx --test tests/tarot-reading-route.test.ts` exited 0 with 11/11 assertions passing after the minimal extraction.
+- Focused integration: `npx tsx --test tests/tarot-reading-route.test.ts tests/tarot-reading-service.test.ts tests/tarot-api-contract.test.ts` exited 0 with 25/25 assertions passing.
+- TypeScript: `npx tsc --noEmit` exited 0.
+- `git diff --check` over the five scoped files exited 0.
+- The scoped credential-pattern scan passed with no matches.
+
+### Follow-up files
+
+- `app/api/tarot/reading/route.ts`
+- `lib/tarot-reading-route.ts`
+- `tests/tarot-reading-route.test.ts`
+- `tests/tarot-api-contract.test.ts`
+- `.superpowers/sdd/2026-09-18-ai-tarot-reading-engine/task-4-report.md`
+
+### Residual limitation
+
+The Node suite does not instantiate the full Cloudflare Worker module or a real D1/provider deployment. Those runtime-owned integrations remain covered by their existing service/provider tests and deployment/build boundaries; the previously unexecuted HTTP status/body/header/log branches themselves are now runtime-tested without a Cloudflare module fake.

@@ -9,6 +9,7 @@ const spreadMigration = readFileSync(new URL("../drizzle/0003_moonlight_spread_c
 const drawRoute = readFileSync(new URL("../app/api/tarot/draw/route.ts", import.meta.url), "utf8");
 const interpretRoute = readFileSync(new URL("../app/api/tarot/interpret/route.ts", import.meta.url), "utf8");
 const readingRoute = readFileSync(new URL("../app/api/tarot/reading/route.ts", import.meta.url), "utf8");
+const readingRouteRuntime = readFileSync(new URL("../lib/tarot-reading-route.ts", import.meta.url), "utf8");
 const interpretation = readFileSync(new URL("../lib/tarot-interpretation.ts", import.meta.url), "utf8");
 const repository = readFileSync(new URL("../lib/tarot-repository.ts", import.meta.url), "utf8");
 
@@ -68,14 +69,16 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(readingRoute, /generateTarotReading/);
   assert.match(readingRoute, /createTarotAIProvider/);
   assert.match(readingRoute, /env as unknown as Record/);
-  assert.match(readingRoute, /model_name/);
-  assert.match(readingRoute, /prompt_version/);
-  assert.match(readingRoute, /z\.enum\(\["en", "vi"\]\)/);
+  assert.match(readingRoute, /handleTarotReadingRoute/);
+  assert.match(readingRouteRuntime, /model_name/);
+  assert.match(readingRouteRuntime, /prompt_version/);
+  assert.match(readingRouteRuntime, /z\.enum\(\["en", "vi"\]\)/);
   assert.match(readingRoute, /logTarotReadingEvent/);
-  assert.match(readingRoute, /cardCount/);
-  assert.match(readingRoute, /latencyMs/);
-  assert.match(readingRoute, /failureCategory/);
-  assert.doesNotMatch(readingRoute, /console\.(?:info|warn|error)\([^\n]*(?:question|optionalContext|prompt|apiKey|rawBody|error\.message)/);
+  assert.match(readingRouteRuntime, /cardCount/);
+  assert.match(readingRouteRuntime, /latencyMs/);
+  assert.match(readingRouteRuntime, /failureCategory/);
+  assert.doesNotMatch(readingRouteRuntime, /cloudflare:workers/);
+  assert.doesNotMatch(`${readingRoute}\n${readingRouteRuntime}`, /console\.(?:info|warn|error)\([^\n]*(?:question|optionalContext|prompt|apiKey|rawBody|error\.message)/);
   assert.doesNotMatch(readingRoute, /buildLocalReading|TAROT_AI_URL|TAROT_AI_KEY/);
   assert.equal(interpretRoute.trim(), 'export { POST } from "@/app/api/tarot/reading/route";');
   assert.doesNotMatch(interpretRoute, /buildLocalReading|TAROT_AI_URL|TAROT_AI_KEY/);
