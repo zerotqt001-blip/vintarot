@@ -21,7 +21,7 @@ Status: COMPLETE for the Task 6 documentation slice, subject only to the reposit
 ## Verification evidence
 
 - `npx tsx --test tests/tarot-documentation.test.ts` — exit 0, 3 passed, 0 failed.
-- `npx tsx --test tests/tarot-ai.test.ts tests/tarot-interpretation.test.ts tests/tarot-reading-context.test.ts tests/tarot-reading-service.test.ts tests/tarot-api-contract.test.ts tests/tarot-draw.test.ts tests/tarot-catalog.test.ts tests/tarot-seed.test.ts tests/tarot-room.test.ts` — first complete Task 6 run exited 0 at 68/68. A concurrent intermediate state briefly exited 1 at 72/75; after the Room/i18n fixes landed separately as `e4ab764`, the final rerun exited 0 at 75/75.
+- `npx tsx --test tests/tarot-ai.test.ts tests/tarot-interpretation.test.ts tests/tarot-reading-context.test.ts tests/tarot-reading-service.test.ts tests/tarot-api-contract.test.ts tests/tarot-draw.test.ts tests/tarot-catalog.test.ts tests/tarot-seed.test.ts tests/tarot-room.test.ts` — first complete Task 6 run exited 0 at 68/68. A concurrent intermediate state briefly exited 1 at 72/75; after the Room/i18n fixes landed separately as `cef4180`, the final rerun exited 0 at 75/75.
 - `npx tsc --noEmit` — exit 0, no output.
 - `npm run build` — exit 0; Vinext completed all five build phases and listed both Tarot routes.
 - `npx eslint tests/tarot-documentation.test.ts` — exit 0, no output.
@@ -30,6 +30,6 @@ Status: COMPLETE for the Task 6 documentation slice, subject only to the reposit
 
 ## Scope and remaining findings
 
-Task 6 changes only `README.md`, the Task 6 paragraphs in `docs/PROJECT_STATE.md`, `tests/tarot-documentation.test.ts`, and this report. Concurrent route/service/API-test work landed separately as `3b224bd`; Room/i18n work landed separately as `e4ab764`. None of it was edited or staged by this task. The concurrent custom-domain addition in `docs/PROJECT_STATE.md` and the existing untracked homepage files were also preserved but excluded from the Task 6 commits.
+Task 6 changes only `README.md`, the Task 6 paragraphs in `docs/PROJECT_STATE.md`, `tests/tarot-documentation.test.ts`, and this report. Concurrent route/service/API-test work landed separately as `3b224bd`; Room/i18n work landed separately as `cef4180`. None of it was edited or staged by this task. The concurrent custom-domain addition in `docs/PROJECT_STATE.md` and the existing untracked homepage files were also preserved but excluded from the Task 6 commits.
 
 Remaining work is configuring one selected provider and its key/model pair in the server environment and addressing the repository-wide lint baseline separately. Neither is a Task 6 documentation implementation gap. The report accompanies the Task 6 commits; obtain their identities with `git log -- .superpowers/sdd/2026-09-18-ai-tarot-reading-engine/task-6-report.md`.
