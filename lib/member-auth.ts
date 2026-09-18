@@ -219,6 +219,11 @@ export function parseCookie(header: string | null, name: string): string | null 
   return null;
 }
 
+export async function getMemberFromCookieHeader(database: D1Database, cookieHeader: string | null): Promise<MemberView | null> {
+  const rawSession = parseCookie(cookieHeader, SESSION_COOKIE_NAME);
+  return rawSession ? createMemberAuthStore(database).readSession(rawSession) : null;
+}
+
 export function safeRelativeReturnPath(value: string): string {
   if (!value || value[0] !== "/" || value.startsWith("//") || value.includes("\\") || /[\u0000-\u001f\u007f]/.test(value)) return "/";
   const path = value.split(/[?#]/, 1)[0];

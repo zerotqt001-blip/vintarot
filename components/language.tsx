@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { api } from "@/lib/client";
 import { messageFor, messages, normalizeLocale, type Locale } from "@/lib/i18n";
 
-type User = { name: string; email: string } | null;
+type User = { name: string; email: string; username: string } | null;
 type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;

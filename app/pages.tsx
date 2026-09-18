@@ -29,6 +29,9 @@ import {
   Users,
 } from "lucide-react";
 
+type MemberUser = { name: string; email: string; username: string; phone?: string } | null;
+type PublicMemberUser = { name: string; email: string; username: string } | null;
+
 export function CardFace({
   card,
   reversed = false,
@@ -190,8 +193,7 @@ export function SignIn() {
       <p>{t("pages.signInText")}</p>
       <a
         className="button black"
-        href="/signin-with-chatgpt?return_to=/profile"
-        target="_top"
+        href="/auth?return_to=/profile"
       >
         {t("common.signIn")}
       </a>
@@ -204,7 +206,7 @@ export default function Pages({
   user,
 }: {
   section: string;
-  user: { name: string; email: string } | null;
+  user: MemberUser;
 }) {
   const { t } = useLanguage();
   if (section === "decks" || section === "guidebook") return <Library />;
@@ -490,7 +492,7 @@ function ImmersiveCardDetail({ card }: { card: Card }) {
   );
 }
 
-function Daily({ user }: { user: any }) {
+function Daily({ user }: { user: PublicMemberUser }) {
   const { t } = useLanguage();
   const [draw, setDraw] = useState<number[]>([]);
   const [flipped, setFlipped] = useState<boolean[]>([false, false]);
@@ -561,7 +563,7 @@ function Daily({ user }: { user: any }) {
               {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
             </button>
           ) : (
-            <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
+            <a className="button" href="/auth?return_to=/daily-spread">
               {t("common.signIn")}
             </a>
           )}
@@ -581,7 +583,7 @@ const puzzles = [
   { clue: "Patience and courage bring a difficult moment into balance.", answer: [8, 14] },
 ];
 
-function Game({ user }: { user: any }) {
+function Game({ user }: { user: PublicMemberUser }) {
   const { t } = useLanguage();
   const [round, setRound] = useState(0);
   const [choices, setChoices] = useState<number[]>([]);
@@ -665,7 +667,7 @@ function Game({ user }: { user: any }) {
   );
 }
 
-function Journal({ user }: { user: any }) {
+function Journal({ user }: { user: PublicMemberUser }) {
   const { t, locale } = useLanguage();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -765,7 +767,7 @@ function Journal({ user }: { user: any }) {
   );
 }
 
-function Practice({ user }: { user: any }) {
+function Practice({ user }: { user: PublicMemberUser }) {
   const { t, locale } = useLanguage();
   const [id, setId] = useState(0);
   const [shown, setShown] = useState(false);
@@ -861,13 +863,14 @@ function Practice({ user }: { user: any }) {
   );
 }
 
-function Profile({ user }: { user: any }) {
+function Profile({ user }: { user: MemberUser }) {
   const { t, locale, setLocale } = useLanguage();
   const [name, setName] = useState(user?.name || "");
   const [bio, setBio] = useState("");
   const [timezone, setTimezone] = useState("Asia/Ho_Chi_Minh");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [logoutBusy, setLogoutBusy] = useState(false);
   useEffect(() => {
     if (user)
       api("records?kind=profile")
@@ -897,10 +900,22 @@ function Profile({ user }: { user: any }) {
         <div className="profile-avatar"><Moon size={43} /></div>
         <label>{t("pages.displayName")}<input value={name} required maxLength={80} onChange={(event) => setName(event.target.value)} /></label>
         <label>{t("pages.email")}<input readOnly value={user.email} /></label>
+        <label>{t("pages.phone")}<input readOnly value={user.phone || ""} /></label>
         <label>{t("pages.aboutYou")}<textarea value={bio} rows={4} onChange={(event) => setBio(event.target.value)} /></label>
         <label>{t("common.language")}<select value={locale} onChange={(event) => setLocale(event.target.value === "vi" ? "vi" : "en")}><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label>
         <label>{t("pages.timezone")}<select value={timezone} onChange={(event) => setTimezone(event.target.value)}>{["Asia/Ho_Chi_Minh", "Asia/Bangkok", "Asia/Singapore", "Europe/London", "America/New_York", "America/Los_Angeles", "UTC"].map((zone) => <option key={zone}>{zone}</option>)}</select></label>
         <button className="button black" disabled={busy}>{busy ? t("common.saving") : t("pages.saveProfile")}</button>
+        <button className="button" type="button" disabled={logoutBusy} onClick={async () => {
+          setLogoutBusy(true);
+          try {
+            const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+            if (!response.ok) throw new Error("Unable to sign out.");
+            window.location.assign("/auth");
+          } catch (error: any) {
+            setMessage(error.message);
+            setLogoutBusy(false);
+          }
+        }}>{logoutBusy ? t("common.saving") : t("pages.logOut")}</button>
         <p role="status">{message}</p>
       </form>
       <div className="service-status">
