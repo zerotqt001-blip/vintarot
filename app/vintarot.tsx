@@ -1,6 +1,7 @@
 'use client';
 
 import CardMark from "@/components/card-mark";
+import Logo from "@/components/brand/logo";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import { useEffect, useRef, useState } from "react";
 import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
@@ -90,8 +91,10 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
-      <a className="brand" href="/">NaTarot</a>
-      <span>{t("header.tagline")}</span>
+      <div className="brand-lockup">
+        <Logo variant="dark" href="/" priority={isHome} />
+        <span className="brand-tagline">{t("header.tagline")}</span>
+      </div>
       <nav className="topbar-nav" aria-label={t("nav.decks")}>
         {topNav.map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav>
@@ -113,7 +116,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       <section className="feature-row"><div><h2>{t("home.rhythm")}</h2><p>{t("home.rhythmText")}</p><a href="/community" className="button peach">{t("home.practice")} <ArrowUpRight size={16} /></a></div><div className="feature-cards"><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div></div></section>
       <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/guidebook">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
     </>}</main>
-    <footer><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></footer>
+    <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></footer>
     <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
