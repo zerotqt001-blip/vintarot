@@ -1,4 +1,5 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import type { GoogleOAuthClient } from "./google-oauth";
 import {
   MemberConflictError,
   type MemberRow,
@@ -16,6 +17,7 @@ import {
   passwordResetRequestSchema,
   registrationSchema,
   resetPasswordSchema,
+  safeRelativeReturnPath,
   verifyPassword,
 } from "./member-auth";
 
@@ -34,6 +36,7 @@ export type AuthHandlersDependencies = {
   sendVerification: (message: MailMessage) => Promise<void>;
   sendPasswordReset: (message: MailMessage) => Promise<void>;
   readJson?: JsonReader;
+  googleOAuth?: GoogleOAuthClient;
 };
 
 function requestUsesHttps(request: Request): boolean {
@@ -107,6 +110,48 @@ function verificationRedirect(request: Request, verified: boolean): Response {
   return Response.redirect(target, 303);
 }
 
+function googleErrorRedirect(request: Request): Response {
+  return Response.redirect(new URL("/auth?error=google", request.url), 303);
+}
+
+function localRedirect(request: Request, returnPath: string, sessionRaw: string): Response {
+  return new Response(null, {
+    status: 303,
+    headers: {
+      Location: new URL(returnPath, request.url).toString(),
+      "Set-Cookie": buildSessionCookie(sessionRaw, requestUsesHttps(request)),
+    },
+  });
+}
+
+function googleCompletionPayload(value: unknown): { subject: string; email: string; displayName: string | null; returnPath: string } | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const payload = value as Record<string, unknown>;
+  if (typeof payload.subject !== "string" || !payload.subject || typeof payload.email !== "string" || typeof payload.returnPath !== "string") return null;
+  if (payload.displayName !== null && typeof payload.displayName !== "string") return null;
+  try {
+    return {
+      subject: payload.subject,
+      email: normalizeEmail(payload.email),
+      displayName: payload.displayName,
+      returnPath: safeRelativeReturnPath(payload.returnPath),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function googleCompletionInput(value: unknown): { token: string; username: string; phone: string } | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  if (typeof input.token !== "string" || typeof input.username !== "string" || typeof input.phone !== "string") return null;
+  try {
+    return { token: input.token, username: normalizeUsername(input.username), phone: normalizePhone(input.phone) };
+  } catch {
+    return null;
+  }
+}
+
 export function createAuthHandlers({
   database,
   now = Date.now,
@@ -114,10 +159,97 @@ export function createAuthHandlers({
   sendVerification,
   sendPasswordReset,
   readJson = defaultReadJson,
+  googleOAuth,
 }: AuthHandlersDependencies) {
   const store = createMemberAuthStore(database, now);
 
   return {
+    async googleStart(request: Request): Promise<Response> {
+      if (!googleOAuth) return Response.json({ error: "Google sign-in is unavailable." }, { status: 503 });
+      try {
+        const returnPath = new URL(request.url).searchParams.get("returnPath") ?? "/";
+        const started = await googleOAuth.begin(returnPath);
+        return Response.redirect(started.url, 303);
+      } catch {
+        return Response.json({ error: "Google sign-in is unavailable." }, { status: 503 });
+      }
+    },
+
+    async googleCallback(request: Request): Promise<Response> {
+      if (!googleOAuth) return googleErrorRedirect(request);
+      const query = new URL(request.url).searchParams;
+      const state = query.get("state");
+      const code = query.get("code");
+      if (query.get("error") || !state || !code) return googleErrorRedirect(request);
+      const statePayload = await store.consumeOAuthState(state);
+      if (!statePayload) return googleErrorRedirect(request);
+
+      try {
+        const accessToken = await googleOAuth.exchange(code, statePayload.codeVerifier);
+        const identity = await googleOAuth.readVerifiedIdentity(accessToken);
+        const linked = await store.findByGoogleSubject(identity.subject);
+        if (linked) {
+          if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request);
+          await store.markLastLogin(linked.id);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw);
+        }
+
+        const byEmail = await store.findByEmail(identity.email);
+        if (byEmail) {
+          if (byEmail.disabled !== 0 || byEmail.email_verified_at === null) return googleErrorRedirect(request);
+          try {
+            await store.linkGoogleSubject(byEmail.id, identity.subject);
+          } catch (error) {
+            if (!(error instanceof MemberConflictError)) throw error;
+            const racedLink = await store.findByGoogleSubject(identity.subject);
+            if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request);
+          }
+          await store.markLastLogin(byEmail.id);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw);
+        }
+
+        const completion = await store.createToken({
+          kind: "google-completion",
+          ttlMs: 10 * 60 * 1_000,
+          payload: {
+            subject: identity.subject,
+            email: identity.email,
+            displayName: identity.displayName,
+            returnPath: statePayload.returnPath,
+          },
+        });
+        const target = new URL("/auth/complete", request.url);
+        target.searchParams.set("token", completion.raw);
+        return Response.redirect(target, 303);
+      } catch {
+        return googleErrorRedirect(request);
+      }
+    },
+
+    async googleComplete(request: Request): Promise<Response> {
+      const input = googleCompletionInput(await readJson(request));
+      if (!input) return invalidInput();
+      const consumed = await store.consumeToken("google-completion", input.token);
+      const payload = googleCompletionPayload(consumed?.payload);
+      if (!payload) return invalidToken();
+      try {
+        const member = await store.createMember({
+          email: payload.email,
+          username: input.username,
+          phone: input.phone,
+          passwordHash: null,
+          googleSubject: payload.subject,
+          displayName: payload.displayName,
+          emailVerifiedAt: now(),
+        });
+        await store.markLastLogin(member.id);
+        return localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw);
+      } catch (error) {
+        if (error instanceof MemberConflictError) return invalidInput();
+        throw error;
+      }
+    },
+
     async register(request: Request): Promise<Response> {
       const parsed = parseRegistration(await readJson(request));
       if (!parsed) return invalidInput();

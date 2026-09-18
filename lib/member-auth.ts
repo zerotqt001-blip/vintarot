@@ -37,9 +37,10 @@ export interface MemberRegistration {
   email: string;
   username: string;
   phone: string;
-  passwordHash: string;
+  passwordHash: string | null;
   emailVerifiedAt?: number | null;
   displayName?: string | null;
+  googleSubject?: string | null;
 }
 
 export class MemberConflictError extends Error {
@@ -278,7 +279,7 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
         phone: normalizePhone(input.phone),
         display_name: input.displayName ?? null,
         password_hash: input.passwordHash,
-        google_subject: null,
+        google_subject: input.googleSubject ?? null,
         email_verified_at: input.emailVerifiedAt ?? null,
         created_at: timestamp,
         updated_at: timestamp,
