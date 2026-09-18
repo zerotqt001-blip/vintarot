@@ -122,21 +122,31 @@ The portable build runs Vinext directly without a host `timeout` command. The ma
 
 ## AI Tarot readings
 
-The Room sends completed spreads to the server-only `POST /api/tarot/reading` route. The older `POST /api/tarot/interpret` path remains a compatibility alias. The server validates the stored session, retrieves only the drawn cards and their positions, assembles the selected Knowledge Base V5.0 context, calls the explicitly selected provider, validates the structured reading, and persists provider metadata. It does not expose provider secrets, send the full knowledge base, or silently substitute the old local template when a provider is unavailable.
+The canonical endpoint is `POST /api/tarot/reading`. The older `POST /api/tarot/interpret` route is a compatibility alias. The server validates the stored session, retrieves only the drawn cards and their positions, assembles the selected Knowledge Base V5.0 context, calls the explicitly selected provider, validates the structured reading, and persists provider metadata. It does not send the full knowledge base or silently substitute the old local template when a provider is unavailable.
 
-Configure only the provider you intend to use in the server/Cloudflare environment:
+Use this placeholder-only block as the server/Cloudflare environment checklist:
 
 ```text
-TAROT_AI_PROVIDER=openai|gemini|deepseek
-OPENAI_API_KEY=server-only-secret
-OPENAI_TAROT_MODEL=your-supported-model
-GEMINI_API_KEY=server-only-secret
-GEMINI_TAROT_MODEL=your-supported-model
-DEEPSEEK_API_KEY=server-only-secret
-DEEPSEEK_TAROT_MODEL=your-supported-model
+TAROT_AI_PROVIDER=openai
+OPENAI_API_KEY=replace-with-server-secret
+OPENAI_TAROT_MODEL=replace-with-supported-model
+GEMINI_API_KEY=replace-with-server-secret
+GEMINI_TAROT_MODEL=replace-with-supported-model
+DEEPSEEK_API_KEY=replace-with-server-secret
+DEEPSEEK_TAROT_MODEL=replace-with-supported-model
 ```
 
-The selected provider must have both its API key and model configured. Never place these values in client code, browser storage, committed files, or the public response. Without a configured provider, the Room keeps the spread and shows a safe retry/unavailable state; it does not claim that a local fallback is an AI reading.
+Set `TAROT_AI_PROVIDER` to `openai`, `gemini`, or `deepseek`; only the selected provider's key/model pair is required. All provider keys are server-side secrets. Never copy these values into client code, browser storage, committed files, logs, or public responses. Without a configured provider, the Room keeps the spread and shows a safe retry/unavailable state; it does not claim that a local fallback is an AI reading.
+
+The documentation and implementation can be checked locally without real provider credentials:
+
+```sh
+npx tsx --test tests/tarot-documentation.test.ts
+npx tsx --test tests/tarot-ai.test.ts tests/tarot-interpretation.test.ts tests/tarot-reading-context.test.ts tests/tarot-reading-service.test.ts tests/tarot-api-contract.test.ts tests/tarot-draw.test.ts tests/tarot-catalog.test.ts tests/tarot-seed.test.ts tests/tarot-room.test.ts
+npx tsc --noEmit
+npm run build
+npm run lint
+```
 
 ## Learn More
 
