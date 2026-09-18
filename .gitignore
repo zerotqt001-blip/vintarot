@@ -55,3 +55,4 @@ next-env.d.ts
 # Private task observations and memory stores
 /skill-observations/
 /.claude-mem/
+.worktrees/
