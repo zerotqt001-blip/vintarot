@@ -209,3 +209,10 @@ An earlier ad-hoc scoped TypeScript CLI invocation omitted the project's ESNext 
 - Audited the pre-existing staged Task 3 diff and confirmed the allowlist contains only the trusted context/repository/V5 serialization slice, its four runtime JSON imports, focused tests/configuration, project-state note, and this report. Concurrent route, Room, API-contract, service, homepage, and handbook changes remain unstaged or untracked.
 - Re-ran the reported focused suite: 57 passed, 0 failed. Scoped `npx tsc --noEmit -p tests/tsconfig.tarot-context.json`, scoped ESLint, `git diff --check`, `git diff --cached --check`, staged JSON count/integrity checks, and staged secret-pattern scan all passed.
 - A fresh full-project `npx tsc --noEmit` remains outside this slice and currently stops at `app/room/room.tsx(233,1930): error TS17002: Expected corresponding JSX closing tag for 'button'` from concurrent Room work.
+
+## Review fix round 1/5 — 2026-09-18
+
+- Fixed V5 few-shot admission so every example card must match both the requested locale and the exact drawn card orientation; the existing drawn-card restriction remains in place. Added an inverted-HR001 regression proving the same-card example is rejected when orientations are opposite.
+- Fixed directional `uncertainty_to_truth` triad retrieval so it requires an ordered uncertainty-role position before a truth/action-role position. Added a swapped-position regression proving the opposite direction is not claimed; ambiguous ordering emits no directional hint.
+- D1 localized upright/reversed meaning rows remain authoritative; these changes affect supplemental V5 retrieval only. Tasks 4–6, route, Room, service, and concurrent untracked files were untouched.
+- Covering Task 3 suite passes 59/59. Scoped TypeScript and ESLint pass. Diff checks and the staged secret scan are pending immediately before the fix commit.

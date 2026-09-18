@@ -183,10 +183,17 @@ function matchingTriad(names: Set<string>, cardsInReading: Array<{ nameEn: strin
   const hasBlock = positionKeys.some((key) => /obstacle|challenge|block|barrier|cost|pressure|risk|tension/.test(key));
   const hasAction = positionKeys.some((key) => /action|solution|direction|path|next|future|outcome|flow|advice|approach/.test(key));
 
-  if (names.has(normalize("The Moon")) || names.has(normalize("Seven of Cups")) || names.has(normalize("Two of Swords"))) {
-    if (names.has(normalize("Justice")) || names.has(normalize("Ace of Swords")) || names.has(normalize("The Sun"))) {
+  const uncertaintyNames = new Set([normalize("The Moon"), normalize("Seven of Cups"), normalize("Two of Swords")]);
+  const truthNames = new Set([normalize("Justice"), normalize("Ace of Swords"), normalize("The Sun")]);
+  const uncertaintyIndex = cardsInReading.findIndex((card) => uncertaintyNames.has(normalize(card.nameEn)));
+  const truthIndex = cardsInReading.findIndex((card) => truthNames.has(normalize(card.nameEn)));
+  const uncertaintyPosition = uncertaintyIndex >= 0 ? normalize(cardsInReading[uncertaintyIndex].positionKey) : "";
+  const truthPosition = truthIndex >= 0 ? normalize(cardsInReading[truthIndex].positionKey) : "";
+  const hasUncertaintyRole = /past|root|current|present|hidden|obstacle|challenge|uncertain|confusion|problem/.test(uncertaintyPosition);
+  const hasTruthRole = /future|outcome|result|solution|advice|action|direction|path|next|clarity|resolution|development|trajectory/.test(truthPosition);
+
+  if (uncertaintyIndex >= 0 && truthIndex > uncertaintyIndex && hasUncertaintyRole && hasTruthRole) {
       return triads.find((pattern) => pattern.name === "uncertainty_to_truth") || null;
-    }
   }
   if ((names.has(normalize("The Devil")) || names.has(normalize("Six of Cups")) || names.has(normalize("Four of Pentacles")))
     && (names.has(normalize("Death")) || names.has(normalize("Eight of Cups")) || names.has(normalize("The World")))) {
@@ -231,9 +238,11 @@ export function selectFewShotExamples(args: {
   cards: Array<{ nameEn: string; orientation: TarotOrientation }>;
 }): TarotFewShotExample[] {
   const drawnNames = new Set(args.cards.map((card) => normalize(card.nameEn)));
+  const drawnOrientations = new Map(args.cards.map((card) => [normalize(card.nameEn), card.orientation]));
   return examples
-    // Style references must not introduce another card or target language.
-    .filter((example) => example.language === args.locale && example.spread.every(([, name]) => drawnNames.has(normalize(name))))
+    // Style references must not introduce another card, target language, or orientation.
+    .filter((example) => example.language === args.locale
+      && example.spread.every(([, name, orientation]) => drawnNames.has(normalize(name)) && drawnOrientations.get(normalize(name)) === orientation))
     .map((example) => ({ example, score: exampleScore(example, args.locale, args.domain, args.question, args.cards.map((card) => card.nameEn), args.cards.map((card) => card.orientation)) }))
     .filter(({ score }) => score >= 8)
     .sort((left, right) => right.score - left.score || left.example.id.localeCompare(right.example.id))

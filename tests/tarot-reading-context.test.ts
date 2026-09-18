@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { CardMeaningRow, ReadingCardWithDetails, ReadingSessionRow, ReadingTemplateWithPositions } from "../lib/tarot-repository";
+import { selectCombinationHints } from "../lib/ai/knowledge-v5";
 import { buildTarotPromptContext } from "../lib/ai/prompts/tarot-reading";
 import { tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import { buildTarotReadingInput } from "../lib/tarot-reading-context";
@@ -134,6 +135,36 @@ test("builds a bounded V5 context from the exact stored cards and positions", ()
   assert.match(prompt, /emotional fulfillment|shared belonging/i);
   assert.doesNotMatch(prompt, /G001|B01|benchmark|evaluation/);
   assert.doesNotMatch(prompt, /The Fool/);
+});
+
+test("does not retrieve a same-card example when every drawn orientation is inverted", () => {
+  const invertedCards = [card(0), card(1), card(2)].map((current) => ({
+    ...current,
+    orientation: current.orientation === "upright" ? "reversed" as const : "upright" as const,
+  }));
+  const input = buildTarotReadingInput({
+    session,
+    cards: invertedCards,
+    template,
+    meanings: meaningPairs(invertedCards),
+    locale: "vi",
+  });
+
+  assert.deepEqual(input.fewShotExamples, []);
+});
+
+test("does not claim uncertainty moves toward truth when directional positions are swapped", () => {
+  const canonical = selectCombinationHints([
+    { nameEn: "The Moon", positionKey: "current" },
+    { nameEn: "Justice", positionKey: "outcome" },
+  ]);
+  assert.ok(canonical.some((hint) => hint.kind === "triad" && hint.signals.some((signal) => /ambiguity toward verification/i.test(signal))));
+
+  const swapped = selectCombinationHints([
+    { nameEn: "Justice", positionKey: "outcome" },
+    { nameEn: "The Moon", positionKey: "current" },
+  ]);
+  assert.equal(swapped.some((hint) => hint.kind === "triad" && hint.signals.some((signal) => /ambiguity toward verification/i.test(signal))), false);
 });
 
 test("preserves every localized D1 evidence field and only supplements known handbook cards", () => {
