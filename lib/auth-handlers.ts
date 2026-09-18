@@ -188,7 +188,8 @@ export function createAuthHandlers({
     async googleStart(request: Request): Promise<Response> {
       if (!googleOAuth) return Response.json({ error: "Google sign-in is unavailable." }, { status: 503 });
       try {
-        const returnPath = new URL(request.url).searchParams.get("returnPath") ?? "/";
+        const query = new URL(request.url).searchParams;
+        const returnPath = query.get("return_to") ?? query.get("returnPath") ?? "/";
         const started = await googleOAuth.begin(returnPath);
         const response = redirect(started.url);
         response.headers.append("Set-Cookie", googleTransactionCookie(await digestToken(started.rawState), requestUsesHttps(request)));

@@ -40,7 +40,7 @@ function providerError(status: number | "unknown", category: "provider" | "netwo
 }
 
 function createLink(origin: URL, path: string, token: string): string {
-  return `${origin.origin}${path}?token=${encodeURIComponent(token)}`;
+  return `${origin.origin}${path}${path.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}`;
 }
 
 export function createAuthEmailSender({ fetchImpl, apiKey, from, origin }: AuthEmailSenderOptions): AuthEmailSender {
@@ -56,7 +56,7 @@ export function createAuthEmailSender({ fetchImpl, apiKey, from, origin }: AuthE
 
   async function send(request: AuthEmailRequest, kind: "verification" | "reset"): Promise<void> {
     const safeUsername = htmlEscape(request.username);
-    const link = createLink(parsedOrigin, kind === "verification" ? "/api/auth/verify" : "/auth/reset", request.token);
+    const link = createLink(parsedOrigin, kind === "verification" ? "/api/auth/verify" : "/auth?reset=1", request.token);
     const isVerification = kind === "verification";
     const subject = isVerification
       ? "Xác minh tài khoản NaTarot / Verify your NaTarot account"

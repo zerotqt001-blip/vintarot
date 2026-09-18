@@ -137,6 +137,35 @@ test("Google start binds state to the initiating browser and rejects a cross-bro
   assert.equal(await count(harness.database, "members"), 0);
 });
 
+test("Google start accepts safe return_to and ignores unsafe destinations", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+
+  const safeStart = await harness.handlers.googleStart(new Request("https://natarot.test/api/auth/google/start?return_to=%2Fjournal%3Ftab%3Dsaved"));
+  const safeState = new URL(safeStart.headers.get("location") ?? "").searchParams.get("state");
+  assert.ok(safeState);
+  const safeCookie = parseCookie(safeStart.headers.get("set-cookie"), "natarot_google_oauth");
+  assert.ok(safeCookie);
+  const safeCallback = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(safeState)}`, { headers: { cookie: `natarot_google_oauth=${safeCookie}` } }));
+  const safeToken = new URL(safeCallback.headers.get("location") ?? "", "https://natarot.test").searchParams.get("token");
+  assert.ok(safeToken);
+  const safePayload = await harness.database.prepare("SELECT payload FROM auth_tokens WHERE kind=?").bind("google-completion").first<{ payload: string }>();
+  assert.equal(JSON.parse(safePayload?.payload ?? "{}").returnPath, "/journal?tab=saved");
+
+  const unsafeHarness = createHarness();
+  t.after(() => unsafeHarness.sqlite.close());
+  const unsafeStart = await unsafeHarness.handlers.googleStart(new Request("https://natarot.test/api/auth/google/start?return_to=https%3A%2F%2Fevil.example%2Fsteal"));
+  const unsafeState = new URL(unsafeStart.headers.get("location") ?? "").searchParams.get("state");
+  assert.ok(unsafeState);
+  const unsafeCookie = parseCookie(unsafeStart.headers.get("set-cookie"), "natarot_google_oauth");
+  assert.ok(unsafeCookie);
+  const unsafeCallback = await unsafeHarness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(unsafeState)}`, { headers: { cookie: `natarot_google_oauth=${unsafeCookie}` } }));
+  const unsafeToken = new URL(unsafeCallback.headers.get("location") ?? "", "https://natarot.test").searchParams.get("token");
+  assert.ok(unsafeToken);
+  const unsafePayload = await unsafeHarness.database.prepare("SELECT payload FROM auth_tokens WHERE kind=?").bind("google-completion").first<{ payload: string }>();
+  assert.equal(JSON.parse(unsafePayload?.payload ?? "{}").returnPath, "/");
+});
+
 test("Google provider-error callback consumes a browser-bound state and clears its transaction cookie", async (t) => {
   const harness = createHarness();
   t.after(() => harness.sqlite.close());

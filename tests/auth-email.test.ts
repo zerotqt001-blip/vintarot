@@ -38,7 +38,7 @@ test("verification mail uses the configured sender and one-time link", async () 
   assert.match(body.html, /NaTarot|xác minh|verify/i);
 });
 
-test("password reset mail uses the reset path and bilingual copy", async () => {
+test("password reset mail uses the auth reset screen and bilingual copy", async () => {
   const calls: CapturedCall[] = [];
   const sender = createAuthEmailSender({
     apiKey: "test-only-key",
@@ -55,7 +55,7 @@ test("password reset mail uses the reset path and bilingual copy", async () => {
 
   const body = JSON.parse(String(calls[0].init.body));
   assert.match(body.subject, /reset|đặt lại/i);
-  assert.match(body.html, /\/auth\/reset\?token=reset%20token%2F%3F%26/);
+  assert.match(body.html, /\/auth\?reset=1&token=reset%20token%2F%3F%26/);
   assert.match(body.text, /Đặt lại|reset/i);
   assert.match(body.html, /Đặt lại|reset/i);
 });
