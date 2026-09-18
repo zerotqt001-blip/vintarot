@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import test from "node:test";
 import { buildSeedSql } from "../scripts/generate-tarot-seed";
 import { buildTarotSeed } from "../db/tarot-seed";
@@ -68,7 +71,8 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(readingRoute, /getTarotRepository/);
   assert.match(readingRoute, /generateTarotReading/);
   assert.match(readingRoute, /createTarotAIProvider/);
-  assert.match(readingRoute, /env as unknown as Record/);
+  assert.match(readingRoute, /runtimeEnv as unknown as Record/);
+  assert.doesNotMatch(readingRoute, /cloudflare:workers/);
   assert.match(readingRoute, /handleTarotReadingRoute/);
   assert.match(readingRouteRuntime, /model_name/);
   assert.match(readingRouteRuntime, /prompt_version/);
@@ -88,4 +92,23 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(repository, /input\.reading\.overview/);
   assert.match(repository, /JSON\.stringify\(input\.reading\.cards\)/);
   assert.doesNotMatch(readingRoute, /portraitCard|obstacleCard|solutionCard/);
+});
+
+test("Node runtime exposes the SQLite database through the D1-shaped boundary", async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "natarot-runtime-"));
+  const databasePath = join(directory, "runtime.sqlite");
+  const previousPath = process.env.NATAROT_DB_PATH;
+  process.env.NATAROT_DB_PATH = databasePath;
+  t.after(() => {
+    if (previousPath === undefined) delete process.env.NATAROT_DB_PATH;
+    else process.env.NATAROT_DB_PATH = previousPath;
+    rmSync(directory, { recursive: true, force: true });
+  });
+
+  const runtime = await import(`${new URL("../lib/runtime.ts", import.meta.url).href}?test=${Date.now()}`);
+  const database = runtime.getRuntimeDatabase();
+  await database.prepare("CREATE TABLE runtime_probe (value TEXT NOT NULL)").run();
+  await database.prepare("INSERT INTO runtime_probe (value) VALUES (?)").bind("node").run();
+  const row = await database.prepare("SELECT value FROM runtime_probe").first<{ value: string }>();
+  assert.deepEqual(row, { value: "node" });
 });

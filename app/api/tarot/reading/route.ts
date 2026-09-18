@@ -1,7 +1,7 @@
-import { env } from "cloudflare:workers";
 import { createTarotAIProvider } from "@/lib/ai/factory";
 import { boundary, db, json, originCheck } from "@/lib/server";
 import { readOptionalOwner } from "@/lib/tarot-guest";
+import { runtimeEnv } from "@/lib/runtime";
 import { handleTarotReadingRoute, type TarotReadingLogEvent } from "@/lib/tarot-reading-route";
 import { generateTarotReading } from "@/lib/tarot-reading-service";
 import { getTarotRepository } from "@/lib/tarot-repository";
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     },
     execute: async (input, metadata) => {
       const { owner, setCookie } = await readOptionalOwner(req);
-      const provider = createTarotAIProvider(env as unknown as Record<string, string | undefined>);
+      const provider = createTarotAIProvider(runtimeEnv as unknown as Record<string, string | undefined>);
       metadata.provider = provider.id;
       metadata.modelName = `${provider.id}:${provider.model}`;
       const result = await generateTarotReading({
