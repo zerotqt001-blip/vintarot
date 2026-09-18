@@ -49,6 +49,12 @@ test("Room stays public until the first draw while card detail remains protected
   assert.match(helper, /export async function requirePageMember\(returnTo: string\)/);
 });
 
+test("desktop Room fan clears the bottom action rail hit area", () => {
+  const styles = read("app/globals.css");
+
+  assert.match(styles, /\.room-page \.card-fan\{bottom:65px\}/);
+});
+
 test("anonymous page identity skips runtime database initialization", () => {
   const helper = read("lib/member-page.ts");
 

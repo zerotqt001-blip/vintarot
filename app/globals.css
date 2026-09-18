@@ -284,6 +284,8 @@
 .room-page .card-fan{left:4%;right:4%;bottom:10px;z-index:3;filter:drop-shadow(0 -14px 26px rgba(2, 8, 18, 0.62))}
 .room-page .fan-surface{border-color:rgba(199, 166, 106, 0.48);background-color:rgba(5, 18, 32, 0.74)!important;box-shadow:0 8px 18px rgba(2, 8, 18, 0.36)}
 .room-page .fan-card:hover .fan-surface{box-shadow:0 15px 28px rgba(2, 8, 18, 0.55),0 0 22px rgba(199, 166, 106, 0.1)}
+/* Keep the desktop fan above the fixed bottom action rail so its cards remain clickable. */
+.room-page .card-fan{bottom:65px}
 .room-page .room-loading{color:var(--tarot-gold-light)}
 .room-dialog,[data-slot=dialog-content].room-dialog{background:rgba(5, 18, 32, 0.95);border:1px solid rgba(199, 166, 106, 0.38);color:var(--tarot-text);box-shadow:0 20px 70px rgba(2, 8, 18, 0.62)}
 .room-dialog [data-slot=dialog-title]{color:var(--tarot-gold-light)}
