@@ -350,6 +350,30 @@ test("Google completion rejects duplicate username, duplicate email, and invalid
   assert.equal(invalid.status, 400);
 });
 
+test("Google completion returns safe field-level validation keys", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+
+  const start = await beginAndCallback(harness);
+  const token = new URL(start.headers.get("location") ?? "", "https://natarot.test").searchParams.get("token");
+  assert.ok(token);
+
+  const invalid = await harness.handlers.googleComplete(jsonRequest("/api/auth/google/complete", {
+    token,
+    username: "bad-name",
+    phone: "12345",
+  }));
+
+  assert.equal(invalid.status, 400);
+  assert.deepEqual(await invalid.json(), {
+    error: "Please check your details.",
+    fields: {
+      username: "invalid",
+      phone: "invalid",
+    },
+  });
+});
+
 test("Google OAuth rejects a non-HTTPS redirect URI in production", () => {
   assert.throws(() => createGoogleOAuthClient({
     clientId: "google-client-id",

@@ -162,3 +162,23 @@ test("Google completion submits the token only to its endpoint and keeps phone p
   assert.doesNotMatch(authSources, /localStorage/);
   assert.doesNotMatch(authSources, /ChatGPT/);
 });
+
+test("auth forms expose localized inline field errors and safe client rules", () => {
+  const screen = read("app/auth/auth.tsx");
+  const client = read("lib/client.ts");
+  const messages = read("lib/i18n.ts");
+
+  assert.match(screen, /fieldErrors/);
+  assert.match(screen, /noValidate/);
+  assert.match(screen, /aria-invalid/);
+  assert.match(screen, /role=["']alert["']/);
+  assert.match(screen, /auth\.invalidEmail/);
+  assert.match(screen, /auth\.invalidUsername/);
+  assert.match(screen, /auth\.invalidPhone/);
+  assert.match(screen, /auth\.invalidPassword/);
+  assert.match(client, /fieldErrors/);
+  assert.match(messages, /invalidEmail/);
+  assert.match(messages, /invalidUsername/);
+  assert.match(messages, /invalidPhone/);
+  assert.match(messages, /invalidPassword/);
+});

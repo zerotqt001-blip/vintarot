@@ -102,6 +102,29 @@ test("registration rejects invalid local credentials without creating a member",
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 0);
 });
 
+test("registration returns safe field-level validation keys", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+
+  const response = await harness.handlers.register(jsonRequest("/api/auth/register", {
+    email: "not-an-email",
+    username: "bad-name",
+    phone: "12345",
+    password: "short",
+  }));
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), {
+    error: "Please check your details.",
+    fields: {
+      email: "invalid",
+      username: "invalid",
+      phone: "invalid",
+      password: "invalid",
+    },
+  });
+});
+
 test("verification consumes a token once, redirects locally, and rejects replay or expiry", async (t) => {
   const harness = createHarness();
   t.after(() => harness.sqlite.close());

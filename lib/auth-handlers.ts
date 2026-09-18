@@ -15,9 +15,9 @@ import {
   normalizeUsername,
   parseCookie,
   passwordResetRequestSchema,
-  registrationSchema,
   resetPasswordSchema,
   safeRelativeReturnPath,
+  validatePassword,
   verifyPassword,
 } from "./member-auth";
 
@@ -88,8 +88,14 @@ async function defaultReadJson(request: Request): Promise<unknown> {
   }
 }
 
-function invalidInput(): Response {
-  return Response.json({ error: "Please check your details." }, { status: 400 });
+type AuthField = "email" | "username" | "phone" | "password";
+type FieldErrors = Partial<Record<AuthField, "invalid">>;
+
+function invalidInput(fields?: FieldErrors): Response {
+  const body = fields && Object.keys(fields).length > 0
+    ? { error: "Please check your details.", fields }
+    : { error: "Please check your details." };
+  return Response.json(body, { status: 400 });
 }
 
 function invalidCredentials(): Response {
@@ -113,21 +119,41 @@ async function rollbackRegistration(database: D1Database, memberId: string, rawT
   ]);
 }
 
-function parseRegistration(value: unknown) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const record = value as Record<string, unknown>;
-  if (typeof record.email !== "string" || typeof record.username !== "string" || typeof record.phone !== "string") return null;
-  try {
-    const parsed = registrationSchema.safeParse({
-      ...record,
-      email: normalizeEmail(record.email),
-      username: normalizeUsername(record.username),
-      phone: normalizePhone(record.phone),
-    });
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
+function parseRegistration(value: unknown): { email: string; username: string; phone: string; password: string } | { fields: FieldErrors } {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { fields: { email: "invalid", username: "invalid", phone: "invalid", password: "invalid" } };
   }
+  const record = value as Record<string, unknown>;
+  const fields: FieldErrors = {};
+  let email = "";
+  let username = "";
+  let phone = "";
+  let password = "";
+  try {
+    if (typeof record.email !== "string") throw new Error();
+    email = normalizeEmail(record.email);
+  } catch {
+    fields.email = "invalid";
+  }
+  try {
+    if (typeof record.username !== "string") throw new Error();
+    username = normalizeUsername(record.username);
+  } catch {
+    fields.username = "invalid";
+  }
+  try {
+    if (typeof record.phone !== "string") throw new Error();
+    phone = normalizePhone(record.phone);
+  } catch {
+    fields.phone = "invalid";
+  }
+  try {
+    if (typeof record.password !== "string") throw new Error();
+    password = validatePassword(record.password);
+  } catch {
+    fields.password = "invalid";
+  }
+  return Object.keys(fields).length > 0 ? { fields } : { email, username, phone, password };
 }
 
 function verificationRedirect(request: Request, verified: boolean): Response {
@@ -184,15 +210,26 @@ function googleCompletionPayload(value: unknown): { subject: string; email: stri
   }
 }
 
-function googleCompletionInput(value: unknown): { token: string; username: string; phone: string } | null {
+function googleCompletionInput(value: unknown): { token: string; username: string; phone: string } | { fields: Pick<FieldErrors, "username" | "phone"> } | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
-  if (typeof input.token !== "string" || typeof input.username !== "string" || typeof input.phone !== "string") return null;
+  if (typeof input.token !== "string") return null;
+  const fields: Pick<FieldErrors, "username" | "phone"> = {};
+  let username = "";
+  let phone = "";
   try {
-    return { token: input.token, username: normalizeUsername(input.username), phone: normalizePhone(input.phone) };
+    if (typeof input.username !== "string") throw new Error();
+    username = normalizeUsername(input.username);
   } catch {
-    return null;
+    fields.username = "invalid";
   }
+  try {
+    if (typeof input.phone !== "string") throw new Error();
+    phone = normalizePhone(input.phone);
+  } catch {
+    fields.phone = "invalid";
+  }
+  return Object.keys(fields).length > 0 ? { fields } : { token: input.token, username, phone };
 }
 
 export function createAuthHandlers({
@@ -276,8 +313,10 @@ export function createAuthHandlers({
     },
 
     async googleComplete(request: Request): Promise<Response> {
-      const input = googleCompletionInput(await readJson(request));
-      if (!input) return invalidInput();
+      const parsed = googleCompletionInput(await readJson(request));
+      if (!parsed) return invalidInput();
+      if ("fields" in parsed) return invalidInput(parsed.fields);
+      const input = parsed;
       const tokenHash = await digestToken(input.token);
       const available = await store.peekToken("google-completion", input.token);
       const payload = googleCompletionPayload(available?.payload);
@@ -304,7 +343,7 @@ export function createAuthHandlers({
 
     async register(request: Request): Promise<Response> {
       const parsed = parseRegistration(await readJson(request));
-      if (!parsed) return invalidInput();
+      if ("fields" in parsed) return invalidInput(parsed.fields);
       if (!allowRateLimitedAction(rateLimiter, "register", `${parsed.email}:${parsed.username}`, request, trustForwardedFor, trustCloudflareIp)) {
         return Response.json({ ok: true, next: "verify-email" });
       }
