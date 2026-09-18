@@ -1,11 +1,12 @@
-import { getRuntimeDatabase } from '@/lib/runtime';
+import { getRuntimeDatabase, runtimeEnv } from '@/lib/runtime';
 import { attachIdentityCookie, readRequestIdentity } from '@/lib/request-identity';
 export function db(){return getRuntimeDatabase();}
 export async function identity(request:Request){return readRequestIdentity(request,db());}
 export { attachIdentityCookie };
 function requestOrigin(req: Request) {
-  const forwardedProto = req.headers.get('x-forwarded-proto')?.split(',', 1)[0]?.trim();
-  const forwardedHost = req.headers.get('x-forwarded-host')?.split(',', 1)[0]?.trim();
+  const trustForwardedFor = /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? '');
+  const forwardedProto = trustForwardedFor ? req.headers.get('x-forwarded-proto')?.split(',', 1)[0]?.trim() : undefined;
+  const forwardedHost = trustForwardedFor ? req.headers.get('x-forwarded-host')?.split(',', 1)[0]?.trim() : undefined;
   const host = forwardedHost || req.headers.get('host')?.trim();
   if (forwardedProto && host) return `${forwardedProto}://${host}`;
   return new URL(req.url).origin;

@@ -66,7 +66,7 @@ GOOGLE_REDIRECT_URI=https://example.test/api/auth/google/callback
 NATAROT_TRUSTED_PROXY=true
 ```
 
-The included Nginx config overwrites `X-Forwarded-For`, `X-Real-IP` and `X-Forwarded-Proto` with the direct client/proxy values, so its deployment should use `NATAROT_TRUSTED_PROXY=true`. Keep it `false` for a directly exposed Node process or any ingress that preserves client-supplied forwarding headers; in that mode those headers are ignored for auth rate limits and cookie security.
+The included Nginx config overwrites `X-Forwarded-For`, `X-Real-IP`, `X-Forwarded-Host` and `X-Forwarded-Proto` with the direct client/proxy values, so its deployment should use `NATAROT_TRUSTED_PROXY=true`. Keep it `false` for a directly exposed Node process or any ingress that preserves client-supplied forwarding headers; in that mode those headers are ignored for auth rate limits, cookie security and POST origin checks.
 
 ## Local D1 migrations
 
