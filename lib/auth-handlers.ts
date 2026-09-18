@@ -6,6 +6,7 @@ import {
   buildSessionCookie,
   clearSessionCookie,
   createMemberAuthStore,
+  digestToken,
   hashPassword,
   loginSchema,
   normalizeEmail,
@@ -70,6 +71,19 @@ function invalidToken(): Response {
   return Response.json(INVALID_TOKEN, { status: 400 });
 }
 
+async function deleteAuthToken(database: D1Database, rawToken: string): Promise<void> {
+  await database.prepare("DELETE FROM auth_tokens WHERE token_hash=?")
+    .bind(await digestToken(rawToken))
+    .run();
+}
+
+async function rollbackRegistration(database: D1Database, memberId: string, rawToken: string): Promise<void> {
+  await database.batch([
+    database.prepare("DELETE FROM auth_tokens WHERE token_hash=?").bind(await digestToken(rawToken)),
+    database.prepare("DELETE FROM members WHERE id=?").bind(memberId),
+  ]);
+}
+
 function parseRegistration(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const record = value as Record<string, unknown>;
@@ -129,7 +143,16 @@ export function createAuthHandlers({
         memberId: member.id,
         ttlMs: VERIFICATION_TOKEN_TTL_MS,
       });
-      await sendVerification({ to: member.email, username: member.username, token: token.raw });
+      try {
+        await sendVerification({ to: member.email, username: member.username, token: token.raw });
+      } catch {
+        try {
+          await rollbackRegistration(database, member.id, token.raw);
+        } catch {
+          // Keep the public response generic even if cleanup cannot complete.
+        }
+        return Response.json({ ok: true, next: "verify-email" });
+      }
       return Response.json({ ok: true, next: "verify-email" });
     },
 
@@ -185,7 +208,15 @@ export function createAuthHandlers({
           memberId: member.id,
           ttlMs: PASSWORD_RESET_TOKEN_TTL_MS,
         });
-        await sendPasswordReset({ to: member.email, username: member.username, token: token.raw });
+        try {
+          await sendPasswordReset({ to: member.email, username: member.username, token: token.raw });
+        } catch {
+          try {
+            await deleteAuthToken(database, token.raw);
+          } catch {
+            // Keep the public response generic even if cleanup cannot complete.
+          }
+        }
       }
       return Response.json({ ok: true, next: "check-email" });
     },

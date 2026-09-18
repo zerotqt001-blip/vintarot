@@ -25,7 +25,10 @@ function jsonRequest(path: string, body: unknown, headers: HeadersInit = {}): Re
   });
 }
 
-function createHarness() {
+function createHarness(options: {
+  sendVerification?: (message: SentMail) => Promise<void>;
+  sendPasswordReset?: (message: SentMail) => Promise<void>;
+} = {}) {
   let clock = 1_700_000_000_000;
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec(migrationSql);
@@ -36,8 +39,8 @@ function createHarness() {
     database,
     now: () => clock,
     rateLimiter: createAuthRateLimiter({ now: () => clock, windowMs: 60_000, maxAttempts: 10 }),
-    sendVerification: async (message) => { verificationMail.push(message); },
-    sendPasswordReset: async (message) => { resetMail.push(message); },
+    sendVerification: options.sendVerification ?? (async (message) => { verificationMail.push(message); }),
+    sendPasswordReset: options.sendPasswordReset ?? (async (message) => { resetMail.push(message); }),
   });
   return {
     database,
@@ -203,4 +206,38 @@ test("password reset hides account existence, consumes once, changes the hash, a
   assert.equal(await verifyPassword("new secure password", updated.password_hash), true);
   assert.equal(await harness.store.readSession(rawSessionToken), null);
   assert.equal((await harness.handlers.confirmPasswordReset(jsonRequest("/api/auth/password-reset/confirm", { token, password: "new secure password" }))).status, 400);
+});
+
+test("registration mail failure is generic and rolls back the new member and token", async (t) => {
+  const harness = createHarness({
+    sendVerification: async () => { throw new Error("mail provider unavailable"); },
+  });
+  t.after(() => harness.sqlite.close());
+
+  const response = await harness.handlers.register(jsonRequest("/api/auth/register", validRegistration));
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, next: "verify-email" });
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens").first<{ count: number }>())?.count, 0);
+});
+
+test("reset mail failure is generic for known and unknown identifiers and preserves the account", async (t) => {
+  const harness = createHarness({
+    sendPasswordReset: async () => { throw new Error("mail provider unavailable"); },
+  });
+  t.after(() => harness.sqlite.close());
+  await registerAndVerify(harness);
+  const login = await harness.handlers.login(jsonRequest("/api/auth/login", { identifier: "moon_rider", password: validRegistration.password }));
+  const rawSessionToken = parseCookie(login.headers.get("set-cookie"), SESSION_COOKIE_NAME);
+  assert.ok(rawSessionToken);
+
+  const known = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "MOON_RIDER" }));
+  const unknown = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "nobody" }));
+
+  assert.equal(known.status, unknown.status);
+  assert.deepEqual(await known.json(), { ok: true, next: "check-email" });
+  assert.deepEqual(await unknown.json(), { ok: true, next: "check-email" });
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens WHERE kind=?").bind("password-reset").first<{ count: number }>())?.count, 0);
+  assert.deepEqual(await harness.store.readSession(rawSessionToken), (await harness.store.getPublicMember((await harness.store.findByIdentifier("moon_rider"))?.id ?? "")));
 });
