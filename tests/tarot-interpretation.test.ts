@@ -41,7 +41,7 @@ test("strict parsing rejects mismatched evidence positions", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, card_evidence: mismatchedEvidence }, tarotReadingQualityFixture.cards, "en"), /position|coverage/i);
 });
 
-test("v4 parsing accepts concise optional sections in English and Vietnamese", () => {
+test("v4.1 parsing accepts concise optional sections in English and Vietnamese", () => {
   const concise = {
     ...providerOutput,
     personal_insights: [{ title: "One insight", body: "One useful pattern." }],
@@ -58,7 +58,7 @@ test("v4 parsing accepts concise optional sections in English and Vietnamese", (
   }
 });
 
-test("strict parsing enforces v4 list sizes without manufacturing filler", () => {
+test("strict parsing enforces v4.1 list sizes without manufacturing filler", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: Array.from({ length: 4 }, (_, index) => ({ title: `Insight ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
   assert.throws(() => parseReadingPayload({ ...providerOutput, reflection_prompts: ["one", "two", "three"] }, tarotReadingQualityFixture.cards, "en"), /reflection_prompts/i);
   assert.throws(() => parseReadingPayload({ ...providerOutput, next_steps: Array.from({ length: 4 }, (_, index) => ({ title: `Step ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /next_steps/i);
