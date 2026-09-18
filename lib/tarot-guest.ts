@@ -13,11 +13,11 @@ export type GuestIdentity = {
   setCookie: string;
 };
 
-export function createGuestIdentity(guestId = globalThis.crypto.randomUUID()): GuestIdentity {
+export function createGuestIdentity(guestId = globalThis.crypto.randomUUID(), secure = true): GuestIdentity {
   if (!guestIdPattern.test(guestId)) throw new Error("Invalid guest identity");
   return {
     guestId,
-    setCookie: `${GUEST_COOKIE_NAME}=${guestId}; Path=/; Max-Age=${GUEST_COOKIE_MAX_AGE}; HttpOnly; SameSite=Lax; Secure`,
+    setCookie: `${GUEST_COOKIE_NAME}=${guestId}; Path=/; Max-Age=${GUEST_COOKIE_MAX_AGE}; HttpOnly; SameSite=Lax${secure ? "; Secure" : ""}`,
   };
 }
 
@@ -32,6 +32,12 @@ export function readGuestId(request: Request): string | null {
   return null;
 }
 
+function requestUsesHttps(request: Request): boolean {
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase();
+  if (forwardedProto) return forwardedProto === "https";
+  return new URL(request.url).protocol === "https:";
+}
+
 export async function readOptionalOwner(request: Request): Promise<{ owner: ReadingOwner; setCookie?: string }> {
   let user: Awaited<ReturnType<typeof getChatGPTUser>> = null;
   try {
@@ -44,7 +50,7 @@ export async function readOptionalOwner(request: Request): Promise<{ owner: Read
   const existingGuestId = readGuestId(request);
   if (existingGuestId) return { owner: { kind: "guest", guestId: existingGuestId } };
 
-  const identity = createGuestIdentity();
+  const identity = createGuestIdentity(undefined, requestUsesHttps(request));
   return { owner: { kind: "guest", guestId: identity.guestId }, setCookie: identity.setCookie };
 }
 
