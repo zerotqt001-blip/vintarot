@@ -1,6 +1,13 @@
-import { buildTarotPromptContext, TAROT_RESPONSE_SCHEMA, TAROT_SYSTEM_PROMPT } from "./prompts/tarot-reading";
+import {
+  buildTarotFollowUpPromptContext,
+  buildTarotPromptContext,
+  TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
+  TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+  TAROT_RESPONSE_SCHEMA,
+  TAROT_SYSTEM_PROMPT,
+} from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
-import { parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 
@@ -57,6 +64,32 @@ export function createOpenAIProvider(
       const content = extractOutputText(envelope);
       if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true });
       return parseTarotProviderContent(content, input);
+    },
+    async generateFollowUp(input) {
+      const envelope = await request(OPENAI_RESPONSES_URL, {
+        method: "POST",
+        headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          instructions: TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+          input: buildTarotFollowUpPromptContext(input),
+          store: false,
+          temperature: 0.35,
+          max_output_tokens: 2200,
+          text: {
+            format: {
+              type: "json_schema",
+              name: "tarot_follow_up",
+              strict: true,
+              schema: TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
+            },
+          },
+        }),
+      });
+
+      const content = extractOutputText(envelope);
+      if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true });
+      return parseTarotFollowUpContent(content);
     },
   };
 }

@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { tarotReadingProviderOutputFixture, tarotReadingQualityAssertions, tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
-import { buildTarotPromptContext, TAROT_PROMPT_VERSION, TAROT_RESPONSE_SCHEMA, TAROT_SYSTEM_PROMPT } from "../lib/ai/prompts/tarot-reading";
+import {
+  buildTarotFollowUpPromptContext,
+  buildTarotPromptContext,
+  TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
+  TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+  TAROT_PROMPT_VERSION,
+  TAROT_RESPONSE_SCHEMA,
+  TAROT_SYSTEM_PROMPT,
+} from "../lib/ai/prompts/tarot-reading";
 import { createTarotAIProvider } from "../lib/ai/factory";
-import { parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
+import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
+import type { TarotFollowUpInput } from "../lib/ai/types";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
 
 function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
@@ -16,6 +25,16 @@ function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
     })),
   };
 }
+
+const followUpInput: TarotFollowUpInput = {
+  locale: "vi",
+  question: tarotReadingQualityFixture.question,
+  followUpQuestion: "What should I notice first?",
+  category: tarotReadingQualityFixture.category,
+  spread: tarotReadingQualityFixture.spread,
+  cards: tarotReadingQualityFixture.cards.map(({ readingCardId, position, card, orientation }) => ({ readingCardId, position, card, orientation })),
+  reading: parseReadingPayload(providerOutput(), tarotReadingQualityFixture.cards, "vi"),
+};
 
 test("normalizes the provider-neutral output with trusted card metadata", () => {
   const result = parseReadingPayload(providerOutput(), tarotReadingQualityFixture.cards, "vi");
@@ -126,6 +145,35 @@ test("publishes the versioned strict prompt contract", () => {
   for (const oldKey of ["overview", "cards", "connections", "guidance", "closing"]) {
     assert.equal(oldKey in TAROT_RESPONSE_SCHEMA.properties, false);
   }
+});
+
+test("serializes bounded follow-up context without V5 retrieval blobs", () => {
+  const context = JSON.parse(buildTarotFollowUpPromptContext({
+    ...followUpInput,
+    question: "q".repeat(1_200),
+    followUpQuestion: "f".repeat(1_200),
+  })) as Record<string, unknown>;
+  assert.equal((context.question as string).length, 1_000);
+  assert.equal((context.follow_up_question as string).length, 1_000);
+  assert.deepEqual(context.category, followUpInput.category);
+  assert.deepEqual(context.spread, followUpInput.spread);
+  assert.equal((context.drawn_cards as unknown[]).length, followUpInput.cards.length);
+  assert.deepEqual(context.current_reading, followUpInput.reading);
+  assert.equal("optional_context" in context, false);
+  assert.equal("retrieved_guidance" in context, false);
+  assert.equal("knowledge" in context, false);
+});
+
+test("parses only the bounded follow-up answer and safely rejects malformed output", () => {
+  assert.deepEqual(parseTarotFollowUpContent(JSON.stringify({ answer: "A useful next step." })), { answer: "A useful next step." });
+  assert.throws(
+    () => parseTarotFollowUpContent(JSON.stringify({ answer: "x".repeat(3_001) })),
+    (error) => error instanceof TarotAIError && error.code === "invalid_response" && error.retryable,
+  );
+  assert.throws(
+    () => parseTarotFollowUpContent("not-json private provider detail"),
+    (error) => error instanceof TarotAIError && error.code === "invalid_response" && error.retryable,
+  );
 });
 
 type FetchCall = { input: string | URL | Request; init?: RequestInit };
@@ -256,6 +304,49 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
         assert.doesNotMatch(messages[1].content, new RegExp(`"${oldKey}"`));
       }
       assert.match(messages[1].content, new RegExp(buildTarotPromptContext(tarotReadingQualityFixture).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
+  });
+}
+
+for (const providerId of ["openai", "gemini", "deepseek"] as const) {
+  test(`${providerId} sends a bounded structured follow-up request`, async () => {
+    const calls: FetchCall[] = [];
+    const fakeFetch: typeof fetch = async (input, init) => {
+      calls.push({ input, init });
+      return jsonResponse(providerEnvelope(providerId, { answer: "Start with the smallest observable step." }));
+    };
+    const provider = createTarotAIProvider(providerEnv(providerId), { fetch: fakeFetch, timeoutMs: 1_000 });
+    const followUp = await provider.generateFollowUp!(followUpInput);
+
+    assert.deepEqual(followUp, { answer: "Start with the smallest observable step." });
+    assert.equal(calls.length, 1);
+    const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
+    const promptContext = buildTarotFollowUpPromptContext(followUpInput);
+    if (providerId === "openai") {
+      assert.deepEqual(body, {
+        model: "openai-tarot-model",
+        instructions: TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+        input: promptContext,
+        store: false,
+        temperature: 0.35,
+        max_output_tokens: 2200,
+        text: { format: { type: "json_schema", name: "tarot_follow_up", strict: true, schema: TAROT_FOLLOW_UP_RESPONSE_SCHEMA } },
+      });
+    } else if (providerId === "gemini") {
+      assert.deepEqual(body, {
+        systemInstruction: { parts: [{ text: TAROT_FOLLOW_UP_SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: [{ text: promptContext }] }],
+        generationConfig: { temperature: 0.35, responseMimeType: "application/json", responseJsonSchema: TAROT_FOLLOW_UP_RESPONSE_SCHEMA },
+      });
+    } else {
+      assert.deepEqual(body.model, "deepseek-tarot-model");
+      assert.deepEqual(body.response_format, { type: "json_object" });
+      assert.deepEqual(body.thinking, { type: "disabled" });
+      const messages = body.messages as Array<{ role: string; content: string }>;
+      assert.equal(messages[0].content, TAROT_FOLLOW_UP_SYSTEM_PROMPT);
+      assert.match(messages[1].content, /\{"answer":"string"\}/);
+      assert.match(messages[1].content, new RegExp(promptContext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     }
     assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
   });

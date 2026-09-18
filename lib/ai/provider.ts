@@ -1,5 +1,6 @@
 import { parseReadingPayload } from "../tarot-interpretation";
-import type { TarotProviderId, TarotReadingInput, TarotReadingPayload } from "./types";
+import { z } from "zod";
+import type { TarotFollowUpInput, TarotFollowUpPayload, TarotProviderId, TarotReadingInput, TarotReadingPayload } from "./types";
 
 export type TarotAIErrorCode =
   | "configuration"
@@ -27,7 +28,12 @@ export type TarotAIProvider = {
   id: TarotProviderId;
   model: string;
   generateReading(input: TarotReadingInput): Promise<TarotReadingPayload>;
+  generateFollowUp?(input: TarotFollowUpInput): Promise<TarotFollowUpPayload>;
 };
+
+export const tarotFollowUpPayloadSchema = z.object({
+  answer: z.string().min(1).max(3000),
+}).strict();
 
 export function parseTarotProviderContent(content: string, input: TarotReadingInput): TarotReadingPayload {
   let value: unknown;
@@ -42,4 +48,19 @@ export function parseTarotProviderContent(content: string, input: TarotReadingIn
   } catch (error) {
     throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid reading.", { retryable: true, cause: error });
   }
+}
+
+export function parseTarotFollowUpContent(content: string): TarotFollowUpPayload {
+  let value: unknown;
+  try {
+    value = JSON.parse(content);
+  } catch (error) {
+    throw new TarotAIError("invalid_response", "Tarot AI provider returned invalid follow-up JSON.", { retryable: true, cause: error });
+  }
+
+  const parsed = tarotFollowUpPayloadSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid follow-up.", { retryable: true, cause: parsed.error });
+  }
+  return parsed.data;
 }

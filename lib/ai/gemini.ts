@@ -1,6 +1,13 @@
-import { buildTarotPromptContext, TAROT_RESPONSE_SCHEMA, TAROT_SYSTEM_PROMPT } from "./prompts/tarot-reading";
+import {
+  buildTarotFollowUpPromptContext,
+  buildTarotPromptContext,
+  TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
+  TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+  TAROT_RESPONSE_SCHEMA,
+  TAROT_SYSTEM_PROMPT,
+} from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
-import { parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 function extractCandidateText(value: unknown): string | null {
   if (typeof value !== "object" || value === null || !("candidates" in value) || !Array.isArray(value.candidates)) return null;
@@ -41,6 +48,25 @@ export function createGeminiProvider(
       const content = extractCandidateText(envelope);
       if (content === null) throw new TarotAIError("invalid_response", "Gemini returned an invalid response.", { retryable: true });
       return parseTarotProviderContent(content, input);
+    },
+    async generateFollowUp(input) {
+      const envelope = await request(url, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: TAROT_FOLLOW_UP_SYSTEM_PROMPT }] },
+          contents: [{ role: "user", parts: [{ text: buildTarotFollowUpPromptContext(input) }] }],
+          generationConfig: {
+            temperature: 0.35,
+            responseMimeType: "application/json",
+            responseJsonSchema: TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
+          },
+        }),
+      });
+
+      const content = extractCandidateText(envelope);
+      if (content === null) throw new TarotAIError("invalid_response", "Gemini returned an invalid follow-up response.", { retryable: true });
+      return parseTarotFollowUpContent(content);
     },
   };
 }

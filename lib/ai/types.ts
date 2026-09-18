@@ -116,3 +116,17 @@ export type TarotReadingPayload = {
   followUpSuggestions: string[];
   disclaimer: string;
 };
+
+export type TarotFollowUpInput = {
+  locale: TarotLocale;
+  question: string;
+  followUpQuestion: string;
+  category: TarotReadingInput["category"];
+  spread: TarotReadingInput["spread"];
+  cards: Array<Pick<TarotReadingPayload["cardEvidence"][number], "readingCardId" | "position" | "card" | "orientation">>;
+  reading: TarotReadingPayload;
+};
+
+export type TarotFollowUpPayload = {
+  answer: string;
+};
