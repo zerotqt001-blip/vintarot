@@ -52,6 +52,22 @@ test("strict parsing requires two to four direct-answer paragraphs", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, direct_answer: "One paragraph." }, tarotReadingQualityFixture.cards, "en"), /direct_answer/i);
 });
 
+test("strict parsing enforces direct-answer, title, body, and interpretation limits", () => {
+  const directAnswerAtLimit = `${"a".repeat(2999)}\n\n${"b".repeat(2999)}`;
+  assert.equal(directAnswerAtLimit.length, 6000);
+  assert.doesNotThrow(() => parseReadingPayload({ ...providerOutput, direct_answer: directAnswerAtLimit }, tarotReadingQualityFixture.cards, "en"));
+  assert.throws(() => parseReadingPayload({ ...providerOutput, direct_answer: `${"a".repeat(3000)}\n\n${"b".repeat(2999)}` }, tarotReadingQualityFixture.cards, "en"), /direct_answer/i);
+
+  const insightAtLimits = { title: "t".repeat(240), body: "b".repeat(1200) };
+  assert.doesNotThrow(() => parseReadingPayload({ ...providerOutput, personal_insights: [insightAtLimits] }, tarotReadingQualityFixture.cards, "en"));
+  assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: [{ title: "t".repeat(241), body: "b" }] }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: [{ title: "t", body: "b".repeat(1201) }] }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
+
+  const evidenceAtLimit = { ...providerOutput.card_evidence[0], interpretation: "i".repeat(4000) };
+  assert.doesNotThrow(() => parseReadingPayload({ ...providerOutput, card_evidence: [evidenceAtLimit, ...providerOutput.card_evidence.slice(1)] }, tarotReadingQualityFixture.cards, "en"));
+  assert.throws(() => parseReadingPayload({ ...providerOutput, card_evidence: [{ ...providerOutput.card_evidence[0], interpretation: "i".repeat(4001) }, ...providerOutput.card_evidence.slice(1)] }, tarotReadingQualityFixture.cards, "en"), /card_evidence/i);
+});
+
 test("strict parsing rejects arbitrary provider metadata", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, provider_metadata: { model: "untrusted" } }, tarotReadingQualityFixture.cards, "en"), /provider output|provider_metadata/i);
 });

@@ -39,7 +39,7 @@ export function parseTarotProviderContent(content: string, input: TarotReadingIn
 
   try {
     return parseReadingPayload(value, input.cards, input.locale);
-  } catch {
-    throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid reading.", { retryable: true });
+  } catch (error) {
+    throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid reading.", { retryable: true, cause: error });
   }
 }

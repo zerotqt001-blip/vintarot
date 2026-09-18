@@ -3,7 +3,7 @@ import test from "node:test";
 import { tarotReadingProviderOutputFixture, tarotReadingQualityAssertions, tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import { buildTarotPromptContext, TAROT_PROMPT_VERSION, TAROT_RESPONSE_SCHEMA, TAROT_SYSTEM_PROMPT } from "../lib/ai/prompts/tarot-reading";
 import { createTarotAIProvider } from "../lib/ai/factory";
-import { TarotAIError } from "../lib/ai/provider";
+import { parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
 
 function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
@@ -450,4 +450,21 @@ test("rejects malformed provider JSON without retrying or exposing raw content",
       && !error.message.includes(rawContent),
   );
   assert.equal(attempts, 1);
+});
+
+test("maps malformed V3 output to a safe retryable invalid response with an internal parser cause", () => {
+  const providerText = "private provider paragraph";
+  const malformedOutput = { ...providerOutput(), direct_answer: providerText };
+
+  assert.throws(
+    () => parseTarotProviderContent(JSON.stringify(malformedOutput), tarotReadingQualityFixture),
+    (error) => error instanceof TarotAIError
+      && error.code === "invalid_response"
+      && error.retryable
+      && error.message === "Tarot AI provider returned an invalid reading."
+      && !error.message.includes(providerText)
+      && error.cause instanceof Error
+      && !error.cause.message.includes(providerText)
+      && error.cause.message.includes("direct_answer"),
+  );
 });
