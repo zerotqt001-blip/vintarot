@@ -10,15 +10,15 @@ const canonicalResult = {
   source: "ai" as const,
   provider: "openai" as const,
   modelName: "openai:gpt-test",
-  promptVersion: "tarot-reading-v2",
+  promptVersion: "tarot-reading-v3",
   reading: {
-    overview: "A grounded overview.",
-    cards: [
+    directAnswer: "A grounded direct answer.\n\nA grounded next step.",
+    personalInsights: [{ title: "A pattern", body: "A grounded pattern." }],
+    reflectionPrompts: ["What is ready to change?"],
+    nextSteps: [{ title: "One step", body: "Take one considered step." }],
+    cardEvidence: [
       {
-        reading_card_id: "reading-card-1",
-        position_key: "present",
-        interpretation: "Notice the present pattern.",
-        reflection_prompt: "What is ready to change?",
+        readingCardId: "reading-card-1",
         position: {
           id: "position-present",
           key: "present",
@@ -36,11 +36,11 @@ const canonicalResult = {
           keywords: ["beginning"],
         },
         orientation: "upright" as const,
+        interpretation: "Notice the present pattern.",
       },
     ],
-    connections: "One card establishes the direction.",
-    guidance: "Take one considered step.",
-    closing: "Stay curious.",
+    deeperReading: null,
+    followUpSuggestions: ["Explore the pattern."],
     disclaimer: "Use this reading as reflective guidance.",
   },
 };
@@ -80,7 +80,7 @@ test("returns a real 400 JSON response and metadata-only log for an invalid requ
     status: "failure",
     httpStatus: 400,
     failureCategory: "invalid_request",
-    promptVersion: "tarot-reading-v2",
+    promptVersion: "tarot-reading-v3",
     latencyMs: 0,
   }]);
   assert.equal(JSON.stringify(events).includes(secret), false);
@@ -117,7 +117,7 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
         sessionId: "session-runtime",
         provider: "openai",
         modelName: "openai:gpt-test",
-        promptVersion: "tarot-reading-v2",
+        promptVersion: "tarot-reading-v3",
         latencyMs: 0,
       }]);
       assert.equal(JSON.stringify(events).includes(secret), false);
@@ -155,7 +155,7 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
         sessionId: "session-runtime",
         provider: "gemini",
         modelName: "gemini:model-test",
-        promptVersion: "tarot-reading-v2",
+        promptVersion: "tarot-reading-v3",
         latencyMs: 0,
       }]);
     });
@@ -179,13 +179,16 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
   assert.equal(response.headers.get("set-cookie"), "vintarot_guest=guest-1; HttpOnly; Path=/; SameSite=Lax");
   assert.match(response.headers.get("content-type") || "", /^application\/json/);
   const responseBody = await readJson(response);
+  assert.match(String((responseBody.reading as Record<string, unknown>).directAnswer), /grounded direct answer/);
+  assert.equal(((responseBody.reading as Record<string, unknown>).cardEvidence as unknown[]).length, 1);
+  assert.equal((((responseBody.reading as Record<string, unknown>).cardEvidence as Array<Record<string, unknown>>)[0].position as Record<string, unknown>).key, "present");
   assert.deepEqual(responseBody, {
     session_id: canonicalResult.sessionId,
     locale: canonicalResult.locale,
     source: "ai",
     provider: "openai",
     model_name: "openai:gpt-test",
-    prompt_version: "tarot-reading-v2",
+    prompt_version: "tarot-reading-v3",
     reading: canonicalResult.reading,
   });
   assert.deepEqual(events, [{
@@ -194,7 +197,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
     sessionId: "session-runtime",
     provider: "openai",
     modelName: "openai:gpt-test",
-    promptVersion: "tarot-reading-v2",
+    promptVersion: "tarot-reading-v3",
     cardCount: 1,
     latencyMs: 0,
   }]);
@@ -221,7 +224,7 @@ test("rethrows request rejection responses after logging only allowlisted metada
     sessionId: undefined,
     provider: undefined,
     modelName: undefined,
-    promptVersion: "tarot-reading-v2",
+    promptVersion: "tarot-reading-v3",
     latencyMs: 0,
   }]);
 });

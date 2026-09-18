@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { TarotAIProvider } from "../lib/ai/provider";
 import { TarotAIError } from "../lib/ai/provider";
-import type { TarotProviderOutput } from "../lib/ai/types";
+import type { TarotProviderOutputV3 } from "../lib/ai/types";
 import type {
   CardMeaningRow,
   ReadingCardWithDetails,
@@ -81,13 +81,15 @@ function meaning(cardId: string, orientation: "upright" | "reversed"): CardMeani
   };
 }
 
-function output(inputCards: ReadingCardWithDetails[]): TarotProviderOutput {
+function output(inputCards: ReadingCardWithDetails[]): TarotProviderOutputV3 {
   return {
-    overview: "A spread-level overview.",
-    cards: inputCards.map((card) => ({ reading_card_id: card.id, position_key: card.positionKey, interpretation: "A grounded interpretation.", reflection_prompt: "What would you like to notice?" })),
-    connections: "The cards connect through a practical progression.",
-    guidance: "Choose one small experiment.",
-    closing: "Let the next step teach you.",
+    direct_answer: "A spread-level direct answer.\n\nChoose one practical next step.",
+    personal_insights: [{ title: "The pattern", body: "The cards show a practical progression." }],
+    reflection_prompts: ["What would you like to notice?"],
+    next_steps: [{ title: "One experiment", body: "Choose one small experiment." }],
+    card_evidence: inputCards.map((card) => ({ reading_card_id: card.id, position_key: card.positionKey, interpretation: "A grounded interpretation." })),
+    deeper_reading: null,
+    follow_up_suggestions: ["Explore the pattern."],
   };
 }
 
@@ -158,10 +160,14 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.source, "ai");
   assert.equal(result.provider, "openai");
   assert.equal(result.modelName, "openai:test-model");
-  assert.equal(result.promptVersion, "tarot-reading-v2");
-  assert.equal(result.reading.cards.length, 3);
-  assert.equal(saved?.reading.overview, result.reading.overview);
-  assert.equal(saved?.reading.connections, result.reading.connections);
+  assert.equal(result.promptVersion, "tarot-reading-v3");
+  assert.match(result.reading.directAnswer, /spread-level direct answer/);
+  assert.equal(result.reading.cardEvidence.length, 3);
+  assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
+  assert.equal(result.reading.cardEvidence[1].position.key, template.positions[1].key);
+  assert.equal(result.reading.cardEvidence[1].orientation, "reversed");
+  assert.equal(saved?.reading.directAnswer, result.reading.directAnswer);
+  assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
   assert.equal(saved?.modelName, "openai:test-model");
 });
 

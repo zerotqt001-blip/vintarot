@@ -160,6 +160,17 @@ function headerValue(headers: HeadersInit | undefined, name: string): string | n
   return new Headers(headers).get(name);
 }
 
+function assertV3ResponseSchema(value: unknown): void {
+  assert.deepEqual(value, TAROT_RESPONSE_SCHEMA);
+  const schema = value as { properties: Record<string, unknown> };
+  for (const key of ["direct_answer", "card_evidence", "deeper_reading"]) {
+    assert.equal(key in schema.properties, true);
+  }
+  for (const oldKey of ["overview", "reflection_prompt"]) {
+    assert.equal(oldKey in schema.properties, false);
+  }
+}
+
 for (const providerId of ["openai", "gemini", "deepseek"] as const) {
   test(`${providerId} sends its native structured request and normalizes extracted JSON`, async () => {
     const calls: FetchCall[] = [];
@@ -176,6 +187,7 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
     assert.equal(calls.length, 1);
     assert.equal(calls[0].init?.method, "POST");
     assert.equal(headerValue(calls[0].init?.headers, "content-type"), "application/json");
+    assert.equal(reading.directAnswer, tarotReadingProviderOutputFixture.direct_answer);
     assert.deepEqual(reading.cardEvidence.map((card) => card.readingCardId), tarotReadingQualityAssertions.cardIds);
     const url = String(calls[0].input);
     const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
@@ -199,6 +211,7 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
           },
         },
       });
+      assertV3ResponseSchema(((body.text as Record<string, unknown>).format as Record<string, unknown>).schema);
     } else if (providerId === "gemini") {
       assert.equal(url, "https://generativelanguage.googleapis.com/v1beta/models/gemini-tarot-model:generateContent");
       assert.equal(headerValue(calls[0].init?.headers, "x-goog-api-key"), "test-provider-key");
@@ -213,6 +226,7 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
           responseJsonSchema: TAROT_RESPONSE_SCHEMA,
         },
       });
+      assertV3ResponseSchema((body.generationConfig as Record<string, unknown>).responseJsonSchema);
       assert.equal("responseSchema" in (body.generationConfig as Record<string, unknown>), false);
     } else {
       assert.equal(url, "https://api.deepseek.com/chat/completions");

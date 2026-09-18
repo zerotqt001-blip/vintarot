@@ -82,7 +82,7 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
       sessionId: result.sessionId,
       provider: result.provider,
       modelName: result.modelName,
-      cardCount: result.reading.cards.length,
+      cardCount: result.reading.cardEvidence.length,
     });
     return new Response(JSON.stringify({
       session_id: result.sessionId,

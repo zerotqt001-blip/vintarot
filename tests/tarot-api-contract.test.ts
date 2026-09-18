@@ -79,6 +79,7 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(readingRouteRuntime, /z\.enum\(\["en", "vi"\]\)/);
   assert.match(readingRoute, /logTarotReadingEvent/);
   assert.match(readingRouteRuntime, /cardCount/);
+  assert.match(readingRouteRuntime, /reading\.cardEvidence\.length/);
   assert.match(readingRouteRuntime, /latencyMs/);
   assert.match(readingRouteRuntime, /failureCategory/);
   assert.doesNotMatch(readingRouteRuntime, /cloudflare:workers/);
