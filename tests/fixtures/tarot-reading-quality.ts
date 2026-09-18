@@ -1,4 +1,4 @@
-import type { TarotMeaningEvidence, TarotReadingInput } from "../../lib/ai/types";
+import type { TarotMeaningEvidence, TarotProviderOutputV3, TarotReadingInput } from "../../lib/ai/types";
 
 function evidence(label: string): TarotMeaningEvidence {
   return {
@@ -60,6 +60,20 @@ export const tarotReadingQualityFixture: TarotReadingInput = {
   },
   combinationHints: [],
   fewShotExamples: [],
+};
+
+export const tarotReadingProviderOutputFixture: TarotProviderOutputV3 = {
+  direct_answer: "First paragraph.\n\nSecond paragraph.",
+  personal_insights: [{ title: "A pattern", body: "A useful pattern." }],
+  reflection_prompts: ["What would you like to notice?"],
+  next_steps: [{ title: "A next step", body: "Try one grounded action." }],
+  card_evidence: tarotReadingQualityFixture.cards.map((card, index) => ({
+    reading_card_id: card.readingCardId,
+    position_key: card.position.key,
+    interpretation: `Interpretation ${index + 1}.`,
+  })),
+  deeper_reading: null,
+  follow_up_suggestions: ["Explore the pattern.", "Notice the next step."],
 };
 
 export const tarotReadingQualityAssertions = {

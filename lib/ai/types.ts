@@ -74,32 +74,45 @@ export type TarotReadingInput = {
   fewShotExamples: TarotFewShotExample[];
 };
 
-export type TarotProviderCard = {
+export type TarotProviderInsight = {
+  title: string;
+  body: string;
+};
+
+export type TarotProviderNextStep = {
+  title: string;
+  body: string;
+};
+
+export type TarotProviderCardEvidence = {
   reading_card_id: string;
   position_key: string;
   interpretation: string;
-  reflection_prompt: string;
 };
 
-export type TarotProviderOutput = {
-  overview: string;
-  cards: TarotProviderCard[];
-  connections: string;
-  guidance: string;
-  closing: string;
-};
-
-export type TarotReadingCard = TarotProviderCard & {
-  position: TarotReadingCardContext["position"];
-  card: TarotReadingCardContext["card"];
-  orientation: TarotOrientation;
+export type TarotProviderOutputV3 = {
+  direct_answer: string;
+  personal_insights: TarotProviderInsight[];
+  reflection_prompts: string[];
+  next_steps: TarotProviderNextStep[];
+  card_evidence: TarotProviderCardEvidence[];
+  deeper_reading: string | null;
+  follow_up_suggestions: string[];
 };
 
 export type TarotReadingPayload = {
-  overview: string;
-  cards: TarotReadingCard[];
-  connections: string;
-  guidance: string;
-  closing: string;
+  directAnswer: string;
+  personalInsights: TarotProviderInsight[];
+  reflectionPrompts: string[];
+  nextSteps: TarotProviderNextStep[];
+  cardEvidence: Array<{
+    readingCardId: string;
+    position: TarotReadingCardContext["position"];
+    card: TarotReadingCardContext["card"];
+    orientation: TarotOrientation;
+    interpretation: string;
+  }>;
+  deeperReading: string | null;
+  followUpSuggestions: string[];
   disclaimer: string;
 };
