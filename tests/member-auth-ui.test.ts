@@ -87,3 +87,48 @@ test("phone remains private to the profile surface", () => {
   assert.doesNotMatch(read("components/language.tsx"), /\bphone\b/);
   assert.match(read("app/pages.tsx"), /user\.phone/);
 });
+
+test("auth entry validates its query state before rendering a localized form", () => {
+  const page = read("app/auth/page.tsx");
+  const screen = read("app/auth/auth.tsx");
+
+  assert.match(page, /dynamic\s*=\s*["']force-dynamic["']/);
+  assert.match(page, /safeRelativeReturnPath/);
+  assert.match(page, /return_to/);
+  assert.match(page, /login|register|forgot|verify/);
+  assert.match(page, /verified/);
+  assert.match(page, /error/);
+  assert.match(page, /reset/);
+  assert.match(screen, /useLanguage/);
+  assert.match(screen, /t\(["']auth\./);
+});
+
+test("auth forms use the member endpoints and Google uses top-level navigation", () => {
+  const screen = read("app/auth/auth.tsx");
+
+  for (const route of ["auth/login", "auth/register", "auth/password-reset/request", "auth/password-reset/confirm"]) {
+    assert.match(screen, new RegExp(route.replace(/[/.]/g, "\\$&")));
+  }
+  for (const field of ["identifier", "email", "username", "phone", "password", "token"]) {
+    assert.match(screen, new RegExp(`\\b${field}\\b`));
+  }
+  assert.match(screen, /href=\{googleHref\}/);
+  assert.match(screen, /\/api\/auth\/google\/start\?return_to=/);
+  assert.match(screen, /window\.location\.assign\(returnTo\)/);
+  assert.doesNotMatch(screen, /fetch\([^)]*google\/start/);
+});
+
+test("Google completion submits the token only to its endpoint and keeps phone private", () => {
+  const completion = read("app/auth/complete/page.tsx");
+  const completionUi = read("app/auth/auth.tsx");
+  const authSources = [read("app/auth/page.tsx"), completionUi, completion].join("\n");
+
+  assert.match(completion, /dynamic\s*=\s*["']force-dynamic["']/);
+  assert.match(completion, /searchParams/);
+  assert.match(completionUi, /auth\/google\/complete/);
+  assert.match(completionUi, /\{\s*token\s*,\s*username\s*,\s*phone\s*\}/);
+  assert.match(completionUi, /phonePrivacy/);
+  assert.match(completionUi, /window\.location\.assign/);
+  assert.doesNotMatch(authSources, /localStorage/);
+  assert.doesNotMatch(authSources, /ChatGPT/);
+});
