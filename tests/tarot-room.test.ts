@@ -1,14 +1,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import type { ReadingPayload } from "../lib/tarot-interpretation";
 import { messageFor } from "../lib/i18n";
 import { shuffleDeck } from "../lib/tarot";
 import { spreadCardPosition } from "../lib/room-motion";
 import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, remainingFanCardNumbers, roomPositionLabels } from "../lib/tarot-room";
 
 const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
-const roomModule = await import("../app/room/room");
+const readingPanelSource = readFileSync(new URL("../components/reading/reading-panel.tsx", import.meta.url), "utf8");
 
 test("legacy spread labels hydrate without changing their order", () => {
   const result = hydrateLegacySpread(["Persona", "Obstacle", "Solution"]);
@@ -27,60 +26,38 @@ test("consuming any fan card uses its server position order and prevents duplica
   assert.equal(consumeDrawPlan(plan, [first!.card], 9, 2), null);
 });
 
-test("Room reflection surface exposes interpretation and dynamic session data", () => {
+test("Room reflection surface exposes normalized personal reading and follow-up boundary", () => {
   assert.match(roomSource, /api\(['"]tarot\/reading/);
+  assert.match(roomSource, /api\(['"]tarot\/follow-up/);
   assert.match(roomSource, /sessionId/);
-  assert.match(roomSource, /reading\.overview/);
-  assert.match(roomSource, /reading\.cards/);
-  assert.match(roomSource, /reading\.connections/);
-  assert.match(roomSource, /reading\.guidance/);
-  assert.match(roomSource, /reading\.closing/);
-  assert.match(roomSource, /reading\.disclaimer/);
-  assert.doesNotMatch(roomSource, /local-fallback|card_readings|reading\.opening|reading\.synthesis|reading\.advice/);
+  for (const field of ["directAnswer", "personalInsights", "reflectionPrompts", "nextSteps", "cardEvidence"]) {
+    assert.match(`${roomSource}\n${readingPanelSource}`, new RegExp(`reading\\.${field}`));
+  }
+  assert.match(roomSource, /ReadingPanel/);
+  assert.doesNotMatch(roomSource, /InterpretationTab|room-interpretation-tabs|interpretationOverviewTab|reading\.overview/);
   assert.match(roomSource, /cardId/);
 });
 
-test("reading cards use trusted localized names and always expose orientation", () => {
-  const identity = (roomModule as unknown as {
-    roomReadingCardIdentity?: (
-      card: ReadingPayload["cards"][number],
-      locale: "en" | "vi",
-      translate: (key: string) => string,
-    ) => { cardName: string; orientationLabel: string };
-  }).roomReadingCardIdentity;
-  assert.equal(typeof identity, "function");
-
-  const card = {
-    reading_card_id: "reading-card-1",
-    position_key: "persona",
-    position: { id: "position-1", key: "persona", order: 0, name: "Persona", meaning: "", prompt: "" },
-    card: { id: "card-1", nameEn: "The Star", nameVi: "Ngôi Sao", arcana: "major", suit: null, keywords: [] },
-    orientation: "upright" as const,
-    interpretation: "Interpretation",
-    reflection_prompt: "Reflection",
-  };
-
-  assert.deepEqual(identity!(card, "en", (key) => messageFor("en", key)), {
-    cardName: "The Star",
-    orientationLabel: "UPRIGHT",
-  });
-  assert.deepEqual(identity!({ ...card, orientation: "reversed" }, "vi", (key) => messageFor("vi", key)), {
-    cardName: "Ngôi Sao",
-    orientationLabel: "ĐẢO CHIỀU",
-  });
+test("Room mounts one editorial reading panel and keeps the question editor separate", () => {
+  assert.match(roomSource, /<ReadingPanel[\s\S]*onClose=/);
+  assert.match(roomSource, /artworkByReadingCardId/);
+  assert.match(roomSource, /saveJournal/);
+  assert.match(roomSource, /onFollowUpSubmit/);
+  assert.match(roomSource, /ReflectionPanel/);
+  assert.match(roomSource, /room-reading-panel-retry/);
+  assert.match(roomSource, /interpretationRetryAction/);
+  assert.doesNotMatch(roomSource, /reading\.cards|reading\.connections|reading\.guidance|reading\.closing|reading\.disclaimer/);
 });
 
-test("overview presents canonical reading sections in the approved order", () => {
-  const overviewPanel = roomSource.slice(roomSource.indexOf("tab==='overview'"), roomSource.indexOf("tab==='cards'"));
+test("Room exposes the canonical reading hierarchy in source order", () => {
   const orderedMarkers = [
-    "reading.overview",
-    "readings.map",
-    "reading.connections",
-    "reading.guidance",
-    "reading.closing",
-    "reading.disclaimer",
+    "reading.directAnswer",
+    "reading.personalInsights",
+    "reading.reflectionPrompts",
+    "reading.nextSteps",
+    "reading.cardEvidence",
   ];
-  const offsets = orderedMarkers.map((marker) => overviewPanel.indexOf(marker));
+  const offsets = orderedMarkers.map((marker) => readingPanelSource.indexOf(marker));
   assert.ok(offsets.every((offset) => offset >= 0), `missing canonical section: ${JSON.stringify(offsets)}`);
   assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right));
 });
@@ -124,8 +101,8 @@ test("room shuffles a full fan and submits only the customer's selected cards", 
 test("completed readings expose the reference CTA and interpretation panel", () => {
   assert.match(roomSource, /readingComplete/);
   assert.match(roomSource, /room-reading-actions/);
-  assert.match(roomSource, /interpretationOverviewTab/);
-  assert.match(roomSource, /interpretationPositionDetails/);
+  assert.match(roomSource, /<ReadingPanel/);
+  assert.doesNotMatch(roomSource, /room-interpretation-tabs/);
   assert.match(roomSource, /redrawReading/);
 });
 
@@ -134,4 +111,8 @@ test("stale room requests cannot commit after a newer reading starts", () => {
   assert.equal(isRoomRequestCurrent({ epoch: 4, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
   assert.equal(isRoomRequestCurrent({ epoch: 4, id: "new-reading" }, { epoch: 4, id: "new-reading" }), true);
   assert.match(roomSource, /isRoomRequestCurrent/);
+  assert.match(roomSource, /followUpRequest/);
+  assert.match(roomSource, /requestSessionId/);
+  assert.match(roomSource, /readingEpoch\.current/);
+  assert.match(roomSource, /follow_up_question/);
 });

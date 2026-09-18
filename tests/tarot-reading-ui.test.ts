@@ -7,6 +7,8 @@ const panel = readFileSync(new URL("../components/reading/reading-panel.tsx", im
 const header = readFileSync(new URL("../components/reading/reading-header.tsx", import.meta.url), "utf8");
 const evidence = readFileSync(new URL("../components/reading/tarot-evidence.tsx", import.meta.url), "utf8");
 const followUp = readFileSync(new URL("../components/reading/follow-up-reading.tsx", import.meta.url), "utf8");
+const room = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
+const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () => {
   for (const component of ["ReadingHeader", "DirectAnswer", "PersonalInsights", "ReflectionPrompts", "NextSteps", "TarotEvidence", "FollowUpReading"]) {
@@ -71,4 +73,14 @@ test("reading components expose the accessible 44px interaction and celestial la
   assert.match(components, /midnight|navy/);
   assert.match(components, /antique-gold|gold/);
   assert.match(components, /prefers-reduced-motion|motion-reduce/);
+});
+
+test("Room reading surface is a single responsive editorial column", () => {
+  assert.match(room, /ReadingPanel/);
+  assert.doesNotMatch(room, /InterpretationTab|room-interpretation-tabs|interpretationOverviewTab/);
+  assert.match(css, /\.reading-panel/);
+  assert.match(css, /@media\(max-width:768px\)/);
+  assert.match(css, /safe-area-inset/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /reading-card-evidence/);
 });
