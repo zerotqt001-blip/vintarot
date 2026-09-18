@@ -100,6 +100,8 @@ Latest header-safe NaTarot deployment (2026-09-19): commit `efda23805116afcc53c2
 
 Room guidebook behavior correction (2026-09-19): the Room guide panel now starts closed, selecting or flipping a drawn card no longer opens it automatically, and the BookOpen toolbar control remains the in-room toggle. The focused Room/UI tests pass 32/32, `npx tsc --noEmit`, `npm run build`, `git diff --check`, and local browser smoke checks pass; this source fix is committed as `04b2df3` and pushed to `codex/tooling-and-version-history`. No public deployment was performed for this small interaction change.
 
+Room guidebook production deployment (2026-09-19): source HEAD `2b2ab2a66e279594d1905993cf7d08d09da8a47` was rebuilt, secret-scanned, and deployed atomically to the existing VPS release at `/opt/natarot`; the previous tree is retained at `/opt/natarot.previous-2b2ab2a66e279594d1905993cf7d08d09da8a47` for rollback. The service remains active and the public HTTPS smoke checks returned `200` for `/`, `/room?ritual=1`, and `/api/tarot/catalog?locale=vi`. A live browser check confirmed the Room guide is closed initially, selecting a fan card keeps it closed, and the BookOpen/Sách hướng dẫn control opens it. The VPS release reuses the existing dependency tree through a symlink to avoid duplicating `node_modules`; no database or `/etc/natarot.env` changes were made.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
