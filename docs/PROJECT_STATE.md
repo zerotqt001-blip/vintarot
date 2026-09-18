@@ -116,6 +116,8 @@ NaTarot auth experience redesign (2026-09-19, branch `codex/auth-current-ui`): L
 
 Verification for this redesign: the full test glob passes `301/301`, `npx tsc --noEmit` passes, the production build completes, and targeted ESLint on the changed auth/i18n/test files reports no errors (one existing redirect warning remains). Local browser QA covered login, register, per-field validation messages, forgot password and Google completion at desktop and 390px mobile; the viewport override was reset afterward. Repository-wide `npm run lint` remains red on the pre-existing generated skill/runtime and legacy anchor-rule baseline outside this change.
 
+Production deployment for the auth redesign (2026-09-19): commit `bc26183` was packaged without `.env` files, databases, logs or provider credentials, uploaded to the BKNS VPS, and activated at `/opt/natarot`. The previous release is retained at `/opt/natarot.previous.auth-redesign-bc26183-20260918224715`; `natarot.service` is active and the deployed `package-lock.json` hash matches the verified local lockfile. Public HTTPS smoke checks returned `200` for `/`, `/auth?mode=login` and `/auth?mode=register`, `303` for Google OAuth start with the configured `natarot.com` callback, and `401` for unauthenticated `/api/auth/me`. Login and registration auth markers were present in the live HTML.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
