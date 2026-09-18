@@ -42,7 +42,7 @@ export interface MemberRegistration {
 }
 
 const emailValue = z.string().trim().email().max(254);
-const usernameValue = z.string().trim().regex(/^[a-z0-9_]{4,24}$/i);
+const usernameValue = z.string().trim().regex(/^[a-z0-9_]{3,24}$/i);
 const phoneValue = z.string().trim().regex(/^\+\d{8,15}$/);
 const passwordValue = z.string().min(10).max(128);
 

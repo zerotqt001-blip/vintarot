@@ -23,8 +23,9 @@ import {
 test("normalizes login identifiers and phone numbers", () => {
   assert.equal(normalizeEmail("  Reader@Example.TEST "), "reader@example.test");
   assert.equal(normalizeUsername("  Moon_Rider "), "moon_rider");
+  assert.equal(normalizeUsername("abc"), "abc");
   assert.equal(normalizePhone("+84 912-345-678"), "+84912345678");
-  assert.throws(() => normalizeUsername("two"));
+  assert.throws(() => normalizeUsername("ab"));
   assert.throws(() => normalizeUsername("bad-name"));
   assert.throws(() => normalizePhone("0912345678"));
 });
@@ -74,6 +75,12 @@ test("cookies are parsed literally and session cookie builders set safe attribut
 });
 
 test("auth schemas accept their exact payload shapes and reject missing fields", () => {
+  assert.equal(registrationSchema.parse({
+    email: "abc@example.test",
+    username: "abc",
+    phone: "+84912345678",
+    password: "correct horse battery staple",
+  }).username, "abc");
   assert.equal(registrationSchema.parse({
     email: "Reader@Example.TEST",
     username: "Moon_Rider",
