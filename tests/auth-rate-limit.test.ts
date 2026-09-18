@@ -25,3 +25,29 @@ test("rate limiter clears its retained attempts and caps hostile key growth", ()
   limiter.clear();
   assert.equal(limiter.allow("login:one:127.0.0.1"), true);
 });
+
+test("rate limiter prunes only the current key on its normal request path", () => {
+  const limiter = createAuthRateLimiter({
+    now: () => 1_700_000_000_000,
+    windowMs: 60_000,
+    maxAttempts: 2,
+    maxKeys: 100,
+  });
+  for (let index = 0; index < 100; index += 1) {
+    assert.equal(limiter.allow(`login:${index}:127.0.0.1`), true);
+  }
+
+  const originalFilter = Array.prototype.filter;
+  let filterCalls = 0;
+  Array.prototype.filter = function (...args: Parameters<typeof originalFilter>) {
+    filterCalls += 1;
+    return originalFilter.apply(this, args);
+  };
+  try {
+    assert.equal(limiter.allow("login:0:127.0.0.1"), true);
+  } finally {
+    Array.prototype.filter = originalFilter;
+  }
+
+  assert.equal(filterCalls, 1);
+});
