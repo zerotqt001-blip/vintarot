@@ -1,0 +1,202 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import type { TarotAIProvider } from "../lib/ai/provider";
+import { TarotAIError } from "../lib/ai/provider";
+import type { TarotProviderOutput } from "../lib/ai/types";
+import type {
+  CardMeaningRow,
+  ReadingCardWithDetails,
+  ReadingSessionRow,
+  ReadingTemplateWithPositions,
+  TarotRepository,
+} from "../lib/tarot-repository";
+import { generateTarotReading, TarotReadingServiceError } from "../lib/tarot-reading-service";
+
+const session: ReadingSessionRow = {
+  id: "service-session",
+  userId: "user-service",
+  guestId: null,
+  question: "What is the next useful step in my work?",
+  optionalContext: "Keep this reflective and practical.",
+  categoryId: "category-business",
+  spreadTemplateId: "spread-business-meeting",
+  spreadType: "row-3",
+  cardCount: 3,
+  locale: "en",
+  status: "drawn",
+};
+
+const template: ReadingTemplateWithPositions = {
+  category: { id: session.categoryId, slug: "business", name: "Business", description: "Work and grounded decisions." },
+  template: { id: session.spreadTemplateId, categoryId: session.categoryId, slug: "the-big-meeting", name: "The Big Meeting", description: "A practical three-card spread.", cardCount: 3, spreadType: "row-3" },
+  positions: ["strength", "needs", "bridge"].map((key, order) => ({ id: `position-${key}`, key, order, name: key, meaning: `Meaning ${key}`, prompt: `Prompt ${key}` })),
+};
+
+const cardNames = [
+  ["wands-eight", "Eight of Wands", "Eight of Wands", "Wands"],
+  ["pentacles-ten", "Ten of Pentacles", "Ten of Pentacles", "Pentacles"],
+  ["major-temperance", "Temperance", "Temperance", "Major Arcana"],
+] as const;
+
+function cards(): ReadingCardWithDetails[] {
+  return cardNames.map(([cardId, nameEn, nameVi, suit], index) => ({
+    id: `service-card-${index}`,
+    sessionId: session.id,
+    cardId,
+    spreadPositionId: template.positions[index].id,
+    positionKey: template.positions[index].key,
+    positionOrder: index,
+    positionLabel: template.positions[index].name,
+    orientation: index === 1 ? "reversed" : "upright",
+    cardOrder: index,
+    deckId: "deck-rider-waite-smith",
+    cardNumber: index,
+    slug: nameEn.toLowerCase().replaceAll(" ", "-"),
+    nameEn,
+    nameVi,
+    arcana: suit === "Major Arcana" ? "major" : "minor",
+    suit,
+    imageUrl: "/cards/service.webp",
+    positionPrompt: template.positions[index].prompt,
+    positionDescription: template.positions[index].meaning,
+  }));
+}
+
+function meaning(cardId: string, orientation: "upright" | "reversed"): CardMeaningRow {
+  return {
+    id: `${cardId}-${orientation}`,
+    cardId,
+    locale: "en",
+    orientation,
+    summary: "legacy summary",
+    energy: "legacy energy",
+    actions: "legacy actions",
+    relationships: "legacy relationships",
+    work: "legacy work",
+    creativity: "legacy creativity",
+    home: "legacy home",
+    symbolism: "legacy symbolism",
+    journalQuestions: [],
+    keywords: "legacy",
+  };
+}
+
+function output(inputCards: ReadingCardWithDetails[]): TarotProviderOutput {
+  return {
+    overview: "A spread-level overview.",
+    cards: inputCards.map((card) => ({ reading_card_id: card.id, position_key: card.positionKey, interpretation: "A grounded interpretation.", reflection_prompt: "What would you like to notice?" })),
+    connections: "The cards connect through a practical progression.",
+    guidance: "Choose one small experiment.",
+    closing: "Let the next step teach you.",
+  };
+}
+
+function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
+  const storedCards = cards();
+  return {
+    listCatalog: async () => ({ locale: "en", categories: [] }),
+    getActiveDeck: async () => null,
+    getActiveTemplate: async () => null,
+    getReadingTemplate: async () => template,
+    listCards: async () => [],
+    createReadingSession: async () => session.id,
+    createReadingCards: async () => undefined,
+    getSessionForOwner: async () => ({ session, cards: storedCards }),
+    getMeaning: async () => null,
+    getMeaningPair: async (cardId) => ({ upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") }),
+    saveReading: async () => "saved-reading",
+    ...overrides,
+  };
+}
+
+function provider(overrides: Partial<TarotAIProvider> = {}): TarotAIProvider {
+  const base: TarotAIProvider = {
+    id: "openai",
+    model: "test-model",
+    generateReading: async (input) => {
+      const value = output(input.cards.map((card) => ({
+        id: card.readingCardId,
+        cardId: card.card.id,
+        sessionId: session.id,
+        spreadPositionId: card.position.id,
+        positionKey: card.position.key,
+        positionOrder: card.position.order,
+        positionLabel: card.position.name,
+        orientation: card.orientation,
+        cardOrder: card.position.order,
+        deckId: "deck",
+        cardNumber: card.position.order,
+        slug: card.card.id,
+        nameEn: card.card.nameEn,
+        nameVi: card.card.nameVi,
+        arcana: card.card.arcana,
+        suit: card.card.suit || "Major Arcana",
+        imageUrl: "/cards/test.webp",
+        positionPrompt: card.position.prompt,
+        positionDescription: card.position.meaning,
+      })));
+      const { parseReadingPayload } = await import("../lib/tarot-interpretation");
+      return parseReadingPayload(value, input.cards, input.locale);
+    },
+    ...overrides,
+  };
+  return base;
+}
+
+test("orchestrates one owner-checked V5 context, provider call, and persistence", async () => {
+  let providerCalls = 0;
+  let saved: Parameters<TarotRepository["saveReading"]>[0] | undefined;
+  const result = await generateTarotReading({
+    repository: repository({ saveReading: async (input) => { saved = input; return input.id; } }),
+    owner: { kind: "user", userId: "user-service" },
+    sessionId: session.id,
+    locale: "en",
+    provider: provider({ generateReading: async (input) => { providerCalls += 1; return provider().generateReading(input); } }),
+  });
+
+  assert.equal(providerCalls, 1);
+  assert.equal(result.source, "ai");
+  assert.equal(result.provider, "openai");
+  assert.equal(result.modelName, "openai:test-model");
+  assert.equal(result.promptVersion, "tarot-reading-v2");
+  assert.equal(result.reading.cards.length, 3);
+  assert.equal(saved?.reading.overview, result.reading.overview);
+  assert.equal(saved?.reading.connections, result.reading.connections);
+  assert.equal(saved?.modelName, "openai:test-model");
+});
+
+test("rejects an unknown or incomplete owned session before invoking the provider", async () => {
+  let calls = 0;
+  const countingProvider = provider({ generateReading: async () => { calls += 1; throw new Error("should not run"); } });
+  await assert.rejects(
+    generateTarotReading({ repository: repository({ getSessionForOwner: async () => null }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "not_found",
+  );
+  await assert.rejects(
+    generateTarotReading({ repository: repository({ getSessionForOwner: async () => ({ session, cards: cards().slice(0, 2) }) }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "incomplete",
+  );
+  assert.equal(calls, 0);
+});
+
+test("does not replace a selected provider failure with a local template", async () => {
+  const providerError = new TarotAIError("upstream", "Selected provider failed safely.", { retryable: true });
+  await assert.rejects(
+    generateTarotReading({ repository: repository(), ownerId: "user-service", sessionId: session.id, locale: "en", provider: provider({ generateReading: async () => { throw providerError; } }) }),
+    (error) => error === providerError,
+  );
+});
+
+test("fails before provider work when a historical template or meaning pair is missing", async () => {
+  let calls = 0;
+  const countingProvider = provider({ generateReading: async () => { calls += 1; throw new Error("should not run"); } });
+  await assert.rejects(
+    generateTarotReading({ repository: repository({ getReadingTemplate: async () => null }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "incomplete",
+  );
+  await assert.rejects(
+    generateTarotReading({ repository: repository({ getMeaningPair: async () => null }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "incomplete",
+  );
+  assert.equal(calls, 0);
+});

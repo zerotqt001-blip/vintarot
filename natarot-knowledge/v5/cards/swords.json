@@ -1,0 +1,1447 @@
+{
+  "version": "3.0",
+  "cards": [
+    {
+      "id": "ace-of-swords",
+      "name_en": "Ace of Swords",
+      "name_vi": "Khởi đầu Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Ace",
+      "element": "Khí",
+      "core": {
+        "archetype": "seed, opening, concentrated potential expressed through thought, truth, communication, conflict",
+        "rank_theme": "seed, opening, concentrated potential",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by seed, opening, concentrated potential"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the ace theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ace of Swords centers on clarity, truth, decisive insight, a clean mental beginning. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: truth creates possibility but may require a difficult cut.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the ace theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of clarity, truth, decisive insight, a clean mental beginning. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of seed, opening, concentrated potential expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate seed, opening, concentrated potential expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody seed, opening, concentrated potential expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how clarity, truth, decisive insight, a clean mental beginning affects both emotional desire and practical readiness to repair. Truth creates possibility but may require a difficult cut.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ace of Swords brings clarity, truth, decisive insight, a clean mental beginning into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: truth creates possibility but may require a difficult cut.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use seed, opening, concentrated potential expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within seed, opening, concentrated potential expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how seed, opening, concentrated potential expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of seed, opening, concentrated potential expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "clarity, truth, decisive insight, a clean mental beginning",
+        "developmental_logic": "a seed or opening: potential exists, but it still needs embodiment",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "truth creates possibility but may require a difficult cut"
+      }
+    },
+    {
+      "id": "two-of-swords",
+      "name_en": "Two of Swords",
+      "name_vi": "Hai Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Two",
+      "element": "Khí",
+      "core": {
+        "archetype": "duality, choice, balance, relationship expressed through thought, truth, communication, conflict",
+        "rank_theme": "duality, choice, balance, relationship",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by duality, choice, balance, relationship"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the two theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Two of Swords centers on stalemate, guarded choice, suspended decision. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: not choosing is itself shaping the situation.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the two theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of stalemate, guarded choice, suspended decision. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of duality, choice, balance, relationship expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate duality, choice, balance, relationship expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody duality, choice, balance, relationship expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how stalemate, guarded choice, suspended decision affects both emotional desire and practical readiness to repair. Not choosing is itself shaping the situation.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Two of Swords brings stalemate, guarded choice, suspended decision into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: not choosing is itself shaping the situation.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use duality, choice, balance, relationship expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within duality, choice, balance, relationship expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how duality, choice, balance, relationship expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of duality, choice, balance, relationship expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "stalemate, guarded choice, suspended decision",
+        "developmental_logic": "a polarity or balancing act: two forces must be held, compared or related",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "not choosing is itself shaping the situation"
+      }
+    },
+    {
+      "id": "three-of-swords",
+      "name_en": "Three of Swords",
+      "name_vi": "Ba Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Three",
+      "element": "Khí",
+      "core": {
+        "archetype": "painful truth, grief, separation, emotional wound",
+        "rank_theme": "development, expression, collaboration",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "painful truth, grief, separation, emotional wound"
+      },
+      "reversed": {
+        "baseline": "healing process, suppressed grief, lingering hurt",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Three of Swords centers on heartbreak, painful truth, separation, grief. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: pain clarifies what matters, but the card alone does not specify betrayal.",
+          "reversed": "In love, reversed may show healing process, suppressed grief, lingering hurt. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of heartbreak, painful truth, separation, grief. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of painful truth, grief, separation, emotional wound."
+        },
+        "intentions": {
+          "upright": "As intentions, translate painful truth, grief, separation, emotional wound into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody painful truth, grief, separation, emotional wound. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how heartbreak, painful truth, separation, grief affects both emotional desire and practical readiness to repair. Pain clarifies what matters, but the card alone does not specify betrayal.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Three of Swords brings heartbreak, painful truth, separation, grief into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: pain clarifies what matters, but the card alone does not specify betrayal.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use painful truth, grief, separation, emotional wound to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within painful truth, grief, separation, emotional wound is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how painful truth, grief, separation, emotional wound becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of painful truth, grief, separation, emotional wound; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "heartbreak, painful truth, separation, grief",
+        "developmental_logic": "development through expression, collaboration or an emerging result",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "pain clarifies what matters, but the card alone does not specify betrayal"
+      }
+    },
+    {
+      "id": "four-of-swords",
+      "name_en": "Four of Swords",
+      "name_vi": "Bốn Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Four",
+      "element": "Khí",
+      "core": {
+        "archetype": "structure, stability, consolidation expressed through thought, truth, communication, conflict",
+        "rank_theme": "structure, stability, consolidation",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by structure, stability, consolidation"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the four theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Four of Swords centers on rest, retreat, mental recovery, deliberate pause. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: pause is productive when it restores capacity rather than avoids reality.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the four theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of rest, retreat, mental recovery, deliberate pause. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of structure, stability, consolidation expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate structure, stability, consolidation expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody structure, stability, consolidation expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how rest, retreat, mental recovery, deliberate pause affects both emotional desire and practical readiness to repair. Pause is productive when it restores capacity rather than avoids reality.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Four of Swords brings rest, retreat, mental recovery, deliberate pause into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: pause is productive when it restores capacity rather than avoids reality.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use structure, stability, consolidation expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within structure, stability, consolidation expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how structure, stability, consolidation expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of structure, stability, consolidation expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "rest, retreat, mental recovery, deliberate pause",
+        "developmental_logic": "consolidation: stability can become either a foundation or a holding pattern",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "pause is productive when it restores capacity rather than avoids reality"
+      }
+    },
+    {
+      "id": "five-of-swords",
+      "name_en": "Five of Swords",
+      "name_vi": "Năm Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Five",
+      "element": "Khí",
+      "core": {
+        "archetype": "disruption, friction, adaptation expressed through thought, truth, communication, conflict",
+        "rank_theme": "disruption, friction, adaptation",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by disruption, friction, adaptation"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the five theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Five of Swords centers on conflict, hollow victory, power struggle, damaging tactics. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: winning can cost more than the issue is worth.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the five theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of conflict, hollow victory, power struggle, damaging tactics. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of disruption, friction, adaptation expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate disruption, friction, adaptation expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody disruption, friction, adaptation expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how conflict, hollow victory, power struggle, damaging tactics affects both emotional desire and practical readiness to repair. Winning can cost more than the issue is worth.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Five of Swords brings conflict, hollow victory, power struggle, damaging tactics into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: winning can cost more than the issue is worth.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use disruption, friction, adaptation expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within disruption, friction, adaptation expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how disruption, friction, adaptation expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of disruption, friction, adaptation expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "conflict, hollow victory, power struggle, damaging tactics",
+        "developmental_logic": "friction and destabilization that exposes what is not working",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "winning can cost more than the issue is worth"
+      }
+    },
+    {
+      "id": "six-of-swords",
+      "name_en": "Six of Swords",
+      "name_vi": "Sáu Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Six",
+      "element": "Khí",
+      "core": {
+        "archetype": "adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict",
+        "rank_theme": "adjustment, exchange, movement toward harmony",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by adjustment, exchange, movement toward harmony"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the six theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Six of Swords centers on transition away from turbulence, mental relocation, gradual passage. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: movement helps, though emotional processing may lag behind.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the six theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of transition away from turbulence, mental relocation, gradual passage. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how transition away from turbulence, mental relocation, gradual passage affects both emotional desire and practical readiness to repair. Movement helps, though emotional processing may lag behind.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Six of Swords brings transition away from turbulence, mental relocation, gradual passage into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: movement helps, though emotional processing may lag behind.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of adjustment, exchange, movement toward harmony expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "transition away from turbulence, mental relocation, gradual passage",
+        "developmental_logic": "rebalancing, exchange or movement after disruption",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "movement helps, though emotional processing may lag behind"
+      }
+    },
+    {
+      "id": "seven-of-swords",
+      "name_en": "Seven of Swords",
+      "name_vi": "Bảy Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Seven",
+      "element": "Khí",
+      "core": {
+        "archetype": "assessment, challenge, strategy expressed through thought, truth, communication, conflict",
+        "rank_theme": "assessment, challenge, strategy",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by assessment, challenge, strategy"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the seven theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Seven of Swords centers on strategy, discretion, avoidance, acting indirectly. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: privacy and strategy differ from deception; context must decide.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the seven theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of strategy, discretion, avoidance, acting indirectly. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of assessment, challenge, strategy expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate assessment, challenge, strategy expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody assessment, challenge, strategy expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how strategy, discretion, avoidance, acting indirectly affects both emotional desire and practical readiness to repair. Privacy and strategy differ from deception; context must decide.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Seven of Swords brings strategy, discretion, avoidance, acting indirectly into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: privacy and strategy differ from deception; context must decide.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use assessment, challenge, strategy expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within assessment, challenge, strategy expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how assessment, challenge, strategy expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of assessment, challenge, strategy expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "strategy, discretion, avoidance, acting indirectly",
+        "developmental_logic": "assessment under pressure: strategy, conviction and discernment are tested",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "privacy and strategy differ from deception; context must decide"
+      }
+    },
+    {
+      "id": "eight-of-swords",
+      "name_en": "Eight of Swords",
+      "name_vi": "Tám Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Eight",
+      "element": "Khí",
+      "core": {
+        "archetype": "movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict",
+        "rank_theme": "movement, mastery, constraint or acceleration",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by movement, mastery, constraint or acceleration"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the eight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Eight of Swords centers on perceived restriction, self-limiting frame, constrained agency. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: some limits are real, others are maintained by fear or assumptions.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the eight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of perceived restriction, self-limiting frame, constrained agency. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how perceived restriction, self-limiting frame, constrained agency affects both emotional desire and practical readiness to repair. Some limits are real, others are maintained by fear or assumptions.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Eight of Swords brings perceived restriction, self-limiting frame, constrained agency into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: some limits are real, others are maintained by fear or assumptions.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of movement, mastery, constraint or acceleration expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "perceived restriction, self-limiting frame, constrained agency",
+        "developmental_logic": "concentrated movement, repetition, mastery or constraint depending on the suit",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "some limits are real, others are maintained by fear or assumptions"
+      }
+    },
+    {
+      "id": "nine-of-swords",
+      "name_en": "Nine of Swords",
+      "name_vi": "Chín Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Nine",
+      "element": "Khí",
+      "core": {
+        "archetype": "culmination, intensity, near-completion expressed through thought, truth, communication, conflict",
+        "rank_theme": "culmination, intensity, near-completion",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by culmination, intensity, near-completion"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the nine theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Nine of Swords centers on anxiety, rumination, guilt, nighttime mental pressure. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: the mind can intensify suffering beyond what is externally confirmed.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the nine theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of anxiety, rumination, guilt, nighttime mental pressure. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of culmination, intensity, near-completion expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate culmination, intensity, near-completion expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody culmination, intensity, near-completion expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how anxiety, rumination, guilt, nighttime mental pressure affects both emotional desire and practical readiness to repair. The mind can intensify suffering beyond what is externally confirmed.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Nine of Swords brings anxiety, rumination, guilt, nighttime mental pressure into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: the mind can intensify suffering beyond what is externally confirmed.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use culmination, intensity, near-completion expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within culmination, intensity, near-completion expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how culmination, intensity, near-completion expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of culmination, intensity, near-completion expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "anxiety, rumination, guilt, nighttime mental pressure",
+        "developmental_logic": "intensity near culmination: much has developed, but the final threshold matters",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "the mind can intensify suffering beyond what is externally confirmed"
+      }
+    },
+    {
+      "id": "ten-of-swords",
+      "name_en": "Ten of Swords",
+      "name_vi": "Mười Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Ten",
+      "element": "Khí",
+      "core": {
+        "archetype": "painful culmination, ending, mental exhaustion",
+        "rank_theme": "completion, consequence, transition to next cycle",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "painful culmination, ending, mental exhaustion"
+      },
+      "reversed": {
+        "baseline": "recovery, resisting an ending, aftermath",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ten of Swords centers on painful culmination, ending, exhaustion, no further room for the old pattern. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: the lowest point also makes continuation in the same form difficult.",
+          "reversed": "In love, reversed may show recovery, resisting an ending, aftermath. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of painful culmination, ending, exhaustion, no further room for the old pattern. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of painful culmination, ending, mental exhaustion."
+        },
+        "intentions": {
+          "upright": "As intentions, translate painful culmination, ending, mental exhaustion into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody painful culmination, ending, mental exhaustion. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how painful culmination, ending, exhaustion, no further room for the old pattern affects both emotional desire and practical readiness to repair. The lowest point also makes continuation in the same form difficult.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ten of Swords brings painful culmination, ending, exhaustion, no further room for the old pattern into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: the lowest point also makes continuation in the same form difficult.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use painful culmination, ending, mental exhaustion to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within painful culmination, ending, mental exhaustion is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how painful culmination, ending, mental exhaustion becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of painful culmination, ending, mental exhaustion; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "painful culmination, ending, exhaustion, no further room for the old pattern",
+        "developmental_logic": "the full consequence of the suit: completion, saturation and transition",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "the lowest point also makes continuation in the same form difficult"
+      }
+    },
+    {
+      "id": "page-of-swords",
+      "name_en": "Page of Swords",
+      "name_vi": "Tiểu Đồng Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Page",
+      "element": "Khí",
+      "core": {
+        "archetype": "learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict",
+        "rank_theme": "learning, message, curiosity, early embodiment",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by learning, message, curiosity, early embodiment"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the page theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Page of Swords centers on curiosity, vigilance, questions, direct or restless communication. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: information-seeking needs maturity to avoid suspicion or gossip.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the page theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of curiosity, vigilance, questions, direct or restless communication. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how curiosity, vigilance, questions, direct or restless communication affects both emotional desire and practical readiness to repair. Information-seeking needs maturity to avoid suspicion or gossip.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Page of Swords brings curiosity, vigilance, questions, direct or restless communication into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: information-seeking needs maturity to avoid suspicion or gossip.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of learning, message, curiosity, early embodiment expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "curiosity, vigilance, questions, direct or restless communication",
+        "developmental_logic": "early embodiment: curiosity, message, experimentation and immature-but-real potential",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "information-seeking needs maturity to avoid suspicion or gossip"
+      }
+    },
+    {
+      "id": "knight-of-swords",
+      "name_en": "Knight of Swords",
+      "name_vi": "Hiệp Sĩ Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Knight",
+      "element": "Khí",
+      "core": {
+        "archetype": "pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict",
+        "rank_theme": "pursuit, movement, testing the suit through action",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by pursuit, movement, testing the suit through action"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the knight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Knight of Swords centers on speed, argument, decisive pursuit, intellectual force. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: clarity becomes aggression when speed outruns listening.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the knight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of speed, argument, decisive pursuit, intellectual force. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how speed, argument, decisive pursuit, intellectual force affects both emotional desire and practical readiness to repair. Clarity becomes aggression when speed outruns listening.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Knight of Swords brings speed, argument, decisive pursuit, intellectual force into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: clarity becomes aggression when speed outruns listening.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of pursuit, movement, testing the suit through action expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "speed, argument, decisive pursuit, intellectual force",
+        "developmental_logic": "active pursuit: the suit is pushed into motion, sometimes faster than integration",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "clarity becomes aggression when speed outruns listening"
+      }
+    },
+    {
+      "id": "queen-of-swords",
+      "name_en": "Queen of Swords",
+      "name_vi": "Nữ Hoàng Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "Queen",
+      "element": "Khí",
+      "core": {
+        "archetype": "mature inward command of the suit expressed through thought, truth, communication, conflict",
+        "rank_theme": "mature inward command of the suit",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by mature inward command of the suit"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the queen theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Queen of Swords centers on discernment, boundaries, independent judgment, honest perception. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: clarity can be compassionate without becoming cold.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the queen theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of discernment, boundaries, independent judgment, honest perception. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature inward command of the suit expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature inward command of the suit expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature inward command of the suit expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how discernment, boundaries, independent judgment, honest perception affects both emotional desire and practical readiness to repair. Clarity can be compassionate without becoming cold.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Queen of Swords brings discernment, boundaries, independent judgment, honest perception into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: clarity can be compassionate without becoming cold.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature inward command of the suit expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature inward command of the suit expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature inward command of the suit expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature inward command of the suit expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "discernment, boundaries, independent judgment, honest perception",
+        "developmental_logic": "inward mastery: the suit is held, understood and expressed with mature receptivity",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "clarity can be compassionate without becoming cold"
+      }
+    },
+    {
+      "id": "king-of-swords",
+      "name_en": "King of Swords",
+      "name_vi": "Vua Kiếm",
+      "arcana": "minor",
+      "suit": "Swords",
+      "rank": "King",
+      "element": "Khí",
+      "core": {
+        "archetype": "mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict",
+        "rank_theme": "mature outward command and stewardship of the suit",
+        "suit_domain": "thought, truth, communication, conflict"
+      },
+      "upright": {
+        "core_expression": "clarity, decision, analysis shaped by mature outward command and stewardship of the suit"
+      },
+      "reversed": {
+        "baseline": "confusion, harshness, avoidance, internal conflict; the king theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read thought, truth, communication, conflict through reciprocity, communication, behavior and readiness.",
+        "career": "Read thought, truth, communication, conflict through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, King of Swords centers on strategic reason, authority of thought, principled decision. Read it through communication, assumptions, difficult truths, mental distance and boundary-setting. Key nuance: logic is strongest when accountable to facts and ethics.",
+          "reversed": "In love, reversed may show confusion, harshness, avoidance, internal conflict; the king theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of strategic reason, authority of thought, principled decision. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how strategic reason, authority of thought, principled decision affects both emotional desire and practical readiness to repair. Logic is strongest when accountable to facts and ethics.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, King of Swords brings strategic reason, authority of thought, principled decision into analysis, strategy, negotiation, pressure, decisions and conflict. Key nuance: logic is strongest when accountable to facts and ethics.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature outward command and stewardship of the suit expressed through thought, truth, communication, conflict; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "strategic reason, authority of thought, principled decision",
+        "developmental_logic": "outward stewardship: the suit is directed, structured and made consequential",
+        "suit_logic": "thought, truth, language, decision, boundaries and conflict",
+        "shadow_tension": "overthinking, harshness, defensiveness, anxiety or avoidance of truth",
+        "interpretive_nuance": "logic is strongest when accountable to facts and ethics"
+      }
+    }
+  ]
+}

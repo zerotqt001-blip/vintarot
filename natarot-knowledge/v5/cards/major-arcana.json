@@ -1,0 +1,2205 @@
+{
+  "version": "3.0",
+  "cards": [
+    {
+      "id": "the-fool",
+      "name_en": "The Fool",
+      "name_vi": "Kẻ Khờ",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "beginnings, openness, leap into the unknown",
+        "central_tension": "How to embody beginnings, openness, leap into the unknown without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "naivety, freedom, experimentation"
+      },
+      "reversed": {
+        "baseline": "blocked start, reckless leap, fear of beginning",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on openness and willingness to risk a new relational chapter. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show blocked start, reckless leap, fear of beginning. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Fool can describe an inner experience colored by beginnings, openness, leap into the unknown; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of beginnings, openness, leap into the unknown."
+        },
+        "intentions": {
+          "upright": "As intentions, translate beginnings, openness, leap into the unknown into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody beginnings, openness, leap into the unknown. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether beginnings, openness, leap into the unknown supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on a new path or experiment; assess risk without demanding certainty. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use beginnings, openness, leap into the unknown to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within beginnings, openness, leap into the unknown is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how beginnings, openness, leap into the unknown becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of beginnings, openness, leap into the unknown; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "beginnings, openness, leap into the unknown",
+        "archetypal_love_lens": "openness and willingness to risk a new relational chapter",
+        "archetypal_career_lens": "a new path or experiment; assess risk without demanding certainty",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-magician",
+      "name_en": "The Magician",
+      "name_vi": "Nhà Ảo Thuật",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "agency, skill, manifestation",
+        "central_tension": "How to embody agency, skill, manifestation without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "focused will, resourcefulness, initiative"
+      },
+      "reversed": {
+        "baseline": "misused skill, scattered will, blocked agency",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on active attraction and the ability to communicate/shape connection. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show misused skill, scattered will, blocked agency. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Magician can describe an inner experience colored by agency, skill, manifestation; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of agency, skill, manifestation."
+        },
+        "intentions": {
+          "upright": "As intentions, translate agency, skill, manifestation into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody agency, skill, manifestation. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether agency, skill, manifestation supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on agency, skills and resourceful execution. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use agency, skill, manifestation to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within agency, skill, manifestation is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how agency, skill, manifestation becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of agency, skill, manifestation; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "agency, skill, manifestation",
+        "archetypal_love_lens": "active attraction and the ability to communicate/shape connection",
+        "archetypal_career_lens": "agency, skills and resourceful execution",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-high-priestess",
+      "name_en": "The High Priestess",
+      "name_vi": "Nữ Tư Tế",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "intuition, hidden knowledge, inward knowing",
+        "central_tension": "How to embody intuition, hidden knowledge, inward knowing without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "receptivity, silence, discernment"
+      },
+      "reversed": {
+        "baseline": "ignored intuition, secrecy, disconnection from inner knowing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on private feeling, intuition, receptivity and what remains unspoken. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show ignored intuition, secrecy, disconnection from inner knowing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The High Priestess can describe an inner experience colored by intuition, hidden knowledge, inward knowing; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of intuition, hidden knowledge, inward knowing."
+        },
+        "intentions": {
+          "upright": "As intentions, translate intuition, hidden knowledge, inward knowing into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody intuition, hidden knowledge, inward knowing. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether intuition, hidden knowledge, inward knowing supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on observation, research and trusting informed intuition before acting. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use intuition, hidden knowledge, inward knowing to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within intuition, hidden knowledge, inward knowing is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how intuition, hidden knowledge, inward knowing becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of intuition, hidden knowledge, inward knowing; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "intuition, hidden knowledge, inward knowing",
+        "archetypal_love_lens": "private feeling, intuition, receptivity and what remains unspoken",
+        "archetypal_career_lens": "observation, research and trusting informed intuition before acting",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-empress",
+      "name_en": "The Empress",
+      "name_vi": "Hoàng Hậu",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "nurture, abundance, creation",
+        "central_tension": "How to embody nurture, abundance, creation without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "care, fertility of ideas, embodiment"
+      },
+      "reversed": {
+        "baseline": "overgiving, smothering, creative block, self-neglect",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on nurture, sensuality, receptivity and growth. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show overgiving, smothering, creative block, self-neglect. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Empress can describe an inner experience colored by nurture, abundance, creation; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of nurture, abundance, creation."
+        },
+        "intentions": {
+          "upright": "As intentions, translate nurture, abundance, creation into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody nurture, abundance, creation. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether nurture, abundance, creation supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on creative productivity, support, value creation and sustainable growth. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use nurture, abundance, creation to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within nurture, abundance, creation is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how nurture, abundance, creation becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of nurture, abundance, creation; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "nurture, abundance, creation",
+        "archetypal_love_lens": "nurture, sensuality, receptivity and growth",
+        "archetypal_career_lens": "creative productivity, support, value creation and sustainable growth",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-emperor",
+      "name_en": "The Emperor",
+      "name_vi": "Hoàng Đế",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "structure, authority, boundaries",
+        "central_tension": "How to embody structure, authority, boundaries without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "leadership, order, stability"
+      },
+      "reversed": {
+        "baseline": "rigidity, control, weak boundaries, authority conflict",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on structure, boundaries, commitment style and control. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show rigidity, control, weak boundaries, authority conflict. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Emperor can describe an inner experience colored by structure, authority, boundaries; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of structure, authority, boundaries."
+        },
+        "intentions": {
+          "upright": "As intentions, translate structure, authority, boundaries into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody structure, authority, boundaries. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether structure, authority, boundaries supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on leadership, systems, authority and accountability. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use structure, authority, boundaries to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within structure, authority, boundaries is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how structure, authority, boundaries becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of structure, authority, boundaries; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "structure, authority, boundaries",
+        "archetypal_love_lens": "structure, boundaries, commitment style and control",
+        "archetypal_career_lens": "leadership, systems, authority and accountability",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-hierophant",
+      "name_en": "The Hierophant",
+      "name_vi": "Giáo Hoàng",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "tradition, teaching, shared systems",
+        "central_tension": "How to embody tradition, teaching, shared systems without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "mentorship, convention, commitment"
+      },
+      "reversed": {
+        "baseline": "questioning convention, dogma, nonconformity",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on shared values, commitment conventions and relationship expectations. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show questioning convention, dogma, nonconformity. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Hierophant can describe an inner experience colored by tradition, teaching, shared systems; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of tradition, teaching, shared systems."
+        },
+        "intentions": {
+          "upright": "As intentions, translate tradition, teaching, shared systems into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody tradition, teaching, shared systems. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether tradition, teaching, shared systems supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on institutions, mentorship, standards and established pathways. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use tradition, teaching, shared systems to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within tradition, teaching, shared systems is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how tradition, teaching, shared systems becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of tradition, teaching, shared systems; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "tradition, teaching, shared systems",
+        "archetypal_love_lens": "shared values, commitment conventions and relationship expectations",
+        "archetypal_career_lens": "institutions, mentorship, standards and established pathways",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-lovers",
+      "name_en": "The Lovers",
+      "name_vi": "Tình Nhân",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "alignment, relationship, meaningful choice",
+        "central_tension": "How to embody alignment, relationship, meaningful choice without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "union, values alignment, conscious choice"
+      },
+      "reversed": {
+        "baseline": "misalignment, difficult choice, relational disconnect",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on alignment of values and conscious relational choice. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show misalignment, difficult choice, relational disconnect. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Lovers can describe an inner experience colored by alignment, relationship, meaningful choice; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of alignment, relationship, meaningful choice."
+        },
+        "intentions": {
+          "upright": "As intentions, translate alignment, relationship, meaningful choice into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody alignment, relationship, meaningful choice. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether alignment, relationship, meaningful choice supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on a values-based choice, partnership or alignment between role and self. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use alignment, relationship, meaningful choice to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within alignment, relationship, meaningful choice is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how alignment, relationship, meaningful choice becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of alignment, relationship, meaningful choice; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "alignment, relationship, meaningful choice",
+        "archetypal_love_lens": "alignment of values and conscious relational choice",
+        "archetypal_career_lens": "a values-based choice, partnership or alignment between role and self",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-chariot",
+      "name_en": "The Chariot",
+      "name_vi": "Cỗ Xe",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "direction, will, controlled momentum",
+        "central_tension": "How to embody direction, will, controlled momentum without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "determination, movement, self-command"
+      },
+      "reversed": {
+        "baseline": "loss of direction, force without integration, stalled momentum",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on whether emotion can be translated into a shared direction. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show loss of direction, force without integration, stalled momentum. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Chariot can describe an inner experience colored by direction, will, controlled momentum; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of direction, will, controlled momentum."
+        },
+        "intentions": {
+          "upright": "As intentions, translate direction, will, controlled momentum into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody direction, will, controlled momentum. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether direction, will, controlled momentum supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on focus, momentum and disciplined execution amid competing demands. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use direction, will, controlled momentum to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within direction, will, controlled momentum is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how direction, will, controlled momentum becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of direction, will, controlled momentum; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "direction, will, controlled momentum",
+        "archetypal_love_lens": "whether emotion can be translated into a shared direction",
+        "archetypal_career_lens": "focus, momentum and disciplined execution amid competing demands",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "strength",
+      "name_en": "Strength",
+      "name_vi": "Sức Mạnh",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "courage, compassion, inner regulation",
+        "central_tension": "How to embody courage, compassion, inner regulation without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "gentle confidence, patience, emotional mastery"
+      },
+      "reversed": {
+        "baseline": "self-doubt, depleted courage, force replacing gentleness",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on patient courage, emotional regulation and gentle honesty. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show self-doubt, depleted courage, force replacing gentleness. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Strength can describe an inner experience colored by courage, compassion, inner regulation; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of courage, compassion, inner regulation."
+        },
+        "intentions": {
+          "upright": "As intentions, translate courage, compassion, inner regulation into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody courage, compassion, inner regulation. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether courage, compassion, inner regulation supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on steady confidence and influence without force. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use courage, compassion, inner regulation to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within courage, compassion, inner regulation is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how courage, compassion, inner regulation becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of courage, compassion, inner regulation; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "courage, compassion, inner regulation",
+        "archetypal_love_lens": "patient courage, emotional regulation and gentle honesty",
+        "archetypal_career_lens": "steady confidence and influence without force",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-hermit",
+      "name_en": "The Hermit",
+      "name_vi": "Ẩn Sĩ",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "introspection, solitude, inner guidance",
+        "central_tension": "How to embody introspection, solitude, inner guidance without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "reflection, discernment, purposeful withdrawal"
+      },
+      "reversed": {
+        "baseline": "isolation, avoidance, difficulty hearing inner guidance",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on need for space, introspection and clarity about authentic desire. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show isolation, avoidance, difficulty hearing inner guidance. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Hermit can describe an inner experience colored by introspection, solitude, inner guidance; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of introspection, solitude, inner guidance."
+        },
+        "intentions": {
+          "upright": "As intentions, translate introspection, solitude, inner guidance into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody introspection, solitude, inner guidance. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether introspection, solitude, inner guidance supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on independent reflection, expertise and a purposeful step back. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use introspection, solitude, inner guidance to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within introspection, solitude, inner guidance is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how introspection, solitude, inner guidance becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of introspection, solitude, inner guidance; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "introspection, solitude, inner guidance",
+        "archetypal_love_lens": "need for space, introspection and clarity about authentic desire",
+        "archetypal_career_lens": "independent reflection, expertise and a purposeful step back",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "wheel-of-fortune",
+      "name_en": "Wheel of Fortune",
+      "name_vi": "Bánh Xe Số Phận",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "cycles, change, turning point",
+        "central_tension": "How to embody cycles, change, turning point without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "movement, changing conditions, opportunity"
+      },
+      "reversed": {
+        "baseline": "resistance to change, repeated cycle, poor timing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on changing relational conditions and repeating cycles. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show resistance to change, repeated cycle, poor timing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Wheel of Fortune can describe an inner experience colored by cycles, change, turning point; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of cycles, change, turning point."
+        },
+        "intentions": {
+          "upright": "As intentions, translate cycles, change, turning point into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody cycles, change, turning point. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether cycles, change, turning point supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on timing, external change and a turning point in circumstances. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use cycles, change, turning point to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within cycles, change, turning point is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how cycles, change, turning point becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of cycles, change, turning point; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "cycles, change, turning point",
+        "archetypal_love_lens": "changing relational conditions and repeating cycles",
+        "archetypal_career_lens": "timing, external change and a turning point in circumstances",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "justice",
+      "name_en": "Justice",
+      "name_vi": "Công Lý",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "fairness, truth, accountability",
+        "central_tension": "How to embody fairness, truth, accountability without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "clear consequences, balance, integrity"
+      },
+      "reversed": {
+        "baseline": "avoidance of accountability, imbalance, distorted judgment",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on reciprocity, truth, accountability and explicit agreements. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show avoidance of accountability, imbalance, distorted judgment. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Justice can describe an inner experience colored by fairness, truth, accountability; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of fairness, truth, accountability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate fairness, truth, accountability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody fairness, truth, accountability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether fairness, truth, accountability supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on fair process, consequences, contracts and evidence-based decisions. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use fairness, truth, accountability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within fairness, truth, accountability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how fairness, truth, accountability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of fairness, truth, accountability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "fairness, truth, accountability",
+        "archetypal_love_lens": "reciprocity, truth, accountability and explicit agreements",
+        "archetypal_career_lens": "fair process, consequences, contracts and evidence-based decisions",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-hanged-man",
+      "name_en": "The Hanged Man",
+      "name_vi": "Người Treo Ngược",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "pause, surrender, new perspective",
+        "central_tension": "How to embody pause, surrender, new perspective without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "reframing, voluntary pause, release of control"
+      },
+      "reversed": {
+        "baseline": "stagnation, needless sacrifice, resisting perspective shift",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on pause, changed perspective and surrender of a fixed relational script. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show stagnation, needless sacrifice, resisting perspective shift. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Hanged Man can describe an inner experience colored by pause, surrender, new perspective; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of pause, surrender, new perspective."
+        },
+        "intentions": {
+          "upright": "As intentions, translate pause, surrender, new perspective into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody pause, surrender, new perspective. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether pause, surrender, new perspective supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on strategic pause and reframing before further investment. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use pause, surrender, new perspective to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within pause, surrender, new perspective is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how pause, surrender, new perspective becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of pause, surrender, new perspective; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "pause, surrender, new perspective",
+        "archetypal_love_lens": "pause, changed perspective and surrender of a fixed relational script",
+        "archetypal_career_lens": "strategic pause and reframing before further investment",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "death",
+      "name_en": "Death",
+      "name_vi": "Cái Chết",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "ending, transition, transformation",
+        "central_tension": "How to embody ending, transition, transformation without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "closure, shedding, irreversible change"
+      },
+      "reversed": {
+        "baseline": "resistance to ending, lingering transition, difficulty releasing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on a relationship form or pattern reaching a real ending/transition. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show resistance to ending, lingering transition, difficulty releasing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Death can describe an inner experience colored by ending, transition, transformation; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of ending, transition, transformation."
+        },
+        "intentions": {
+          "upright": "As intentions, translate ending, transition, transformation into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody ending, transition, transformation. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether ending, transition, transformation supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on closure of an old mode and necessary transformation. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use ending, transition, transformation to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within ending, transition, transformation is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how ending, transition, transformation becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of ending, transition, transformation; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "ending, transition, transformation",
+        "archetypal_love_lens": "a relationship form or pattern reaching a real ending/transition",
+        "archetypal_career_lens": "closure of an old mode and necessary transformation",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "temperance",
+      "name_en": "Temperance",
+      "name_vi": "Tiết Chế",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "integration, moderation, healing balance",
+        "central_tension": "How to embody integration, moderation, healing balance without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "patience, blending, sustainable adjustment"
+      },
+      "reversed": {
+        "baseline": "imbalance, excess, poor integration, impatience",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on integration, pacing, repair and learning how differences can coexist. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show imbalance, excess, poor integration, impatience. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Temperance can describe an inner experience colored by integration, moderation, healing balance; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of integration, moderation, healing balance."
+        },
+        "intentions": {
+          "upright": "As intentions, translate integration, moderation, healing balance into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody integration, moderation, healing balance. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether integration, moderation, healing balance supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on sustainable process, coordination and measured adjustment. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use integration, moderation, healing balance to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within integration, moderation, healing balance is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how integration, moderation, healing balance becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of integration, moderation, healing balance; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "integration, moderation, healing balance",
+        "archetypal_love_lens": "integration, pacing, repair and learning how differences can coexist",
+        "archetypal_career_lens": "sustainable process, coordination and measured adjustment",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-devil",
+      "name_en": "The Devil",
+      "name_vi": "Ác Quỷ",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "attachment, compulsion, shadow bargain",
+        "central_tension": "How to embody attachment, compulsion, shadow bargain without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "awareness of binding patterns, desire, material pull"
+      },
+      "reversed": {
+        "baseline": "release from attachment, denial, hidden compulsion, reclaiming agency",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on attachment, desire, dependency, power bargains or compulsive loops. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show release from attachment, denial, hidden compulsion, reclaiming agency. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Devil can describe an inner experience colored by attachment, compulsion, shadow bargain; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of attachment, compulsion, shadow bargain."
+        },
+        "intentions": {
+          "upright": "As intentions, translate attachment, compulsion, shadow bargain into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody attachment, compulsion, shadow bargain. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether attachment, compulsion, shadow bargain supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on golden handcuffs, unhealthy incentives, overattachment to status/material reward. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use attachment, compulsion, shadow bargain to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within attachment, compulsion, shadow bargain is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how attachment, compulsion, shadow bargain becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of attachment, compulsion, shadow bargain; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "attachment, compulsion, shadow bargain",
+        "archetypal_love_lens": "attachment, desire, dependency, power bargains or compulsive loops",
+        "archetypal_career_lens": "golden handcuffs, unhealthy incentives, overattachment to status/material reward",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-tower",
+      "name_en": "The Tower",
+      "name_vi": "Tòa Tháp",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "disruption, revelation, unstable structures",
+        "central_tension": "How to embody disruption, revelation, unstable structures without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "breakthrough, collapse of false stability, sudden truth"
+      },
+      "reversed": {
+        "baseline": "avoided upheaval, internal crisis, delayed restructuring",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on a destabilizing truth or collapse of an unsustainable relational structure. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show avoided upheaval, internal crisis, delayed restructuring. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Tower can describe an inner experience colored by disruption, revelation, unstable structures; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of disruption, revelation, unstable structures."
+        },
+        "intentions": {
+          "upright": "As intentions, translate disruption, revelation, unstable structures into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody disruption, revelation, unstable structures. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether disruption, revelation, unstable structures supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on disruption that exposes structural weakness and forces redesign. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use disruption, revelation, unstable structures to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within disruption, revelation, unstable structures is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how disruption, revelation, unstable structures becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of disruption, revelation, unstable structures; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "disruption, revelation, unstable structures",
+        "archetypal_love_lens": "a destabilizing truth or collapse of an unsustainable relational structure",
+        "archetypal_career_lens": "disruption that exposes structural weakness and forces redesign",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-star",
+      "name_en": "The Star",
+      "name_vi": "Ngôi Sao",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "hope, renewal, authenticity",
+        "central_tension": "How to embody hope, renewal, authenticity without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "healing, openness, restored direction"
+      },
+      "reversed": {
+        "baseline": "discouragement, fragile hope, disconnection from inspiration",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on renewed openness, healing and a more authentic relational horizon. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show discouragement, fragile hope, disconnection from inspiration. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Star can describe an inner experience colored by hope, renewal, authenticity; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of hope, renewal, authenticity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate hope, renewal, authenticity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody hope, renewal, authenticity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether hope, renewal, authenticity supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on restored purpose, long-range hope and authentic direction. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use hope, renewal, authenticity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within hope, renewal, authenticity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how hope, renewal, authenticity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of hope, renewal, authenticity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "hope, renewal, authenticity",
+        "archetypal_love_lens": "renewed openness, healing and a more authentic relational horizon",
+        "archetypal_career_lens": "restored purpose, long-range hope and authentic direction",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-moon",
+      "name_en": "The Moon",
+      "name_vi": "Mặt Trăng",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "uncertainty, imagination, subconscious",
+        "central_tension": "How to embody uncertainty, imagination, subconscious without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "ambiguity, intuition, emotional fog"
+      },
+      "reversed": {
+        "baseline": "fog beginning to clear, denied uncertainty, distorted fear",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on ambiguity, projection, fear and intuition when facts are incomplete. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show fog beginning to clear, denied uncertainty, distorted fear. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Moon can describe an inner experience colored by uncertainty, imagination, subconscious; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of uncertainty, imagination, subconscious."
+        },
+        "intentions": {
+          "upright": "As intentions, translate uncertainty, imagination, subconscious into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody uncertainty, imagination, subconscious. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether uncertainty, imagination, subconscious supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on unclear information, anxiety and the need to verify assumptions. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use uncertainty, imagination, subconscious to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within uncertainty, imagination, subconscious is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how uncertainty, imagination, subconscious becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of uncertainty, imagination, subconscious; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "uncertainty, imagination, subconscious",
+        "archetypal_love_lens": "ambiguity, projection, fear and intuition when facts are incomplete",
+        "archetypal_career_lens": "unclear information, anxiety and the need to verify assumptions",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-sun",
+      "name_en": "The Sun",
+      "name_vi": "Mặt Trời",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "clarity, vitality, joy",
+        "central_tension": "How to embody clarity, vitality, joy without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "confidence, visibility, warmth, success"
+      },
+      "reversed": {
+        "baseline": "clouded joy, delayed clarity, overexposure, diminished vitality",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on openness, warmth, visibility and shared vitality. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show clouded joy, delayed clarity, overexposure, diminished vitality. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The Sun can describe an inner experience colored by clarity, vitality, joy; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of clarity, vitality, joy."
+        },
+        "intentions": {
+          "upright": "As intentions, translate clarity, vitality, joy into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody clarity, vitality, joy. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether clarity, vitality, joy supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on clarity, recognition, confidence and visible progress. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use clarity, vitality, joy to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within clarity, vitality, joy is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how clarity, vitality, joy becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of clarity, vitality, joy; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "clarity, vitality, joy",
+        "archetypal_love_lens": "openness, warmth, visibility and shared vitality",
+        "archetypal_career_lens": "clarity, recognition, confidence and visible progress",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "judgement",
+      "name_en": "Judgement",
+      "name_vi": "Phán Xét",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "awakening, reckoning, calling",
+        "central_tension": "How to embody awakening, reckoning, calling without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "self-review, renewal, answering a call"
+      },
+      "reversed": {
+        "baseline": "self-doubt, avoiding reckoning, difficulty moving on",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on reckoning with the past, forgiveness/accountability and a conscious next chapter. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show self-doubt, avoiding reckoning, difficulty moving on. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, Judgement can describe an inner experience colored by awakening, reckoning, calling; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of awakening, reckoning, calling."
+        },
+        "intentions": {
+          "upright": "As intentions, translate awakening, reckoning, calling into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody awakening, reckoning, calling. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether awakening, reckoning, calling supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on review, calling and a decision informed by lessons already learned. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use awakening, reckoning, calling to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within awakening, reckoning, calling is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how awakening, reckoning, calling becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of awakening, reckoning, calling; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "awakening, reckoning, calling",
+        "archetypal_love_lens": "reckoning with the past, forgiveness/accountability and a conscious next chapter",
+        "archetypal_career_lens": "review, calling and a decision informed by lessons already learned",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    },
+    {
+      "id": "the-world",
+      "name_en": "The World",
+      "name_vi": "Thế Giới",
+      "arcana": "major",
+      "suit": null,
+      "rank": null,
+      "core": {
+        "archetype": "completion, integration, wholeness",
+        "central_tension": "How to embody completion, integration, wholeness without falling into its shadow."
+      },
+      "upright": {
+        "core_expression": "closure, achievement, full-cycle integration"
+      },
+      "reversed": {
+        "baseline": "unfinished business, delayed completion, incomplete integration",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Translate the archetype into relationship dynamics, not a yes/no verdict.",
+        "career": "Translate into role, agency, environment, trade-offs and next move.",
+        "future": "Treat as conditional trajectory."
+      },
+      "avoid_overinterpretation": [
+        "Do not use this card alone as proof of a specific external event or another person's private thoughts."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, focus on completion, integration and whether a cycle can close maturely. Keep the reading relational and behavioral rather than fatalistic.",
+          "reversed": "In love, reversed may show unfinished business, delayed completion, incomplete integration. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, The World can describe an inner experience colored by completion, integration, wholeness; it does not prove what another person privately thinks.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of completion, integration, wholeness."
+        },
+        "intentions": {
+          "upright": "As intentions, translate completion, integration, wholeness into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody completion, integration, wholeness. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test whether completion, integration, wholeness supports both desire and readiness to repair the underlying pattern.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, focus on completion, mastery and transition after a full cycle. Treat it as a major theme, not a guaranteed external event.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use completion, integration, wholeness to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within completion, integration, wholeness is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how completion, integration, wholeness becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of completion, integration, wholeness; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "completion, integration, wholeness",
+        "archetypal_love_lens": "completion, integration and whether a cycle can close maturely",
+        "archetypal_career_lens": "completion, mastery and transition after a full cycle",
+        "interpretive_nuance": "Major Arcana increases thematic weight, but does not override the spread position or prove a fated event."
+      }
+    }
+  ]
+}

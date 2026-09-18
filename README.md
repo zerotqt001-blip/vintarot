@@ -120,6 +120,24 @@ When using the Sites plugin, follow its skill instructions for installation, bui
 
 The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
 
+## AI Tarot readings
+
+The Room sends completed spreads to the server-only `POST /api/tarot/reading` route. The older `POST /api/tarot/interpret` path remains a compatibility alias. The server validates the stored session, retrieves only the drawn cards and their positions, assembles the selected Knowledge Base V5.0 context, calls the explicitly selected provider, validates the structured reading, and persists provider metadata. It does not expose provider secrets, send the full knowledge base, or silently substitute the old local template when a provider is unavailable.
+
+Configure only the provider you intend to use in the server/Cloudflare environment:
+
+```text
+TAROT_AI_PROVIDER=openai|gemini|deepseek
+OPENAI_API_KEY=server-only-secret
+OPENAI_TAROT_MODEL=your-supported-model
+GEMINI_API_KEY=server-only-secret
+GEMINI_TAROT_MODEL=your-supported-model
+DEEPSEEK_API_KEY=server-only-secret
+DEEPSEEK_TAROT_MODEL=your-supported-model
+```
+
+The selected provider must have both its API key and model configured. Never place these values in client code, browser storage, committed files, or the public response. Without a configured provider, the Room keeps the spread and shows a safe retry/unavailable state; it does not claim that a local fallback is an AI reading.
+
 ## Learn More
 
 - [vinext Documentation](https://github.com/cloudflare/vinext)

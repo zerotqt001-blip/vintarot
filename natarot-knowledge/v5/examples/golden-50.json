@@ -1,0 +1,1156 @@
+{
+  "version": "4.0",
+  "note": "Evaluation/few-shot candidates. Use selectively; never send all 50 in a prompt.",
+  "cases": [
+    {
+      "id": "G001",
+      "language": "vi",
+      "domain": "love",
+      "question": "Mối quan hệ này đang thực sự vận hành như thế nào?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Two of Cups upright",
+        "Two of Swords upright",
+        "Knight of Wands reversed"
+      ],
+      "expected_thesis": "connection exists but movement/consistency is constrained",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G002",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Khả năng kết nối lại đang bị cản bởi điều gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Six of Cups upright",
+        "Justice upright",
+        "The Hanged Man upright"
+      ],
+      "expected_thesis": "past attachment meets accountability and pause; repair requires review, not nostalgia",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G003",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tại sao công việc ổn mà tôi vẫn thấy không ổn?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "King of Pentacles upright",
+        "Four of Cups upright",
+        "The Hermit upright"
+      ],
+      "expected_thesis": "external stability coexists with disengagement and need for inward reassessment",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G004",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Điều gì quan trọng nhất trước khi tôi chọn hướng mới?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Wands upright",
+        "Seven of Cups upright",
+        "King of Swords upright"
+      ],
+      "expected_thesis": "spark must be narrowed by discernment and evidence",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G005",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Pattern nào tôi cần dừng lại?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Devil upright",
+        "Nine of Swords upright",
+        "Death upright"
+      ],
+      "expected_thesis": "binding loop and rumination reach a transformation threshold",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G006",
+      "language": "vi",
+      "domain": "love",
+      "question": "Người này có cảm xúc nhưng có khả năng xây dựng không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Queen of Cups upright",
+        "Two of Pentacles reversed",
+        "Knight of Pentacles reversed"
+      ],
+      "expected_thesis": "emotional capacity does not automatically equal practical consistency",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G007",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điều gì đang làm hai người xa nhau?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Lovers reversed",
+        "The Moon upright",
+        "Page of Cups reversed"
+      ],
+      "expected_thesis": "misalignment is intensified by ambiguity and immature/blocked emotional expression",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G008",
+      "language": "vi",
+      "domain": "career",
+      "question": "Xu hướng nếu tôi tiếp tục cách làm hiện tại?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Eight of Pentacles upright",
+        "Ten of Wands upright",
+        "Temperance upright"
+      ],
+      "expected_thesis": "competence can become overload; sustainability is the pivot",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G009",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Liên lạc lại có đồng nghĩa quay lại không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Page of Cups upright",
+        "Six of Cups upright",
+        "Two of Swords upright"
+      ],
+      "expected_thesis": "message/nostalgia may reopen contact while decision remains unresolved",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G010",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Tôi đang bị nỗi sợ hay trực giác dẫn dắt?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Moon upright",
+        "Nine of Swords upright",
+        "Justice upright"
+      ],
+      "expected_thesis": "uncertainty and anxiety require reality-based verification",
+      "must": [
+        "respect positions",
+        "synthesize all cards",
+        "calibrate uncertainty"
+      ],
+      "must_not": [
+        "dictionary dump",
+        "deterministic prophecy",
+        "unsupported third-party facts"
+      ]
+    },
+    {
+      "id": "G011",
+      "language": "en",
+      "domain": "love",
+      "question": "What is the core dynamic in this connection?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Cups upright",
+        "Four of Pentacles upright",
+        "Strength upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G012",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Điều gì cần thay đổi để việc quay lại có ý nghĩa?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Empress upright",
+        "Five of Swords upright",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G013",
+      "language": "vi",
+      "domain": "career",
+      "question": "Điều gì đang định hình hướng công việc sắp tới?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Sun upright",
+        "The Moon upright",
+        "Ace of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G014",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Trade-off quan trọng nhất của lựa chọn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Knight of Cups upright",
+        "Seven of Cups upright",
+        "King of Pentacles upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G015",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "What pattern needs clearer awareness?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Emperor reversed",
+        "Queen of Cups upright",
+        "Temperance upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G016",
+      "language": "vi",
+      "domain": "love",
+      "question": "Xu hướng cảm xúc và hành động có khớp nhau không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Three of Swords upright",
+        "The Star upright",
+        "Page of Cups upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G017",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Kết nối cũ đang trở lại theo cách nào?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Tower upright",
+        "Four of Wands reversed",
+        "The World upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G018",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi cần điều chỉnh gì trong cách làm việc?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Pentacles upright",
+        "Seven of Pentacles upright",
+        "Wheel of Fortune upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G019",
+      "language": "en",
+      "domain": "decision",
+      "question": "What trade-off matters most here?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Three of Pentacles upright",
+        "Five of Wands upright",
+        "King of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G020",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì cần được nhìn rõ thay vì phản ứng tự động?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Page of Pentacles upright",
+        "Eight of Pentacles upright",
+        "Ten of Wands reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G021",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điểm mấu chốt trong kết nối này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Hermit upright",
+        "Judgement upright",
+        "The Fool upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G022",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Điều gì cần thay đổi để việc quay lại có ý nghĩa?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Four of Swords upright",
+        "Ace of Wands upright",
+        "The Chariot upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G023",
+      "language": "en",
+      "domain": "career",
+      "question": "What is shaping my work trajectory?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Queen of Wands upright",
+        "Six of Wands upright",
+        "The Devil reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G024",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Trade-off quan trọng nhất của lựa chọn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Seven of Swords upright",
+        "The Moon upright",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G025",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Bài học trung tâm của giai đoạn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Eight of Cups upright",
+        "Death upright",
+        "The Star upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G026",
+      "language": "vi",
+      "domain": "love",
+      "question": "Xu hướng cảm xúc và hành động có khớp nhau không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ten of Cups reversed",
+        "Page of Cups reversed",
+        "The Chariot upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G027",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What would make reconnection meaningful?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Hierophant upright",
+        "The Lovers reversed",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G028",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi cần điều chỉnh gì trong cách làm việc?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "King of Cups upright",
+        "Knight of Wands reversed",
+        "Two of Pentacles reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G029",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Tôi nên đánh giá lựa chọn này bằng tiêu chí nào?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Swords upright",
+        "Five of Cups upright",
+        "Six of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G030",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì cần được nhìn rõ thay vì phản ứng tự động?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Four of Pentacles upright",
+        "The Tower upright",
+        "The Star upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G031",
+      "language": "en",
+      "domain": "love",
+      "question": "What is the core dynamic in this connection?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Cups upright",
+        "Four of Pentacles upright",
+        "Strength upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G032",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Điều gì cần thay đổi để việc quay lại có ý nghĩa?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Empress upright",
+        "Five of Swords upright",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G033",
+      "language": "vi",
+      "domain": "career",
+      "question": "Điều gì đang định hình hướng công việc sắp tới?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Sun upright",
+        "The Moon upright",
+        "Ace of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G034",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Trade-off quan trọng nhất của lựa chọn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Knight of Cups upright",
+        "Seven of Cups upright",
+        "King of Pentacles upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G035",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "What pattern needs clearer awareness?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Emperor reversed",
+        "Queen of Cups upright",
+        "Temperance upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G036",
+      "language": "vi",
+      "domain": "love",
+      "question": "Xu hướng cảm xúc và hành động có khớp nhau không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Three of Swords upright",
+        "The Star upright",
+        "Page of Cups upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G037",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Kết nối cũ đang trở lại theo cách nào?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Tower upright",
+        "Four of Wands reversed",
+        "The World upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G038",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi cần điều chỉnh gì trong cách làm việc?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Pentacles upright",
+        "Seven of Pentacles upright",
+        "Wheel of Fortune upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G039",
+      "language": "en",
+      "domain": "decision",
+      "question": "What trade-off matters most here?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Three of Pentacles upright",
+        "Five of Wands upright",
+        "King of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G040",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì cần được nhìn rõ thay vì phản ứng tự động?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Page of Pentacles upright",
+        "Eight of Pentacles upright",
+        "Ten of Wands reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G041",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điểm mấu chốt trong kết nối này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Hermit upright",
+        "Judgement upright",
+        "The Fool upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G042",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Điều gì cần thay đổi để việc quay lại có ý nghĩa?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Four of Swords upright",
+        "Ace of Wands upright",
+        "The Chariot upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G043",
+      "language": "en",
+      "domain": "career",
+      "question": "What is shaping my work trajectory?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Queen of Wands upright",
+        "Six of Wands upright",
+        "The Devil reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G044",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Trade-off quan trọng nhất của lựa chọn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Seven of Swords upright",
+        "The Moon upright",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G045",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Bài học trung tâm của giai đoạn này là gì?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Eight of Cups upright",
+        "Death upright",
+        "The Star upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G046",
+      "language": "vi",
+      "domain": "love",
+      "question": "Xu hướng cảm xúc và hành động có khớp nhau không?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ten of Cups reversed",
+        "Page of Cups reversed",
+        "The Chariot upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G047",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What would make reconnection meaningful?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "The Hierophant upright",
+        "The Lovers reversed",
+        "Justice upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G048",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi cần điều chỉnh gì trong cách làm việc?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "King of Cups upright",
+        "Knight of Wands reversed",
+        "Two of Pentacles reversed"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G049",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Tôi nên đánh giá lựa chọn này bằng tiêu chí nào?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Ace of Swords upright",
+        "Five of Cups upright",
+        "Six of Swords upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    },
+    {
+      "id": "G050",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì cần được nhìn rõ thay vì phản ứng tự động?",
+      "spread": "context / tension / direction",
+      "cards": [
+        "Four of Pentacles upright",
+        "The Tower upright",
+        "The Star upright"
+      ],
+      "expected_thesis": "Derive a specific thesis from position + card interactions; do not use a prewritten verdict.",
+      "must": [
+        "identify strongest cross-card relationship",
+        "separate potential from behavior",
+        "use conditional future language"
+      ],
+      "must_not": [
+        "generic filler",
+        "fixed pair superstition",
+        "claim hidden facts"
+      ]
+    }
+  ]
+}

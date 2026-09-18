@@ -1,0 +1,188 @@
+{
+  "version": "3.0",
+  "cases": [
+    {
+      "id": "B01",
+      "question": "Người ấy có muốn quay lại không?",
+      "domain": "reconciliation",
+      "spread": "feelings / obstacle / likely action",
+      "cards": [
+        "Six of Cups upright",
+        "Two of Swords upright",
+        "Knight of Wands reversed"
+      ],
+      "checks": [
+        "feelings != action",
+        "no mind-reading certainty",
+        "connect nostalgia to indecision and unstable action"
+      ]
+    },
+    {
+      "id": "B02",
+      "question": "3 tháng tới công việc của tôi có xu hướng thế nào?",
+      "domain": "career",
+      "spread": "current / pressure / direction",
+      "cards": [
+        "Eight of Pentacles upright",
+        "Ten of Wands upright",
+        "Temperance upright"
+      ],
+      "checks": [
+        "skill + workload + sustainable adjustment",
+        "no guaranteed promotion"
+      ]
+    },
+    {
+      "id": "B03",
+      "question": "Mối quan hệ này đang có vấn đề gì?",
+      "domain": "love",
+      "spread": "surface / root / guidance",
+      "cards": [
+        "The Lovers reversed",
+        "The Moon upright",
+        "Justice upright"
+      ],
+      "checks": [
+        "misalignment + uncertainty + need for clarity/accountability",
+        "no cheating accusation"
+      ]
+    },
+    {
+      "id": "B04",
+      "question": "Tôi nên nhìn quyết định này theo hướng nào?",
+      "domain": "decision",
+      "spread": "benefit / cost / principle",
+      "cards": [
+        "Ace of Wands upright",
+        "Seven of Pentacles upright",
+        "The Emperor reversed"
+      ],
+      "checks": [
+        "trade-off",
+        "agency",
+        "avoid yes/no command"
+      ]
+    },
+    {
+      "id": "B05",
+      "question": "Tôi đang bỏ sót điều gì?",
+      "domain": "self-reflection",
+      "spread": "hidden factor / expression / next step",
+      "cards": [
+        "The Hermit reversed",
+        "Page of Swords upright",
+        "Strength upright"
+      ],
+      "checks": [
+        "choose reversal lens from context",
+        "do not equate Hermit reversed with loneliness only"
+      ]
+    },
+    {
+      "id": "B06",
+      "question": "Có còn tình cảm nhưng không hành động không?",
+      "domain": "love",
+      "spread": "feelings / intentions / actions",
+      "cards": [
+        "Queen of Cups upright",
+        "The Hanged Man upright",
+        "Knight of Pentacles reversed"
+      ],
+      "checks": [
+        "separate feeling/intention/action",
+        "no certainty"
+      ]
+    },
+    {
+      "id": "B07",
+      "question": "Cơ hội mới này có đáng để theo đuổi?",
+      "domain": "career",
+      "spread": "opportunity / risk / approach",
+      "cards": [
+        "Ace of Pentacles upright",
+        "Seven of Cups upright",
+        "King of Swords upright"
+      ],
+      "checks": [
+        "ground opportunity",
+        "identify option overload",
+        "use evidence/strategy"
+      ]
+    },
+    {
+      "id": "B08",
+      "question": "Tại sao tôi cứ mắc lại pattern này?",
+      "domain": "self-reflection",
+      "spread": "pattern / driver / release",
+      "cards": [
+        "The Devil upright",
+        "Nine of Swords upright",
+        "Death upright"
+      ],
+      "checks": [
+        "attachment plus rumination",
+        "Death as transformation not literal death"
+      ]
+    },
+    {
+      "id": "B09",
+      "question": "What is changing between us?",
+      "domain": "love",
+      "spread": "old pattern / transition / emerging",
+      "cards": [
+        "Four of Pentacles upright",
+        "The Tower upright",
+        "The Star upright"
+      ],
+      "checks": [
+        "control to disruption to renewal",
+        "no guaranteed happy ending"
+      ]
+    },
+    {
+      "id": "B10",
+      "question": "Tôi có nên nhắn trước không?",
+      "domain": "decision",
+      "spread": "motivation / risk / guidance",
+      "cards": [
+        "Page of Cups upright",
+        "Five of Swords upright",
+        "Temperance upright"
+      ],
+      "checks": [
+        "do not command",
+        "consider motive/conflict/pacing"
+      ]
+    },
+    {
+      "id": "B11",
+      "question": "Người này nghiêm túc hay chỉ hứng thú nhất thời?",
+      "domain": "love",
+      "spread": "attraction / capacity / consistency",
+      "cards": [
+        "Ace of Wands upright",
+        "King of Cups upright",
+        "Two of Pentacles reversed"
+      ],
+      "checks": [
+        "chemistry != consistency",
+        "capacity can coexist with poor bandwidth"
+      ]
+    },
+    {
+      "id": "B12",
+      "question": "What is the likely trajectory if I stay in this role?",
+      "domain": "career",
+      "spread": "current / cost / trajectory",
+      "cards": [
+        "King of Pentacles upright",
+        "Ten of Wands upright",
+        "Four of Cups upright"
+      ],
+      "checks": [
+        "stability plus burden plus disengagement",
+        "conditional future"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1447 @@
+{
+  "version": "3.0",
+  "cards": [
+    {
+      "id": "ace-of-wands",
+      "name_en": "Ace of Wands",
+      "name_vi": "Khởi đầu Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Ace",
+      "element": "Lửa",
+      "core": {
+        "archetype": "spark, desire, creative beginning",
+        "rank_theme": "seed, opening, concentrated potential",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "spark, desire, creative beginning"
+      },
+      "reversed": {
+        "baseline": "blocked spark, false start, depleted initiative",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ace of Wands centers on spark, attraction, inspiration, a genuine urge to begin. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: a spark that needs direction; enthusiasm alone is not a plan.",
+          "reversed": "In love, reversed may show blocked spark, false start, depleted initiative. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of spark, attraction, inspiration, a genuine urge to begin. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of spark, desire, creative beginning."
+        },
+        "intentions": {
+          "upright": "As intentions, translate spark, desire, creative beginning into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody spark, desire, creative beginning. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how spark, attraction, inspiration, a genuine urge to begin affects both emotional desire and practical readiness to repair. A spark that needs direction; enthusiasm alone is not a plan.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ace of Wands brings spark, attraction, inspiration, a genuine urge to begin into initiative, ambition, leadership, creative work and momentum. Key nuance: a spark that needs direction; enthusiasm alone is not a plan.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use spark, desire, creative beginning to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within spark, desire, creative beginning is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how spark, desire, creative beginning becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of spark, desire, creative beginning; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "spark, attraction, inspiration, a genuine urge to begin",
+        "developmental_logic": "a seed or opening: potential exists, but it still needs embodiment",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "a spark that needs direction; enthusiasm alone is not a plan"
+      }
+    },
+    {
+      "id": "two-of-wands",
+      "name_en": "Two of Wands",
+      "name_vi": "Hai Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Two",
+      "element": "Lửa",
+      "core": {
+        "archetype": "duality, choice, balance, relationship expressed through drive, desire, creativity, action",
+        "rank_theme": "duality, choice, balance, relationship",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by duality, choice, balance, relationship"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the two theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Two of Wands centers on planning beyond the current horizon, choice of direction. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: wanting more while still standing at the threshold.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the two theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of planning beyond the current horizon, choice of direction. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of duality, choice, balance, relationship expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate duality, choice, balance, relationship expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody duality, choice, balance, relationship expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how planning beyond the current horizon, choice of direction affects both emotional desire and practical readiness to repair. Wanting more while still standing at the threshold.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Two of Wands brings planning beyond the current horizon, choice of direction into initiative, ambition, leadership, creative work and momentum. Key nuance: wanting more while still standing at the threshold.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use duality, choice, balance, relationship expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within duality, choice, balance, relationship expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how duality, choice, balance, relationship expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of duality, choice, balance, relationship expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "planning beyond the current horizon, choice of direction",
+        "developmental_logic": "a polarity or balancing act: two forces must be held, compared or related",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "wanting more while still standing at the threshold"
+      }
+    },
+    {
+      "id": "three-of-wands",
+      "name_en": "Three of Wands",
+      "name_vi": "Ba Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Three",
+      "element": "Lửa",
+      "core": {
+        "archetype": "development, expression, collaboration expressed through drive, desire, creativity, action",
+        "rank_theme": "development, expression, collaboration",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by development, expression, collaboration"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the three theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Three of Wands centers on expansion, foresight, early returns from prior effort. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: waiting for response/results after committing energy.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the three theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of expansion, foresight, early returns from prior effort. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of development, expression, collaboration expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate development, expression, collaboration expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody development, expression, collaboration expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how expansion, foresight, early returns from prior effort affects both emotional desire and practical readiness to repair. Waiting for response/results after committing energy.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Three of Wands brings expansion, foresight, early returns from prior effort into initiative, ambition, leadership, creative work and momentum. Key nuance: waiting for response/results after committing energy.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use development, expression, collaboration expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within development, expression, collaboration expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how development, expression, collaboration expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of development, expression, collaboration expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "expansion, foresight, early returns from prior effort",
+        "developmental_logic": "development through expression, collaboration or an emerging result",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "waiting for response/results after committing energy"
+      }
+    },
+    {
+      "id": "four-of-wands",
+      "name_en": "Four of Wands",
+      "name_vi": "Bốn Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Four",
+      "element": "Lửa",
+      "core": {
+        "archetype": "structure, stability, consolidation expressed through drive, desire, creativity, action",
+        "rank_theme": "structure, stability, consolidation",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by structure, stability, consolidation"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the four theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Four of Wands centers on celebration, belonging, stable milestone, shared space. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: a foundation worth acknowledging; stability should not be mistaken for finality.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the four theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of celebration, belonging, stable milestone, shared space. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of structure, stability, consolidation expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate structure, stability, consolidation expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody structure, stability, consolidation expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how celebration, belonging, stable milestone, shared space affects both emotional desire and practical readiness to repair. A foundation worth acknowledging; stability should not be mistaken for finality.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Four of Wands brings celebration, belonging, stable milestone, shared space into initiative, ambition, leadership, creative work and momentum. Key nuance: a foundation worth acknowledging; stability should not be mistaken for finality.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use structure, stability, consolidation expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within structure, stability, consolidation expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how structure, stability, consolidation expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of structure, stability, consolidation expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "celebration, belonging, stable milestone, shared space",
+        "developmental_logic": "consolidation: stability can become either a foundation or a holding pattern",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "a foundation worth acknowledging; stability should not be mistaken for finality"
+      }
+    },
+    {
+      "id": "five-of-wands",
+      "name_en": "Five of Wands",
+      "name_vi": "Năm Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Five",
+      "element": "Lửa",
+      "core": {
+        "archetype": "disruption, friction, adaptation expressed through drive, desire, creativity, action",
+        "rank_theme": "disruption, friction, adaptation",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by disruption, friction, adaptation"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the five theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Five of Wands centers on competition, clashing agendas, productive or draining friction. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: conflict may clarify differences, but unmanaged ego turns stimulation into noise.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the five theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of competition, clashing agendas, productive or draining friction. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of disruption, friction, adaptation expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate disruption, friction, adaptation expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody disruption, friction, adaptation expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how competition, clashing agendas, productive or draining friction affects both emotional desire and practical readiness to repair. Conflict may clarify differences, but unmanaged ego turns stimulation into noise.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Five of Wands brings competition, clashing agendas, productive or draining friction into initiative, ambition, leadership, creative work and momentum. Key nuance: conflict may clarify differences, but unmanaged ego turns stimulation into noise.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use disruption, friction, adaptation expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within disruption, friction, adaptation expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how disruption, friction, adaptation expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of disruption, friction, adaptation expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "competition, clashing agendas, productive or draining friction",
+        "developmental_logic": "friction and destabilization that exposes what is not working",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "conflict may clarify differences, but unmanaged ego turns stimulation into noise"
+      }
+    },
+    {
+      "id": "six-of-wands",
+      "name_en": "Six of Wands",
+      "name_vi": "Sáu Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Six",
+      "element": "Lửa",
+      "core": {
+        "archetype": "adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action",
+        "rank_theme": "adjustment, exchange, movement toward harmony",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by adjustment, exchange, movement toward harmony"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the six theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Six of Wands centers on recognition, visible progress, confidence after effort. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: external validation can support momentum but can also become the goal.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the six theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of recognition, visible progress, confidence after effort. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how recognition, visible progress, confidence after effort affects both emotional desire and practical readiness to repair. External validation can support momentum but can also become the goal.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Six of Wands brings recognition, visible progress, confidence after effort into initiative, ambition, leadership, creative work and momentum. Key nuance: external validation can support momentum but can also become the goal.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of adjustment, exchange, movement toward harmony expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "recognition, visible progress, confidence after effort",
+        "developmental_logic": "rebalancing, exchange or movement after disruption",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "external validation can support momentum but can also become the goal"
+      }
+    },
+    {
+      "id": "seven-of-wands",
+      "name_en": "Seven of Wands",
+      "name_vi": "Bảy Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Seven",
+      "element": "Lửa",
+      "core": {
+        "archetype": "assessment, challenge, strategy expressed through drive, desire, creativity, action",
+        "rank_theme": "assessment, challenge, strategy",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by assessment, challenge, strategy"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the seven theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Seven of Wands centers on defending position, conviction under challenge. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: persistence is useful when the position is worth defending.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the seven theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of defending position, conviction under challenge. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of assessment, challenge, strategy expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate assessment, challenge, strategy expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody assessment, challenge, strategy expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how defending position, conviction under challenge affects both emotional desire and practical readiness to repair. Persistence is useful when the position is worth defending.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Seven of Wands brings defending position, conviction under challenge into initiative, ambition, leadership, creative work and momentum. Key nuance: persistence is useful when the position is worth defending.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use assessment, challenge, strategy expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within assessment, challenge, strategy expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how assessment, challenge, strategy expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of assessment, challenge, strategy expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "defending position, conviction under challenge",
+        "developmental_logic": "assessment under pressure: strategy, conviction and discernment are tested",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "persistence is useful when the position is worth defending"
+      }
+    },
+    {
+      "id": "eight-of-wands",
+      "name_en": "Eight of Wands",
+      "name_vi": "Tám Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Eight",
+      "element": "Lửa",
+      "core": {
+        "archetype": "movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action",
+        "rank_theme": "movement, mastery, constraint or acceleration",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by movement, mastery, constraint or acceleration"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the eight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Eight of Wands centers on rapid movement, messages, acceleration, alignment of momentum. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: speed amplifies both clarity and confusion.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the eight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of rapid movement, messages, acceleration, alignment of momentum. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how rapid movement, messages, acceleration, alignment of momentum affects both emotional desire and practical readiness to repair. Speed amplifies both clarity and confusion.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Eight of Wands brings rapid movement, messages, acceleration, alignment of momentum into initiative, ambition, leadership, creative work and momentum. Key nuance: speed amplifies both clarity and confusion.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of movement, mastery, constraint or acceleration expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "rapid movement, messages, acceleration, alignment of momentum",
+        "developmental_logic": "concentrated movement, repetition, mastery or constraint depending on the suit",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "speed amplifies both clarity and confusion"
+      }
+    },
+    {
+      "id": "nine-of-wands",
+      "name_en": "Nine of Wands",
+      "name_vi": "Chín Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Nine",
+      "element": "Lửa",
+      "core": {
+        "archetype": "culmination, intensity, near-completion expressed through drive, desire, creativity, action",
+        "rank_theme": "culmination, intensity, near-completion",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by culmination, intensity, near-completion"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the nine theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Nine of Wands centers on resilience, guarded persistence, fatigue with boundaries. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: experience protects, but hypervigilance can block support.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the nine theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of resilience, guarded persistence, fatigue with boundaries. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of culmination, intensity, near-completion expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate culmination, intensity, near-completion expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody culmination, intensity, near-completion expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how resilience, guarded persistence, fatigue with boundaries affects both emotional desire and practical readiness to repair. Experience protects, but hypervigilance can block support.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Nine of Wands brings resilience, guarded persistence, fatigue with boundaries into initiative, ambition, leadership, creative work and momentum. Key nuance: experience protects, but hypervigilance can block support.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use culmination, intensity, near-completion expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within culmination, intensity, near-completion expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how culmination, intensity, near-completion expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of culmination, intensity, near-completion expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "resilience, guarded persistence, fatigue with boundaries",
+        "developmental_logic": "intensity near culmination: much has developed, but the final threshold matters",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "experience protects, but hypervigilance can block support"
+      }
+    },
+    {
+      "id": "ten-of-wands",
+      "name_en": "Ten of Wands",
+      "name_vi": "Mười Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Ten",
+      "element": "Lửa",
+      "core": {
+        "archetype": "completion, consequence, transition to next cycle expressed through drive, desire, creativity, action",
+        "rank_theme": "completion, consequence, transition to next cycle",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by completion, consequence, transition to next cycle"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the ten theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ten of Wands centers on burden, responsibility, carrying too much. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: commitment becomes unsustainable when everything is carried alone.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the ten theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of burden, responsibility, carrying too much. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of completion, consequence, transition to next cycle expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate completion, consequence, transition to next cycle expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody completion, consequence, transition to next cycle expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how burden, responsibility, carrying too much affects both emotional desire and practical readiness to repair. Commitment becomes unsustainable when everything is carried alone.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ten of Wands brings burden, responsibility, carrying too much into initiative, ambition, leadership, creative work and momentum. Key nuance: commitment becomes unsustainable when everything is carried alone.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use completion, consequence, transition to next cycle expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within completion, consequence, transition to next cycle expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how completion, consequence, transition to next cycle expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of completion, consequence, transition to next cycle expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "burden, responsibility, carrying too much",
+        "developmental_logic": "the full consequence of the suit: completion, saturation and transition",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "commitment becomes unsustainable when everything is carried alone"
+      }
+    },
+    {
+      "id": "page-of-wands",
+      "name_en": "Page of Wands",
+      "name_vi": "Tiểu Đồng Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Page",
+      "element": "Lửa",
+      "core": {
+        "archetype": "learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action",
+        "rank_theme": "learning, message, curiosity, early embodiment",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by learning, message, curiosity, early embodiment"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the page theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Page of Wands centers on curiosity, exciting news, exploratory desire. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: enthusiasm is sincere but still learning consistency.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the page theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of curiosity, exciting news, exploratory desire. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how curiosity, exciting news, exploratory desire affects both emotional desire and practical readiness to repair. Enthusiasm is sincere but still learning consistency.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Page of Wands brings curiosity, exciting news, exploratory desire into initiative, ambition, leadership, creative work and momentum. Key nuance: enthusiasm is sincere but still learning consistency.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of learning, message, curiosity, early embodiment expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "curiosity, exciting news, exploratory desire",
+        "developmental_logic": "early embodiment: curiosity, message, experimentation and immature-but-real potential",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "enthusiasm is sincere but still learning consistency"
+      }
+    },
+    {
+      "id": "knight-of-wands",
+      "name_en": "Knight of Wands",
+      "name_vi": "Hiệp Sĩ Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Knight",
+      "element": "Lửa",
+      "core": {
+        "archetype": "pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action",
+        "rank_theme": "pursuit, movement, testing the suit through action",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by pursuit, movement, testing the suit through action"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the knight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Knight of Wands centers on pursuit, passion, adventure, rapid action. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: strong momentum can outrun stability or follow-through.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the knight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of pursuit, passion, adventure, rapid action. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how pursuit, passion, adventure, rapid action affects both emotional desire and practical readiness to repair. Strong momentum can outrun stability or follow-through.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Knight of Wands brings pursuit, passion, adventure, rapid action into initiative, ambition, leadership, creative work and momentum. Key nuance: strong momentum can outrun stability or follow-through.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of pursuit, movement, testing the suit through action expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "pursuit, passion, adventure, rapid action",
+        "developmental_logic": "active pursuit: the suit is pushed into motion, sometimes faster than integration",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "strong momentum can outrun stability or follow-through"
+      }
+    },
+    {
+      "id": "queen-of-wands",
+      "name_en": "Queen of Wands",
+      "name_vi": "Nữ Hoàng Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "Queen",
+      "element": "Lửa",
+      "core": {
+        "archetype": "mature inward command of the suit expressed through drive, desire, creativity, action",
+        "rank_theme": "mature inward command of the suit",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by mature inward command of the suit"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the queen theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Queen of Wands centers on warm confidence, magnetism, independent creative power. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: self-possession attracts more than chasing validation.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the queen theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of warm confidence, magnetism, independent creative power. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature inward command of the suit expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature inward command of the suit expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature inward command of the suit expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how warm confidence, magnetism, independent creative power affects both emotional desire and practical readiness to repair. Self-possession attracts more than chasing validation.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Queen of Wands brings warm confidence, magnetism, independent creative power into initiative, ambition, leadership, creative work and momentum. Key nuance: self-possession attracts more than chasing validation.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature inward command of the suit expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature inward command of the suit expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature inward command of the suit expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature inward command of the suit expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "warm confidence, magnetism, independent creative power",
+        "developmental_logic": "inward mastery: the suit is held, understood and expressed with mature receptivity",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "self-possession attracts more than chasing validation"
+      }
+    },
+    {
+      "id": "king-of-wands",
+      "name_en": "King of Wands",
+      "name_vi": "Vua Gậy",
+      "arcana": "minor",
+      "suit": "Wands",
+      "rank": "King",
+      "element": "Lửa",
+      "core": {
+        "archetype": "mature outward command and stewardship of the suit expressed through drive, desire, creativity, action",
+        "rank_theme": "mature outward command and stewardship of the suit",
+        "suit_domain": "drive, desire, creativity, action"
+      },
+      "upright": {
+        "core_expression": "energy, initiative, ambition shaped by mature outward command and stewardship of the suit"
+      },
+      "reversed": {
+        "baseline": "scattered drive, burnout, delay, misdirected action; the king theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read drive, desire, creativity, action through reciprocity, communication, behavior and readiness.",
+        "career": "Read drive, desire, creativity, action through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, King of Wands centers on visionary leadership, bold direction, entrepreneurial command. Read it through chemistry, pursuit, excitement, independence and how desire becomes action. Key nuance: vision needs responsibility and room for others.",
+          "reversed": "In love, reversed may show scattered drive, burnout, delay, misdirected action; the king theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of visionary leadership, bold direction, entrepreneurial command. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature outward command and stewardship of the suit expressed through drive, desire, creativity, action."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature outward command and stewardship of the suit expressed through drive, desire, creativity, action into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature outward command and stewardship of the suit expressed through drive, desire, creativity, action. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how visionary leadership, bold direction, entrepreneurial command affects both emotional desire and practical readiness to repair. Vision needs responsibility and room for others.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, King of Wands brings visionary leadership, bold direction, entrepreneurial command into initiative, ambition, leadership, creative work and momentum. Key nuance: vision needs responsibility and room for others.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature outward command and stewardship of the suit expressed through drive, desire, creativity, action to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature outward command and stewardship of the suit expressed through drive, desire, creativity, action is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature outward command and stewardship of the suit expressed through drive, desire, creativity, action becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature outward command and stewardship of the suit expressed through drive, desire, creativity, action; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "visionary leadership, bold direction, entrepreneurial command",
+        "developmental_logic": "outward stewardship: the suit is directed, structured and made consequential",
+        "suit_logic": "desire, vitality, initiative, creativity and the courage to act",
+        "shadow_tension": "impulsiveness, ego friction, burnout, inconsistency or action without reflection",
+        "interpretive_nuance": "vision needs responsibility and room for others"
+      }
+    }
+  ]
+}

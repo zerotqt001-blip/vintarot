@@ -25,9 +25,15 @@ test("consuming any fan card uses its server position order and prevents duplica
 });
 
 test("Room reflection surface exposes interpretation and dynamic session data", () => {
-  assert.match(roomSource, /api\(['"]tarot\/interpret/);
+  assert.match(roomSource, /api\(['"]tarot\/reading/);
   assert.match(roomSource, /sessionId/);
-  assert.match(roomSource, /local-fallback|reading\.disclaimer/);
+  assert.match(roomSource, /reading\.overview/);
+  assert.match(roomSource, /reading\.cards/);
+  assert.match(roomSource, /reading\.connections/);
+  assert.match(roomSource, /reading\.guidance/);
+  assert.match(roomSource, /reading\.closing/);
+  assert.match(roomSource, /reading\.disclaimer/);
+  assert.doesNotMatch(roomSource, /local-fallback|card_readings|reading\.opening|reading\.synthesis|reading\.advice/);
   assert.match(roomSource, /cardId/);
 });
 

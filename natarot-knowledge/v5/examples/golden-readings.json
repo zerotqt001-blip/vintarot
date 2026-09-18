@@ -1,0 +1,211 @@
+{
+  "version": "2.0",
+  "examples": [
+    {
+      "id": "love-future-001",
+      "language": "vi",
+      "question": "Xu hướng 3 tháng tới của mối quan hệ này như thế nào?",
+      "spread": {
+        "name": "3-card trajectory",
+        "positions": [
+          {
+            "name": "Current dynamic",
+            "purpose": "Năng lượng đang chi phối mối quan hệ"
+          },
+          {
+            "name": "Emotional challenge",
+            "purpose": "Điểm cảm xúc đang làm mối quan hệ khó tiến"
+          },
+          {
+            "name": "Direction",
+            "purpose": "Hướng phát triển nếu động lực hiện tại tiếp tục"
+          }
+        ]
+      },
+      "cards": [
+        {
+          "name": "Ten of Cups",
+          "orientation": "reversed"
+        },
+        {
+          "name": "Page of Cups",
+          "orientation": "reversed"
+        },
+        {
+          "name": "The Chariot",
+          "orientation": "upright"
+        }
+      ],
+      "golden_reading": {
+        "overview": "Ba lá cho thấy mối quan hệ chưa hẳn mất kết nối, nhưng đang có khoảng cách giữa điều hai người mong muốn và cách cảm xúc thực sự được xử lý. Hai lá Cốc ngược đặt vấn đề ở tầng tình cảm; The Chariot ở cuối lại đưa câu chuyện sang tầng lựa chọn và cách hành động. Vì vậy ba tháng tới không chỉ phụ thuộc vào còn tình cảm hay không, mà phụ thuộc vào việc hai người có đưa được cảm xúc ra khỏi trạng thái lúng túng để tạo một hướng đi rõ ràng hay không.",
+        "connections": "Ten of Cups ngược và Page of Cups ngược củng cố nhau: kỳ vọng về sự hòa hợp đang cao hơn khả năng giao tiếp cảm xúc hiện tại. The Chariot không xóa vấn đề đó; nó cho thấy năng lượng có thể chuyển động khi có người chủ động định hướng, đặt ranh giới hoặc nói rõ mình muốn gì. Nếu chỉ cố tiến nhanh mà không xử lý hai lá Cốc ngược, sự quyết liệt dễ trở thành kéo mối quan hệ đi bằng ý chí hơn là bằng sự đồng thuận.",
+        "guidance": "Điểm cần quan sát không phải là những lời hứa lớn mà là khả năng nói chuyện cảm xúc một cách trưởng thành và nhất quán. Nếu điều này cải thiện, The Chariot có thể biểu hiện như một giai đoạn lấy lại phương hướng. Nếu không, cùng lá đó có thể cho thấy hai người chọn những hướng khác nhau thay vì tiếp tục ở trạng thái mơ hồ."
+      }
+    },
+    {
+      "id": "career-decision-001",
+      "language": "vi",
+      "question": "Tôi có nên rời công việc hiện tại để tìm hướng mới không?",
+      "spread": {
+        "name": "Decision lens",
+        "positions": [
+          {
+            "name": "Current state",
+            "purpose": "Điều công việc hiện tại đang tạo ra"
+          },
+          {
+            "name": "Cost of staying",
+            "purpose": "Điều cần đánh đổi nếu tiếp tục"
+          },
+          {
+            "name": "What supports change",
+            "purpose": "Nguồn lực hoặc thái độ hỗ trợ bước chuyển"
+          }
+        ]
+      },
+      "cards": [
+        {
+          "name": "Eight of Pentacles",
+          "orientation": "upright"
+        },
+        {
+          "name": "Four of Cups",
+          "orientation": "upright"
+        },
+        {
+          "name": "The Fool",
+          "orientation": "upright"
+        }
+      ],
+      "quality_notes": [
+        "Không biến The Fool thành mệnh lệnh 'hãy nghỉ việc'.",
+        "Phải nhận ra năng lực/craft hiện tại là tài sản có thể mang sang hướng mới.",
+        "Phân biệt chán nản với bằng chứng rằng công việc khách quan là xấu."
+      ]
+    },
+    {
+      "id": "reconciliation-002",
+      "language": "vi",
+      "question": "Người cũ có xu hướng chủ động liên hệ lại không?",
+      "spread": {
+        "name": "emotion / barrier / action",
+        "positions": [
+          {
+            "name": "Emotional residue",
+            "purpose": "Điều còn đọng lại về cảm xúc"
+          },
+          {
+            "name": "Barrier",
+            "purpose": "Điều cản trở kết nối"
+          },
+          {
+            "name": "Likely action",
+            "purpose": "Xu hướng hành động nếu hiện trạng tiếp tục"
+          }
+        ]
+      },
+      "cards": [
+        {
+          "name": "Six of Cups",
+          "orientation": "upright"
+        },
+        {
+          "name": "Two of Swords",
+          "orientation": "upright"
+        },
+        {
+          "name": "Knight of Wands",
+          "orientation": "reversed"
+        }
+      ],
+      "quality_notes": [
+        "Nostalgia is not the same as reconciliation readiness.",
+        "Two of Swords qualifies Six of Cups with indecision/avoidance.",
+        "Knight reversed in action must prevent a confident prediction of stable contact.",
+        "Do not claim verified private thoughts."
+      ]
+    },
+    {
+      "id": "love-conflict-003",
+      "language": "en",
+      "question": "What is the central problem in this relationship?",
+      "spread": {
+        "name": "surface / root / guidance",
+        "positions": [
+          {
+            "name": "Surface",
+            "purpose": "What is visible"
+          },
+          {
+            "name": "Root",
+            "purpose": "Underlying dynamic"
+          },
+          {
+            "name": "Guidance",
+            "purpose": "What would help"
+          }
+        ]
+      },
+      "cards": [
+        {
+          "name": "The Lovers",
+          "orientation": "reversed"
+        },
+        {
+          "name": "The Moon",
+          "orientation": "upright"
+        },
+        {
+          "name": "Justice",
+          "orientation": "upright"
+        }
+      ],
+      "quality_notes": [
+        "Frame Lovers reversed as misalignment rather than automatic breakup.",
+        "Moon at root adds uncertainty/fear/ambiguity, not a cheating claim.",
+        "Justice as guidance asks for clarity, accountability, explicit agreements."
+      ]
+    },
+    {
+      "id": "career-burnout-004",
+      "language": "vi",
+      "question": "Tôi nên hiểu tình trạng công việc hiện tại như thế nào?",
+      "spread": {
+        "name": "state / pressure / adjustment",
+        "positions": [
+          {
+            "name": "State",
+            "purpose": "Năng lực và trạng thái hiện tại"
+          },
+          {
+            "name": "Pressure",
+            "purpose": "Điều đang tạo tải"
+          },
+          {
+            "name": "Adjustment",
+            "purpose": "Cách điều chỉnh hữu ích"
+          }
+        ]
+      },
+      "cards": [
+        {
+          "name": "Eight of Pentacles",
+          "orientation": "upright"
+        },
+        {
+          "name": "Ten of Wands",
+          "orientation": "upright"
+        },
+        {
+          "name": "Temperance",
+          "orientation": "upright"
+        }
+      ],
+      "quality_notes": [
+        "Recognize competence and effort before discussing overload.",
+        "Do not equate workload with guaranteed resignation.",
+        "Temperance should synthesize into sustainable pacing/integration, not generic balance advice."
+      ]
+    }
+  ]
+}

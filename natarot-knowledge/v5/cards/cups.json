@@ -1,0 +1,1447 @@
+{
+  "version": "3.0",
+  "cards": [
+    {
+      "id": "ace-of-cups",
+      "name_en": "Ace of Cups",
+      "name_vi": "Khởi đầu Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Ace",
+      "element": "Nước",
+      "core": {
+        "archetype": "seed, opening, concentrated potential expressed through emotion, connection, receptivity",
+        "rank_theme": "seed, opening, concentrated potential",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by seed, opening, concentrated potential"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the ace theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ace of Cups centers on emotional opening, tenderness, new feeling, receptive heart. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: feeling is available, but its future depends on how it is received and expressed.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the ace theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of emotional opening, tenderness, new feeling, receptive heart. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of seed, opening, concentrated potential expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate seed, opening, concentrated potential expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody seed, opening, concentrated potential expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how emotional opening, tenderness, new feeling, receptive heart affects both emotional desire and practical readiness to repair. Feeling is available, but its future depends on how it is received and expressed.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ace of Cups brings emotional opening, tenderness, new feeling, receptive heart into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: feeling is available, but its future depends on how it is received and expressed.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use seed, opening, concentrated potential expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within seed, opening, concentrated potential expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how seed, opening, concentrated potential expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of seed, opening, concentrated potential expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "emotional opening, tenderness, new feeling, receptive heart",
+        "developmental_logic": "a seed or opening: potential exists, but it still needs embodiment",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "feeling is available, but its future depends on how it is received and expressed"
+      }
+    },
+    {
+      "id": "two-of-cups",
+      "name_en": "Two of Cups",
+      "name_vi": "Hai Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Two",
+      "element": "Nước",
+      "core": {
+        "archetype": "mutuality, attraction, reciprocal exchange",
+        "rank_theme": "duality, choice, balance, relationship",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "mutuality, attraction, reciprocal exchange"
+      },
+      "reversed": {
+        "baseline": "disconnect, imbalance, difficulty meeting each other",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Two of Cups centers on mutual recognition, reciprocal attraction, meaningful exchange. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: mutuality requires both emotional resonance and actual participation.",
+          "reversed": "In love, reversed may show disconnect, imbalance, difficulty meeting each other. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of mutual recognition, reciprocal attraction, meaningful exchange. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mutuality, attraction, reciprocal exchange."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mutuality, attraction, reciprocal exchange into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mutuality, attraction, reciprocal exchange. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how mutual recognition, reciprocal attraction, meaningful exchange affects both emotional desire and practical readiness to repair. Mutuality requires both emotional resonance and actual participation.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Two of Cups brings mutual recognition, reciprocal attraction, meaningful exchange into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: mutuality requires both emotional resonance and actual participation.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mutuality, attraction, reciprocal exchange to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mutuality, attraction, reciprocal exchange is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mutuality, attraction, reciprocal exchange becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mutuality, attraction, reciprocal exchange; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "mutual recognition, reciprocal attraction, meaningful exchange",
+        "developmental_logic": "a polarity or balancing act: two forces must be held, compared or related",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "mutuality requires both emotional resonance and actual participation"
+      }
+    },
+    {
+      "id": "three-of-cups",
+      "name_en": "Three of Cups",
+      "name_vi": "Ba Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Three",
+      "element": "Nước",
+      "core": {
+        "archetype": "development, expression, collaboration expressed through emotion, connection, receptivity",
+        "rank_theme": "development, expression, collaboration",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by development, expression, collaboration"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the three theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Three of Cups centers on shared joy, friendship, emotional community. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: connection expands through social support; context decides whether a third-party theme is relevant.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the three theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of shared joy, friendship, emotional community. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of development, expression, collaboration expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate development, expression, collaboration expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody development, expression, collaboration expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how shared joy, friendship, emotional community affects both emotional desire and practical readiness to repair. Connection expands through social support; context decides whether a third-party theme is relevant.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Three of Cups brings shared joy, friendship, emotional community into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: connection expands through social support; context decides whether a third-party theme is relevant.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use development, expression, collaboration expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within development, expression, collaboration expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how development, expression, collaboration expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of development, expression, collaboration expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "shared joy, friendship, emotional community",
+        "developmental_logic": "development through expression, collaboration or an emerging result",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "connection expands through social support; context decides whether a third-party theme is relevant"
+      }
+    },
+    {
+      "id": "four-of-cups",
+      "name_en": "Four of Cups",
+      "name_vi": "Bốn Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Four",
+      "element": "Nước",
+      "core": {
+        "archetype": "structure, stability, consolidation expressed through emotion, connection, receptivity",
+        "rank_theme": "structure, stability, consolidation",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by structure, stability, consolidation"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the four theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Four of Cups centers on emotional disengagement, contemplation, difficulty receiving what is offered. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: withdrawal may be discernment, boredom or protective numbness.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the four theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of emotional disengagement, contemplation, difficulty receiving what is offered. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of structure, stability, consolidation expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate structure, stability, consolidation expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody structure, stability, consolidation expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how emotional disengagement, contemplation, difficulty receiving what is offered affects both emotional desire and practical readiness to repair. Withdrawal may be discernment, boredom or protective numbness.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Four of Cups brings emotional disengagement, contemplation, difficulty receiving what is offered into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: withdrawal may be discernment, boredom or protective numbness.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use structure, stability, consolidation expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within structure, stability, consolidation expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how structure, stability, consolidation expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of structure, stability, consolidation expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "emotional disengagement, contemplation, difficulty receiving what is offered",
+        "developmental_logic": "consolidation: stability can become either a foundation or a holding pattern",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "withdrawal may be discernment, boredom or protective numbness"
+      }
+    },
+    {
+      "id": "five-of-cups",
+      "name_en": "Five of Cups",
+      "name_vi": "Năm Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Five",
+      "element": "Nước",
+      "core": {
+        "archetype": "disruption, friction, adaptation expressed through emotion, connection, receptivity",
+        "rank_theme": "disruption, friction, adaptation",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by disruption, friction, adaptation"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the five theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Five of Cups centers on grief, disappointment, focus on what was lost. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: loss is real, but not everything valuable has disappeared.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the five theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of grief, disappointment, focus on what was lost. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of disruption, friction, adaptation expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate disruption, friction, adaptation expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody disruption, friction, adaptation expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how grief, disappointment, focus on what was lost affects both emotional desire and practical readiness to repair. Loss is real, but not everything valuable has disappeared.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Five of Cups brings grief, disappointment, focus on what was lost into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: loss is real, but not everything valuable has disappeared.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use disruption, friction, adaptation expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within disruption, friction, adaptation expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how disruption, friction, adaptation expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of disruption, friction, adaptation expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "grief, disappointment, focus on what was lost",
+        "developmental_logic": "friction and destabilization that exposes what is not working",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "loss is real, but not everything valuable has disappeared"
+      }
+    },
+    {
+      "id": "six-of-cups",
+      "name_en": "Six of Cups",
+      "name_vi": "Sáu Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Six",
+      "element": "Nước",
+      "core": {
+        "archetype": "adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity",
+        "rank_theme": "adjustment, exchange, movement toward harmony",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by adjustment, exchange, movement toward harmony"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the six theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Six of Cups centers on memory, nostalgia, innocence, return to familiar emotional territory. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: the past can comfort or distort the present.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the six theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of memory, nostalgia, innocence, return to familiar emotional territory. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how memory, nostalgia, innocence, return to familiar emotional territory affects both emotional desire and practical readiness to repair. The past can comfort or distort the present.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Six of Cups brings memory, nostalgia, innocence, return to familiar emotional territory into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: the past can comfort or distort the present.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of adjustment, exchange, movement toward harmony expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "memory, nostalgia, innocence, return to familiar emotional territory",
+        "developmental_logic": "rebalancing, exchange or movement after disruption",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "the past can comfort or distort the present"
+      }
+    },
+    {
+      "id": "seven-of-cups",
+      "name_en": "Seven of Cups",
+      "name_vi": "Bảy Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Seven",
+      "element": "Nước",
+      "core": {
+        "archetype": "assessment, challenge, strategy expressed through emotion, connection, receptivity",
+        "rank_theme": "assessment, challenge, strategy",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by assessment, challenge, strategy"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the seven theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Seven of Cups centers on many emotional possibilities, fantasy, projection, choice under uncertainty. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: imagination expands options but weakens discernment when ungrounded.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the seven theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of many emotional possibilities, fantasy, projection, choice under uncertainty. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of assessment, challenge, strategy expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate assessment, challenge, strategy expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody assessment, challenge, strategy expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how many emotional possibilities, fantasy, projection, choice under uncertainty affects both emotional desire and practical readiness to repair. Imagination expands options but weakens discernment when ungrounded.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Seven of Cups brings many emotional possibilities, fantasy, projection, choice under uncertainty into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: imagination expands options but weakens discernment when ungrounded.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use assessment, challenge, strategy expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within assessment, challenge, strategy expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how assessment, challenge, strategy expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of assessment, challenge, strategy expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "many emotional possibilities, fantasy, projection, choice under uncertainty",
+        "developmental_logic": "assessment under pressure: strategy, conviction and discernment are tested",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "imagination expands options but weakens discernment when ungrounded"
+      }
+    },
+    {
+      "id": "eight-of-cups",
+      "name_en": "Eight of Cups",
+      "name_vi": "Tám Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Eight",
+      "element": "Nước",
+      "core": {
+        "archetype": "movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity",
+        "rank_theme": "movement, mastery, constraint or acceleration",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by movement, mastery, constraint or acceleration"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the eight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Eight of Cups centers on walking away from emotional insufficiency, searching for deeper meaning. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: departure can be mature when staying would betray a deeper need.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the eight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of walking away from emotional insufficiency, searching for deeper meaning. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how walking away from emotional insufficiency, searching for deeper meaning affects both emotional desire and practical readiness to repair. Departure can be mature when staying would betray a deeper need.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Eight of Cups brings walking away from emotional insufficiency, searching for deeper meaning into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: departure can be mature when staying would betray a deeper need.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of movement, mastery, constraint or acceleration expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "walking away from emotional insufficiency, searching for deeper meaning",
+        "developmental_logic": "concentrated movement, repetition, mastery or constraint depending on the suit",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "departure can be mature when staying would betray a deeper need"
+      }
+    },
+    {
+      "id": "nine-of-cups",
+      "name_en": "Nine of Cups",
+      "name_vi": "Chín Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Nine",
+      "element": "Nước",
+      "core": {
+        "archetype": "culmination, intensity, near-completion expressed through emotion, connection, receptivity",
+        "rank_theme": "culmination, intensity, near-completion",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by culmination, intensity, near-completion"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the nine theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Nine of Cups centers on satisfaction, pleasure, wish fulfillment, emotional self-enjoyment. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: contentment is valuable; indulgence or self-focus can complicate it.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the nine theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of satisfaction, pleasure, wish fulfillment, emotional self-enjoyment. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of culmination, intensity, near-completion expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate culmination, intensity, near-completion expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody culmination, intensity, near-completion expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how satisfaction, pleasure, wish fulfillment, emotional self-enjoyment affects both emotional desire and practical readiness to repair. Contentment is valuable; indulgence or self-focus can complicate it.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Nine of Cups brings satisfaction, pleasure, wish fulfillment, emotional self-enjoyment into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: contentment is valuable; indulgence or self-focus can complicate it.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use culmination, intensity, near-completion expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within culmination, intensity, near-completion expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how culmination, intensity, near-completion expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of culmination, intensity, near-completion expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "satisfaction, pleasure, wish fulfillment, emotional self-enjoyment",
+        "developmental_logic": "intensity near culmination: much has developed, but the final threshold matters",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "contentment is valuable; indulgence or self-focus can complicate it"
+      }
+    },
+    {
+      "id": "ten-of-cups",
+      "name_en": "Ten of Cups",
+      "name_vi": "Mười Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Ten",
+      "element": "Nước",
+      "core": {
+        "archetype": "emotional fulfillment, shared belonging, relational ideal",
+        "rank_theme": "completion, consequence, transition to next cycle",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "emotional fulfillment, shared belonging, relational ideal"
+      },
+      "reversed": {
+        "baseline": "disharmony, expectation mismatch, family/relationship strain",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ten of Cups centers on shared emotional fulfillment, belonging, relational ideal. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: the ideal of harmony must be supported by real communication and shared expectations.",
+          "reversed": "In love, reversed may show disharmony, expectation mismatch, family/relationship strain. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of shared emotional fulfillment, belonging, relational ideal. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of emotional fulfillment, shared belonging, relational ideal."
+        },
+        "intentions": {
+          "upright": "As intentions, translate emotional fulfillment, shared belonging, relational ideal into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody emotional fulfillment, shared belonging, relational ideal. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how shared emotional fulfillment, belonging, relational ideal affects both emotional desire and practical readiness to repair. The ideal of harmony must be supported by real communication and shared expectations.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ten of Cups brings shared emotional fulfillment, belonging, relational ideal into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: the ideal of harmony must be supported by real communication and shared expectations.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use emotional fulfillment, shared belonging, relational ideal to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within emotional fulfillment, shared belonging, relational ideal is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how emotional fulfillment, shared belonging, relational ideal becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of emotional fulfillment, shared belonging, relational ideal; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "shared emotional fulfillment, belonging, relational ideal",
+        "developmental_logic": "the full consequence of the suit: completion, saturation and transition",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "the ideal of harmony must be supported by real communication and shared expectations"
+      }
+    },
+    {
+      "id": "page-of-cups",
+      "name_en": "Page of Cups",
+      "name_vi": "Tiểu Đồng Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Page",
+      "element": "Nước",
+      "core": {
+        "archetype": "emotional openness, tender message, imaginative feeling",
+        "rank_theme": "learning, message, curiosity, early embodiment",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "emotional openness, tender message, imaginative feeling"
+      },
+      "reversed": {
+        "baseline": "emotional immaturity, blocked expression, oversensitivity",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Page of Cups centers on tender feeling, apology/message, emotional curiosity, imagination. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: sensitivity is genuine but may lack mature expression.",
+          "reversed": "In love, reversed may show emotional immaturity, blocked expression, oversensitivity. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of tender feeling, apology/message, emotional curiosity, imagination. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of emotional openness, tender message, imaginative feeling."
+        },
+        "intentions": {
+          "upright": "As intentions, translate emotional openness, tender message, imaginative feeling into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody emotional openness, tender message, imaginative feeling. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how tender feeling, apology/message, emotional curiosity, imagination affects both emotional desire and practical readiness to repair. Sensitivity is genuine but may lack mature expression.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Page of Cups brings tender feeling, apology/message, emotional curiosity, imagination into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: sensitivity is genuine but may lack mature expression.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use emotional openness, tender message, imaginative feeling to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within emotional openness, tender message, imaginative feeling is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how emotional openness, tender message, imaginative feeling becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of emotional openness, tender message, imaginative feeling; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "tender feeling, apology/message, emotional curiosity, imagination",
+        "developmental_logic": "early embodiment: curiosity, message, experimentation and immature-but-real potential",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "sensitivity is genuine but may lack mature expression"
+      }
+    },
+    {
+      "id": "knight-of-cups",
+      "name_en": "Knight of Cups",
+      "name_vi": "Hiệp Sĩ Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Knight",
+      "element": "Nước",
+      "core": {
+        "archetype": "pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity",
+        "rank_theme": "pursuit, movement, testing the suit through action",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by pursuit, movement, testing the suit through action"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the knight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Knight of Cups centers on romantic pursuit, invitation, idealistic emotional movement. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: beautiful intention needs consistency and reality-testing.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the knight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of romantic pursuit, invitation, idealistic emotional movement. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how romantic pursuit, invitation, idealistic emotional movement affects both emotional desire and practical readiness to repair. Beautiful intention needs consistency and reality-testing.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Knight of Cups brings romantic pursuit, invitation, idealistic emotional movement into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: beautiful intention needs consistency and reality-testing.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of pursuit, movement, testing the suit through action expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "romantic pursuit, invitation, idealistic emotional movement",
+        "developmental_logic": "active pursuit: the suit is pushed into motion, sometimes faster than integration",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "beautiful intention needs consistency and reality-testing"
+      }
+    },
+    {
+      "id": "queen-of-cups",
+      "name_en": "Queen of Cups",
+      "name_vi": "Nữ Hoàng Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "Queen",
+      "element": "Nước",
+      "core": {
+        "archetype": "mature inward command of the suit expressed through emotion, connection, receptivity",
+        "rank_theme": "mature inward command of the suit",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by mature inward command of the suit"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the queen theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Queen of Cups centers on empathy, intuitive emotional intelligence, deep receptivity. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: care requires boundaries so sensitivity does not become absorption.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the queen theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of empathy, intuitive emotional intelligence, deep receptivity. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature inward command of the suit expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature inward command of the suit expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature inward command of the suit expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how empathy, intuitive emotional intelligence, deep receptivity affects both emotional desire and practical readiness to repair. Care requires boundaries so sensitivity does not become absorption.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Queen of Cups brings empathy, intuitive emotional intelligence, deep receptivity into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: care requires boundaries so sensitivity does not become absorption.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature inward command of the suit expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature inward command of the suit expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature inward command of the suit expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature inward command of the suit expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "empathy, intuitive emotional intelligence, deep receptivity",
+        "developmental_logic": "inward mastery: the suit is held, understood and expressed with mature receptivity",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "care requires boundaries so sensitivity does not become absorption"
+      }
+    },
+    {
+      "id": "king-of-cups",
+      "name_en": "King of Cups",
+      "name_vi": "Vua Cốc",
+      "arcana": "minor",
+      "suit": "Cups",
+      "rank": "King",
+      "element": "Nước",
+      "core": {
+        "archetype": "mature outward command and stewardship of the suit expressed through emotion, connection, receptivity",
+        "rank_theme": "mature outward command and stewardship of the suit",
+        "suit_domain": "emotion, connection, receptivity"
+      },
+      "upright": {
+        "core_expression": "feeling, relationship, intuition shaped by mature outward command and stewardship of the suit"
+      },
+      "reversed": {
+        "baseline": "emotional blockage, idealization, withdrawal, dysregulation; the king theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read emotion, connection, receptivity through reciprocity, communication, behavior and readiness.",
+        "career": "Read emotion, connection, receptivity through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, King of Cups centers on emotional steadiness, compassionate control, mature feeling. Read it through emotional availability, intimacy, reciprocity, longing and attachment. Key nuance: maturity is shown by regulated expression, not emotional absence.",
+          "reversed": "In love, reversed may show emotional blockage, idealization, withdrawal, dysregulation; the king theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of emotional steadiness, compassionate control, mature feeling. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature outward command and stewardship of the suit expressed through emotion, connection, receptivity."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature outward command and stewardship of the suit expressed through emotion, connection, receptivity into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature outward command and stewardship of the suit expressed through emotion, connection, receptivity. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how emotional steadiness, compassionate control, mature feeling affects both emotional desire and practical readiness to repair. Maturity is shown by regulated expression, not emotional absence.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, King of Cups brings emotional steadiness, compassionate control, mature feeling into meaning, morale, belonging, creative sensitivity and emotional fit. Key nuance: maturity is shown by regulated expression, not emotional absence.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature outward command and stewardship of the suit expressed through emotion, connection, receptivity to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature outward command and stewardship of the suit expressed through emotion, connection, receptivity is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature outward command and stewardship of the suit expressed through emotion, connection, receptivity becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature outward command and stewardship of the suit expressed through emotion, connection, receptivity; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "emotional steadiness, compassionate control, mature feeling",
+        "developmental_logic": "outward stewardship: the suit is directed, structured and made consequential",
+        "suit_logic": "emotion, attachment, receptivity, imagination and relational exchange",
+        "shadow_tension": "idealization, avoidance, emotional flooding, dependency or withdrawal",
+        "interpretive_nuance": "maturity is shown by regulated expression, not emotional absence"
+      }
+    }
+  ]
+}

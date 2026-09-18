@@ -1,0 +1,1447 @@
+{
+  "version": "3.0",
+  "cards": [
+    {
+      "id": "ace-of-pentacles",
+      "name_en": "Ace of Pentacles",
+      "name_vi": "Khởi đầu Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Ace",
+      "element": "Đất",
+      "core": {
+        "archetype": "tangible opportunity, practical seed, material beginning",
+        "rank_theme": "seed, opening, concentrated potential",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "tangible opportunity, practical seed, material beginning"
+      },
+      "reversed": {
+        "baseline": "missed/unstable opportunity, weak foundation, delayed material start",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ace of Pentacles centers on tangible opportunity, resource, practical seed, grounded beginning. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: potential becomes value only through real-world follow-through.",
+          "reversed": "In love, reversed may show missed/unstable opportunity, weak foundation, delayed material start. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of tangible opportunity, resource, practical seed, grounded beginning. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of tangible opportunity, practical seed, material beginning."
+        },
+        "intentions": {
+          "upright": "As intentions, translate tangible opportunity, practical seed, material beginning into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody tangible opportunity, practical seed, material beginning. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how tangible opportunity, resource, practical seed, grounded beginning affects both emotional desire and practical readiness to repair. Potential becomes value only through real-world follow-through.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ace of Pentacles brings tangible opportunity, resource, practical seed, grounded beginning into skill, money, systems, workload, craft and sustainable results. Key nuance: potential becomes value only through real-world follow-through.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use tangible opportunity, practical seed, material beginning to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within tangible opportunity, practical seed, material beginning is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how tangible opportunity, practical seed, material beginning becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of tangible opportunity, practical seed, material beginning; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "tangible opportunity, resource, practical seed, grounded beginning",
+        "developmental_logic": "a seed or opening: potential exists, but it still needs embodiment",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "potential becomes value only through real-world follow-through"
+      }
+    },
+    {
+      "id": "two-of-pentacles",
+      "name_en": "Two of Pentacles",
+      "name_vi": "Hai Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Two",
+      "element": "Đất",
+      "core": {
+        "archetype": "duality, choice, balance, relationship expressed through material life, work, body, stability",
+        "rank_theme": "duality, choice, balance, relationship",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by duality, choice, balance, relationship"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the two theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Two of Pentacles centers on juggling resources, adaptability, shifting priorities. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: flexibility works until too many demands make everything unstable.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the two theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of juggling resources, adaptability, shifting priorities. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of duality, choice, balance, relationship expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate duality, choice, balance, relationship expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody duality, choice, balance, relationship expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how juggling resources, adaptability, shifting priorities affects both emotional desire and practical readiness to repair. Flexibility works until too many demands make everything unstable.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Two of Pentacles brings juggling resources, adaptability, shifting priorities into skill, money, systems, workload, craft and sustainable results. Key nuance: flexibility works until too many demands make everything unstable.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use duality, choice, balance, relationship expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within duality, choice, balance, relationship expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how duality, choice, balance, relationship expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of duality, choice, balance, relationship expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "juggling resources, adaptability, shifting priorities",
+        "developmental_logic": "a polarity or balancing act: two forces must be held, compared or related",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "flexibility works until too many demands make everything unstable"
+      }
+    },
+    {
+      "id": "three-of-pentacles",
+      "name_en": "Three of Pentacles",
+      "name_vi": "Ba Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Three",
+      "element": "Đất",
+      "core": {
+        "archetype": "development, expression, collaboration expressed through material life, work, body, stability",
+        "rank_theme": "development, expression, collaboration",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by development, expression, collaboration"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the three theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Three of Pentacles centers on craft, collaboration, learning through contribution. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: quality grows through feedback, roles and shared standards.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the three theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of craft, collaboration, learning through contribution. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of development, expression, collaboration expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate development, expression, collaboration expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody development, expression, collaboration expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how craft, collaboration, learning through contribution affects both emotional desire and practical readiness to repair. Quality grows through feedback, roles and shared standards.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Three of Pentacles brings craft, collaboration, learning through contribution into skill, money, systems, workload, craft and sustainable results. Key nuance: quality grows through feedback, roles and shared standards.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use development, expression, collaboration expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within development, expression, collaboration expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how development, expression, collaboration expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of development, expression, collaboration expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "craft, collaboration, learning through contribution",
+        "developmental_logic": "development through expression, collaboration or an emerging result",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "quality grows through feedback, roles and shared standards"
+      }
+    },
+    {
+      "id": "four-of-pentacles",
+      "name_en": "Four of Pentacles",
+      "name_vi": "Bốn Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Four",
+      "element": "Đất",
+      "core": {
+        "archetype": "structure, stability, consolidation expressed through material life, work, body, stability",
+        "rank_theme": "structure, stability, consolidation",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by structure, stability, consolidation"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the four theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Four of Pentacles centers on holding resources, security, control, conservation. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: protection can become rigidity or fear of loss.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the four theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of holding resources, security, control, conservation. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of structure, stability, consolidation expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate structure, stability, consolidation expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody structure, stability, consolidation expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how holding resources, security, control, conservation affects both emotional desire and practical readiness to repair. Protection can become rigidity or fear of loss.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Four of Pentacles brings holding resources, security, control, conservation into skill, money, systems, workload, craft and sustainable results. Key nuance: protection can become rigidity or fear of loss.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use structure, stability, consolidation expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within structure, stability, consolidation expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how structure, stability, consolidation expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of structure, stability, consolidation expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "holding resources, security, control, conservation",
+        "developmental_logic": "consolidation: stability can become either a foundation or a holding pattern",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "protection can become rigidity or fear of loss"
+      }
+    },
+    {
+      "id": "five-of-pentacles",
+      "name_en": "Five of Pentacles",
+      "name_vi": "Năm Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Five",
+      "element": "Đất",
+      "core": {
+        "archetype": "disruption, friction, adaptation expressed through material life, work, body, stability",
+        "rank_theme": "disruption, friction, adaptation",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by disruption, friction, adaptation"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the five theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Five of Pentacles centers on material strain, exclusion, insecurity, lack of support. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: hardship can narrow perception; available support should be checked in reality.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the five theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of material strain, exclusion, insecurity, lack of support. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of disruption, friction, adaptation expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate disruption, friction, adaptation expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody disruption, friction, adaptation expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how material strain, exclusion, insecurity, lack of support affects both emotional desire and practical readiness to repair. Hardship can narrow perception; available support should be checked in reality.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Five of Pentacles brings material strain, exclusion, insecurity, lack of support into skill, money, systems, workload, craft and sustainable results. Key nuance: hardship can narrow perception; available support should be checked in reality.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use disruption, friction, adaptation expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within disruption, friction, adaptation expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how disruption, friction, adaptation expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of disruption, friction, adaptation expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "material strain, exclusion, insecurity, lack of support",
+        "developmental_logic": "friction and destabilization that exposes what is not working",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "hardship can narrow perception; available support should be checked in reality"
+      }
+    },
+    {
+      "id": "six-of-pentacles",
+      "name_en": "Six of Pentacles",
+      "name_vi": "Sáu Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Six",
+      "element": "Đất",
+      "core": {
+        "archetype": "adjustment, exchange, movement toward harmony expressed through material life, work, body, stability",
+        "rank_theme": "adjustment, exchange, movement toward harmony",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by adjustment, exchange, movement toward harmony"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the six theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Six of Pentacles centers on giving and receiving, material reciprocity, support, power in exchange. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: generosity is healthiest when terms and power are clear.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the six theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of giving and receiving, material reciprocity, support, power in exchange. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of adjustment, exchange, movement toward harmony expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate adjustment, exchange, movement toward harmony expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody adjustment, exchange, movement toward harmony expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how giving and receiving, material reciprocity, support, power in exchange affects both emotional desire and practical readiness to repair. Generosity is healthiest when terms and power are clear.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Six of Pentacles brings giving and receiving, material reciprocity, support, power in exchange into skill, money, systems, workload, craft and sustainable results. Key nuance: generosity is healthiest when terms and power are clear.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use adjustment, exchange, movement toward harmony expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within adjustment, exchange, movement toward harmony expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how adjustment, exchange, movement toward harmony expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of adjustment, exchange, movement toward harmony expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "giving and receiving, material reciprocity, support, power in exchange",
+        "developmental_logic": "rebalancing, exchange or movement after disruption",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "generosity is healthiest when terms and power are clear"
+      }
+    },
+    {
+      "id": "seven-of-pentacles",
+      "name_en": "Seven of Pentacles",
+      "name_vi": "Bảy Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Seven",
+      "element": "Đất",
+      "core": {
+        "archetype": "assessment, challenge, strategy expressed through material life, work, body, stability",
+        "rank_theme": "assessment, challenge, strategy",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by assessment, challenge, strategy"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the seven theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Seven of Pentacles centers on assessment of investment, patience, delayed return. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: waiting is useful when evidence still supports the investment.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the seven theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of assessment of investment, patience, delayed return. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of assessment, challenge, strategy expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate assessment, challenge, strategy expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody assessment, challenge, strategy expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how assessment of investment, patience, delayed return affects both emotional desire and practical readiness to repair. Waiting is useful when evidence still supports the investment.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Seven of Pentacles brings assessment of investment, patience, delayed return into skill, money, systems, workload, craft and sustainable results. Key nuance: waiting is useful when evidence still supports the investment.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use assessment, challenge, strategy expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within assessment, challenge, strategy expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how assessment, challenge, strategy expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of assessment, challenge, strategy expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "assessment of investment, patience, delayed return",
+        "developmental_logic": "assessment under pressure: strategy, conviction and discernment are tested",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "waiting is useful when evidence still supports the investment"
+      }
+    },
+    {
+      "id": "eight-of-pentacles",
+      "name_en": "Eight of Pentacles",
+      "name_vi": "Tám Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Eight",
+      "element": "Đất",
+      "core": {
+        "archetype": "movement, mastery, constraint or acceleration expressed through material life, work, body, stability",
+        "rank_theme": "movement, mastery, constraint or acceleration",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by movement, mastery, constraint or acceleration"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the eight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Eight of Pentacles centers on craftsmanship, disciplined practice, skill through repetition. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: mastery grows through focused work but can narrow life if overdone.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the eight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of craftsmanship, disciplined practice, skill through repetition. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of movement, mastery, constraint or acceleration expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate movement, mastery, constraint or acceleration expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody movement, mastery, constraint or acceleration expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how craftsmanship, disciplined practice, skill through repetition affects both emotional desire and practical readiness to repair. Mastery grows through focused work but can narrow life if overdone.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Eight of Pentacles brings craftsmanship, disciplined practice, skill through repetition into skill, money, systems, workload, craft and sustainable results. Key nuance: mastery grows through focused work but can narrow life if overdone.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use movement, mastery, constraint or acceleration expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within movement, mastery, constraint or acceleration expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how movement, mastery, constraint or acceleration expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of movement, mastery, constraint or acceleration expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "craftsmanship, disciplined practice, skill through repetition",
+        "developmental_logic": "concentrated movement, repetition, mastery or constraint depending on the suit",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "mastery grows through focused work but can narrow life if overdone"
+      }
+    },
+    {
+      "id": "nine-of-pentacles",
+      "name_en": "Nine of Pentacles",
+      "name_vi": "Chín Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Nine",
+      "element": "Đất",
+      "core": {
+        "archetype": "culmination, intensity, near-completion expressed through material life, work, body, stability",
+        "rank_theme": "culmination, intensity, near-completion",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by culmination, intensity, near-completion"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the nine theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Nine of Pentacles centers on self-sufficiency, earned comfort, independence, cultivated value. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: independence is strength unless it becomes isolation or status fixation.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the nine theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of self-sufficiency, earned comfort, independence, cultivated value. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of culmination, intensity, near-completion expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate culmination, intensity, near-completion expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody culmination, intensity, near-completion expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how self-sufficiency, earned comfort, independence, cultivated value affects both emotional desire and practical readiness to repair. Independence is strength unless it becomes isolation or status fixation.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Nine of Pentacles brings self-sufficiency, earned comfort, independence, cultivated value into skill, money, systems, workload, craft and sustainable results. Key nuance: independence is strength unless it becomes isolation or status fixation.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use culmination, intensity, near-completion expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within culmination, intensity, near-completion expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how culmination, intensity, near-completion expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of culmination, intensity, near-completion expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "self-sufficiency, earned comfort, independence, cultivated value",
+        "developmental_logic": "intensity near culmination: much has developed, but the final threshold matters",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "independence is strength unless it becomes isolation or status fixation"
+      }
+    },
+    {
+      "id": "ten-of-pentacles",
+      "name_en": "Ten of Pentacles",
+      "name_vi": "Mười Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Ten",
+      "element": "Đất",
+      "core": {
+        "archetype": "completion, consequence, transition to next cycle expressed through material life, work, body, stability",
+        "rank_theme": "completion, consequence, transition to next cycle",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by completion, consequence, transition to next cycle"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the ten theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Ten of Pentacles centers on long-term security, legacy, family/material systems, durable structure. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: stability is collective and systemic, not merely personal wealth.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the ten theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of long-term security, legacy, family/material systems, durable structure. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of completion, consequence, transition to next cycle expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate completion, consequence, transition to next cycle expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody completion, consequence, transition to next cycle expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how long-term security, legacy, family/material systems, durable structure affects both emotional desire and practical readiness to repair. Stability is collective and systemic, not merely personal wealth.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Ten of Pentacles brings long-term security, legacy, family/material systems, durable structure into skill, money, systems, workload, craft and sustainable results. Key nuance: stability is collective and systemic, not merely personal wealth.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use completion, consequence, transition to next cycle expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within completion, consequence, transition to next cycle expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how completion, consequence, transition to next cycle expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of completion, consequence, transition to next cycle expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "long-term security, legacy, family/material systems, durable structure",
+        "developmental_logic": "the full consequence of the suit: completion, saturation and transition",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "stability is collective and systemic, not merely personal wealth"
+      }
+    },
+    {
+      "id": "page-of-pentacles",
+      "name_en": "Page of Pentacles",
+      "name_vi": "Tiểu Đồng Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Page",
+      "element": "Đất",
+      "core": {
+        "archetype": "learning, message, curiosity, early embodiment expressed through material life, work, body, stability",
+        "rank_theme": "learning, message, curiosity, early embodiment",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by learning, message, curiosity, early embodiment"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the page theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Page of Pentacles centers on practical learning, study, small concrete opportunity, grounded curiosity. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: promise is real when backed by consistent practice.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the page theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of practical learning, study, small concrete opportunity, grounded curiosity. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of learning, message, curiosity, early embodiment expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate learning, message, curiosity, early embodiment expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody learning, message, curiosity, early embodiment expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how practical learning, study, small concrete opportunity, grounded curiosity affects both emotional desire and practical readiness to repair. Promise is real when backed by consistent practice.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Page of Pentacles brings practical learning, study, small concrete opportunity, grounded curiosity into skill, money, systems, workload, craft and sustainable results. Key nuance: promise is real when backed by consistent practice.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use learning, message, curiosity, early embodiment expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within learning, message, curiosity, early embodiment expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how learning, message, curiosity, early embodiment expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of learning, message, curiosity, early embodiment expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "practical learning, study, small concrete opportunity, grounded curiosity",
+        "developmental_logic": "early embodiment: curiosity, message, experimentation and immature-but-real potential",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "promise is real when backed by consistent practice"
+      }
+    },
+    {
+      "id": "knight-of-pentacles",
+      "name_en": "Knight of Pentacles",
+      "name_vi": "Hiệp Sĩ Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Knight",
+      "element": "Đất",
+      "core": {
+        "archetype": "pursuit, movement, testing the suit through action expressed through material life, work, body, stability",
+        "rank_theme": "pursuit, movement, testing the suit through action",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by pursuit, movement, testing the suit through action"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the knight theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Knight of Pentacles centers on reliability, routine, patient progress, duty. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: steadiness builds trust but can become stagnation.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the knight theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of reliability, routine, patient progress, duty. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of pursuit, movement, testing the suit through action expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate pursuit, movement, testing the suit through action expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody pursuit, movement, testing the suit through action expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how reliability, routine, patient progress, duty affects both emotional desire and practical readiness to repair. Steadiness builds trust but can become stagnation.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Knight of Pentacles brings reliability, routine, patient progress, duty into skill, money, systems, workload, craft and sustainable results. Key nuance: steadiness builds trust but can become stagnation.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use pursuit, movement, testing the suit through action expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within pursuit, movement, testing the suit through action expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how pursuit, movement, testing the suit through action expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of pursuit, movement, testing the suit through action expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "reliability, routine, patient progress, duty",
+        "developmental_logic": "active pursuit: the suit is pushed into motion, sometimes faster than integration",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "steadiness builds trust but can become stagnation"
+      }
+    },
+    {
+      "id": "queen-of-pentacles",
+      "name_en": "Queen of Pentacles",
+      "name_vi": "Nữ Hoàng Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "Queen",
+      "element": "Đất",
+      "core": {
+        "archetype": "mature inward command of the suit expressed through material life, work, body, stability",
+        "rank_theme": "mature inward command of the suit",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by mature inward command of the suit"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the queen theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, Queen of Pentacles centers on practical care, embodied security, resourcefulness, grounded nurture. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: care is sustainable when the caregiver is resourced too.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the queen theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of practical care, embodied security, resourcefulness, grounded nurture. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature inward command of the suit expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature inward command of the suit expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature inward command of the suit expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how practical care, embodied security, resourcefulness, grounded nurture affects both emotional desire and practical readiness to repair. Care is sustainable when the caregiver is resourced too.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, Queen of Pentacles brings practical care, embodied security, resourcefulness, grounded nurture into skill, money, systems, workload, craft and sustainable results. Key nuance: care is sustainable when the caregiver is resourced too.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature inward command of the suit expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature inward command of the suit expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature inward command of the suit expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature inward command of the suit expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "practical care, embodied security, resourcefulness, grounded nurture",
+        "developmental_logic": "inward mastery: the suit is held, understood and expressed with mature receptivity",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "care is sustainable when the caregiver is resourced too"
+      }
+    },
+    {
+      "id": "king-of-pentacles",
+      "name_en": "King of Pentacles",
+      "name_vi": "Vua Tiền",
+      "arcana": "minor",
+      "suit": "Pentacles",
+      "rank": "King",
+      "element": "Đất",
+      "core": {
+        "archetype": "mature outward command and stewardship of the suit expressed through material life, work, body, stability",
+        "rank_theme": "mature outward command and stewardship of the suit",
+        "suit_domain": "material life, work, body, stability"
+      },
+      "upright": {
+        "core_expression": "resources, craft, security, practicality shaped by mature outward command and stewardship of the suit"
+      },
+      "reversed": {
+        "baseline": "instability, scarcity mindset, poor stewardship, stalled practical progress; the king theme may be blocked, overdone, lacking, internalized, or changing",
+        "lenses": [
+          "blocked_or_delayed",
+          "internalized",
+          "excessive_or_deficient",
+          "resisted",
+          "releasing_or_changing"
+        ],
+        "lens_guide": {
+          "blocked_or_delayed": "The core energy wants expression but cannot move cleanly yet.",
+          "internalized": "The archetype is experienced privately or psychologically more than outwardly.",
+          "excessive": "The card's quality is overused, intensified, or compensatory.",
+          "deficient": "The needed quality is unavailable, underdeveloped, or depleted.",
+          "resisted": "The person/dynamic is avoiding or fighting the archetype's demand.",
+          "releasing_or_changing": "A previously stuck/shadow pattern may be loosening or changing form."
+        }
+      },
+      "context_rules": {
+        "love": "Read material life, work, body, stability through reciprocity, communication, behavior and readiness.",
+        "career": "Read material life, work, body, stability through work conditions, capability, resources and action.",
+        "future": "Describe direction if current conditions continue."
+      },
+      "avoid_overinterpretation": [
+        "Do not turn a symbolic theme into an unsupported factual accusation or guaranteed event."
+      ],
+      "contexts": {
+        "love": {
+          "upright": "In love, King of Pentacles centers on material stewardship, stability, mature resource management. Read it through consistency, practical investment, security, shared life and tangible effort. Key nuance: security is strongest when resources serve values rather than control them.",
+          "reversed": "In love, reversed may show instability, scarcity mindset, poor stewardship, stalled practical progress; the king theme may be blocked, overdone, lacking, internalized, or changing. Choose the lens that best fits the position and surrounding cards rather than assuming rejection or breakup."
+        },
+        "feelings": {
+          "upright": "As feelings, this can show an inner experience of material stewardship, stability, mature resource management. Do not convert the symbol into certainty about another person's private mind.",
+          "reversed": "As feelings reversed, look for blocked, conflicted, internalized, excessive, or changing expression of mature outward command and stewardship of the suit expressed through material life, work, body, stability."
+        },
+        "intentions": {
+          "upright": "As intentions, translate mature outward command and stewardship of the suit expressed through material life, work, body, stability into what someone may be oriented toward; do not equate intention with follow-through.",
+          "reversed": "Reversed intentions may be inconsistent, inhibited, conflicted, or undergoing revision."
+        },
+        "actions": {
+          "upright": "As actions, ask what observable behavior would embody mature outward command and stewardship of the suit expressed through material life, work, body, stability. Weight action cards and practical positions more heavily than emotional speculation.",
+          "reversed": "Reversed action may be delayed, poorly directed, avoided, excessive, or inconsistent."
+        },
+        "reconciliation": {
+          "upright": "For reconciliation, test how material stewardship, stability, mature resource management affects both emotional desire and practical readiness to repair. Security is strongest when resources serve values rather than control them.",
+          "reversed": "For reconciliation reversed, identify what remains blocked or unresolved; never treat nostalgia/attraction alone as readiness to reunite."
+        },
+        "career": {
+          "upright": "In career, King of Pentacles brings material stewardship, stability, mature resource management into skill, money, systems, workload, craft and sustainable results. Key nuance: security is strongest when resources serve values rather than control them.",
+          "reversed": "In career reversed, test for blockage, poor fit, excess, avoidance, or transition rather than predicting job loss."
+        },
+        "money": {
+          "upright": "In money questions, use mature outward command and stewardship of the suit expressed through material life, work, body, stability to reflect on resources, choices, habits, risk, and priorities; avoid guaranteed financial outcomes.",
+          "reversed": "Reversed money meaning should flag a possible imbalance or constraint without substituting for financial advice."
+        },
+        "personal_growth": {
+          "upright": "For personal growth, ask what capacity or lesson within mature outward command and stewardship of the suit expressed through material life, work, body, stability is ready to be consciously practiced.",
+          "reversed": "Reversed can point to an internal lesson, resistance, overcorrection, or a pattern beginning to release."
+        }
+      },
+      "position_modifiers": {
+        "current": "Describe how this archetype is operating now, without turning it into a final outcome.",
+        "root": "Use the archetype as an underlying contributor or learned pattern, not necessarily a single historical event.",
+        "obstacle": "Ask how mature outward command and stewardship of the suit expressed through material life, work, body, stability becomes blocked, excessive, deficient, conflicted, or poorly timed here.",
+        "hidden_factor": "Frame as something under-recognized in the dynamic, not as proof of a secret.",
+        "feelings": "Describe symbolic emotional experience; calibrate claims about third parties.",
+        "intentions": "Describe orientation or aim and explicitly separate it from action.",
+        "actions": "Translate the archetype into likely observable behavior or lack of follow-through.",
+        "advice": "Extract the healthiest usable expression of mature outward command and stewardship of the suit expressed through material life, work, body, stability; advice must be specific to the question.",
+        "future_tendency": "Project the current pattern conditionally and name what could alter the trajectory.",
+        "outcome": "Treat as a conditional synthesis of the spread, not fate."
+      },
+      "interpretation_checks": [
+        "What job does the spread position assign this card?",
+        "Which part of the card's core meaning directly answers the user's question?",
+        "Which reversal lens, if reversed, is best supported by neighboring cards?",
+        "Does another card reinforce, qualify, contrast, sequence, or redirect this card?",
+        "What conclusion would be overreach if this card were read alone?"
+      ],
+      "master_semantics": {
+        "specific_anchor": "material stewardship, stability, mature resource management",
+        "developmental_logic": "outward stewardship: the suit is directed, structured and made consequential",
+        "suit_logic": "material reality, body, work, resources, reliability and long-term building",
+        "shadow_tension": "stagnation, scarcity, overcontrol, workaholism or weak practical foundations",
+        "interpretive_nuance": "security is strongest when resources serve values rather than control them"
+      }
+    }
+  ]
+}
