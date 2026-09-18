@@ -20,3 +20,8 @@ test("shell exposes responsive brand hooks", () => {
   assert.match(css, /@media\(max-width:700px\)/);
   assert.match(css, /tagline|brand-tagline/);
 });
+
+test("tablet shell compacts the brand lockup before header controls overlap", () => {
+  assert.match(css, /@media\(max-width:900px\) and \(min-width:701px\)[\s\S]*brand-tagline\{display:none\}/);
+  assert.match(css, /@media\(max-width:900px\) and \(min-width:701px\)[\s\S]*brand-lockup\{flex:0 0 auto;/);
+});
