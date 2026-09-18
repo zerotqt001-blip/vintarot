@@ -92,7 +92,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <div className="brand-lockup">
-        <Logo variant="dark" href="/" priority={isHome} />
+        <Logo variant="dark" href="/" aria-label="NaTarot" priority={isHome} />
         <span className="brand-tagline">{t("header.tagline")}</span>
       </div>
       <nav className="topbar-nav" aria-label={t("nav.decks")}>
