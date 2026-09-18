@@ -119,7 +119,8 @@ export function normalizeUsername(value: string): string {
 }
 
 export function normalizePhone(value: string): string {
-  const normalized = value.trim().replace(/[\s()-]/g, "");
+  const compact = value.trim().replace(/[\s()-]/g, "");
+  const normalized = /^0\d{9}$/.test(compact) ? `+84${compact.slice(1)}` : compact;
   if (!phoneValue.safeParse(normalized).success) fail("Invalid phone number");
   return normalized;
 }

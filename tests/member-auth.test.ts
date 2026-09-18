@@ -38,10 +38,10 @@ test("normalizes login identifiers and phone numbers", () => {
   assert.equal(normalizeUsername("  Moon_Rider "), "moon_rider");
   assert.equal(normalizeUsername("abc"), "abc");
   assert.equal(normalizePhone("+84 912-345-678"), "+84912345678");
+  assert.equal(normalizePhone("036 897 9321"), "+84368979321");
   assert.throws(() => normalizePhone("+012345678"));
   assert.throws(() => normalizeUsername("ab"));
   assert.throws(() => normalizeUsername("bad-name"));
-  assert.throws(() => normalizePhone("0912345678"));
 });
 
 test("password hashes are salted, versioned and reject the wrong password", async () => {
