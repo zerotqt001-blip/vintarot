@@ -165,6 +165,48 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(saved?.modelName, "openai:test-model");
 });
 
+test("loads the owner's stored template, exact cards, and requested-locale meaning pairs", async () => {
+  const calls: string[] = [];
+  let providerCardIds: string[] = [];
+  const result = await generateTarotReading({
+    repository: repository({
+      getSessionForOwner: async (sessionId, owner) => {
+        calls.push(`session:${sessionId}:${owner.kind}:${owner.kind === "user" ? owner.userId : owner.guestId}`);
+        return { session, cards: cards() };
+      },
+      getReadingTemplate: async (templateId, locale) => {
+        calls.push(`template:${templateId}:${locale}`);
+        return template;
+      },
+      getMeaningPair: async (cardId, locale) => {
+        calls.push(`meaning:${cardId}:${locale}`);
+        return { upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") };
+      },
+    }),
+    owner: { kind: "user", userId: "user-service" },
+    sessionId: session.id,
+    locale: "en",
+    provider: provider({
+      generateReading: async (input) => {
+        providerCardIds = input.cards.map((card) => card.card.id);
+        return provider().generateReading(input);
+      },
+    }),
+  });
+
+  assert.deepEqual(calls, [
+    "session:service-session:user:user-service",
+    "template:spread-business-meeting:en",
+    "meaning:wands-eight:en",
+    "meaning:pentacles-ten:en",
+    "meaning:major-temperance:en",
+  ]);
+  assert.deepEqual(providerCardIds, ["wands-eight", "pentacles-ten", "major-temperance"]);
+  assert.deepEqual(Object.keys(result).sort(), ["locale", "modelName", "promptVersion", "provider", "reading", "sessionId", "source"]);
+  assert.equal(JSON.stringify(result).includes(session.question), false);
+  assert.equal(JSON.stringify(result).includes(session.optionalContext), false);
+});
+
 test("rejects an unknown or incomplete owned session before invoking the provider", async () => {
   let calls = 0;
   const countingProvider = provider({ generateReading: async () => { calls += 1; throw new Error("should not run"); } });
@@ -176,7 +218,28 @@ test("rejects an unknown or incomplete owned session before invoking the provide
     generateTarotReading({ repository: repository({ getSessionForOwner: async () => ({ session, cards: cards().slice(0, 2) }) }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
     (error) => error instanceof TarotReadingServiceError && error.code === "incomplete",
   );
+  await assert.rejects(
+    generateTarotReading({ repository: repository({ getSessionForOwner: async () => ({ session: { ...session, status: "pending" }, cards: cards() }) }), ownerId: "user-service", sessionId: session.id, locale: "en", provider: countingProvider }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "incomplete",
+  );
   assert.equal(calls, 0);
+});
+
+test("treats another owner's session as not found", async () => {
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository({
+        getSessionForOwner: async (_sessionId, owner) => owner.kind === "user" && owner.userId === "user-service"
+          ? { session, cards: cards() }
+          : null,
+      }),
+      ownerId: "user-other",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider(),
+    }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "not_found",
+  );
 });
 
 test("does not replace a selected provider failure with a local template", async () => {
@@ -185,6 +248,42 @@ test("does not replace a selected provider failure with a local template", async
     generateTarotReading({ repository: repository(), ownerId: "user-service", sessionId: session.id, locale: "en", provider: provider({ generateReading: async () => { throw providerError; } }) }),
     (error) => error === providerError,
   );
+});
+
+test("preserves safe configuration, upstream, and invalid-response provider errors", async () => {
+  for (const code of ["configuration", "upstream", "invalid_response"] as const) {
+    const expected = new TarotAIError(code, `safe ${code}`, { retryable: code !== "configuration" });
+    await assert.rejects(
+      generateTarotReading({
+        repository: repository(),
+        ownerId: "user-service",
+        sessionId: session.id,
+        locale: "en",
+        provider: provider({ generateReading: async () => { throw expected; } }),
+      }),
+      (error) => error === expected,
+    );
+  }
+});
+
+test("classifies persistence failure after one provider call", async () => {
+  let providerCalls = 0;
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository({ saveReading: async () => { throw new Error("database unavailable"); } }),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({
+        generateReading: async (input) => {
+          providerCalls += 1;
+          return provider().generateReading(input);
+        },
+      }),
+    }),
+    (error) => error instanceof TarotReadingServiceError && error.code === "persistence",
+  );
+  assert.equal(providerCalls, 1);
 });
 
 test("fails before provider work when a historical template or meaning pair is missing", async () => {

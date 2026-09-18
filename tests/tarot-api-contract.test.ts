@@ -70,6 +70,12 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(readingRoute, /env as unknown as Record/);
   assert.match(readingRoute, /model_name/);
   assert.match(readingRoute, /prompt_version/);
+  assert.match(readingRoute, /z\.enum\(\["en", "vi"\]\)/);
+  assert.match(readingRoute, /logTarotReadingEvent/);
+  assert.match(readingRoute, /cardCount/);
+  assert.match(readingRoute, /latencyMs/);
+  assert.match(readingRoute, /failureCategory/);
+  assert.doesNotMatch(readingRoute, /console\.(?:info|warn|error)\([^\n]*(?:question|optionalContext|prompt|apiKey|rawBody|error\.message)/);
   assert.doesNotMatch(readingRoute, /buildLocalReading|TAROT_AI_URL|TAROT_AI_KEY/);
   assert.equal(interpretRoute.trim(), 'export { POST } from "@/app/api/tarot/reading/route";');
   assert.doesNotMatch(interpretRoute, /buildLocalReading|TAROT_AI_URL|TAROT_AI_KEY/);

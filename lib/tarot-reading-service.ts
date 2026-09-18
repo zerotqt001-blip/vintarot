@@ -47,7 +47,7 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
   const owner = resolveOwner(args);
   const stored = await args.repository.getSessionForOwner(args.sessionId, owner);
   if (!stored) throw new TarotReadingServiceError("not_found", "Reading session not found.");
-  if (!stored.cards.length || stored.cards.length !== stored.session.cardCount) {
+  if (stored.session.status !== "drawn" || !stored.cards.length || stored.cards.length !== stored.session.cardCount) {
     throw new TarotReadingServiceError("incomplete", "This reading is not ready to interpret.");
   }
 
