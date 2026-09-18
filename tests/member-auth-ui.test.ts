@@ -18,7 +18,7 @@ test("server entrypoints use the member page projection instead of ChatGPT ident
   for (const path of ["app/page.tsx", "app/[section]/page.tsx", "app/create/page.tsx", "app/room/page.tsx", "app/guidebook/[card]/page.tsx"]) {
     const source = read(path);
     assert.doesNotMatch(source, /getChatGPTUser/);
-    assert.match(source, /getPageMember/);
+    assert.match(source, /getPageMember|requirePageMember/);
     assert.match(source, /dynamic\s*=\s*["']force-dynamic["']/);
   }
 
@@ -27,6 +27,19 @@ test("server entrypoints use the member page projection instead of ChatGPT ident
   assert.match(helper, /cookies\(\)/);
   assert.match(helper, /getMemberFromCookieHeader/);
   assert.match(read("lib/member-auth.ts"), /export async function getMemberFromCookieHeader\(database: D1Database, cookieHeader: string \| null\)/);
+});
+
+test("drawing and individual card detail pages require a member session", () => {
+  const room = read("app/room/page.tsx");
+  const cardDetail = read("app/guidebook/[card]/page.tsx");
+  const helper = read("lib/member-page.ts");
+
+  assert.match(helper, /export async function requirePageMember\(returnTo: string\)/);
+  assert.match(helper, /redirect\(/);
+  assert.match(room, /const returnTo\s*=[\s\S]*["']\/room["']/);
+  assert.match(room, /requirePageMember\(returnTo\)/);
+  assert.match(cardDetail, /requirePageMember\(`\/guidebook\/\$\{slug\}`\)/);
+  assert.match(helper, /safeRelativeReturnPath/);
 });
 
 test("anonymous page identity skips runtime database initialization", () => {
