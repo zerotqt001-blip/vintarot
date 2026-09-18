@@ -46,6 +46,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isCreate = path === "/create";
   const isPractice = path === "/community";
   const isRoom = path === "/room";
+  const isDaily = path === "/daily-spread";
   const shellRef = useRef<HTMLDivElement>(null);
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
@@ -86,7 +87,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
-  return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : "site-shell"}>
+  return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <a className="brand" href="/">NaTarot</a>

@@ -515,16 +515,21 @@ function Daily({ user }: { user: any }) {
     }
   }
   const labels = [t("pages.dailyFeel"), t("pages.dailyNeed")];
+  const complete = flipped.every(Boolean);
   return (
-    <div className="daily-view">
-      <a className="button back-home" href="/">
+    <div className="daily-view daily-cosmic-page">
+      <a className="button daily-back-link" href="/">
         <ArrowLeft size={15} /> {t("common.home")}
       </a>
-      <span className="pill">{t("pages.daily")}</span>
-      <div className="daily-frame">
+      <header className="daily-hero">
+        <div className="daily-ornament" aria-hidden="true"><span />✦<span /></div>
+        <h1>{t("pages.daily")}</h1>
+        <p>{t("pages.dailyReady")}</p>
+      </header>
+      <section className="daily-stage" aria-label={t("pages.daily")}>
         <div className="daily-cards">
           {labels.map((label, index) => (
-            <div key={label}>
+            <div className="daily-card-slot" key={label}>
               <p>{label}:</p>
               <button
                 className={"flip-card " + (flipped[index] ? "flipped" : "")}
@@ -542,7 +547,7 @@ function Daily({ user }: { user: any }) {
                   <span className="card-back flip-back">
                     <CardMark />
                   </span>
-                  <span className="flip-front">
+                  <span className="flip-front" aria-hidden={!flipped[index]}>
                     {draw.length > 0 && <CardFace card={cards[draw[index]]} />}
                   </span>
                 </span>
@@ -550,23 +555,28 @@ function Daily({ user }: { user: any }) {
             </div>
           ))}
         </div>
-      </div>
-      <p>{flipped.every(Boolean) ? t("pages.dailyExplore") : t("pages.dailyReady")}</p>
-      {flipped.every(Boolean) && (
-        <div className="daily-result">
-          <h2>{t("pages.reflect")}</h2>
-          <p>{t("pages.reflectText")}</p>
-          {user ? (
-            <button className="button black" disabled={saved} onClick={save}>
-              {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
-            </button>
-          ) : (
-            <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
-              {t("common.signIn")}
-            </a>
+      </section>
+      <section className={"daily-reflection" + (complete ? " is-complete" : "")} aria-live="polite">
+        <div className="daily-reflection-icon" aria-hidden="true"><Sparkles size={18} strokeWidth={1.4} /></div>
+        <div className="daily-reflection-copy">
+          <strong>{complete ? t("pages.dailyExplore") : t("pages.dailyReady")}</strong>
+          {complete && (
+            <div className="daily-result">
+              <h2>{t("pages.reflect")}</h2>
+              <p>{t("pages.reflectText")}</p>
+              {user ? (
+                <button className="button black" disabled={saved} onClick={save}>
+                  {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
+                </button>
+              ) : (
+                <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
+                  {t("common.signIn")}
+                </a>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </section>
       <p className="status" role="status">{message}</p>
       <CardDetail card={detail} onClose={() => setDetail(null)} />
     </div>
