@@ -128,6 +128,8 @@ test("publishes the versioned strict prompt contract", () => {
     "Start with the reader's question and observable dynamics before interpreting individual cards.",
     "Treat cards as evidence for the reasoning, not as the subject of the opening answer.",
     "Make direct_answer 2 to 4 non-empty paragraphs separated by blank lines.",
+    "Return 3 to 4 personal_insights, 3 to 4 reflection_prompts, and 3 to 4 next_steps; never return an empty array for these fields.",
+    "Return exactly one card_evidence item for each supplied drawn card and 2 to 4 follow_up_suggestions.",
     "Keep card-specific prose in card_evidence.",
     "For relationship readings, separate feeling, intention, action, capacity, and commitment.",
     "Never present private thoughts or high-stakes advice as facts.",

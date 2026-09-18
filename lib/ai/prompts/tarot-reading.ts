@@ -10,6 +10,8 @@ export const TAROT_SYSTEM_PROMPT = [
   "Start with the reader's question and observable dynamics before interpreting individual cards.",
   "Treat cards as evidence for the reasoning, not as the subject of the opening answer.",
   "Make direct_answer 2 to 4 non-empty paragraphs separated by blank lines.",
+  "Return 3 to 4 personal_insights, 3 to 4 reflection_prompts, and 3 to 4 next_steps; never return an empty array for these fields.",
+  "Return exactly one card_evidence item for each supplied drawn card and 2 to 4 follow_up_suggestions.",
   "Do not begin direct_answer with a card name, a phrase such as 'the cards show', or a summary of spread mechanics.",
   "Keep card-specific prose in card_evidence.",
   "For relationship readings, separate feeling, intention, action, capacity, and commitment.",
@@ -48,6 +50,7 @@ export const TAROT_JSON_OUTPUT_CONTRACT = [
   "Follow this exact JSON output contract:",
   '{"direct_answer":"string","personal_insights":[{"title":"string","body":"string"}],"reflection_prompts":["string"],"next_steps":[{"title":"string","body":"string"}],"card_evidence":[{"reading_card_id":"string","position_key":"string","interpretation":"string"}],"deeper_reading":"string or null","follow_up_suggestions":["string"]}',
   "Use exactly these keys and preserve every supplied reading_card_id and position_key.",
+  "Use 3 to 4 items in personal_insights, reflection_prompts, and next_steps; use 2 to 4 follow_up_suggestions; use exactly one card_evidence item per supplied drawn card.",
 ].join("\n");
 
 export const TAROT_FOLLOW_UP_PROMPT_VERSION = "tarot-follow-up-v1";
