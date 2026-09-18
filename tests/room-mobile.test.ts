@@ -6,10 +6,10 @@ const source = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "u
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("mobile Room keeps its main composition centered and the deck summary flexible", () => {
-  assert.match(source, /className="room-deck-summary"/);
+  assert.doesNotMatch(source, /room-bottom|room-deck-summary/);
   assert.match(css, /\.room-page \.table-layout\{[^}]*left:50%;[^}]*transform-origin:center/);
-  assert.match(css, /\.room-page \.room-deck-summary\{[^}]*min-width:0/);
-  assert.match(css, /\.room-page \.room-bottom[^}]*padding[^}]*env\(safe-area-inset/);
+  assert.match(css, /\.room-page \.tabletop\{inset:calc\(64px \+ env\(safe-area-inset-top\)\) 0 0/);
+  assert.match(css, /\.room-page \.card-fan\{[^}]*bottom:max\(10px,env\(safe-area-inset-bottom\)\)/);
 });
 
 test("mobile fan selection keeps swipe-to-draw interaction without a release animation", () => {

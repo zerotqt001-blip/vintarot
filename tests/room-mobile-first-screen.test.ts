@@ -28,7 +28,8 @@ test("mobile Room hides the permanent desktop utilities and protects the first-s
   assert.match(css, /\.room-mobile-sheet/);
   assert.match(css, /\.room-page \.room-mobile-actions/);
   assert.match(css, /\.room-page\{[^}]*min-height:100dvh/);
-  assert.match(css, /\.room-page \.shuffle-control\{[^}]*min-height:56px/);
+  assert.doesNotMatch(css, /shuffle-control/);
+  assert.doesNotMatch(source, /shuffle-control|room\.readyShuffle|room\.doneShuffle/);
 });
 
 test("mobile sheets reset the dialog centering translation", () => {
