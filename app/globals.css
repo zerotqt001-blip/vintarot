@@ -1204,3 +1204,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .home-shell .language-select select,.site-shell .language-select select,.room-page .language-select select{width:44px;min-height:31px;padding:6px 3px;font-size:9px}
   .home-shell .avatar,.site-shell .avatar,.room-page .avatar{width:32px;height:32px}
 }
+
+.profile-actions{display:grid;gap:12px;margin-top:4px}.profile-actions .button{width:100%}.profile-logout{border-color:var(--color-border);background:transparent;color:var(--color-text-muted)}.profile-logout:hover{border-color:var(--color-border-active);background:var(--color-gold-subtle);color:var(--color-ivory)}
