@@ -30,6 +30,9 @@ import {
   Users,
 } from "lucide-react";
 
+type MemberUser = { name: string; email: string; username: string; phone?: string } | null;
+type SignInReturnPath = "/profile" | "/journal" | "/bookings" | "/invites";
+
 export function CardFace({
   card,
   reversed = false,
@@ -182,7 +185,7 @@ export function CardPicker({
   );
 }
 
-export function SignIn() {
+export function SignIn({ returnTo = "/profile" }: { returnTo?: SignInReturnPath } = {}) {
   const { t } = useLanguage();
   return (
     <Panel tone="elevated" className="empty sign-in-panel">
@@ -191,7 +194,7 @@ export function SignIn() {
       <p>{t("pages.signInText")}</p>
       <a
         className="button black"
-        href="/signin-with-chatgpt?return_to=/profile"
+        href={`/auth?return_to=${returnTo}`}
         target="_top"
       >
         {t("common.signIn")}
@@ -205,7 +208,7 @@ export default function Pages({
   user,
 }: {
   section: string;
-  user: { name: string; email: string } | null;
+  user: MemberUser;
 }) {
   const { t } = useLanguage();
   if (section === "decks" || section === "guidebook") return <Library />;
@@ -215,8 +218,8 @@ export default function Pages({
   if (section === "community") return <Practice user={user} />;
   if (section === "profile") return <Profile user={user} />;
   if (section === "book") return <Book />;
-  if (!user) return <SignIn />;
-  if (section === "bookings")
+  if (section === "bookings") {
+    if (!user) return <SignIn returnTo="/bookings" />;
     return (
       <>
         <Header title={t("pages.bookings")} text={t("pages.bookingsText")} />
@@ -230,6 +233,8 @@ export default function Pages({
         </div>
       </>
     );
+  }
+  if (!user) return <SignIn returnTo="/invites" />;
   return <Invites />;
 }
 
@@ -570,7 +575,7 @@ function Daily({ user }: { user: any }) {
                   {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
                 </button>
               ) : (
-                <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
+                <a className="button" href="/auth?return_to=/daily-spread" target="_top">
                   {t("common.signIn")}
                 </a>
               )}
@@ -713,7 +718,7 @@ function Journal({ user }: { user: any }) {
       setBusy(false);
     }
   }
-  if (!user) return <SignIn />;
+  if (!user) return <SignIn returnTo="/journal" />;
   return (
     <>
       <div className="journal-head">
@@ -892,7 +897,7 @@ function Profile({ user }: { user: any }) {
         })
         .catch((error) => setMessage(error.message));
   }, [user]);
-  if (!user) return <SignIn />;
+  if (!user) return <SignIn returnTo="/profile" />;
   return (
     <>
       <Header title={t("pages.yourSpace")} text={t("pages.yourSpaceText")} />
@@ -907,7 +912,8 @@ function Profile({ user }: { user: any }) {
       }}>
         <div className="profile-avatar"><Moon size={43} /></div>
         <label>{t("pages.displayName")}<input value={name} required maxLength={80} onChange={(event) => setName(event.target.value)} /></label>
-        <label>{t("pages.email")}<input readOnly value={user.email} /></label>
+            <label>{t("pages.email")}<input readOnly value={user.email} /></label>
+            <label>{t("pages.phone")}<input readOnly value={user.phone || ""} /></label>
         <label>{t("pages.aboutYou")}<textarea value={bio} rows={4} onChange={(event) => setBio(event.target.value)} /></label>
         <label>{t("common.language")}<select value={locale} onChange={(event) => setLocale(event.target.value === "vi" ? "vi" : "en")}><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label>
         <label>{t("pages.timezone")}<select value={timezone} onChange={(event) => setTimezone(event.target.value)}>{["Asia/Ho_Chi_Minh", "Asia/Bangkok", "Asia/Singapore", "Europe/London", "America/New_York", "America/Los_Angeles", "UTC"].map((zone) => <option key={zone}>{zone}</option>)}</select></label>

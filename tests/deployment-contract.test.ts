@@ -21,7 +21,8 @@ test("Nginx proxies both public hosts with bounded requests and forwarded header
   assert.match(nginx, /proxy_pass\s+http:\/\/127\.0\.0\.1:8787/);
   assert.match(nginx, /proxy_set_header\s+Host\s+\$host/);
   assert.match(nginx, /proxy_set_header\s+X-Real-IP\s+\$remote_addr/);
-  assert.match(nginx, /proxy_set_header\s+X-Forwarded-For\s+\$proxy_add_x_forwarded_for/);
+  assert.match(nginx, /proxy_set_header\s+X-Forwarded-For\s+\$remote_addr/);
+  assert.match(nginx, /proxy_set_header\s+X-Forwarded-Host\s+\$host/);
   assert.match(nginx, /proxy_set_header\s+X-Forwarded-Proto\s+\$scheme/);
   assert.match(nginx, /add_header\s+X-Content-Type-Options\s+nosniff/);
   assert.match(nginx, /add_header\s+X-Frame-Options\s+SAMEORIGIN/);

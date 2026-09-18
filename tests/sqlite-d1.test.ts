@@ -40,3 +40,16 @@ test("SQLite adapter executes a batch in order", async () => {
   assert.deepEqual(rows.results, [{ value: 1 }, { value: 2 }, { value: 3 }]);
   sqlite.close();
 });
+
+test("SQLite adapter rolls back a failed batch atomically", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  const database = createSqliteD1Database(sqlite);
+  sqlite.exec("CREATE TABLE items (id TEXT PRIMARY KEY, value INTEGER)");
+  await assert.rejects(database.batch([
+    database.prepare("INSERT INTO items (id, value) VALUES (?, ?)").bind("item-1", 1),
+    database.prepare("INSERT INTO items (id, value) VALUES (?, ?)").bind("item-1", 2),
+  ]));
+  const rows = await database.prepare("SELECT * FROM items").all();
+  assert.deepEqual(rows.results, []);
+  sqlite.close();
+});
