@@ -42,6 +42,8 @@ test("Room stays public until the first draw while card detail remains protected
   assert.match(room, /sessionStorage/);
   assert.match(room, /window\.location\.assign\(.*\/auth\?return_to=/);
   assert.match(room, /if\(!ensureMemberBeforeDraw\(\)\)return;/);
+  assert.match(room, /function handleFanClick\(id:number\)/);
+  assert.match(room, /onClick=\{\(\)=>handleFanClick\(id\)\}/);
   assert.match(cardDetail, /requirePageMember\(`\/guidebook\/\$\{slug\}`\)/);
   assert.match(helper, /export async function requirePageMember\(returnTo: string\)/);
 });
