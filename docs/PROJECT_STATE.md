@@ -98,6 +98,8 @@ Latest NaTarot/VPS deployment (2026-09-19): the public release was rebuilt from 
 
 Latest header-safe NaTarot deployment (2026-09-19): commit `efda23805116afcc53c2484fc177ccc69dcc7162` extends the medium-width header compaction through 1100px after public browser QA found the tagline crowding navigation near 1030px. The secret-scanned 371-file archive was built, installed atomically at `/opt/natarot`, migrated successfully, and `natarot.service` is active; `/opt/natarot.previous-efda23805116afcc53c2484fc177ccc69dcc7162` is retained for rollback. Public HTTPS smoke checks returned `200` for `/`, `/guidebook`, `/room?ritual=1`, the brand SVG and `/api/tarot/catalog?locale=vi`; the public homepage browser check shows the NaTarot logo, midnight-gold visual system and separated header controls. Tracked tests remain `221/221`, with typecheck, production build and diff check passing. No provider secrets or runtime database were copied.
 
+Room guidebook behavior correction (2026-09-19): the Room guide panel now starts closed, selecting or flipping a drawn card no longer opens it automatically, and the BookOpen toolbar control remains the in-room toggle. The focused Room/UI tests pass 32/32, `npx tsc --noEmit`, `npm run build`, `git diff --check`, and local browser smoke checks pass; this source fix is committed as `04b2df3` and pushed to `codex/tooling-and-version-history`. No public deployment was performed for this small interaction change.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
