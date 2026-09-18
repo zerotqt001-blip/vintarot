@@ -5,6 +5,7 @@ import { splitReadingParagraphs } from "../lib/reading-text";
 
 const panel = readFileSync(new URL("../components/reading/reading-panel.tsx", import.meta.url), "utf8");
 const header = readFileSync(new URL("../components/reading/reading-header.tsx", import.meta.url), "utf8");
+const directAnswer = readFileSync(new URL("../components/reading/direct-answer.tsx", import.meta.url), "utf8");
 const evidence = readFileSync(new URL("../components/reading/tarot-evidence.tsx", import.meta.url), "utf8");
 const followUp = readFileSync(new URL("../components/reading/follow-up-reading.tsx", import.meta.url), "utf8");
 const room = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
@@ -33,6 +34,18 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.match(panel, /\) : error \?/);
   assert.match(panel, /reading-question/);
   assert.match(panel, /deeperReading/);
+});
+
+test("direct answers keep the Room's dark reading surface and readable palette", () => {
+  assert.match(directAnswer, /reading-surface--midnight-navy/);
+  assert.doesNotMatch(directAnswer, /reading-surface--ivory/);
+  assert.match(directAnswer, /text-antique-gold/);
+  assert.match(directAnswer, /text-ivory/);
+  assert.match(css, /--color-midnight-navy:/);
+  assert.match(css, /--color-ivory:/);
+  assert.match(css, /--color-antique-gold:/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-section--direct-answer\{[^}]*background:linear-gradient\(145deg,rgba\(8,24,40,\.72\),rgba\(5,18,32,\.94\)\)/);
+  assert.doesNotMatch(css, /\.room-reading-panel-shell \.reading-section--direct-answer\{[^}]*rgba\(244,238,228/);
 });
 
 test("TarotEvidence uses collapsed native disclosure and safe React text", () => {
