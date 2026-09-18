@@ -45,9 +45,9 @@ export function ReadingPanel({
               </div>
             )}
             <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} t={t} />
-            <PersonalInsights items={reading.personalInsights} t={t} />
-            <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />
-            <NextSteps items={reading.nextSteps} t={t} />
+            {reading.personalInsights.length > 0 && <PersonalInsights items={reading.personalInsights} t={t} />}
+            {reading.reflectionPrompts.length > 0 && <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />}
+            {reading.nextSteps.length > 0 && <NextSteps items={reading.nextSteps} t={t} />}
             <TarotEvidence items={reading.cardEvidence} artwork={artworkByReadingCardId} locale={locale} t={t} />
             {reading.deeperReading && (
               <section className="reading-section reading-section--deeper-reading border-t border-antique-gold/15 px-5 py-6 sm:px-7" aria-labelledby="reading-deeper-reading">

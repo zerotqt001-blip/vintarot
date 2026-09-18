@@ -33,12 +33,12 @@ const directAnswerSchema = z.string().min(1).max(6000).refine((value) => {
 
 export const tarotProviderOutputSchema = z.object({
   direct_answer: directAnswerSchema,
-  personal_insights: z.array(insightSchema).min(1).max(6),
-  reflection_prompts: z.array(reflectionPromptSchema).min(1).max(4),
-  next_steps: z.array(nextStepSchema).min(1).max(4),
+  personal_insights: z.array(insightSchema).min(1).max(3),
+  reflection_prompts: z.array(reflectionPromptSchema).min(0).max(2),
+  next_steps: z.array(nextStepSchema).min(1).max(3),
   card_evidence: z.array(cardEvidenceSchema).min(1).max(10),
   deeper_reading: deeperReadingSchema,
-  follow_up_suggestions: z.array(followUpSuggestionSchema).max(4),
+  follow_up_suggestions: z.array(followUpSuggestionSchema).min(1).max(3),
 }).strict();
 
 const positionSchema = z.object({
@@ -69,8 +69,9 @@ const readingCardEvidenceSchema = z.object({
 
 export const tarotReadingPayloadSchema = z.object({
   directAnswer: directAnswerSchema,
+  // Stored payloads intentionally retain the wider v2/v3 bounds so historical readings remain readable.
   personalInsights: z.array(insightSchema).min(1).max(6),
-  reflectionPrompts: z.array(reflectionPromptSchema).min(1).max(4),
+  reflectionPrompts: z.array(reflectionPromptSchema).min(0).max(4),
   nextSteps: z.array(nextStepSchema).min(1).max(4),
   cardEvidence: z.array(readingCardEvidenceSchema).min(1).max(10),
   deeperReading: deeperReadingSchema,

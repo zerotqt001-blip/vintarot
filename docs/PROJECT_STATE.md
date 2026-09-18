@@ -3,6 +3,9 @@
 ## Product
 Moonlight-inspired tarot website. Preserve reference interactions and smooth motion. The visible product brand is now NaTarot; internal component and storage names retain their existing compatibility. User wants real production services but has not provisioned payment/video/email accounts.
 
+## Tarot AI reader engine v4 (2026-09-19, source-only)
+The bounded v4 upgrade is implemented in the isolated `codex/tarot-reading-v4` worktree and is not deployed or merged. The NaTarot reader prompt now produces situation-first, evidence-grounded readings with strict v4 list cardinalities, contextual relationship language, practical observable next steps, optional reflection prompts, and context-specific follow-up suggestions. Knowledge Base V5 evidence, upright/reversed meanings, provider/model/temperature/timeout configuration, and transport behavior remain unchanged. Provider responses use the strict v4 schema, while normalized stored-reading validation intentionally retains the wider v2/v3 bounds so historical readings continue to hydrate. Validation: Tarot-focused tests 142/142, tracked tests 227/227, `npx tsc --noEmit`, `npm run build`, and `git diff --check` pass. No live provider smoke test or production deployment was performed.
+
 ## Existing implementation
 78 public-domain tarot images, room drawing/shuffling/dragging, guidebook, daily cards, journal, D1 persistence. Local preview on port 5173. Integrations visibly unavailable until configured.
 

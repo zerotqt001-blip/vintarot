@@ -34,6 +34,9 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.match(panel, /\) : error \?/);
   assert.match(panel, /reading-question/);
   assert.match(panel, /deeperReading/);
+  assert.match(panel, /reading\.personalInsights\.length > 0/);
+  assert.match(panel, /reading\.reflectionPrompts\.length > 0/);
+  assert.match(panel, /reading\.nextSteps\.length > 0/);
 });
 
 test("direct answers keep the Room's dark reading surface and readable palette", () => {

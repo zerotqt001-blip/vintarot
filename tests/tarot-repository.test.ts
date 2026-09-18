@@ -125,7 +125,7 @@ test("D1 context orders exact stored cards and persists the validated payload in
     next_steps: [{ title: "Guidance", body: "Guidance" }],
     card_evidence: input.cards.map((c) => ({ reading_card_id: c.readingCardId, position_key: c.position.key, interpretation: "Interpretation" })).reverse(),
     deeper_reading: "Closing",
-    follow_up_suggestions: [],
+    follow_up_suggestions: ["What should we observe next?"],
   };
   assert.throws(() => parseReadingPayload({ ...output, card_evidence: [{ ...output.card_evidence[0], reading_card_id: "other-session-card" }, ...output.card_evidence.slice(1)] }, input.cards, "en"), /coverage/i);
   const reading = parseReadingPayload(output, input.cards, "en");
@@ -139,13 +139,59 @@ test("D1 context orders exact stored cards and persists the validated payload in
   assert.equal(saved.closing, "Closing");
   assert.equal(saved.disclaimer, "This is a reflective reading, not a certain prediction or professional advice.");
   assert.equal(saved.model_name, "openai/test-model");
-  assert.equal(saved.prompt_version, "tarot-reading-v3");
+  assert.equal(saved.prompt_version, "tarot-reading-v4");
   assert.deepEqual(JSON.parse(saved.reading_payload as string), reading);
   const freshRow = await repository.getLatestReadingForOwner(stored.session.id, { kind: "guest", guestId: "owner-guest" });
   assert.ok(freshRow);
   assert.deepEqual(parseStoredReading(freshRow, input.cards, "en"), reading);
   assert.equal(typeof saved.created_at, "number");
   assert.equal(saved.updated_at, saved.created_at);
+});
+
+test("hydrates historical v3 normalized payloads with their original list cardinalities", async (t) => {
+  const { repository, template, cards } = await storedReading(t);
+  const stored = (await repository.getSessionForOwner("guest-session", { kind: "guest", guestId: "owner-guest" }))!;
+  const historical = await repository.getReadingTemplate(template.id, "en");
+  assert.ok(historical);
+  const meanings = new Map(await Promise.all(cards.map(async (card) => [card.id, (await repository.getMeaningPair(card.id, "en"))!] as const)));
+  const input = buildTarotReadingInput({ ...stored, template: historical, meanings, locale: "en" });
+  const payload = {
+    directAnswer: "A historical answer.\n\nA historical second paragraph.",
+    personalInsights: Array.from({ length: 4 }, (_, index) => ({ title: `Insight ${index + 1}`, body: `Historical insight ${index + 1}.` })),
+    reflectionPrompts: Array.from({ length: 4 }, (_, index) => `Historical prompt ${index + 1}?`),
+    nextSteps: Array.from({ length: 4 }, (_, index) => ({ title: `Step ${index + 1}`, body: `Historical step ${index + 1}.` })),
+    cardEvidence: input.cards.map((card) => ({
+      readingCardId: card.readingCardId,
+      position: card.position,
+      card: card.card,
+      orientation: card.orientation,
+      interpretation: `Historical evidence for ${card.readingCardId}.`,
+    })),
+    deeperReading: null,
+    followUpSuggestions: [],
+    disclaimer: "Historical disclaimer.",
+  };
+  const row = {
+    id: "historical-v3-reading",
+    sessionId: stored.session.id,
+    opening: payload.directAnswer,
+    cardReadings: JSON.stringify(payload.cardEvidence),
+    synthesis: "Historical synthesis.",
+    advice: "Historical advice.",
+    closing: "",
+    disclaimer: payload.disclaimer,
+    readingPayload: JSON.stringify(payload),
+    modelName: "legacy/model",
+    promptVersion: "tarot-reading-v3",
+    createdAt: 1,
+    updatedAt: 1,
+  };
+  const result = parseStoredReading(row, input.cards, "en");
+  assert.equal(result.personalInsights.length, 4);
+  assert.equal(result.reflectionPrompts.length, 4);
+  assert.equal(result.nextSteps.length, 4);
+  assert.deepEqual(result.followUpSuggestions, []);
+  assert.deepEqual(result.cardEvidence.map((card) => card.readingCardId), input.cards.map((card) => card.readingCardId));
 });
 
 test("repository returns the latest owned reading and hydrates historical rows with trusted card metadata", async (t) => {

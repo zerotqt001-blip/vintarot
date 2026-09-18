@@ -41,11 +41,28 @@ test("strict parsing rejects mismatched evidence positions", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, card_evidence: mismatchedEvidence }, tarotReadingQualityFixture.cards, "en"), /position|coverage/i);
 });
 
-test("strict parsing enforces bounded V3 list sizes", () => {
-  assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: Array.from({ length: 7 }, (_, index) => ({ title: `Insight ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
-  assert.throws(() => parseReadingPayload({ ...providerOutput, reflection_prompts: ["one", "two", "three", "four", "five"] }, tarotReadingQualityFixture.cards, "en"), /reflection_prompts/i);
-  assert.throws(() => parseReadingPayload({ ...providerOutput, next_steps: Array.from({ length: 5 }, (_, index) => ({ title: `Step ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /next_steps/i);
-  assert.throws(() => parseReadingPayload({ ...providerOutput, follow_up_suggestions: ["one", "two", "three", "four", "five"] }, tarotReadingQualityFixture.cards, "en"), /follow_up_suggestions/i);
+test("v4 parsing accepts concise optional sections in English and Vietnamese", () => {
+  const concise = {
+    ...providerOutput,
+    personal_insights: [{ title: "One insight", body: "One useful pattern." }],
+    reflection_prompts: [],
+    next_steps: [{ title: "One step", body: "Take one practical step." }],
+    follow_up_suggestions: ["What observable sign should I watch first?"],
+  };
+  for (const locale of ["en", "vi"] as const) {
+    const result = parseReadingPayload(concise, tarotReadingQualityFixture.cards, locale);
+    assert.equal(result.personalInsights.length, 1);
+    assert.deepEqual(result.reflectionPrompts, []);
+    assert.equal(result.nextSteps.length, 1);
+    assert.equal(result.followUpSuggestions.length, 1);
+  }
+});
+
+test("strict parsing enforces v4 list sizes without manufacturing filler", () => {
+  assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: Array.from({ length: 4 }, (_, index) => ({ title: `Insight ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, reflection_prompts: ["one", "two", "three"] }, tarotReadingQualityFixture.cards, "en"), /reflection_prompts/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, next_steps: Array.from({ length: 4 }, (_, index) => ({ title: `Step ${index}`, body: "Body" })) }, tarotReadingQualityFixture.cards, "en"), /next_steps/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, follow_up_suggestions: ["one", "two", "three", "four"] }, tarotReadingQualityFixture.cards, "en"), /follow_up_suggestions/i);
 });
 
 test("strict parsing requires two to four direct-answer paragraphs", () => {
