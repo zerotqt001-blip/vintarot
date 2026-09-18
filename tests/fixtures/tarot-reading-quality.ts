@@ -16,6 +16,8 @@ function evidence(label: string): TarotMeaningEvidence {
 }
 
 export const tarotReadingQualityFixture: TarotReadingInput = {
+  knowledgeVersion: "5.0",
+  domain: "love",
   locale: "vi",
   question: "Xu hướng 3 tháng tới của mối quan hệ này như thế nào?",
   optionalContext: "Chúng tôi muốn nhìn rõ hướng phát triển mà không dựa vào dự đoán chắc chắn.",
@@ -49,6 +51,15 @@ export const tarotReadingQualityFixture: TarotReadingInput = {
       knowledge: { upright: evidence("The Chariot upright"), reversed: evidence("The Chariot reversed") },
     },
   ],
+  retrievedGuidance: {
+    method: ["Read the question and position before the card; synthesize the complete spread."],
+    domain: ["Keep relationship readings behavioral and uncertainty-aware."],
+    reversal: ["A reversal may be blocked, internalized, excessive, resisted, or changing."],
+    synthesis: ["Use card relationships to form one thesis instead of a dictionary dump."],
+    safety: ["Do not claim private thoughts or certain future events."],
+  },
+  combinationHints: [],
+  fewShotExamples: [],
 };
 
 export const tarotReadingQualityAssertions = {

@@ -1,0 +1,351 @@
+{
+  "version": "4.0",
+  "principle": "Combinations are contextual relationships, not fixed pair definitions. Position and question outrank pair lore.",
+  "relationship_types": {
+    "reinforce": "Both cards independently support the same central theme.",
+    "qualify": "The second card narrows, conditions, or complicates the first.",
+    "contrast": "The cards pull in meaningfully different directions.",
+    "sequence": "The cards form a plausible developmental or cause-to-effect movement.",
+    "redirect": "A later card changes the trajectory implied by an earlier one."
+  },
+  "curated_pairs": [
+    {
+      "cards": [
+        "The Lovers",
+        "The Devil"
+      ],
+      "signals": [
+        "choice/alignment versus attachment/compulsion",
+        "chemistry can coexist with unhealthy bargaining"
+      ],
+      "avoid": [
+        "Do not label a relationship toxic from this pair alone."
+      ]
+    },
+    {
+      "cards": [
+        "The Moon",
+        "Seven of Swords"
+      ],
+      "signals": [
+        "incomplete information plus indirect strategy/avoidance",
+        "need for verification"
+      ],
+      "avoid": [
+        "Do not conclude cheating or lying as fact."
+      ]
+    },
+    {
+      "cards": [
+        "Six of Cups",
+        "Judgement"
+      ],
+      "signals": [
+        "past returning for review",
+        "memory becomes a reckoning or conscious reassessment"
+      ],
+      "avoid": [
+        "Do not guarantee reconciliation."
+      ]
+    },
+    {
+      "cards": [
+        "Six of Cups",
+        "The Devil"
+      ],
+      "signals": [
+        "attachment to the past",
+        "nostalgia may be binding rather than restorative"
+      ],
+      "avoid": [
+        "Do not equate attachment with love."
+      ]
+    },
+    {
+      "cards": [
+        "Two of Cups",
+        "The Lovers"
+      ],
+      "signals": [
+        "reciprocity plus value/choice alignment",
+        "relationship theme is strongly emphasized"
+      ],
+      "avoid": [
+        "Do not guarantee permanence or marriage."
+      ]
+    },
+    {
+      "cards": [
+        "Two of Cups",
+        "Two of Swords"
+      ],
+      "signals": [
+        "connection exists alongside indecision/guardedness",
+        "mutuality may not translate into movement"
+      ],
+      "avoid": [
+        "Do not flatten into yes/no."
+      ]
+    },
+    {
+      "cards": [
+        "Ten of Cups",
+        "The Tower"
+      ],
+      "signals": [
+        "ideal/shared structure meets disruption or truth",
+        "difference between desired harmony and sustainable reality"
+      ],
+      "avoid": [
+        "Do not automatically predict breakup."
+      ]
+    },
+    {
+      "cards": [
+        "Page of Cups",
+        "Knight of Wands"
+      ],
+      "signals": [
+        "tender feeling meets fast pursuit",
+        "emotional openness may be outpaced by action"
+      ],
+      "avoid": [
+        "Do not equate intensity with commitment."
+      ]
+    },
+    {
+      "cards": [
+        "Queen of Cups",
+        "King of Cups"
+      ],
+      "signals": [
+        "strong emotional literacy/receptivity theme",
+        "potential for mature emotional exchange"
+      ],
+      "avoid": [
+        "Court pairing does not prove soulmates or specific genders."
+      ]
+    },
+    {
+      "cards": [
+        "Ace of Wands",
+        "Ace of Cups"
+      ],
+      "signals": [
+        "desire and emotional opening begin together",
+        "strong start with both chemistry and feeling"
+      ],
+      "avoid": [
+        "Beginnings are potential, not proof of durability."
+      ]
+    },
+    {
+      "cards": [
+        "The Hermit",
+        "Four of Swords"
+      ],
+      "signals": [
+        "withdrawal plus recovery/reflection",
+        "space may be purposeful rather than rejection"
+      ],
+      "avoid": [
+        "Do not diagnose depression/isolation."
+      ]
+    },
+    {
+      "cards": [
+        "The Chariot",
+        "Eight of Wands"
+      ],
+      "signals": [
+        "accelerated movement and directional force",
+        "events/communication can move quickly"
+      ],
+      "avoid": [
+        "Speed does not guarantee desired destination."
+      ]
+    },
+    {
+      "cards": [
+        "The Chariot",
+        "Two of Swords"
+      ],
+      "signals": [
+        "will to move meets unresolved decision",
+        "forcing movement before clarity can create friction"
+      ],
+      "avoid": [
+        "Do not assume one card cancels the other."
+      ]
+    },
+    {
+      "cards": [
+        "Death",
+        "The Star"
+      ],
+      "signals": [
+        "ending/transition opens renewal",
+        "healing follows release rather than restoring the exact old form"
+      ],
+      "avoid": [
+        "Do not read Death literally."
+      ]
+    },
+    {
+      "cards": [
+        "The Tower",
+        "The Star"
+      ],
+      "signals": [
+        "disruption followed by renewal/authenticity",
+        "hope becomes meaningful after structural truth"
+      ],
+      "avoid": [
+        "Do not promise a painless recovery."
+      ]
+    },
+    {
+      "cards": [
+        "The Devil",
+        "Death"
+      ],
+      "signals": [
+        "binding pattern reaches transformation threshold",
+        "release may require ending an old bargain/behavior"
+      ],
+      "avoid": [
+        "Do not dramatize into catastrophe."
+      ]
+    },
+    {
+      "cards": [
+        "Justice",
+        "The Moon"
+      ],
+      "signals": [
+        "need for evidence/clarity in an ambiguous emotional field",
+        "facts and assumptions must be separated"
+      ],
+      "avoid": [
+        "Do not claim hidden wrongdoing."
+      ]
+    },
+    {
+      "cards": [
+        "Temperance",
+        "Five of Wands"
+      ],
+      "signals": [
+        "integration/moderation applied to conflict",
+        "differences may need coordination rather than victory"
+      ],
+      "avoid": [
+        "Do not reduce guidance to generic 'balance'."
+      ]
+    },
+    {
+      "cards": [
+        "Eight of Pentacles",
+        "Ten of Wands"
+      ],
+      "signals": [
+        "competence and sustained effort become workload pressure",
+        "being capable can lead to carrying too much"
+      ],
+      "avoid": [
+        "Do not predict resignation."
+      ]
+    },
+    {
+      "cards": [
+        "Ace of Pentacles",
+        "Seven of Cups"
+      ],
+      "signals": [
+        "one tangible opportunity amid many imagined options",
+        "grounding and selection are central"
+      ],
+      "avoid": [
+        "Do not guarantee profit."
+      ]
+    },
+    {
+      "cards": [
+        "King of Pentacles",
+        "Four of Cups"
+      ],
+      "signals": [
+        "external stability may coexist with internal disengagement",
+        "security is not the same as fulfillment"
+      ],
+      "avoid": [
+        "Do not assume wealth."
+      ]
+    },
+    {
+      "cards": [
+        "Three of Swords",
+        "The Star"
+      ],
+      "signals": [
+        "pain acknowledged alongside healing/reorientation",
+        "hope should not bypass grief"
+      ],
+      "avoid": [
+        "Three of Swords alone does not prove infidelity."
+      ]
+    },
+    {
+      "cards": [
+        "Nine of Swords",
+        "The Moon"
+      ],
+      "signals": [
+        "anxiety interacts with uncertainty/projection",
+        "fear may exceed verified facts"
+      ],
+      "avoid": [
+        "Do not dismiss real concerns as 'all in your head'."
+      ]
+    },
+    {
+      "cards": [
+        "Seven of Swords",
+        "Justice"
+      ],
+      "signals": [
+        "strategy/avoidance meets accountability and facts",
+        "indirect behavior may need clarification"
+      ],
+      "avoid": [
+        "Do not convict someone of deception from cards."
+      ]
+    },
+    {
+      "cards": [
+        "The Emperor",
+        "The Empress"
+      ],
+      "signals": [
+        "structure and nurture; directive and receptive forces",
+        "potential complementarity or control/care tension"
+      ],
+      "avoid": [
+        "Do not assign gender or soulmate status."
+      ]
+    },
+    {
+      "cards": [
+        "The Fool",
+        "The World"
+      ],
+      "signals": [
+        "new cycle and completed cycle appear together",
+        "ending and beginning can coexist"
+      ],
+      "avoid": [
+        "Order/positions determine whether this is closure-to-start or unfinished integration."
+      ]
+    }
+  ]
+}

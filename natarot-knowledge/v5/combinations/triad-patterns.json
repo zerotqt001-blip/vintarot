@@ -1,0 +1,35 @@
+{
+  "version": "4.0",
+  "patterns": [
+    {
+      "name": "emotion_to_block_to_action",
+      "shape": "Cups/emotional card -> blocked/decision card -> action/movement card",
+      "read": "Feeling is present, but the middle card explains why it does or does not become behavior. Never skip the bridge."
+    },
+    {
+      "name": "ideal_to_disruption_to_rebuild",
+      "shape": "fulfillment/structure -> Tower/ending -> Star/Temperance/building card",
+      "read": "The old form is challenged; distinguish restoring the old ideal from building a healthier new form."
+    },
+    {
+      "name": "skill_to_overload_to_adjustment",
+      "shape": "Pentacles/competence -> Ten of Wands/pressure -> Temperance/Four of Swords",
+      "read": "Capacity created responsibility; guidance is sustainable redesign, not generic rest."
+    },
+    {
+      "name": "uncertainty_to_truth",
+      "shape": "Moon/Seven of Cups/Two of Swords -> Justice/Ace of Swords/Sun",
+      "read": "The spread moves from ambiguity toward verification/clarity. Do not fill the uncertain phase with invented facts."
+    },
+    {
+      "name": "attachment_to_release",
+      "shape": "Devil/Six of Cups/Four of Pentacles -> Death/Eight of Cups/World",
+      "read": "Identify what is being held and what release changes; do not assume release means loss rather than maturation."
+    },
+    {
+      "name": "spark_without_capacity",
+      "shape": "Ace/Knight of Wands or Cups -> reversal/stalemate/practical constraint",
+      "read": "Interest or feeling can be genuine while capacity/follow-through is weak."
+    }
+  ]
+}

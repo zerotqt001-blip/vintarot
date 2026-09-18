@@ -1,0 +1,1656 @@
+{
+  "version": "5.0",
+  "purpose": "Complete final-reading reference corpus. Select 0-2 relevant examples per request; never send the full corpus.",
+  "readings": [
+    {
+      "id": "HR001",
+      "language": "vi",
+      "domain": "love",
+      "question": "Xu hướng 3 tháng tới của mối quan hệ này như thế nào?",
+      "spread": [
+        [
+          "Hiện tại",
+          "Ten of Cups",
+          "reversed"
+        ],
+        [
+          "Thử thách cảm xúc",
+          "Page of Cups",
+          "reversed"
+        ],
+        [
+          "Hướng phát triển",
+          "The Chariot",
+          "upright"
+        ]
+      ],
+      "answer": "Mối quan hệ vẫn có lực để tiếp tục, nhưng ba tháng tới khó đi theo kiểu tự nhiên mà mọi thứ tự ổn. Vấn đề chính nằm ở khoảng cách giữa kỳ vọng tình cảm và khả năng nói, nhận, xử lý cảm xúc của hai người.",
+      "overview": "Hai lá Cốc ngược đặt trọng tâm vào sự lệch pha cảm xúc: điều hai người muốn mối quan hệ trở thành có thể đẹp hơn điều đang thực sự diễn ra. The Chariot ở cuối làm spread chuyển từ cảm xúc sang lựa chọn và hành động; vì vậy hướng đi sẽ phụ thuộc nhiều vào việc hai người có tạo được một phương hướng chung hay chỉ cố kéo tình hình theo ý riêng.",
+      "positions": [
+        "Ten of Cups ngược ở hiện tại cho thấy hình ảnh về sự hòa hợp đang có vết lệch: kỳ vọng, gia đình, tương lai chung hoặc cảm giác 'đáng lẽ chúng ta phải hạnh phúc hơn thế này' có thể tạo áp lực.",
+        "Page of Cups ngược ở thử thách cho thấy phần khó nhất là cách cảm xúc được biểu đạt. Có thể có sự nhạy cảm, tự ái, ngại nói thẳng hoặc những tín hiệu tình cảm không đủ trưởng thành để giải quyết vấn đề thật.",
+        "The Chariot ở hướng phát triển cho thấy tình hình không đứng yên. Một quyết định, cuộc nói chuyện rõ ràng hoặc hành động dứt khoát có thể đưa mối quan hệ sang giai đoạn mới."
+      ],
+      "connections": "Ten of Cups ngược và Page of Cups ngược củng cố nhau: bất ổn không nhất thiết đến từ việc hết tình cảm mà từ việc cảm xúc hiện tại chưa nâng đỡ nổi kỳ vọng về mối quan hệ. The Chariot không tự động 'cứu' hai lá trước; nó đòi hỏi hai người thống nhất hướng đi, nếu không sự quyết liệt dễ trở thành kéo co.",
+      "guidance": "Hãy quan sát sự nhất quán giữa lời nói và hành động hơn là những lời hứa lớn. Nếu hai người có thể nói rõ điều mình cần mà không phản ứng bằng tự ái hoặc né tránh, spread này có khả năng chuyển từ mơ hồ sang có phương hướng.",
+      "closing": "Trải bài nghiêng về một giai đoạn phải chỉnh cách yêu và cách giao tiếp hơn là một kết luận chia tay hay ổn định sẵn có."
+    },
+    {
+      "id": "HR002",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Người cũ có xu hướng chủ động liên hệ lại không?",
+      "spread": [
+        [
+          "Cảm xúc còn lại",
+          "Six of Cups",
+          "upright"
+        ],
+        [
+          "Điều cản trở",
+          "Two of Swords",
+          "upright"
+        ],
+        [
+          "Xu hướng hành động",
+          "Knight of Wands",
+          "reversed"
+        ]
+      ],
+      "answer": "Có dấu hiệu quá khứ vẫn còn sức nặng cảm xúc, nhưng spread không cho thấy một đường hành động ổn định để quay lại. Nhớ nhau và thực sự sẵn sàng chủ động là hai chuyện khác nhau.",
+      "overview": "Six of Cups giữ kết nối với ký ức và sự quen thuộc; Two of Swords đặt nó vào trạng thái lưỡng lự; Knight of Wands ngược khiến phần hành động dễ thất thường hoặc thiếu follow-through.",
+      "positions": [
+        "Six of Cups cho thấy mối liên hệ cũ chưa hoàn toàn mất ý nghĩa. Ký ức đẹp, cảm giác thân thuộc hoặc việc so sánh hiện tại với quá khứ có thể vẫn tồn tại.",
+        "Two of Swords cho thấy rào cản là việc chưa muốn hoặc chưa thể đưa ra một quyết định rõ. Có cảm xúc không có nghĩa là đã biết nên làm gì với nó.",
+        "Knight of Wands ngược ở hành động làm giảm khả năng của một bước tiến ổn định. Nếu có liên hệ, nó có thể đến theo kiểu bốc đồng, lúc gần lúc xa hoặc chưa mang theo một kế hoạch thực tế."
+      ],
+      "connections": "Spread đi từ nostalgia sang indecision rồi tới inconsistent action. Chính chuỗi này quan trọng hơn việc chỉ nhìn Six of Cups và kết luận rằng người cũ sẽ quay lại.",
+      "guidance": "Nếu có liên lạc, hãy đánh giá chất lượng và sự nhất quán của hành động sau đó. Một tin nhắn không tự nó chứng minh rằng pattern cũ đã thay đổi.",
+      "closing": "Năng lượng hiện tại cho thấy ký ức vẫn còn, nhưng readiness để xây lại mối quan hệ chưa rõ."
+    },
+    {
+      "id": "HR003",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi đang làm khá tốt nhưng vì sao ngày càng mệt với công việc?",
+      "spread": [
+        [
+          "Năng lực hiện tại",
+          "Eight of Pentacles",
+          "upright"
+        ],
+        [
+          "Áp lực",
+          "Ten of Wands",
+          "upright"
+        ],
+        [
+          "Điều chỉnh",
+          "Temperance",
+          "upright"
+        ]
+      ],
+      "answer": "Vấn đề không nằm ở việc bạn không đủ năng lực; ngược lại, chính việc làm tốt và có thể gánh việc đang khiến tải ngày càng dồn lên bạn.",
+      "overview": "Eight of Pentacles cho thấy năng lực và tính kỷ luật, Ten of Wands cho thấy hệ quả khi năng lực biến thành việc phải mang quá nhiều, còn Temperance yêu cầu thiết kế lại nhịp làm việc chứ không chỉ cố nghỉ một hai ngày rồi quay lại guồng cũ.",
+      "positions": [
+        "Eight of Pentacles xác nhận bạn đang đầu tư công sức thật và có xu hướng muốn làm việc cho đúng chuẩn.",
+        "Ten of Wands cho thấy áp lực tích lũy: trách nhiệm có thể đã vượt quá phần việc đáng ra một người phải tự ôm.",
+        "Temperance khuyên điều chỉnh hệ thống: phân phối tải, giới hạn, nhịp độ và cách phối hợp nguồn lực."
+      ],
+      "connections": "Ba lá tạo một câu chuyện rất thực tế: competence → more responsibility → need for sustainable integration. Đây không phải spread nói rằng bạn yếu đi.",
+      "guidance": "Thay vì hỏi mình có chịu thêm được không, hãy hỏi phần nào thực sự cần bạn làm, phần nào có thể giảm, giao hoặc thay đổi tiêu chuẩn.",
+      "closing": "Xu hướng tốt hơn đến từ việc làm bền hơn, không phải chứng minh rằng mình còn có thể chịu thêm."
+    },
+    {
+      "id": "HR004",
+      "language": "vi",
+      "domain": "love",
+      "question": "Mối quan hệ này đang có vấn đề gì?",
+      "spread": [
+        [
+          "Biểu hiện",
+          "The Lovers",
+          "reversed"
+        ],
+        [
+          "Gốc rễ",
+          "The Moon",
+          "upright"
+        ],
+        [
+          "Điều cần làm",
+          "Justice",
+          "upright"
+        ]
+      ],
+      "answer": "Vấn đề trung tâm là sự lệch nhau về kỳ vọng hoặc lựa chọn trong khi có quá nhiều điều chưa được nói hoặc chưa được xác minh rõ.",
+      "overview": "The Lovers ngược cho thấy misalignment; The Moon ở gốc khiến sự lệch đó dễ bị nuôi bởi suy đoán, lo sợ hoặc tín hiệu không rõ; Justice yêu cầu đưa câu chuyện trở về sự thật, trách nhiệm và thỏa thuận cụ thể.",
+      "positions": [
+        "The Lovers ngược không nhất thiết báo chia tay; ở đây nó cho thấy hai người chưa thực sự đứng cùng một phía về điều mối quan hệ cần.",
+        "The Moon ở gốc cho thấy có vùng mờ. Nó không đủ để kết luận có phản bội; điều chắc hơn là thông tin và cảm nhận đang không hoàn toàn trùng nhau.",
+        "Justice ở lời khuyên yêu cầu nói rõ sự thật, trách nhiệm, ranh giới và điều mỗi người có thể cam kết."
+      ],
+      "connections": "Moon giải thích vì sao Lovers bị lệch: khi dữ kiện không rõ, mỗi người dễ tự điền phần còn thiếu bằng nỗi sợ hoặc kỳ vọng. Justice là đối trọng trực tiếp bằng tính minh bạch.",
+      "guidance": "Đừng cố giải quyết vùng mờ bằng thêm suy đoán. Một cuộc trao đổi cụ thể về mong muốn, ranh giới và hành vi sẽ có giá trị hơn việc cố đọc tín hiệu.",
+      "closing": "Spread này đặt trọng tâm vào clarity và alignment, không phải vào việc tìm một 'bí mật' để giải thích mọi thứ."
+    },
+    {
+      "id": "HR005",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Tôi có nên bỏ công việc hiện tại để bắt đầu hướng mới không?",
+      "spread": [
+        [
+          "Điều đang có",
+          "Eight of Pentacles",
+          "upright"
+        ],
+        [
+          "Điều khiến muốn rời đi",
+          "Four of Cups",
+          "upright"
+        ],
+        [
+          "Năng lượng hướng mới",
+          "The Fool",
+          "upright"
+        ]
+      ],
+      "answer": "Spread không nói bạn phải nghỉ ngay; nó cho thấy bạn có năng lực thật ở nơi hiện tại nhưng cảm giác gắn kết đang giảm, trong khi một hướng mới đang đánh thức sự tò mò và nhu cầu được thử lại từ đầu.",
+      "overview": "Điểm đáng chú ý là dissatisfaction không xuất phát từ thất bại. Eight of Pentacles cho thấy bạn đã xây được kỹ năng; Four of Cups cho thấy vấn đề là engagement; The Fool mở một cánh cửa thử nghiệm hơn là bảo đảm thành công.",
+      "positions": [
+        "Eight of Pentacles nói rằng những gì bạn đã học không bị mất nếu chuyển hướng.",
+        "Four of Cups cho thấy sự chán hoặc cảm giác không còn được nuôi dưỡng bởi môi trường hiện tại cần được xem nghiêm túc, nhưng cũng cần phân biệt burnout tạm thời với mismatch lâu dài.",
+        "The Fool khuyến khích exploration và willingness to begin, nhưng không xóa nhu cầu chuẩn bị thực tế."
+      ],
+      "connections": "Spread không phải 'cũ xấu, mới tốt'. Nó nói kỹ năng cũ có thể trở thành hành trang cho một thử nghiệm mới.",
+      "guidance": "Một bước thử có kiểm soát—nghiên cứu, side project, phỏng vấn, portfolio—sẽ cho bạn dữ kiện tốt hơn trước khi biến sự tò mò thành quyết định không thể đảo ngược.",
+      "closing": "Hướng mới đáng được khám phá; quyết định rời đi nên dựa thêm vào bằng chứng thực tế mà quá trình khám phá đó tạo ra."
+    },
+    {
+      "id": "HR006",
+      "language": "en",
+      "domain": "love",
+      "question": "Is there real feeling here, or mostly attraction?",
+      "spread": [
+        [
+          "Emotional layer",
+          "Queen of Cups",
+          "upright"
+        ],
+        [
+          "Attraction",
+          "Ace of Wands",
+          "upright"
+        ],
+        [
+          "Capacity for consistency",
+          "Two of Pentacles",
+          "reversed"
+        ]
+      ],
+      "answer": "The spread suggests that feeling and attraction can both be present, but consistency is the weaker part of the picture. The question is less whether something is felt and more whether there is enough bandwidth to carry it steadily.",
+      "overview": "Queen of Cups gives the emotional layer depth and receptivity, while Ace of Wands adds genuine spark. Two of Pentacles reversed changes the practical conclusion: strong feeling and chemistry do not automatically produce reliable availability.",
+      "positions": [
+        "Queen of Cups in the emotional position points to sensitivity and meaningful emotional engagement, without proving anyone's private thoughts as fact.",
+        "Ace of Wands makes the attraction immediate and energizing; this is a real beginning signal, but beginnings are still potential.",
+        "Two of Pentacles reversed suggests difficulty juggling priorities or sustaining a balanced rhythm."
+      ],
+      "connections": "The first two cards reinforce emotional and physical interest; the third qualifies them. This is a useful example of why attraction, feeling, and relationship capacity should be read separately.",
+      "guidance": "Watch what happens after moments of closeness. Consistency, scheduling, follow-through and the ability to make room for the connection will tell you more than intensity alone.",
+      "closing": "There may be substance here, but the spread keeps the practical question of consistency open."
+    },
+    {
+      "id": "HR007",
+      "language": "en",
+      "domain": "career",
+      "question": "What is shaping my next career phase?",
+      "spread": [
+        [
+          "Opportunity",
+          "Ace of Pentacles",
+          "upright"
+        ],
+        [
+          "Complication",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Best approach",
+          "King of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "A tangible opportunity is available, but your biggest risk is not lack of options—it is allowing too many possibilities to blur the difference between a promising idea and a workable path.",
+      "overview": "Ace of Pentacles grounds the spread in something concrete. Seven of Cups expands the field until choice becomes difficult. King of Swords asks you to narrow that field using evidence, criteria and a clear decision process.",
+      "positions": [
+        "Ace of Pentacles can point to a practical opening: a role, project, skill investment or resource worth developing.",
+        "Seven of Cups shows that possibility itself can become distracting when every path is kept alive equally.",
+        "King of Swords favors research, comparison and explicit criteria over excitement alone."
+      ],
+      "connections": "The movement is from opportunity to option overload to disciplined selection. The King does not suppress imagination; it turns it into a decision.",
+      "guidance": "Define what must be true for an option to deserve your time—compensation, learning, autonomy, stability, or another measurable priority—and test each path against it.",
+      "closing": "The next phase becomes clearer when possibility is converted into criteria."
+    },
+    {
+      "id": "HR008",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Tôi đang mắc lại pattern nào?",
+      "spread": [
+        [
+          "Pattern",
+          "The Devil",
+          "upright"
+        ],
+        [
+          "Cơ chế duy trì",
+          "Nine of Swords",
+          "upright"
+        ],
+        [
+          "Điểm chuyển",
+          "Death",
+          "upright"
+        ]
+      ],
+      "answer": "Spread gợi ý một vòng lặp trong đó sự bám giữ hoặc cảm giác 'không thoát được' được nuôi thêm bởi suy nghĩ lặp lại, lo sợ và tự gây áp lực. Điểm chuyển không nằm ở việc kiểm soát pattern tốt hơn mà ở việc chấm dứt một phần cấu trúc đang duy trì nó.",
+      "overview": "The Devil mô tả sự ràng buộc; Nine of Swords cho thấy tâm trí có thể tiếp tục tái kích hoạt ràng buộc đó; Death đặt yêu cầu thay đổi ở mức sâu hơn một mẹo đối phó ngắn hạn.",
+      "positions": [
+        "The Devil không nói bạn 'xấu' hay yếu; nó hỏi bạn đang đổi tự do lấy điều gì—sự quen thuộc, kiểm soát, validation hay một cảm giác an toàn tạm thời.",
+        "Nine of Swords cho thấy vòng suy nghĩ có thể khiến lựa chọn trông ít hơn thực tế.",
+        "Death là chuyển hóa và kết thúc pattern cũ, không phải cái chết theo nghĩa đen."
+      ],
+      "connections": "Devil + Nine of Swords có thể tạo vòng attachment → fear → attachment. Death cắt chuỗi đó bằng việc yêu cầu một cách vận hành cũ không tiếp tục nguyên trạng.",
+      "guidance": "Tìm một hành vi cụ thể đang giữ vòng lặp sống và thay đổi nó ở mức thực tế, thay vì chỉ cố thuyết phục bản thân đừng nghĩ nữa.",
+      "closing": "Spread này thiên về giải phóng bằng thay đổi cấu trúc hơn là bằng ý chí thuần túy."
+    },
+    {
+      "id": "HR009",
+      "language": "vi",
+      "domain": "reconciliation",
+      "question": "Nếu hai người nói chuyện lại, liệu có thể xây lại tốt hơn không?",
+      "spread": [
+        [
+          "Điều cũ",
+          "Three of Swords",
+          "upright"
+        ],
+        [
+          "Khả năng chữa lành",
+          "The Star",
+          "upright"
+        ],
+        [
+          "Điều cần có",
+          "Justice",
+          "upright"
+        ]
+      ],
+      "answer": "Có không gian cho chữa lành, nhưng việc nói chuyện lại chỉ có ý nghĩa nếu nỗi đau cũ được nhìn thẳng và đi cùng trách nhiệm cụ thể. Spread không ủng hộ kiểu quay lại chỉ vì nhớ nhau.",
+      "overview": "Three of Swords đặt vết thương ở trung tâm; The Star mở khả năng phục hồi; Justice khiến sự phục hồi đó có điều kiện: sự thật, trách nhiệm và cách xử lý công bằng phải thay đổi.",
+      "positions": [
+        "Three of Swords xác nhận có đau hoặc sự thật khó chịu chưa thể bỏ qua. Lá này tự nó không chứng minh ngoại tình.",
+        "The Star cho thấy hy vọng có thể trở lại khi cả hai không còn cố phủ nhận vết thương.",
+        "Justice yêu cầu nhìn rõ ai chịu trách nhiệm cho điều gì và thỏa thuận mới sẽ khác cũ ở đâu."
+      ],
+      "connections": "Star không xóa Three of Swords; nó chữa lành bằng cách đi xuyên qua điều đã đau. Justice biến healing từ cảm xúc đẹp thành một quá trình có accountability.",
+      "guidance": "Nếu cuộc nói chuyện chỉ xoay quanh nhớ nhau, spread còn thiếu điều quan trọng. Hãy xem hai người có thể gọi đúng vấn đề cũ và đưa ra hành vi mới hay không.",
+      "closing": "Khả năng xây lại có, nhưng chất lượng của lần kết nối mới phụ thuộc vào việc pattern cũ có thực sự được xử lý."
+    },
+    {
+      "id": "HR010",
+      "language": "en",
+      "domain": "love",
+      "question": "What is changing between us?",
+      "spread": [
+        [
+          "Old pattern",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Transition",
+          "The Tower",
+          "upright"
+        ],
+        [
+          "Emerging direction",
+          "The Star",
+          "upright"
+        ]
+      ],
+      "answer": "A pattern of holding on, controlling exposure, or protecting what felt secure is being disrupted. What emerges can be more honest and open, but only after the old structure stops pretending it is stable.",
+      "overview": "Four of Pentacles describes preservation; The Tower breaks what can no longer be maintained in the same form; The Star shifts the tone toward renewal and authenticity. That does not automatically mean the relationship ends or survives—the form is what is under pressure.",
+      "positions": [
+        "Four of Pentacles suggests the old dynamic relied heavily on protection, predictability or emotional control.",
+        "The Tower makes that strategy harder to maintain. Something may need to be acknowledged that the old arrangement could contain only by avoiding it.",
+        "The Star favors a cleaner, more authentic direction after the disruption."
+      ],
+      "connections": "The sequence is hold → disruption → renewal. The Star matters because it prevents the Tower from being read only as catastrophe; the Tower matters because it prevents the Star from becoming wishful thinking.",
+      "guidance": "Ask what both of you were protecting by keeping the old pattern intact. The more directly that is named, the more constructive the transition can become.",
+      "closing": "The spread points toward change in structure first, and only then toward the possibility of a more open connection."
+    },
+    {
+      "id": "HR011",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điều gì quan trọng nhất trong kết nối này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Ace of Cups",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Strength",
+          "upright"
+        ]
+      ],
+      "answer": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn.",
+      "overview": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn.",
+      "positions": [
+        "Ace of Cups ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Four of Pentacles cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Strength mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR012",
+      "language": "vi",
+      "domain": "love",
+      "question": "Hai người có đang muốn cùng một điều không?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "The Lovers",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The Moon",
+          "upright"
+        ]
+      ],
+      "answer": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra.",
+      "overview": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra.",
+      "positions": [
+        "The Emperor ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "The Lovers cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The Moon mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR013",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi nên chú ý điều gì trong cơ hội này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Three of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Five of Wands",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "King of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện.",
+      "overview": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện.",
+      "positions": [
+        "Three of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Five of Wands cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "King of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR014",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Điều gì khiến tôi chưa quyết được?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Two of Swords",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Ace of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác.",
+      "overview": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác.",
+      "positions": [
+        "Two of Swords ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Seven of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Ace of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR015",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì tôi cần buông?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Eight of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The World",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có.",
+      "overview": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có.",
+      "positions": [
+        "Four of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Eight of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The World mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR016",
+      "language": "en",
+      "domain": "love",
+      "question": "What is making this connection difficult to read?",
+      "spread": [
+        [
+          "Context",
+          "The High Priestess",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Justice",
+          "upright"
+        ]
+      ],
+      "answer": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal.",
+      "overview": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal.",
+      "positions": [
+        "The High Priestess establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Seven of Cups functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Justice describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR017",
+      "language": "en",
+      "domain": "career",
+      "question": "Why does progress feel slower than expected?",
+      "spread": [
+        [
+          "Context",
+          "Seven of Pentacles",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Knight of Pentacles",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Wheel of Fortune",
+          "upright"
+        ]
+      ],
+      "answer": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review.",
+      "overview": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review.",
+      "positions": [
+        "Seven of Pentacles establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Knight of Pentacles functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Wheel of Fortune describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR018",
+      "language": "en",
+      "domain": "decision",
+      "question": "What should guide this choice?",
+      "spread": [
+        [
+          "Context",
+          "The Fool",
+          "upright"
+        ],
+        [
+          "Tension",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Temperance",
+          "upright"
+        ]
+      ],
+      "answer": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once.",
+      "overview": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once.",
+      "positions": [
+        "The Fool establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "The Emperor functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Temperance describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR019",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What remains unresolved between us?",
+      "spread": [
+        [
+          "Context",
+          "Six of Cups",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Five of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Judgement",
+          "upright"
+        ]
+      ],
+      "answer": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized.",
+      "overview": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized.",
+      "positions": [
+        "Six of Cups establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Five of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Judgement describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR020",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "Where am I underestimating myself?",
+      "spread": [
+        [
+          "Context",
+          "Strength",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Eight of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "The Chariot",
+          "upright"
+        ]
+      ],
+      "answer": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid.",
+      "overview": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid.",
+      "positions": [
+        "Strength establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Eight of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "The Chariot describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR021",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điều gì quan trọng nhất trong kết nối này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Ace of Cups",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Four of Pentacles",
+          "reversed"
+        ],
+        [
+          "Hướng đi",
+          "Strength",
+          "upright"
+        ]
+      ],
+      "answer": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Ace of Cups ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Four of Pentacles cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái reversed quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Strength mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR022",
+      "language": "vi",
+      "domain": "love",
+      "question": "Hai người có đang muốn cùng một điều không?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "The Lovers",
+          "reversed"
+        ],
+        [
+          "Hướng đi",
+          "The Moon",
+          "upright"
+        ]
+      ],
+      "answer": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "The Emperor ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "The Lovers cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái reversed quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The Moon mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR023",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi nên chú ý điều gì trong cơ hội này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Three of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Five of Wands",
+          "reversed"
+        ],
+        [
+          "Hướng đi",
+          "King of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Three of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Five of Wands cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái reversed quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "King of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR024",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Điều gì khiến tôi chưa quyết được?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Two of Swords",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Seven of Cups",
+          "reversed"
+        ],
+        [
+          "Hướng đi",
+          "Ace of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Two of Swords ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Seven of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái reversed quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Ace of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR025",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì tôi cần buông?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Eight of Cups",
+          "reversed"
+        ],
+        [
+          "Hướng đi",
+          "The World",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Four of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Eight of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái reversed quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The World mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR026",
+      "language": "en",
+      "domain": "love",
+      "question": "What is making this connection difficult to read?",
+      "spread": [
+        [
+          "Context",
+          "The High Priestess",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Seven of Cups",
+          "reversed"
+        ],
+        [
+          "Direction",
+          "Justice",
+          "upright"
+        ]
+      ],
+      "answer": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "overview": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "positions": [
+        "The High Priestess establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Seven of Cups functions as the tension or qualifier. Its reversed orientation changes how available or distorted that theme is.",
+        "Justice describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR027",
+      "language": "en",
+      "domain": "career",
+      "question": "Why does progress feel slower than expected?",
+      "spread": [
+        [
+          "Context",
+          "Seven of Pentacles",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Knight of Pentacles",
+          "reversed"
+        ],
+        [
+          "Direction",
+          "Wheel of Fortune",
+          "upright"
+        ]
+      ],
+      "answer": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "overview": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "positions": [
+        "Seven of Pentacles establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Knight of Pentacles functions as the tension or qualifier. Its reversed orientation changes how available or distorted that theme is.",
+        "Wheel of Fortune describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR028",
+      "language": "en",
+      "domain": "decision",
+      "question": "What should guide this choice?",
+      "spread": [
+        [
+          "Context",
+          "The Fool",
+          "upright"
+        ],
+        [
+          "Tension",
+          "The Emperor",
+          "reversed"
+        ],
+        [
+          "Direction",
+          "Temperance",
+          "upright"
+        ]
+      ],
+      "answer": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "overview": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "positions": [
+        "The Fool establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "The Emperor functions as the tension or qualifier. Its reversed orientation changes how available or distorted that theme is.",
+        "Temperance describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR029",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What remains unresolved between us?",
+      "spread": [
+        [
+          "Context",
+          "Six of Cups",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Five of Swords",
+          "reversed"
+        ],
+        [
+          "Direction",
+          "Judgement",
+          "upright"
+        ]
+      ],
+      "answer": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "overview": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "positions": [
+        "Six of Cups establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Five of Swords functions as the tension or qualifier. Its reversed orientation changes how available or distorted that theme is.",
+        "Judgement describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR030",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "Where am I underestimating myself?",
+      "spread": [
+        [
+          "Context",
+          "Strength",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Eight of Swords",
+          "reversed"
+        ],
+        [
+          "Direction",
+          "The Chariot",
+          "upright"
+        ]
+      ],
+      "answer": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "overview": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The middle card is reversed, so test whether its theme is blocked, internalized or beginning to change rather than simply inverting it.",
+      "positions": [
+        "Strength establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Eight of Swords functions as the tension or qualifier. Its reversed orientation changes how available or distorted that theme is.",
+        "The Chariot describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR031",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điều gì quan trọng nhất trong kết nối này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Ace of Cups",
+          "reversed"
+        ],
+        [
+          "Điểm căng",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Strength",
+          "upright"
+        ]
+      ],
+      "answer": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Ace of Cups ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái reversed và không biến nó thành kết luận toàn spread.",
+        "Four of Pentacles cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Strength mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR032",
+      "language": "vi",
+      "domain": "love",
+      "question": "Hai người có đang muốn cùng một điều không?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "The Emperor",
+          "reversed"
+        ],
+        [
+          "Điểm căng",
+          "The Lovers",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The Moon",
+          "upright"
+        ]
+      ],
+      "answer": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "The Emperor ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái reversed và không biến nó thành kết luận toàn spread.",
+        "The Lovers cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The Moon mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR033",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi nên chú ý điều gì trong cơ hội này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Three of Pentacles",
+          "reversed"
+        ],
+        [
+          "Điểm căng",
+          "Five of Wands",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "King of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Three of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái reversed và không biến nó thành kết luận toàn spread.",
+        "Five of Wands cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "King of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR034",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Điều gì khiến tôi chưa quyết được?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Two of Swords",
+          "reversed"
+        ],
+        [
+          "Điểm căng",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Ace of Swords",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Two of Swords ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái reversed và không biến nó thành kết luận toàn spread.",
+        "Seven of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Ace of Swords mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR035",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì tôi cần buông?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Four of Pentacles",
+          "reversed"
+        ],
+        [
+          "Điểm căng",
+          "Eight of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The World",
+          "upright"
+        ]
+      ],
+      "answer": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Four of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái reversed và không biến nó thành kết luận toàn spread.",
+        "Eight of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The World mô tả hướng đi có điều kiện. Trạng thái upright không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR036",
+      "language": "en",
+      "domain": "love",
+      "question": "What is making this connection difficult to read?",
+      "spread": [
+        [
+          "Context",
+          "The High Priestess",
+          "reversed"
+        ],
+        [
+          "Tension",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Justice",
+          "upright"
+        ]
+      ],
+      "answer": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "overview": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "positions": [
+        "The High Priestess establishes the context. Its reversed orientation should shape the starting condition without becoming the whole verdict.",
+        "Seven of Cups functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Justice describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR037",
+      "language": "en",
+      "domain": "career",
+      "question": "Why does progress feel slower than expected?",
+      "spread": [
+        [
+          "Context",
+          "Seven of Pentacles",
+          "reversed"
+        ],
+        [
+          "Tension",
+          "Knight of Pentacles",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Wheel of Fortune",
+          "upright"
+        ]
+      ],
+      "answer": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "overview": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "positions": [
+        "Seven of Pentacles establishes the context. Its reversed orientation should shape the starting condition without becoming the whole verdict.",
+        "Knight of Pentacles functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Wheel of Fortune describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR038",
+      "language": "en",
+      "domain": "decision",
+      "question": "What should guide this choice?",
+      "spread": [
+        [
+          "Context",
+          "The Fool",
+          "reversed"
+        ],
+        [
+          "Tension",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Temperance",
+          "upright"
+        ]
+      ],
+      "answer": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "overview": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "positions": [
+        "The Fool establishes the context. Its reversed orientation should shape the starting condition without becoming the whole verdict.",
+        "The Emperor functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Temperance describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR039",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What remains unresolved between us?",
+      "spread": [
+        [
+          "Context",
+          "Six of Cups",
+          "reversed"
+        ],
+        [
+          "Tension",
+          "Five of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Judgement",
+          "upright"
+        ]
+      ],
+      "answer": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "overview": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "positions": [
+        "Six of Cups establishes the context. Its reversed orientation should shape the starting condition without becoming the whole verdict.",
+        "Five of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Judgement describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR040",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "Where am I underestimating myself?",
+      "spread": [
+        [
+          "Context",
+          "Strength",
+          "reversed"
+        ],
+        [
+          "Tension",
+          "Eight of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "The Chariot",
+          "upright"
+        ]
+      ],
+      "answer": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "overview": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The first card is reversed, so the starting condition may be less available or more internalized than it first appears.",
+      "positions": [
+        "Strength establishes the context. Its reversed orientation should shape the starting condition without becoming the whole verdict.",
+        "Eight of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "The Chariot describes a conditional direction, not a fixed prediction; its upright orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR041",
+      "language": "vi",
+      "domain": "love",
+      "question": "Điều gì quan trọng nhất trong kết nối này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Ace of Cups",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Strength",
+          "reversed"
+        ]
+      ],
+      "answer": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có cảm xúc để mở ra, nhưng sự bảo vệ bản thân đang làm nhịp kết nối chậm lại. Strength cho thấy tiến triển tốt nhất đến từ sự an toàn và kiên nhẫn, không phải ép một người phải mở lòng nhanh hơn. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Ace of Cups ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Four of Pentacles cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Strength mô tả hướng đi có điều kiện. Trạng thái reversed không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR042",
+      "language": "vi",
+      "domain": "love",
+      "question": "Hai người có đang muốn cùng một điều không?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "The Lovers",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The Moon",
+          "reversed"
+        ]
+      ],
+      "answer": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Có nhu cầu định hình mối quan hệ, nhưng alignment chưa hoàn toàn rõ vì cảm xúc và giả định còn nhiều vùng mờ. Cần phân biệt điều đã được nói rõ với điều mỗi người tự suy ra. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "The Emperor ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "The Lovers cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The Moon mô tả hướng đi có điều kiện. Trạng thái reversed không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR043",
+      "language": "vi",
+      "domain": "career",
+      "question": "Tôi nên chú ý điều gì trong cơ hội này?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Three of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Five of Wands",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "King of Swords",
+          "reversed"
+        ]
+      ],
+      "answer": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Cơ hội có giá trị học hỏi và hợp tác, nhưng môi trường có thể nhiều cạnh tranh hoặc khác biệt quan điểm. Thành công phụ thuộc vào tiêu chuẩn rõ và khả năng xử lý xung đột bằng dữ kiện. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Three of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Five of Wands cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "King of Swords mô tả hướng đi có điều kiện. Trạng thái reversed không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR044",
+      "language": "vi",
+      "domain": "decision",
+      "question": "Điều gì khiến tôi chưa quyết được?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Two of Swords",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "Ace of Swords",
+          "reversed"
+        ]
+      ],
+      "answer": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn không thiếu lựa chọn mà thiếu một tiêu chí đủ sắc để loại bớt lựa chọn. Sự rõ ràng đến khi bạn chấp nhận rằng quyết định tốt cũng đồng nghĩa đóng lại vài khả năng khác. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Two of Swords ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Seven of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "Ace of Swords mô tả hướng đi có điều kiện. Trạng thái reversed không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR045",
+      "language": "vi",
+      "domain": "self-reflection",
+      "question": "Điều gì tôi cần buông?",
+      "spread": [
+        [
+          "Bối cảnh",
+          "Four of Pentacles",
+          "upright"
+        ],
+        [
+          "Điểm căng",
+          "Eight of Cups",
+          "upright"
+        ],
+        [
+          "Hướng đi",
+          "The World",
+          "reversed"
+        ]
+      ],
+      "answer": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "overview": "Bạn có thể đang giữ một cấu trúc vì nó quen thuộc hơn là vì nó còn nuôi dưỡng mình. Việc rời đi ở đây mang tính hoàn tất một chu kỳ, không phải phủ nhận giá trị của những gì đã từng có. Khi có lá ngược, cần đọc cách năng lượng bị chặn, nội hóa hoặc lệch nhịp thay vì coi nó là nghĩa đối lập.",
+      "positions": [
+        "Four of Pentacles ở vị trí bối cảnh đặt nền cho câu hỏi; hãy đọc nó theo đúng trạng thái upright và không biến nó thành kết luận toàn spread.",
+        "Eight of Cups cho thấy điểm căng hoặc yếu tố đang điều chỉnh lá đầu. Trạng thái upright quyết định năng lượng này biểu hiện trực tiếp hay khó vận hành.",
+        "The World mô tả hướng đi có điều kiện. Trạng thái reversed không phải một lời tiên tri cố định."
+      ],
+      "connections": "Ba lá phải được đọc như một tiến trình: bối cảnh tạo vấn đề, lá giữa giải thích lực căng, và lá cuối cho thấy cách câu chuyện có thể chuyển hướng.",
+      "guidance": "Ưu tiên một hành động nhỏ có thể kiểm chứng trong thực tế thay vì cố tìm sự chắc chắn tuyệt đối từ trải bài.",
+      "closing": "Đây là xu hướng của động lực hiện tại; cách bạn và những người liên quan hành động vẫn có thể thay đổi hướng đi."
+    },
+    {
+      "id": "HR046",
+      "language": "en",
+      "domain": "love",
+      "question": "What is making this connection difficult to read?",
+      "spread": [
+        [
+          "Context",
+          "The High Priestess",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Seven of Cups",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Justice",
+          "reversed"
+        ]
+      ],
+      "answer": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "overview": "There is a real lack of explicit information, and imagination may be filling the gaps. The spread favors verification and clear agreements over trying to decode every signal. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "positions": [
+        "The High Priestess establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Seven of Cups functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Justice describes a conditional direction, not a fixed prediction; its reversed orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR047",
+      "language": "en",
+      "domain": "career",
+      "question": "Why does progress feel slower than expected?",
+      "spread": [
+        [
+          "Context",
+          "Seven of Pentacles",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Knight of Pentacles",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Wheel of Fortune",
+          "reversed"
+        ]
+      ],
+      "answer": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "overview": "The work is developing through patience and repetition, while timing is partly outside your control. Slow progress is not the same as no progress, but the investment still needs periodic evidence-based review. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "positions": [
+        "Seven of Pentacles establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Knight of Pentacles functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Wheel of Fortune describes a conditional direction, not a fixed prediction; its reversed orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR048",
+      "language": "en",
+      "domain": "decision",
+      "question": "What should guide this choice?",
+      "spread": [
+        [
+          "Context",
+          "The Fool",
+          "upright"
+        ],
+        [
+          "Tension",
+          "The Emperor",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Temperance",
+          "reversed"
+        ]
+      ],
+      "answer": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "overview": "The choice asks for both experimentation and structure. A useful path is neither reckless freedom nor total control, but a bounded experiment that lets you learn without risking everything at once. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "positions": [
+        "The Fool establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "The Emperor functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Temperance describes a conditional direction, not a fixed prediction; its reversed orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR049",
+      "language": "en",
+      "domain": "reconciliation",
+      "question": "What remains unresolved between us?",
+      "spread": [
+        [
+          "Context",
+          "Six of Cups",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Five of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "Judgement",
+          "reversed"
+        ]
+      ],
+      "answer": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "overview": "The past still has emotional pull, but the unresolved issue is how conflict was handled and what it cost. Reconnection becomes meaningful only if the old conflict pattern is reviewed rather than romanticized. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "positions": [
+        "Six of Cups establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Five of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "Judgement describes a conditional direction, not a fixed prediction; its reversed orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    },
+    {
+      "id": "HR050",
+      "language": "en",
+      "domain": "self-reflection",
+      "question": "Where am I underestimating myself?",
+      "spread": [
+        [
+          "Context",
+          "Strength",
+          "upright"
+        ],
+        [
+          "Tension",
+          "Eight of Swords",
+          "upright"
+        ],
+        [
+          "Direction",
+          "The Chariot",
+          "reversed"
+        ]
+      ],
+      "answer": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "overview": "Your constraint may be partly maintained by the story that you need more certainty before acting. The spread emphasizes regulated courage and directional action rather than waiting to feel completely unafraid. The final card is reversed, so the direction is less settled and may require deliberate adjustment.",
+      "positions": [
+        "Strength establishes the context. Its upright orientation should shape the starting condition without becoming the whole verdict.",
+        "Eight of Swords functions as the tension or qualifier. Its upright orientation changes how available or distorted that theme is.",
+        "The Chariot describes a conditional direction, not a fixed prediction; its reversed orientation matters to how easily that direction can be expressed."
+      ],
+      "connections": "Read the three cards as context → tension → direction. The middle card should materially change how the first develops into the third.",
+      "guidance": "Use one reality-based action or observation to test the reading rather than treating symbolism as verified fact.",
+      "closing": "This is a trajectory under current conditions, not a predetermined outcome."
+    }
+  ]
+}

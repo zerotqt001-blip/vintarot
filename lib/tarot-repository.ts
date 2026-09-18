@@ -58,11 +58,13 @@ export type TarotRepository = {
   listCatalog(locale: TarotLocale): Promise<TarotCatalog>;
   getActiveDeck(deckId: string): Promise<DeckRow | null>;
   getActiveTemplate(categoryId: string, templateId: string): Promise<ActiveTemplate | null>;
+  getReadingTemplate(templateId: string, locale: TarotLocale): Promise<ReadingTemplateWithPositions | null>;
   listCards(deckId: string): Promise<CardRow[]>;
   createReadingSession(input: NewReadingSession): Promise<string>;
   createReadingCards(rows: NewReadingCard[]): Promise<void>;
   getSessionForOwner(sessionId: string, owner: ReadingOwner): Promise<ReadingSessionWithCards | null>;
   getMeaning(cardId: string, locale: TarotLocale, orientation: "upright" | "reversed"): Promise<CardMeaningRow | null>;
+  getMeaningPair(cardId: string, locale: TarotLocale): Promise<{ upright: CardMeaningRow; reversed: CardMeaningRow } | null>;
   saveReading(input: NewReading): Promise<string>;
 };
 
@@ -107,6 +109,36 @@ export type ActiveTemplate = {
   category: CatalogCategoryRow;
   template: CatalogTemplateRow;
   positions: CatalogPositionRow[];
+};
+
+export type ReadingSessionRow = ReadingSessionWithCards["session"];
+
+export type ReadingCardWithDetails = ReadingSessionWithCards["cards"][number];
+
+export type ReadingTemplateWithPositions = {
+  category: {
+    id: string;
+    slug: string;
+    name: string;
+    description: string;
+  };
+  template: {
+    id: string;
+    categoryId: string;
+    slug: string;
+    name: string;
+    description: string;
+    cardCount: number;
+    spreadType: string;
+  };
+  positions: Array<{
+    id: string;
+    key: string;
+    order: number;
+    name: string;
+    meaning: string;
+    prompt: string;
+  }>;
 };
 
 export type NewReadingSession = {
@@ -249,6 +281,38 @@ export function getTarotRepository(database: D1Database): TarotRepository {
       const positions = await rows<CatalogPositionRow>(database, "SELECT id, spread_template_id AS templateId, position_key AS key, position_order AS \"order\", label_en AS labelEn, label_vi AS labelVi, description_en AS descriptionEn, description_vi AS descriptionVi, prompt_en AS promptEn, prompt_vi AS promptVi FROM spread_positions WHERE spread_template_id = ? ORDER BY position_order, id", templateId);
       return { category, template, positions };
     },
+    async getReadingTemplate(templateId, locale) {
+      const category = await first<CatalogCategoryRow>(database, "SELECT c.id, c.slug, c.name_en AS nameEn, c.name_vi AS nameVi, c.description_en AS descriptionEn, c.description_vi AS descriptionVi, c.icon, c.image_url AS imageUrl, c.display_order AS displayOrder, c.active FROM spread_categories c JOIN spread_templates t ON t.category_id = c.id WHERE t.id = ?", templateId);
+      const template = await first<CatalogTemplateRow>(database, "SELECT id, category_id AS categoryId, slug, name_en AS nameEn, name_vi AS nameVi, description_en AS descriptionEn, description_vi AS descriptionVi, card_count AS cardCount, spread_type AS spreadType, display_order AS displayOrder, active FROM spread_templates WHERE id = ?", templateId);
+      if (!category || !template || category.id !== template.categoryId) return null;
+      const positionRows = await rows<CatalogPositionRow>(database, "SELECT id, spread_template_id AS templateId, position_key AS key, position_order AS \"order\", label_en AS labelEn, label_vi AS labelVi, description_en AS descriptionEn, description_vi AS descriptionVi, prompt_en AS promptEn, prompt_vi AS promptVi FROM spread_positions WHERE spread_template_id = ? ORDER BY position_order, id", templateId);
+      const localized = (en: string, vi: string) => locale === "vi" ? vi : en;
+      return {
+        category: {
+          id: category.id,
+          slug: category.slug,
+          name: localized(category.nameEn, category.nameVi),
+          description: localized(category.descriptionEn, category.descriptionVi),
+        },
+        template: {
+          id: template.id,
+          categoryId: template.categoryId,
+          slug: template.slug,
+          name: localized(template.nameEn, template.nameVi),
+          description: localized(template.descriptionEn, template.descriptionVi),
+          cardCount: template.cardCount,
+          spreadType: template.spreadType,
+        },
+        positions: positionOrder(positionRows).map((position) => ({
+          id: position.id,
+          key: position.key,
+          order: position.order,
+          name: localized(position.labelEn, position.labelVi),
+          meaning: localized(position.descriptionEn, position.descriptionVi),
+          prompt: localized(position.promptEn, position.promptVi),
+        })),
+      };
+    },
     async listCards(deckId) {
       return rows<CardRow>(database, "SELECT id, deck_id AS deckId, card_number AS cardNumber, slug, name_en AS nameEn, name_vi AS nameVi, arcana, suit, image_url AS imageUrl FROM tarot_cards WHERE deck_id = ? ORDER BY display_order, id", deckId);
     },
@@ -284,10 +348,27 @@ export function getTarotRepository(database: D1Database): TarotRepository {
       }
       return { ...row, journalQuestions };
     },
+    async getMeaningPair(cardId, locale) {
+      const meaningRows = await rows<Omit<CardMeaningRow, "journalQuestions"> & { journalQuestions: string }>(database, "SELECT cm.id, cm.card_id AS cardId, cm.locale, cm.orientation, cm.summary, cm.energy, cm.actions, cm.relationships, cm.work, cm.creativity, cm.home, cm.symbolism, cm.journal_questions AS journalQuestions, cm.keywords FROM card_meanings cm JOIN tarot_cards tc ON tc.id = cm.card_id JOIN decks d ON d.id = tc.deck_id WHERE cm.card_id = ? AND cm.locale = ? AND d.active = 1 AND cm.orientation IN ('upright', 'reversed') ORDER BY CASE cm.orientation WHEN 'upright' THEN 0 ELSE 1 END", cardId, locale);
+      const parsed = new Map<string, CardMeaningRow>();
+      for (const row of meaningRows) {
+        let journalQuestions: string[] = [];
+        try {
+          const value = JSON.parse(row.journalQuestions);
+          if (Array.isArray(value)) journalQuestions = value.filter((item): item is string => typeof item === "string");
+        } catch {
+          journalQuestions = [];
+        }
+        parsed.set(row.orientation, { ...row, journalQuestions });
+      }
+      const upright = parsed.get("upright");
+      const reversed = parsed.get("reversed");
+      return upright && reversed ? { upright, reversed } : null;
+    },
     async saveReading(input) {
       const now = Date.now();
       await database.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        .bind(input.id, input.sessionId, input.reading.opening, JSON.stringify(input.reading.card_readings), input.reading.synthesis, input.reading.advice, input.reading.closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
+        .bind(input.id, input.sessionId, input.reading.overview, JSON.stringify(input.reading.cards), input.reading.connections, input.reading.guidance, input.reading.closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
         .run();
       return input.id;
     },

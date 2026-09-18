@@ -27,12 +27,17 @@ export const TAROT_RESPONSE_SCHEMA = {
 
 export function buildTarotPromptContext(input: TarotReadingInput): string {
   return JSON.stringify({
+    knowledge_version: input.knowledgeVersion,
+    domain: input.domain,
     target_language: input.locale,
     question: input.question,
     optional_context: input.optionalContext,
     category: input.category,
     spread: input.spread,
     drawn_cards: input.cards.map((card) => ({ reading_card_id: card.readingCardId, orientation: card.orientation, position: card.position, card: card.card, knowledge: card.knowledge })),
+    retrieved_guidance: input.retrievedGuidance,
+    combination_hints: input.combinationHints.slice(0, 2),
+    few_shot_examples: input.fewShotExamples.slice(0, 2),
   });
 }
 

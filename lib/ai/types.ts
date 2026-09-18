@@ -13,6 +13,43 @@ export type TarotMeaningEvidence = {
   symbolism: string;
   journalQuestions: string[];
   keywords: string[];
+  /** Selective V5 handbook evidence; these fields never contain provider output. */
+  core?: string;
+  contextRule?: string;
+  positionModifier?: string;
+  reversalGuidance?: string;
+  cautions?: string[];
+  interpretationChecks?: string[];
+  masterSemantics?: string[];
+};
+
+export type TarotRetrievedGuidance = {
+  method: string[];
+  domain: string[];
+  reversal: string[];
+  synthesis: string[];
+  safety: string[];
+};
+
+export type TarotCombinationHint = {
+  kind: "pair" | "triad";
+  cards: string[];
+  signals: string[];
+  cautions: string[];
+  relationship?: string;
+};
+
+export type TarotFewShotExample = {
+  id: string;
+  language: TarotLocale;
+  domain: string;
+  question: string;
+  spread: string;
+  cards: string[];
+  overview: string;
+  connections: string;
+  guidance: string;
+  closing: string;
 };
 
 export type TarotReadingCardContext = {
@@ -24,12 +61,17 @@ export type TarotReadingCardContext = {
 };
 
 export type TarotReadingInput = {
+  knowledgeVersion: "5.0";
+  domain: string;
   locale: TarotLocale;
   question: string;
   optionalContext: string | null;
   category: { id: string; key: string; name: string } | null;
   spread: { id: string; key: string; name: string; description: string };
   cards: TarotReadingCardContext[];
+  retrievedGuidance: TarotRetrievedGuidance;
+  combinationHints: TarotCombinationHint[];
+  fewShotExamples: TarotFewShotExample[];
 };
 
 export type TarotProviderCard = {

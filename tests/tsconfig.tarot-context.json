@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../lib/tarot-reading-context.ts",
+    "../lib/tarot-repository.ts",
+    "../lib/ai/knowledge-v5.ts",
+    "tarot-reading-context.test.ts",
+    "tarot-repository.test.ts",
+    "tarot-ai.test.ts",
+    "tarot-interpretation.test.ts"
+  ]
+}
