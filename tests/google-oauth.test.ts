@@ -4,7 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { createAuthHandlers } from "../lib/auth-handlers";
 import { createGoogleOAuthClient } from "../lib/google-oauth";
-import { SESSION_COOKIE_NAME, createMemberAuthStore, parseCookie } from "../lib/member-auth";
+import { SESSION_COOKIE_NAME, createMemberAuthStore, digestToken, parseCookie } from "../lib/member-auth";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
 
 const migrationSql = readFileSync(new URL("../drizzle/0004_member_auth.sql", import.meta.url), "utf8");
@@ -77,7 +77,9 @@ async function beginAndCallback(harness: ReturnType<typeof createHarness>, retur
   assert.equal(started.status, 303);
   const state = new URL(started.headers.get("location") ?? "").searchParams.get("state");
   assert.ok(state);
-  return harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(state)}`));
+  const binding = parseCookie(started.headers.get("set-cookie"), "natarot_google_oauth");
+  assert.ok(binding);
+  return harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(state)}`, { headers: { cookie: `natarot_google_oauth=${binding}` } }));
 }
 
 test("Google start stores hashed single-use state and a PKCE challenge", async (t) => {
@@ -105,15 +107,47 @@ test("Google callback rejects wrong, expired, and replayed states before exchang
   assert.equal(new URL(wrong.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
   assert.equal(harness.requests.length, 0);
 
-  const replayFirst = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${start.rawState}`));
+  const stateCookie = `natarot_google_oauth=${await digestToken(start.rawState)}`;
+  const replayFirst = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${start.rawState}`, { headers: { cookie: stateCookie } }));
   assert.equal(replayFirst.status, 303);
-  const replay = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${start.rawState}`));
+  const replay = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${start.rawState}`, { headers: { cookie: stateCookie } }));
   assert.equal(new URL(replay.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
 
   const expires = await harness.googleOAuth.begin("/journal");
   harness.setClock(1_700_000_000_000 + 11 * 60_000);
-  const expired = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${expires.rawState}`));
+  const expired = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${expires.rawState}`, { headers: { cookie: `natarot_google_oauth=${await digestToken(expires.rawState)}` } }));
   assert.equal(new URL(expired.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
+});
+
+test("Google start binds state to the initiating browser and rejects a cross-browser callback", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+
+  const start = await harness.handlers.googleStart(new Request("https://natarot.test/api/auth/google/start?returnPath=%2Fprofile"));
+  const state = new URL(start.headers.get("location") ?? "").searchParams.get("state");
+  assert.ok(state);
+  const binding = parseCookie(start.headers.get("set-cookie"), "natarot_google_oauth");
+  assert.equal(binding, await digestToken(state));
+  assert.doesNotMatch(start.headers.get("set-cookie") ?? "", new RegExp(state));
+  assert.match(start.headers.get("set-cookie") ?? "", /HttpOnly; SameSite=Lax; Path=\/; Secure$/);
+
+  const crossBrowser = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(state)}`));
+  assert.equal(new URL(crossBrowser.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
+  assert.equal(harness.requests.length, 0);
+  assert.equal(await count(harness.database, "members"), 0);
+});
+
+test("Google provider-error callback consumes a browser-bound state and clears its transaction cookie", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  const state = await harness.googleOAuth.begin("/profile");
+  const cookie = `natarot_google_oauth=${await digestToken(state.rawState)}`;
+
+  const rejected = await harness.handlers.googleCallback(new Request(`https://natarot.test/api/auth/google/callback?error=access_denied&state=${encodeURIComponent(state.rawState)}`, { headers: { cookie } }));
+
+  assert.equal(new URL(rejected.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
+  assert.match(rejected.headers.get("set-cookie") ?? "", /natarot_google_oauth=; Max-Age=0/);
+  assert.equal(await harness.store.consumeOAuthState(state.rawState), null);
 });
 
 test("Google token exchange rejects a wrong PKCE verifier without exposing provider details", async (t) => {
@@ -160,6 +194,25 @@ test("Google callback links a verified member by normalized email and starts a m
   assert.ok(session);
   assert.equal((await harness.store.readSession(session))?.id, existing.id);
   assert.equal((await harness.store.findByGoogleSubject("linked-google-subject"))?.id, existing.id);
+});
+
+test("Google callback does not replace a different Google subject already linked to an email match", async (t) => {
+  const harness = createHarness({ userInfo: { sub: "incoming-google-subject", email: "reader@example.test", email_verified: true } });
+  t.after(() => harness.sqlite.close());
+  const existing = await harness.store.createMember({
+    email: "reader@example.test",
+    username: "reader",
+    phone: "+84912345678",
+    passwordHash: null,
+    googleSubject: "original-google-subject",
+    emailVerifiedAt: 1_700_000_000_000,
+  });
+
+  const result = await beginAndCallback(harness);
+
+  assert.equal(new URL(result.headers.get("location") ?? "", "https://natarot.test").href, "https://natarot.test/auth?error=google");
+  assert.equal((await harness.store.findByIdentifier(existing.email))?.google_subject, "original-google-subject");
+  assert.equal(await count(harness.database, "auth_tokens"), 0);
 });
 
 test("Google callback signs in an active member already linked to the Google subject", async (t) => {

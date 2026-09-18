@@ -419,11 +419,13 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
         .then((row) => row ? { codeVerifier: row.code_verifier, returnPath: row.return_path } : null);
     },
 
-    async linkGoogleSubject(memberId: string, subject: string): Promise<void> {
+    async linkGoogleSubject(memberId: string, subject: string): Promise<boolean> {
       try {
-        await database.prepare("UPDATE members SET google_subject=?, updated_at=? WHERE id=?")
-          .bind(subject, now(), memberId)
+        const update = await database.prepare(`UPDATE members SET google_subject=?, updated_at=?
+          WHERE id=? AND (google_subject IS NULL OR google_subject=?)`)
+          .bind(subject, now(), memberId, subject)
           .run();
+        return Number(update.meta.changes) === 1;
       } catch (error) {
         if (isUniqueConstraint(error)) throw new MemberConflictError();
         throw error;

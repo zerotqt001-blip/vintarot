@@ -23,6 +23,8 @@ import {
 
 const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1_000;
 const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1_000;
+const GOOGLE_TRANSACTION_COOKIE_NAME = "natarot_google_oauth";
+const GOOGLE_TRANSACTION_TTL_SECONDS = 10 * 60;
 const INVALID_CREDENTIALS = { error: "Invalid credentials." };
 const INVALID_TOKEN = { error: "This link is invalid or expired." };
 
@@ -110,18 +112,37 @@ function verificationRedirect(request: Request, verified: boolean): Response {
   return Response.redirect(target, 303);
 }
 
-function googleErrorRedirect(request: Request): Response {
-  return Response.redirect(new URL("/auth?error=google", request.url), 303);
+function googleTransactionCookie(binding: string, secure: boolean): string {
+  return `${GOOGLE_TRANSACTION_COOKIE_NAME}=${binding}; Max-Age=${GOOGLE_TRANSACTION_TTL_SECONDS}; HttpOnly; SameSite=Lax; Path=/${secure ? "; Secure" : ""}`;
 }
 
-function localRedirect(request: Request, returnPath: string, sessionRaw: string): Response {
-  return new Response(null, {
+function clearGoogleTransactionCookie(secure: boolean): string {
+  return `${GOOGLE_TRANSACTION_COOKIE_NAME}=; Max-Age=0; HttpOnly; SameSite=Lax; Path=/${secure ? "; Secure" : ""}`;
+}
+
+function withGoogleTransactionCleared(response: Response, request: Request): Response {
+  response.headers.append("Set-Cookie", clearGoogleTransactionCookie(requestUsesHttps(request)));
+  return response;
+}
+
+function redirect(location: URL | string): Response {
+  return new Response(null, { status: 303, headers: { Location: String(location) } });
+}
+
+function googleErrorRedirect(request: Request, clearTransaction = false): Response {
+  const response = redirect(new URL("/auth?error=google", request.url));
+  return clearTransaction ? withGoogleTransactionCleared(response, request) : response;
+}
+
+function localRedirect(request: Request, returnPath: string, sessionRaw: string, clearGoogleTransaction = false): Response {
+  const response = new Response(null, {
     status: 303,
     headers: {
       Location: new URL(returnPath, request.url).toString(),
       "Set-Cookie": buildSessionCookie(sessionRaw, requestUsesHttps(request)),
     },
   });
+  return clearGoogleTransaction ? withGoogleTransactionCleared(response, request) : response;
 }
 
 function googleCompletionPayload(value: unknown): { subject: string; email: string; displayName: string | null; returnPath: string } | null {
@@ -169,7 +190,9 @@ export function createAuthHandlers({
       try {
         const returnPath = new URL(request.url).searchParams.get("returnPath") ?? "/";
         const started = await googleOAuth.begin(returnPath);
-        return Response.redirect(started.url, 303);
+        const response = redirect(started.url);
+        response.headers.append("Set-Cookie", googleTransactionCookie(await digestToken(started.rawState), requestUsesHttps(request)));
+        return response;
       } catch {
         return Response.json({ error: "Google sign-in is unavailable." }, { status: 503 });
       }
@@ -180,32 +203,33 @@ export function createAuthHandlers({
       const query = new URL(request.url).searchParams;
       const state = query.get("state");
       const code = query.get("code");
-      if (query.get("error") || !state || !code) return googleErrorRedirect(request);
+      const transactionBinding = parseCookie(request.headers.get("cookie"), GOOGLE_TRANSACTION_COOKIE_NAME);
+      if (!state || !transactionBinding || transactionBinding !== await digestToken(state)) return googleErrorRedirect(request, true);
       const statePayload = await store.consumeOAuthState(state);
-      if (!statePayload) return googleErrorRedirect(request);
+      if (!statePayload || query.get("error") || !code) return googleErrorRedirect(request, true);
 
       try {
         const accessToken = await googleOAuth.exchange(code, statePayload.codeVerifier);
         const identity = await googleOAuth.readVerifiedIdentity(accessToken);
         const linked = await store.findByGoogleSubject(identity.subject);
         if (linked) {
-          if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request);
+          if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request, true);
           await store.markLastLogin(linked.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw, true);
         }
 
         const byEmail = await store.findByEmail(identity.email);
         if (byEmail) {
-          if (byEmail.disabled !== 0 || byEmail.email_verified_at === null) return googleErrorRedirect(request);
+          if (byEmail.disabled !== 0 || byEmail.email_verified_at === null) return googleErrorRedirect(request, true);
           try {
-            await store.linkGoogleSubject(byEmail.id, identity.subject);
+            if (!(await store.linkGoogleSubject(byEmail.id, identity.subject))) return googleErrorRedirect(request, true);
           } catch (error) {
             if (!(error instanceof MemberConflictError)) throw error;
             const racedLink = await store.findByGoogleSubject(identity.subject);
-            if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request);
+            if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request, true);
           }
           await store.markLastLogin(byEmail.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw, true);
         }
 
         const completion = await store.createToken({
@@ -220,9 +244,9 @@ export function createAuthHandlers({
         });
         const target = new URL("/auth/complete", request.url);
         target.searchParams.set("token", completion.raw);
-        return Response.redirect(target, 303);
+        return withGoogleTransactionCleared(redirect(target), request);
       } catch {
-        return googleErrorRedirect(request);
+        return googleErrorRedirect(request, true);
       }
     },
 
