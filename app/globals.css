@@ -1180,7 +1180,7 @@ html,body{background:var(--color-bg-deep);color:var(--color-text)}
 .brand-input:-webkit-autofill,.brand-input:-webkit-autofill:hover,.brand-input:-webkit-autofill:focus{-webkit-text-fill-color:var(--color-text);-webkit-box-shadow:0 0 0 1000px var(--color-surface) inset;transition:background-color 9999s ease-out 0s}
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:var(--color-focus)}
 .topbar-nav a{white-space:nowrap}
-@media(max-width:900px) and (min-width:701px){
+@media(max-width:1100px) and (min-width:701px){
   .home-shell .topbar,.site-shell .topbar,.room-page .topbar{gap:10px;padding-inline:12px}
   .home-shell .brand-tagline,.site-shell .brand-tagline,.room-page .brand-tagline{display:none}
   .home-shell .brand-lockup,.site-shell .brand-lockup,.room-page .brand-lockup{flex:0 0 auto;gap:0}
