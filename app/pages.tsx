@@ -888,7 +888,7 @@ function Profile({ user }: { user: MemberUser }) {
         })
         .catch((error) => setMessage(error.message));
   }, [user]);
-      if (!user) return <SignIn returnTo="/profile" />;
+  if (!user) return <SignIn returnTo="/profile" />;
   return (
     <>
       <Header title={t("pages.yourSpace")} text={t("pages.yourSpaceText")} />
