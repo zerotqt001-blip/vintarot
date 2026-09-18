@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { TarotLocale, TarotReadingCardContext, TarotReadingPayload } from "./ai/types";
-import { tarotReadingPayloadSchema } from "./tarot-interpretation";
+import { assertPersonalOpening, tarotReadingPayloadSchema } from "./tarot-interpretation";
 
 export type StoredReadingRow = {
   id: string;
@@ -97,6 +97,11 @@ function parseNormalizedPayload(row: StoredReadingRow, expectedCards: TarotReadi
   if (!parsed.success) {
     throw new TarotReadingCompatibilityError("Stored Tarot reading payload does not match the normalized contract.", { cause: parsed.error });
   }
+  try {
+    assertPersonalOpening(parsed.data.directAnswer, expectedCards);
+  } catch (error) {
+    throw new TarotReadingCompatibilityError("Stored Tarot reading payload has an invalid direct answer.", { cause: error });
+  }
   return {
     ...parsed.data,
     cardEvidence: expectedCardEvidence(parsed.data.cardEvidence.map((item) => ({
@@ -132,7 +137,7 @@ function parseLegacyPayload(row: StoredReadingRow, expectedCards: TarotReadingCa
   const cardEvidence = expectedCardEvidence(legacyCards, expectedCards);
   const reflectionPrompts = [...new Set(legacyCards.map((card) => card.reflectionPrompt).filter((prompt): prompt is string => Boolean(prompt)).map((prompt) => text(prompt, 1000)))].slice(0, 4);
   const labels = legacyLabels[locale];
-  return {
+  const candidate = {
     directAnswer: text(row.opening, 6000),
     personalInsights: row.synthesis.trim() ? [{ title: labels.insight, body: text(row.synthesis, 1200) }] : [],
     reflectionPrompts,
@@ -142,6 +147,16 @@ function parseLegacyPayload(row: StoredReadingRow, expectedCards: TarotReadingCa
     followUpSuggestions: [],
     disclaimer: row.disclaimer.trim() || disclaimer[locale],
   };
+  const normalized = tarotReadingPayloadSchema.safeParse(candidate);
+  if (!normalized.success) {
+    throw new TarotReadingCompatibilityError("Legacy Tarot reading does not satisfy the normalized contract.", { cause: normalized.error });
+  }
+  try {
+    assertPersonalOpening(normalized.data.directAnswer, expectedCards);
+  } catch (error) {
+    throw new TarotReadingCompatibilityError("Legacy Tarot reading has an invalid direct answer.", { cause: error });
+  }
+  return normalized.data;
 }
 
 export function serializeLegacyReadingFields(reading: TarotReadingPayload): {

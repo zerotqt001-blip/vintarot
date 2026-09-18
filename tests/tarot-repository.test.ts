@@ -196,6 +196,19 @@ test("repository returns the latest owned reading and hydrates historical rows w
   assert.deepEqual(hydrated.reflectionPrompts, input.cards.map((card) => `Notice ${card.position.key}`));
   assert.equal(hydrated.personalInsights[0]?.body, legacy.synthesis);
   assert.equal(hydrated.nextSteps[0]?.body, legacy.advice);
+
+  assert.throws(
+    () => parseStoredReading({ ...legacy, opening: "A single legacy paragraph." }, input.cards, "en"),
+    (error) => error instanceof TarotReadingCompatibilityError && /normalized contract|direct answer/i.test(error.message),
+  );
+  assert.throws(
+    () => parseStoredReading({ ...legacy, synthesis: "" }, input.cards, "en"),
+    (error) => error instanceof TarotReadingCompatibilityError && /normalized contract/i.test(error.message),
+  );
+  assert.throws(
+    () => parseStoredReading({ ...legacy, advice: "" }, input.cards, "en"),
+    (error) => error instanceof TarotReadingCompatibilityError && /normalized contract/i.test(error.message),
+  );
 });
 
 test("legacy hydration rejects malformed JSON and incomplete card coverage", async (t) => {

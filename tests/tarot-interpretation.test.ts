@@ -52,6 +52,17 @@ test("strict parsing requires two to four direct-answer paragraphs", () => {
   assert.throws(() => parseReadingPayload({ ...providerOutput, direct_answer: "One paragraph." }, tarotReadingQualityFixture.cards, "en"), /direct_answer/i);
 });
 
+test("strict parsing keeps the direct answer personal rather than card- or spread-led", () => {
+  for (const directAnswer of [
+    "Ten of Cups points to a turning point.\n\nNotice what feels actionable.",
+    "The cards show a turning point.\n\nNotice what feels actionable.",
+    "This three-card spread shows a turning point.\n\nNotice what feels actionable.",
+    "Các lá bài cho thấy một bước ngoặt.\n\nHãy quan sát điều có thể hành động.",
+  ]) {
+    assert.throws(() => parseReadingPayload({ ...providerOutput, direct_answer: directAnswer }, tarotReadingQualityFixture.cards, "en"), /direct_answer/i);
+  }
+});
+
 test("strict parsing enforces direct-answer, title, body, and interpretation limits", () => {
   const directAnswerAtLimit = `${"a".repeat(2999)}\n\n${"b".repeat(2999)}`;
   assert.equal(directAnswerAtLimit.length, 6000);
@@ -62,6 +73,9 @@ test("strict parsing enforces direct-answer, title, body, and interpretation lim
   assert.doesNotThrow(() => parseReadingPayload({ ...providerOutput, personal_insights: [insightAtLimits] }, tarotReadingQualityFixture.cards, "en"));
   assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: [{ title: "t".repeat(241), body: "b" }] }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
   assert.throws(() => parseReadingPayload({ ...providerOutput, personal_insights: [{ title: "t", body: "b".repeat(1201) }] }, tarotReadingQualityFixture.cards, "en"), /personal_insights/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, reflection_prompts: ["p".repeat(1001)] }, tarotReadingQualityFixture.cards, "en"), /reflection_prompts/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, follow_up_suggestions: ["s".repeat(501)] }, tarotReadingQualityFixture.cards, "en"), /follow_up_suggestions/i);
+  assert.throws(() => parseReadingPayload({ ...providerOutput, deeper_reading: "d".repeat(6001) }, tarotReadingQualityFixture.cards, "en"), /deeper_reading/i);
 
   const evidenceAtLimit = { ...providerOutput.card_evidence[0], interpretation: "i".repeat(4000) };
   assert.doesNotThrow(() => parseReadingPayload({ ...providerOutput, card_evidence: [evidenceAtLimit, ...providerOutput.card_evidence.slice(1)] }, tarotReadingQualityFixture.cards, "en"));

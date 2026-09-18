@@ -16,6 +16,10 @@ const nextStepSchema = z.object({
   body: boundedProviderString(1200),
 }).strict();
 
+const reflectionPromptSchema = boundedProviderString(1000);
+const followUpSuggestionSchema = boundedProviderString(500);
+const deeperReadingSchema = z.union([boundedProviderString(6000), z.null()]);
+
 const cardEvidenceSchema = z.object({
   reading_card_id: z.string().min(1).max(100),
   position_key: z.string().min(1).max(100),
@@ -30,11 +34,11 @@ const directAnswerSchema = z.string().min(1).max(6000).refine((value) => {
 export const tarotProviderOutputSchema = z.object({
   direct_answer: directAnswerSchema,
   personal_insights: z.array(insightSchema).min(1).max(6),
-  reflection_prompts: z.array(z.string().min(1)).min(1).max(4),
+  reflection_prompts: z.array(reflectionPromptSchema).min(1).max(4),
   next_steps: z.array(nextStepSchema).min(1).max(4),
   card_evidence: z.array(cardEvidenceSchema).min(1).max(10),
-  deeper_reading: z.union([z.string().min(1), z.null()]),
-  follow_up_suggestions: z.array(z.string().min(1)).min(0).max(4),
+  deeper_reading: deeperReadingSchema,
+  follow_up_suggestions: z.array(followUpSuggestionSchema).max(4),
 }).strict();
 
 const positionSchema = z.object({
@@ -60,18 +64,18 @@ const readingCardEvidenceSchema = z.object({
   position: positionSchema,
   card: cardSchema,
   orientation: z.enum(["upright", "reversed"]),
-  interpretation: z.string(),
+  interpretation: boundedProviderString(4000),
 }).strict();
 
 export const tarotReadingPayloadSchema = z.object({
-  directAnswer: z.string(),
-  personalInsights: z.array(insightSchema),
-  reflectionPrompts: z.array(z.string()),
-  nextSteps: z.array(nextStepSchema),
-  cardEvidence: z.array(readingCardEvidenceSchema),
-  deeperReading: z.string().nullable(),
-  followUpSuggestions: z.array(z.string()),
-  disclaimer: z.string(),
+  directAnswer: directAnswerSchema,
+  personalInsights: z.array(insightSchema).min(1).max(6),
+  reflectionPrompts: z.array(reflectionPromptSchema).min(1).max(4),
+  nextSteps: z.array(nextStepSchema).min(1).max(4),
+  cardEvidence: z.array(readingCardEvidenceSchema).min(1).max(10),
+  deeperReading: deeperReadingSchema,
+  followUpSuggestions: z.array(followUpSuggestionSchema).max(4),
+  disclaimer: boundedProviderString(500),
 }).strict();
 
 export type ReadingPayload = TarotReadingPayload;
@@ -81,6 +85,32 @@ const disclaimer = {
   vi: "Đây là một lời mời để phản chiếu, không phải lời tiên đoán chắc chắn hay lời khuyên chuyên môn.",
 } as const;
 
+const openingMechanicsPattern = /^(?:(?:the\s+)?cards?\s+(?:show|suggest|indicate|reveal|point|tell|say)\b|(?:the\s+)?spread\s+(?:show|suggest|indicate|reveal|point|tell|say)\b|(?:this|the)\s+(?:\w+\s*[- ]\s*card\s+)?spread\b|(?:in|from|looking\s+at)\s+(?:this|the)\s+(?:\w+\s*[- ]\s*card\s+)?spread\b|(?:the\s+)?(?:first|second|third|fourth|fifth|last)\s+card\b|(?:card|position)\s*#?\s*\d+\b|(?:các\s+)?lá\s+bài\s+(?:cho\s+thấy|gợi\s+ý|chỉ\s+ra|tiết\s+lộ)\b|(?:trải|bộ)\s+bài\s+(?:cho\s+thấy|gợi\s+ý|chỉ\s+ra|tiết\s+lộ)\b|(?:lá\s+)?bài\s+(?:đầu|thứ)\s+(?:tiên|hai|ba|tư|năm)\b)/iu;
+
+function openingText(value: string): string {
+  return value.split(/\n\s*\n/)[0].trim().replace(/^[\s"'“”‘’*_#-]+/u, "");
+}
+
+function startsWithPhrase(value: string, phrase: string): boolean {
+  const normalizedValue = value.toLocaleLowerCase();
+  const normalizedPhrase = phrase.trim().toLocaleLowerCase();
+  if (!normalizedPhrase || !normalizedValue.startsWith(normalizedPhrase)) return false;
+  const next = normalizedValue.slice(normalizedPhrase.length);
+  return next.length === 0 || /^[\s,:;.!?—–-]/u.test(next);
+}
+
+export function assertPersonalOpening(value: string, expectedCards: TarotReadingCardContext[]): void {
+  const opening = openingText(value);
+  if (openingMechanicsPattern.test(opening)) {
+    throw new Error("direct_answer must begin with the reader's situation, not spread mechanics");
+  }
+
+  const cardNames = expectedCards.flatMap((card) => [card.card.nameEn, card.card.nameVi]);
+  if (cardNames.some((name) => startsWithPhrase(opening, name) || startsWithPhrase(opening, `the ${name}`))) {
+    throw new Error("direct_answer must not begin with a card name");
+  }
+}
+
 export function parseReadingPayload(value: unknown, expectedCards: TarotReadingCardContext[], locale: TarotLocale): TarotReadingPayload {
   const parsed = tarotProviderOutputSchema.safeParse(value);
   if (!parsed.success) throw new Error(`Invalid Tarot provider output: ${parsed.error.issues[0]?.path.join(".") || "reading"}`);
@@ -89,6 +119,7 @@ export function parseReadingPayload(value: unknown, expectedCards: TarotReadingC
   if (expectedIds.length === 0 || expectedIds.length > 10 || new Set(expectedIds).size !== expectedIds.length) {
     throw new Error("Invalid expected card coverage for the session");
   }
+  assertPersonalOpening(parsed.data.direct_answer, expectedCards);
 
   const actualIds = parsed.data.card_evidence.map((evidence) => evidence.reading_card_id);
   if (
