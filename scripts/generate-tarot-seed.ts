@@ -74,8 +74,19 @@ export function buildSpreadCatalogMigrationSql(seed: TarotSeed, now = Date.now()
     statements.push(upsert("spread_templates", ["id", "category_id", "slug", "name_en", "name_vi", "description_en", "description_vi", "card_count", "spread_type", "display_order", "active", "created_at", "updated_at"], [template.id, template.categoryId, template.slug, template.name.en, template.name.vi, template.description.en, template.description.vi, template.cardCount, template.spreadType, template.displayOrder, template.active, now, now]));
   }
   for (const position of seed.positions) {
-    const positionId = legacyPositionIds[position.id] || position.id;
-    statements.push(upsert("spread_positions", ["id", "spread_template_id", "position_key", "position_order", "label_en", "label_vi", "description_en", "description_vi", "prompt_en", "prompt_vi", "created_at", "updated_at"], [positionId, position.templateId, position.key, position.order, position.label.en, position.label.vi, position.description.en, position.description.vi, position.prompt.en, position.prompt.vi, now, now]));
+    const columns = ["id", "spread_template_id", "position_key", "position_order", "label_en", "label_vi", "description_en", "description_vi", "prompt_en", "prompt_vi", "created_at", "updated_at"];
+    const values: SqlValue[] = [position.id, position.templateId, position.key, position.order, position.label.en, position.label.vi, position.description.en, position.description.vi, position.prompt.en, position.prompt.vi, now, now];
+    const legacyPositionId = legacyPositionIds[position.id];
+    if (!legacyPositionId) {
+      statements.push(upsert("spread_positions", columns, values));
+      continue;
+    }
+
+    const assignments = columns.slice(1).map((column, index) => `\`${column}\`=${quote(values[index + 1])}`).join(",");
+    const naturalConflict = (candidateId: string) => `NOT EXISTS (SELECT 1 FROM \`spread_positions\` WHERE \`spread_template_id\`=${quote(position.templateId)} AND (\`position_key\`=${quote(position.key)} OR \`position_order\`=${position.order}) AND \`id\`<>${quote(candidateId)})`;
+    statements.push(`UPDATE \`spread_positions\` SET ${assignments} WHERE \`id\`=${quote(position.id)} AND NOT EXISTS (SELECT 1 FROM \`spread_positions\` WHERE \`id\`=${quote(legacyPositionId)}) AND ${naturalConflict(position.id)};`);
+    statements.push(`UPDATE \`spread_positions\` SET ${assignments} WHERE \`id\`=${quote(legacyPositionId)} AND NOT EXISTS (SELECT 1 FROM \`spread_positions\` WHERE \`id\`=${quote(position.id)}) AND ${naturalConflict(legacyPositionId)};`);
+    statements.push(`INSERT INTO \`spread_positions\` (${columns.map((column) => `\`${column}\``).join(",")}) SELECT ${values.map(quote).join(",")} WHERE NOT EXISTS (SELECT 1 FROM \`spread_positions\` WHERE \`id\` IN (${quote(position.id)},${quote(legacyPositionId)})) AND NOT EXISTS (SELECT 1 FROM \`spread_positions\` WHERE \`spread_template_id\`=${quote(position.templateId)} AND (\`position_key\`=${quote(position.key)} OR \`position_order\`=${position.order}));`);
   }
   return `${statements.join("\n")}\n`;
 }
