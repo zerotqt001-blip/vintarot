@@ -68,8 +68,9 @@ export function createAuthEmailSender({ fetchImpl, apiKey, from, origin }: AuthE
       ? `<p>Xin chào ${safeUsername}, hãy <a href="${link}">xác minh tài khoản NaTarot</a> của bạn.</p><p>Hello ${safeUsername}, <a href="${link}">verify your NaTarot account</a>.</p>`
       : `<p>Xin chào ${safeUsername}, hãy <a href="${link}">đặt lại mật khẩu NaTarot</a> của bạn.</p><p>Hello ${safeUsername}, <a href="${link}">reset your NaTarot password</a>.</p>`;
 
+    let response: Response;
     try {
-      const response = await fetchImpl(RESEND_EMAILS_URL, {
+      response = await fetchImpl(RESEND_EMAILS_URL, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -77,11 +78,10 @@ export function createAuthEmailSender({ fetchImpl, apiKey, from, origin }: AuthE
         },
         body: JSON.stringify({ from, to: [request.to], subject, text, html }),
       });
-      if (!response.ok) throw providerError(response.status, "provider");
-    } catch (error) {
-      if (error instanceof Error && error.message.startsWith("Email provider error")) throw error;
+    } catch {
       throw providerError("unknown", "network");
     }
+    if (!response.ok) throw providerError(response.status, "provider");
   }
 
   return {

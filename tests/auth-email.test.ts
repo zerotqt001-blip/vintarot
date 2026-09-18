@@ -101,3 +101,27 @@ test("a provider failure exposes only a safe status and category", async () => {
     },
   );
 });
+
+test("a thrown fetch error is replaced with fixed safe network metadata", async () => {
+  const leakedToken = "injected-token-from-fetch";
+  const leakedKey = "injected-key-from-fetch";
+  const sender = createAuthEmailSender({
+    apiKey: "test-only-key",
+    from: "NaTarot <noreply@natarot.com>",
+    origin: "https://natarot.com",
+    fetchImpl: async () => {
+      throw new Error(`Email provider error (status 500, category: provider): ${leakedToken} ${leakedKey}`);
+    },
+  });
+
+  await assert.rejects(
+    sender.sendVerification({ to: "reader@example.test", username: "moon_rider", token: leakedToken }),
+    (error: unknown) => {
+      const message = String(error);
+      assert.equal(message, "Error: Email provider error (status unknown, category: network).");
+      assert.doesNotMatch(message, new RegExp(leakedToken));
+      assert.doesNotMatch(message, new RegExp(leakedKey));
+      return true;
+    },
+  );
+});
