@@ -101,6 +101,9 @@ test("auth entry validates its query state before rendering a localized form", (
   assert.match(page, /reset/);
   assert.match(screen, /useLanguage/);
   assert.match(screen, /t\(["']auth\./);
+  assert.match(screen, /LanguageSelect/);
+  assert.match(screen, /auth\/verification\/resend/);
+  assert.match(screen, /phonePrivacy/);
 });
 
 test("auth forms use the member endpoints and Google uses top-level navigation", () => {
@@ -128,6 +131,7 @@ test("Google completion submits the token only to its endpoint and keeps phone p
   assert.match(completionUi, /auth\/google\/complete/);
   assert.match(completionUi, /\{\s*token\s*,\s*username\s*,\s*phone\s*\}/);
   assert.match(completionUi, /phonePrivacy/);
+  assert.match(completionUi, /LanguageSelect/);
   assert.match(completionUi, /window\.location\.assign/);
   assert.doesNotMatch(authSources, /localStorage/);
   assert.doesNotMatch(authSources, /ChatGPT/);

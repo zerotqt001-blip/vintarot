@@ -166,6 +166,23 @@ test("Google start accepts safe return_to and ignores unsafe destinations", asyn
   assert.equal(JSON.parse(unsafePayload?.payload ?? "{}").returnPath, "/");
 });
 
+test("Google completion uses a relative local redirect behind an HTTPS-terminating proxy", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  const started = await harness.handlers.googleStart(new Request("http://backend.test/api/auth/google/start?return_to=%2Fprofile", {
+    headers: { "x-forwarded-proto": "https" },
+  }));
+  const state = new URL(started.headers.get("location") ?? "").searchParams.get("state");
+  const cookie = parseCookie(started.headers.get("set-cookie"), "natarot_google_oauth");
+  assert.ok(state && cookie);
+  const callback = await harness.handlers.googleCallback(new Request(`http://backend.test/api/auth/google/callback?code=good-code&state=${encodeURIComponent(state)}`, {
+    headers: { cookie: `natarot_google_oauth=${cookie}`, "x-forwarded-proto": "https" },
+  }));
+  const location = callback.headers.get("location") ?? "";
+  assert.match(location, /^\/auth\/complete\?token=/);
+  assert.doesNotMatch(location, /^http:/i);
+});
+
 test("Google provider-error callback consumes a browser-bound state and clears its transaction cookie", async (t) => {
   const harness = createHarness();
   t.after(() => harness.sqlite.close());
@@ -311,6 +328,9 @@ test("Google completion rejects duplicate username, duplicate email, and invalid
   assert.ok(firstToken);
   const duplicateUsername = await harness.handlers.googleComplete(jsonRequest("/api/auth/google/complete", { token: firstToken, username: "taken_name", phone: "+84987654321" }));
   assert.equal(duplicateUsername.status, 400);
+  const correctedUsername = await harness.handlers.googleComplete(jsonRequest("/api/auth/google/complete", { token: firstToken, username: "corrected_name", phone: "+84987654321" }));
+  assert.equal(correctedUsername.status, 303);
+  assert.equal((await harness.store.findByIdentifier("corrected_name"))?.email, "reader@example.test");
 
   const duplicateEmailHarness = createHarness({ userInfo: { sub: "new-subject", email: "late@example.test", email_verified: true } });
   t.after(() => duplicateEmailHarness.sqlite.close());

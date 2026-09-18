@@ -75,7 +75,7 @@ export interface OAuthStatePayload {
 
 const emailValue = z.string().trim().email().max(254);
 const usernameValue = z.string().trim().regex(/^[a-z0-9_]{3,24}$/i);
-const phoneValue = z.string().trim().regex(/^\+\d{8,15}$/);
+const phoneValue = z.string().trim().regex(/^\+[1-9]\d{7,14}$/);
 const passwordValue = z.string().min(10).max(128);
 
 export const registrationSchema = z.object({
@@ -268,6 +268,11 @@ function parsePayload(value: string | null): unknown {
   return value === null ? null : JSON.parse(value);
 }
 
+function uniqueMarker(timestamp: number): number {
+  const random = (randomBytes(2)[0] << 8 | randomBytes(2)[1]) % 1_000;
+  return timestamp * 1_000 + random;
+}
+
 export function createMemberAuthStore(database: D1Database, now: () => number = Date.now) {
   const memberById = async (id: string): Promise<MemberRow | null> => database
     .prepare("SELECT * FROM members WHERE id=?")
@@ -345,6 +350,19 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       return { raw: token.raw, expiresAt };
     },
 
+    async createSessionIfPasswordMatches(memberId: string, passwordHash: string, _remember: boolean, ttlMs = SESSION_MAX_AGE_SECONDS * 1_000): Promise<AuthSession | null> {
+      const token = await createOpaqueToken();
+      const timestamp = now();
+      const expiresAt = timestamp + ttlMs;
+      const result = await database.prepare(`INSERT INTO auth_sessions
+        (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
+        SELECT ?, ?, ?, ?, ?, NULL FROM members
+        WHERE id=? AND password_hash=? AND disabled=0 AND email_verified_at IS NOT NULL`)
+        .bind(token.hash, memberId, timestamp, expiresAt, timestamp, memberId, passwordHash)
+        .run();
+      return Number(result.meta.changes) === 1 ? { raw: token.raw, expiresAt } : null;
+    },
+
     async readSession(raw: string): Promise<MemberView | null> {
       const hash = await digestToken(raw);
       const timestamp = now();
@@ -382,6 +400,16 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
         .bind(token.hash, input.kind, input.memberId ?? null, jsonPayload(input.payload), timestamp, expiresAt)
         .run();
       return { raw: token.raw, expiresAt };
+    },
+
+    async peekToken(kind: AuthTokenKind, raw: string): Promise<AuthTokenPayload | null> {
+      const hash = await digestToken(raw);
+      const timestamp = now();
+      const row = await database.prepare(`SELECT member_id, payload FROM auth_tokens
+        WHERE token_hash=? AND kind=? AND consumed_at IS NULL AND expires_at > ?`)
+        .bind(hash, kind, timestamp)
+        .first<{ member_id: string | null; payload: string | null }>();
+      return row ? { kind, memberId: row.member_id, payload: parsePayload(row.payload) } : null;
     },
 
     async consumeToken(kind: AuthTokenKind, raw: string): Promise<AuthTokenPayload | null> {
@@ -455,6 +483,71 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       await database.prepare("UPDATE members SET password_hash=?, updated_at=? WHERE id=?")
         .bind(passwordHash, now(), memberId)
         .run();
+    },
+
+    async resetPasswordAtomically(input: {
+      memberId: string;
+      tokenHash: string;
+      expectedPasswordHash: string;
+      passwordHash: string;
+    }): Promise<boolean> {
+      const timestamp = now();
+      const marker = uniqueMarker(timestamp);
+      const results = await database.batch([
+        database.prepare(`UPDATE members SET password_hash=?, updated_at=?
+          WHERE id=? AND password_hash=? AND disabled=0
+            AND EXISTS (SELECT 1 FROM auth_tokens
+              WHERE token_hash=? AND kind='password-reset' AND consumed_at IS NULL AND expires_at > ?)`)
+          .bind(input.passwordHash, marker, input.memberId, input.expectedPasswordHash, input.tokenHash, timestamp),
+        database.prepare(`UPDATE auth_tokens SET consumed_at=?
+          WHERE token_hash=? AND kind='password-reset' AND consumed_at IS NULL AND expires_at > ?
+            AND EXISTS (SELECT 1 FROM members WHERE id=? AND password_hash=? AND updated_at=?)`)
+          .bind(marker, input.tokenHash, timestamp, input.memberId, input.passwordHash, marker),
+        database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND revoked_at IS NULL")
+          .bind(marker, input.memberId),
+      ]);
+      return Number(results[0]?.meta.changes) === 1 && Number(results[1]?.meta.changes) === 1;
+    },
+
+    async completeGoogleMemberAtomically(input: MemberRegistration & { tokenHash: string }): Promise<MemberView | null> {
+      const timestamp = now();
+      const marker = uniqueMarker(timestamp);
+      const row: MemberRow = {
+        id: crypto.randomUUID(),
+        username: normalizeUsername(input.username),
+        email: normalizeEmail(input.email),
+        phone: normalizePhone(input.phone),
+        display_name: input.displayName ?? null,
+        password_hash: input.passwordHash,
+        google_subject: input.googleSubject ?? null,
+        email_verified_at: input.emailVerifiedAt ?? null,
+        created_at: timestamp,
+        updated_at: timestamp,
+        last_login_at: null,
+        disabled: 0,
+      };
+      try {
+        const results = await database.batch([
+          database.prepare(`UPDATE auth_tokens SET consumed_at=?
+            WHERE token_hash=? AND kind='google-completion' AND consumed_at IS NULL AND expires_at > ?`)
+            .bind(marker, input.tokenHash, timestamp),
+          database.prepare(`INSERT INTO members (
+            id, username, email, phone, display_name, password_hash, google_subject,
+            email_verified_at, created_at, updated_at, last_login_at, disabled
+          ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM auth_tokens
+            WHERE token_hash=? AND kind='google-completion' AND consumed_at=?`)
+            .bind(
+              row.id, row.username, row.email, row.phone, row.display_name, row.password_hash,
+              row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
+              row.last_login_at, row.disabled, input.tokenHash, marker,
+            ),
+        ]);
+        if (Number(results[1]?.meta.changes) !== 1) return null;
+      } catch (error) {
+        if (isUniqueConstraint(error)) throw new MemberConflictError();
+        throw error;
+      }
+      return toMemberView(row);
     },
   };
 }

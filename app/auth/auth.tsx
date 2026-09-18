@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useLanguage } from "@/components/language";
+import { LanguageSelect, useLanguage } from "@/components/language";
 import { api } from "@/lib/client";
 
 type AuthMode = "login" | "register" | "forgot" | "reset" | "verify";
@@ -46,8 +46,14 @@ export function AuthScreen({ mode: initialMode, returnTo, token, verified, googl
       }
       if (mode === "register") {
         await api("auth/register", { email: fields.email, username: fields.username, phone: fields.phone, password: fields.password });
+        setFields((current) => ({ ...current, identifier: current.email }));
         setMode("verify");
         setStatus("auth.verifyPending");
+        return;
+      }
+      if (mode === "verify") {
+        await api("auth/verification/resend", { identifier: fields.identifier || fields.email });
+        setStatus("auth.checkEmail");
         return;
       }
       if (mode === "forgot") {
@@ -70,37 +76,33 @@ export function AuthScreen({ mode: initialMode, returnTo, token, verified, googl
 
   const heading = mode === "register" ? "auth.registerTitle" : mode === "forgot" || mode === "reset" ? "auth.resetPassword" : "auth.loginTitle";
   const help = mode === "register" ? "auth.registerHelp" : mode === "forgot" ? "auth.forgotHelp" : mode === "reset" ? "auth.resetHelp" : "auth.loginHelp";
-  const submitKey = mode === "register" ? "auth.submitRegister" : mode === "forgot" ? "auth.sendReset" : mode === "reset" ? "auth.submitReset" : "auth.submitLogin";
+  const submitKey = mode === "register" ? "auth.submitRegister" : mode === "forgot" ? "auth.sendReset" : mode === "reset" ? "auth.submitReset" : mode === "verify" ? "auth.resendVerificationSubmit" : "auth.submitLogin";
 
   return (
     <main className="auth-page">
       <section className="auth-card" aria-labelledby="auth-title">
         <a className="auth-brand" href="/">NaTarot</a>
+        <LanguageSelect />
         <div className="auth-copy">
           <h1 id="auth-title">{t(heading)}</h1>
           <p>{t(help)}</p>
         </div>
         <p className="auth-status" aria-live="polite">{status ? t(status) : ""}</p>
-        {mode === "verify" ? (
-          <div className="auth-actions">
-            <button className="button black" type="button" onClick={() => changeMode("login")}>{t("auth.backToLogin")}</button>
-          </div>
-        ) : (
-          <form className="auth-form" onSubmit={submit}>
-            {mode === "register" && <>
-              <label>{t("auth.email")}<input type="email" autoComplete="email" value={fields.email} onChange={setField("email")} required /></label>
-              <label>{t("auth.username")}<input autoComplete="username" value={fields.username} onChange={setField("username")} required /></label>
-              <label>{t("auth.phone")}<input type="tel" autoComplete="tel" value={fields.phone} onChange={setField("phone")} required /></label>
-            </>}
-            {(mode === "login" || mode === "forgot") && <label>{t("auth.identifier")}<input autoComplete={mode === "login" ? "username" : "email"} value={fields.identifier} onChange={setField("identifier")} required /></label>}
-            {mode !== "forgot" && <label>{t("auth.password")}<input type="password" autoComplete={mode === "reset" ? "new-password" : mode === "register" ? "new-password" : "current-password"} value={fields.password} onChange={setField("password")} required /></label>}
-            <button className="button black auth-submit" type="submit" disabled={busy}>{t(submitKey)}</button>
-          </form>
-        )}
+        <form className="auth-form" onSubmit={submit}>
+          {mode === "register" && <>
+            <label>{t("auth.email")}<input type="email" autoComplete="email" value={fields.email} onChange={setField("email")} required /></label>
+            <label>{t("auth.username")}<input autoComplete="username" value={fields.username} onChange={setField("username")} required /></label>
+            <label>{t("auth.phone")}<input type="tel" autoComplete="tel" value={fields.phone} onChange={setField("phone")} required /></label>
+            <p className="auth-privacy">{t("auth.phonePrivacy")}</p>
+          </>}
+          {(mode === "login" || mode === "forgot" || mode === "verify") && <label>{t(mode === "verify" ? "auth.verificationIdentifier" : "auth.identifier")}<input autoComplete={mode === "login" ? "username" : "email"} value={fields.identifier} onChange={setField("identifier")} required /></label>}
+          {mode !== "forgot" && mode !== "verify" && <label>{t("auth.password")}<input type="password" autoComplete={mode === "reset" ? "new-password" : mode === "register" ? "new-password" : "current-password"} value={fields.password} onChange={setField("password")} required /></label>}
+          <button className="button black auth-submit" type="submit" disabled={busy}>{t(submitKey)}</button>
+        </form>
         {(mode === "login" || mode === "register") && <a className="auth-provider" href={googleHref}>{t("auth.continueGoogle")}</a>}
         {mode === "login" && <div className="auth-switch"><button type="button" onClick={() => changeMode("forgot")}>{t("auth.forgotPassword")}</button><p>{t("auth.noAccount")} <button type="button" onClick={() => changeMode("register")}>{t("auth.createAccount")}</button></p></div>}
         {mode === "register" && <p className="auth-switch">{t("auth.haveAccount")} <button type="button" onClick={() => changeMode("login")}>{t("auth.backToLogin")}</button></p>}
-        {(mode === "forgot" || mode === "reset") && <p className="auth-switch"><button type="button" onClick={() => changeMode("login")}>{t("auth.backToLogin")}</button></p>}
+        {(mode === "forgot" || mode === "reset" || mode === "verify") && <p className="auth-switch"><button type="button" onClick={() => changeMode("login")}>{t("auth.backToLogin")}</button></p>}
       </section>
     </main>
   );
@@ -142,6 +144,7 @@ export function GoogleCompletion({ token }: { token: string }) {
     <main className="auth-page">
       <section className="auth-card" aria-labelledby="complete-title">
         <a className="auth-brand" href="/">NaTarot</a>
+        <LanguageSelect />
         <div className="auth-copy">
           <h1 id="complete-title">{t("auth.completeTitle")}</h1>
           <p>{t("auth.completeHelp")}</p>

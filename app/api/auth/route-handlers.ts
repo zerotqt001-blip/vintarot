@@ -16,10 +16,10 @@ function isProduction(): boolean {
   return runtimeEnv.NODE_ENV === "production" || (typeof process !== "undefined" && process.env.NODE_ENV === "production");
 }
 
-function requestDerivedGoogleRedirectUri(request: Request): string | null {
+function requestDerivedGoogleRedirectUri(request: Request, trustForwardedFor: boolean): string | null {
   const url = new URL(request.url);
-  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase();
-  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",", 1)[0]?.trim();
+  const forwardedProto = trustForwardedFor ? request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase() : undefined;
+  const forwardedHost = trustForwardedFor ? request.headers.get("x-forwarded-host")?.split(",", 1)[0]?.trim() : undefined;
   const protocol = forwardedProto ?? url.protocol.replace(":", "");
   const host = forwardedHost ?? url.host;
   if (protocol !== "https" || !host) return null;
@@ -30,7 +30,8 @@ function googleOAuthFor(request: Request, database: ReturnType<typeof db>) {
   const clientId = runtimeEnv.GOOGLE_CLIENT_ID?.trim();
   const clientSecret = runtimeEnv.GOOGLE_CLIENT_SECRET?.trim();
   const configuredRedirectUri = runtimeEnv.GOOGLE_REDIRECT_URI?.trim();
-  const redirectUri = configuredRedirectUri || (!isProduction() ? requestDerivedGoogleRedirectUri(request) : null);
+  const trustForwardedFor = /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? "");
+  const redirectUri = configuredRedirectUri || (!isProduction() ? requestDerivedGoogleRedirectUri(request, trustForwardedFor) : null);
   if (!clientId || !clientSecret || !redirectUri) return null;
   try {
     return createGoogleOAuthClient({
@@ -66,11 +67,13 @@ function runtimeHandlers(request?: Request) {
     readJson: json,
     sendVerification: (message) => getSender().sendVerification(message),
     sendPasswordReset: (message) => getSender().sendPasswordReset(message),
+    trustForwardedFor: /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? ""),
+    scheduleBackground: (task) => { void task; },
     googleOAuth: request ? googleOAuthFor(request, database) ?? undefined : undefined,
   });
 }
 
-export async function postAuth(request: Request, action: "register" | "login" | "logout" | "requestPasswordReset" | "confirmPasswordReset") {
+export async function postAuth(request: Request, action: "register" | "login" | "logout" | "requestPasswordReset" | "confirmPasswordReset" | "resendVerification") {
   return boundary(async () => {
     originCheck(request);
     return runtimeHandlers()[action](request);

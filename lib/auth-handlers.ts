@@ -27,6 +27,7 @@ const GOOGLE_TRANSACTION_COOKIE_NAME = "natarot_google_oauth";
 const GOOGLE_TRANSACTION_TTL_SECONDS = 10 * 60;
 const INVALID_CREDENTIALS = { error: "Invalid credentials." };
 const INVALID_TOKEN = { error: "This link is invalid or expired." };
+const DUMMY_PASSWORD_HASH = "pbkdf2-sha256$v1$600000$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
 type MailMessage = { to: string; username: string; token: string };
 type JsonReader = (request: Request) => Promise<unknown>;
@@ -39,6 +40,8 @@ export type AuthHandlersDependencies = {
   sendPasswordReset: (message: MailMessage) => Promise<void>;
   readJson?: JsonReader;
   googleOAuth?: GoogleOAuthClient;
+  trustForwardedFor?: boolean;
+  scheduleBackground?: (task: Promise<void>) => void;
 };
 
 function requestUsesHttps(request: Request): boolean {
@@ -46,12 +49,15 @@ function requestUsesHttps(request: Request): boolean {
   return forwardedProto ? forwardedProto === "https" : new URL(request.url).protocol === "https:";
 }
 
-function clientAddress(request: Request): string {
-  return request.headers.get("x-forwarded-for")?.split(",", 1)[0]?.trim() || "unknown";
+function clientAddress(request: Request, trustForwardedFor: boolean): string {
+  if (!trustForwardedFor) return "untrusted-client-address";
+  return request.headers.get("x-forwarded-for")?.split(",", 1)[0]?.trim()
+    || request.headers.get("x-real-ip")?.trim()
+    || "trusted-proxy-unknown";
 }
 
-function rateLimitKey(action: string, identifier: string, request: Request): string {
-  return `${action}:${identifier.trim().toLowerCase()}:${clientAddress(request)}`;
+function rateLimitKey(action: string, identifier: string, request: Request, trustForwardedFor: boolean): string {
+  return `${action}:${identifier.trim().toLowerCase()}:${clientAddress(request, trustForwardedFor)}`;
 }
 
 async function defaultReadJson(request: Request): Promise<unknown> {
@@ -107,9 +113,7 @@ function parseRegistration(value: unknown) {
 }
 
 function verificationRedirect(request: Request, verified: boolean): Response {
-  const target = new URL("/auth", request.url);
-  target.searchParams.set("verified", verified ? "1" : "0");
-  return Response.redirect(target, 303);
+  return redirect(`/auth?verified=${verified ? "1" : "0"}`);
 }
 
 function googleTransactionCookie(binding: string, secure: boolean): string {
@@ -130,7 +134,7 @@ function redirect(location: URL | string): Response {
 }
 
 function googleErrorRedirect(request: Request, clearTransaction = false): Response {
-  const response = redirect(new URL("/auth?error=google", request.url));
+  const response = redirect("/auth?error=google");
   return clearTransaction ? withGoogleTransactionCleared(response, request) : response;
 }
 
@@ -138,7 +142,7 @@ function localRedirect(request: Request, returnPath: string, sessionRaw: string,
   const response = new Response(null, {
     status: 303,
     headers: {
-      Location: new URL(returnPath, request.url).toString(),
+      Location: safeRelativeReturnPath(returnPath),
       "Set-Cookie": buildSessionCookie(sessionRaw, requestUsesHttps(request)),
     },
   });
@@ -181,6 +185,8 @@ export function createAuthHandlers({
   sendPasswordReset,
   readJson = defaultReadJson,
   googleOAuth,
+  trustForwardedFor = false,
+  scheduleBackground = (task) => { void task; },
 }: AuthHandlersDependencies) {
   const store = createMemberAuthStore(database, now);
 
@@ -243,8 +249,7 @@ export function createAuthHandlers({
             returnPath: statePayload.returnPath,
           },
         });
-        const target = new URL("/auth/complete", request.url);
-        target.searchParams.set("token", completion.raw);
+        const target = `/auth/complete?token=${encodeURIComponent(completion.raw)}`;
         return withGoogleTransactionCleared(redirect(target), request);
       } catch {
         return googleErrorRedirect(request, true);
@@ -254,11 +259,12 @@ export function createAuthHandlers({
     async googleComplete(request: Request): Promise<Response> {
       const input = googleCompletionInput(await readJson(request));
       if (!input) return invalidInput();
-      const consumed = await store.consumeToken("google-completion", input.token);
-      const payload = googleCompletionPayload(consumed?.payload);
+      const tokenHash = await digestToken(input.token);
+      const available = await store.peekToken("google-completion", input.token);
+      const payload = googleCompletionPayload(available?.payload);
       if (!payload) return invalidToken();
       try {
-        const member = await store.createMember({
+        const member = await store.completeGoogleMemberAtomically({
           email: payload.email,
           username: input.username,
           phone: input.phone,
@@ -266,7 +272,9 @@ export function createAuthHandlers({
           googleSubject: payload.subject,
           displayName: payload.displayName,
           emailVerifiedAt: now(),
+          tokenHash,
         });
+        if (!member) return invalidToken();
         await store.markLastLogin(member.id);
         return localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw);
       } catch (error) {
@@ -278,7 +286,8 @@ export function createAuthHandlers({
     async register(request: Request): Promise<Response> {
       const parsed = parseRegistration(await readJson(request));
       if (!parsed) return invalidInput();
-      if (!rateLimiter.allow(rateLimitKey("register", `${parsed.email}:${parsed.username}`, request))) {
+      if (!rateLimiter.allow(rateLimitKey("register-address", "all", request, trustForwardedFor))
+        || !rateLimiter.allow(rateLimitKey("register", `${parsed.email}:${parsed.username}`, request, trustForwardedFor))) {
         return Response.json({ ok: true, next: "verify-email" });
       }
 
@@ -324,15 +333,19 @@ export function createAuthHandlers({
 
     async login(request: Request): Promise<Response> {
       const parsed = loginSchema.safeParse(await readJson(request));
-      if (!parsed.success || !rateLimiter.allow(rateLimitKey("login", parsed.success ? parsed.data.identifier : "invalid", request))) {
+      if (!parsed.success || !rateLimiter.allow(rateLimitKey("login", parsed.success ? parsed.data.identifier : "invalid", request, trustForwardedFor))) {
         return invalidCredentials();
       }
       const member = await store.findByIdentifier(parsed.data.identifier);
+      const candidateHash = member && member.disabled === 0 && member.email_verified_at !== null && member.password_hash
+        ? member.password_hash
+        : DUMMY_PASSWORD_HASH;
+      if (!(await verifyPassword(parsed.data.password, candidateHash))) return invalidCredentials();
       if (!member || member.disabled !== 0 || member.email_verified_at === null || !member.password_hash) return invalidCredentials();
-      if (!(await verifyPassword(parsed.data.password, member.password_hash))) return invalidCredentials();
 
+      const session = await store.createSessionIfPasswordMatches(member.id, member.password_hash, true);
+      if (!session) return invalidCredentials();
       await store.markLastLogin(member.id);
-      const session = await store.createSession(member.id, true);
       return Response.json(
         { ok: true, member: { id: member.id, username: member.username, email: member.email, displayName: member.display_name } },
         { headers: { "Set-Cookie": buildSessionCookie(session.raw, requestUsesHttps(request)) } },
@@ -355,7 +368,7 @@ export function createAuthHandlers({
     async requestPasswordReset(request: Request): Promise<Response> {
       const parsed = passwordResetRequestSchema.safeParse(await readJson(request));
       if (!parsed.success) return invalidInput();
-      if (!rateLimiter.allow(rateLimitKey("password-reset", parsed.data.identifier, request))) {
+      if (!rateLimiter.allow(rateLimitKey("password-reset", parsed.data.identifier, request, trustForwardedFor))) {
         return Response.json({ ok: true, next: "check-email" });
       }
       const member = await store.findByIdentifier(parsed.data.identifier);
@@ -365,15 +378,17 @@ export function createAuthHandlers({
           memberId: member.id,
           ttlMs: PASSWORD_RESET_TOKEN_TTL_MS,
         });
-        try {
-          await sendPasswordReset({ to: member.email, username: member.username, token: token.raw });
-        } catch {
+        scheduleBackground((async () => {
           try {
-            await deleteAuthToken(database, token.raw);
+            await sendPasswordReset({ to: member.email, username: member.username, token: token.raw });
           } catch {
-            // Keep the public response generic even if cleanup cannot complete.
+            try {
+              await deleteAuthToken(database, token.raw);
+            } catch {
+              // Keep the public response generic even if cleanup cannot complete.
+            }
           }
-        }
+        })());
       }
       return Response.json({ ok: true, next: "check-email" });
     },
@@ -381,14 +396,48 @@ export function createAuthHandlers({
     async confirmPasswordReset(request: Request): Promise<Response> {
       const parsed = resetPasswordSchema.safeParse(await readJson(request));
       if (!parsed.success) return invalidInput();
-      const passwordHash = await hashPassword(parsed.data.password);
-      const consumed = await store.consumeToken("password-reset", parsed.data.token);
-      if (!consumed?.memberId) return invalidToken();
-      const member = await database.prepare("SELECT * FROM members WHERE id=?").bind(consumed.memberId).first<MemberRow>();
+      const tokenHash = await digestToken(parsed.data.token);
+      const available = await store.peekToken("password-reset", parsed.data.token);
+      if (!available?.memberId) return invalidToken();
+      if (!rateLimiter.allow(rateLimitKey("password-reset-confirm-address", "all", request, trustForwardedFor))
+        || !rateLimiter.allow(`password-reset-confirm-account:${available.memberId}`)
+        || !rateLimiter.allow(`password-reset-confirm-token:${tokenHash}`)) return invalidToken();
+      const member = await database.prepare("SELECT * FROM members WHERE id=?").bind(available.memberId).first<MemberRow>();
       if (!member || member.disabled !== 0 || !member.password_hash) return invalidToken();
-      await store.updatePassword(member.id, passwordHash);
-      await store.revokeAllSessions(member.id);
+      const passwordHash = await hashPassword(parsed.data.password);
+      const reset = await store.resetPasswordAtomically({
+        memberId: member.id,
+        tokenHash,
+        expectedPasswordHash: member.password_hash,
+        passwordHash,
+      });
+      if (!reset) return invalidToken();
       return Response.json({ ok: true, next: "signed-out" });
+    },
+
+    async resendVerification(request: Request): Promise<Response> {
+      const parsed = passwordResetRequestSchema.safeParse(await readJson(request));
+      if (!parsed.success) return invalidInput();
+      if (!rateLimiter.allow(rateLimitKey("verification-resend-address", "all", request, trustForwardedFor))
+        || !rateLimiter.allow(rateLimitKey("verification-resend", parsed.data.identifier, request, trustForwardedFor))) {
+        return Response.json({ ok: true, next: "verify-email" });
+      }
+      const member = await store.findByIdentifier(parsed.data.identifier);
+      if (member && member.disabled === 0 && member.email_verified_at === null) {
+        const token = await store.createToken({ kind: "email-verification", memberId: member.id, ttlMs: VERIFICATION_TOKEN_TTL_MS });
+        scheduleBackground((async () => {
+          try {
+            await sendVerification({ to: member.email, username: member.username, token: token.raw });
+          } catch {
+            try {
+              await deleteAuthToken(database, token.raw);
+            } catch {
+              // Keep the public response generic even if cleanup cannot complete.
+            }
+          }
+        })());
+      }
+      return Response.json({ ok: true, next: "verify-email" });
     },
   };
 }

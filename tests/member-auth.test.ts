@@ -38,6 +38,7 @@ test("normalizes login identifiers and phone numbers", () => {
   assert.equal(normalizeUsername("  Moon_Rider "), "moon_rider");
   assert.equal(normalizeUsername("abc"), "abc");
   assert.equal(normalizePhone("+84 912-345-678"), "+84912345678");
+  assert.throws(() => normalizePhone("+012345678"));
   assert.throws(() => normalizeUsername("ab"));
   assert.throws(() => normalizeUsername("bad-name"));
   assert.throws(() => normalizePhone("0912345678"));
@@ -185,6 +186,29 @@ test("member store rejects expired and revoked sessions", async (t) => {
   const active = await store.createSession(member.id, false);
   await store.revokeSession(active.raw);
   assert.equal(await store.readSession(active.raw), null);
+});
+
+test("conditional login sessions cannot survive a password reset", async (t) => {
+  const { database, sqlite, now } = createTestStore();
+  t.after(() => sqlite.close());
+  const store = createMemberAuthStore(database, now);
+  const oldHash = await hashPassword("correct horse battery staple");
+  const member = await store.createMember({
+    email: "race@example.test",
+    username: "race_user",
+    phone: "+84912345678",
+    passwordHash: oldHash,
+    emailVerifiedAt: now(),
+  });
+  const resetToken = await store.createToken({ kind: "password-reset", memberId: member.id, ttlMs: 60_000 });
+  const reset = await store.resetPasswordAtomically({
+    memberId: member.id,
+    tokenHash: await digestToken(resetToken.raw),
+    expectedPasswordHash: oldHash,
+    passwordHash: await hashPassword("new secure password"),
+  });
+  assert.equal(reset, true);
+  assert.equal(await store.createSessionIfPasswordMatches(member.id, oldHash, true), null);
 });
 
 test("single-use tokens expire and cannot be consumed twice", async (t) => {

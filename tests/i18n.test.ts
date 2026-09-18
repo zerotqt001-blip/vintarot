@@ -10,6 +10,7 @@ const authKeys = [
   "phone",
   "password",
   "identifier",
+  "verificationIdentifier",
   "submitLogin",
   "submitRegister",
   "google",
@@ -17,6 +18,8 @@ const authKeys = [
   "resetPassword",
   "sendReset",
   "verifyPending",
+  "resendVerification",
+  "resendVerificationSubmit",
   "verifySuccess",
   "genericError",
   "logout",
@@ -65,6 +68,7 @@ test("provides the complete bilingual auth dictionary", () => {
   assert.equal(messages.en.auth.registerTitle, "Create your account");
   assert.equal(messages.en.auth.phone, "Phone number");
   assert.equal(messages.en.auth.continueGoogle, "Continue with Google");
+  assert.equal(messages.en.auth.identifier, "Email or username");
   assert.equal(messages.en.auth.checkEmail, "Check your email");
   assert.match(messages.en.auth.phonePrivacy, /NaTarot customer care/);
   assert.match(messages.en.auth.phonePrivacy, /not shown publicly/);
@@ -72,6 +76,7 @@ test("provides the complete bilingual auth dictionary", () => {
   assert.equal(messages.vi.auth.registerTitle, "Tạo tài khoản");
   assert.equal(messages.vi.auth.phone, "Số điện thoại");
   assert.equal(messages.vi.auth.continueGoogle, "Tiếp tục với Google");
+  assert.equal(messages.vi.auth.identifier, "Email hoặc tên người dùng");
   assert.equal(messages.vi.auth.checkEmail, "Kiểm tra email");
   assert.match(messages.vi.auth.phonePrivacy, /chăm sóc khách hàng NaTarot/);
   assert.match(messages.vi.auth.phonePrivacy, /không hiển thị công khai/);

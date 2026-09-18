@@ -63,7 +63,10 @@ NATAROT_EMAIL_FROM=NaTarot <hello@example.test>
 GOOGLE_CLIENT_ID=replace-with-server-client-id
 GOOGLE_CLIENT_SECRET=replace-with-server-secret
 GOOGLE_REDIRECT_URI=https://example.test/api/auth/google/callback
+NATAROT_TRUSTED_PROXY=false
 ```
+
+Keep `NATAROT_TRUSTED_PROXY=false` unless the public ingress strips and overwrites `X-Forwarded-For` and `X-Real-IP`. Set it to `true` only when the application is reachable through that trusted proxy; otherwise client-controlled forwarding headers are ignored for auth rate limits.
 
 ## Local D1 migrations
 

@@ -35,12 +35,14 @@ function createHarness(options: {
   const database = createSqliteD1Database(sqlite);
   const verificationMail: SentMail[] = [];
   const resetMail: SentMail[] = [];
+  const backgroundTasks: Promise<void>[] = [];
   const handlers = createAuthHandlers({
     database,
     now: () => clock,
     rateLimiter: createAuthRateLimiter({ now: () => clock, windowMs: 60_000, maxAttempts: 10 }),
     sendVerification: options.sendVerification ?? (async (message) => { verificationMail.push(message); }),
     sendPasswordReset: options.sendPasswordReset ?? (async (message) => { resetMail.push(message); }),
+    scheduleBackground: (task) => { backgroundTasks.push(task); },
   });
   return {
     database,
@@ -50,6 +52,7 @@ function createHarness(options: {
     sqlite,
     store: createMemberAuthStore(database, () => clock),
     verificationMail,
+    flushBackground: async () => { await Promise.all(backgroundTasks.splice(0)); },
   };
 }
 
@@ -193,6 +196,7 @@ test("password reset hides account existence, consumes once, changes the hash, a
   assert.ok(rawSessionToken);
   const known = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "MOON_RIDER" }));
   const unknown = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "nobody" }));
+  await harness.flushBackground();
   assert.deepEqual(await known.json(), { ok: true, next: "check-email" });
   assert.deepEqual(await unknown.json(), { ok: true, next: "check-email" });
   assert.equal(harness.resetMail.length, 1);
@@ -234,10 +238,85 @@ test("reset mail failure is generic for known and unknown identifiers and preser
 
   const known = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "MOON_RIDER" }));
   const unknown = await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "nobody" }));
+  await harness.flushBackground();
 
   assert.equal(known.status, unknown.status);
   assert.deepEqual(await known.json(), { ok: true, next: "check-email" });
   assert.deepEqual(await unknown.json(), { ok: true, next: "check-email" });
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens WHERE kind=?").bind("password-reset").first<{ count: number }>())?.count, 0);
   assert.deepEqual(await harness.store.readSession(rawSessionToken), (await harness.store.getPublicMember((await harness.store.findByIdentifier("moon_rider"))?.id ?? "")));
+});
+
+test("password-reset responses do not wait for the mail provider", async (t) => {
+  let releaseMail!: () => void;
+  const mailPending = new Promise<void>((resolve) => { releaseMail = resolve; });
+  const harness = createHarness({ sendPasswordReset: async () => mailPending });
+  t.after(() => harness.sqlite.close());
+  await registerAndVerify(harness);
+  const response = await Promise.race([
+    harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "moon_rider" })),
+    new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("reset response waited for mail")), 50)),
+  ]);
+  assert.deepEqual(await response.json(), { ok: true, next: "check-email" });
+  releaseMail();
+  await harness.flushBackground();
+});
+
+test("unknown login still performs dummy PBKDF2 work and invalid reset tokens do not", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  await registerAndVerify(harness);
+  const subtle = globalThis.crypto.subtle;
+  const original = subtle.deriveBits.bind(subtle);
+  let calls = 0;
+  subtle.deriveBits = (algorithm: AlgorithmIdentifier | Pbkdf2Params, baseKey: CryptoKey, length: number) => {
+    calls += 1;
+    return original(algorithm, baseKey, length);
+  };
+  try {
+    await harness.handlers.login(jsonRequest("/api/auth/login", { identifier: "missing-user", password: validRegistration.password }));
+    assert.equal(calls, 1);
+    calls = 0;
+    const invalidReset = await harness.handlers.confirmPasswordReset(jsonRequest("/api/auth/password-reset/confirm", {
+      token: "not-a-real-reset-token",
+      password: "new secure password",
+    }));
+    assert.equal(invalidReset.status, 400);
+    assert.equal(calls, 0);
+  } finally {
+    subtle.deriveBits = original;
+  }
+});
+
+test("registration rate limiting includes an address-wide key", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  for (let index = 0; index < 12; index += 1) {
+    const response = await harness.handlers.register(jsonRequest("/api/auth/register", {
+      email: `reader-${index}@example.test`,
+      username: `reader_${index}`,
+      phone: "+84912345678",
+      password: validRegistration.password,
+    }));
+    assert.equal(response.status, 200);
+  }
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 10);
+});
+
+test("expired verification can be resent without replacing credentials and stays enumeration-safe", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  await harness.handlers.register(jsonRequest("/api/auth/register", { ...validRegistration, email: "expired@example.test", username: "expired_user" }));
+  const firstToken = harness.verificationMail[0]?.token;
+  assert.ok(firstToken);
+  harness.setClock(1_700_000_000_000 + 2 * 24 * 60 * 60 * 1_000);
+  const resend = await harness.handlers.resendVerification(jsonRequest("/api/auth/verification/resend", { identifier: "EXPIRED@EXAMPLE.TEST" }));
+  assert.deepEqual(await resend.json(), { ok: true, next: "verify-email" });
+  await harness.flushBackground();
+  assert.equal(harness.verificationMail.length, 2);
+  assert.notEqual(harness.verificationMail[1]?.token, firstToken);
+  assert.equal((await harness.store.findByIdentifier("expired_user"))?.email_verified_at, null);
+  const unknown = await harness.handlers.resendVerification(jsonRequest("/api/auth/verification/resend", { identifier: "unknown@example.test" }));
+  assert.deepEqual(await unknown.json(), { ok: true, next: "verify-email" });
+  assert.equal(harness.verificationMail.length, 2);
 });
