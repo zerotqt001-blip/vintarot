@@ -5,13 +5,13 @@ import type { ReadingFollowUp, ReadingTranslator } from "./reading-types";
 
 type FollowUpReadingProps = {
   suggestions: string[];
-  initialQuestion?: string;
+  question: string;
+  onQuestionChange: (question: string) => void;
   onSubmit: (question: string) => Promise<string>;
   t: ReadingTranslator;
 };
 
-export function FollowUpReading({ suggestions, initialQuestion = "", onSubmit, t }: FollowUpReadingProps) {
-  const [question, setQuestion] = useState(initialQuestion);
+export function FollowUpReading({ suggestions, question, onQuestionChange, onSubmit, t }: FollowUpReadingProps) {
   const [answers, setAnswers] = useState<ReadingFollowUp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function FollowUpReading({ suggestions, initialQuestion = "", onSubmit, t
     try {
       const answer = await onSubmit(nextQuestion);
       setAnswers((current) => [...current, { id: `${Date.now()}-${current.length}`, question: nextQuestion, answer }]);
-      setQuestion("");
+      onQuestionChange("");
     } catch {
       setError(t("reading.followUpError"));
     } finally {
@@ -48,7 +48,7 @@ export function FollowUpReading({ suggestions, initialQuestion = "", onSubmit, t
               className="min-h-11 rounded-xl border border-antique-gold/20 px-4 py-2 text-left text-sm leading-6 text-ivory/75 hover:border-antique-gold/55 hover:text-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy motion-reduce:transition-none"
               key={suggestion}
               type="button"
-              onClick={() => setQuestion(suggestion)}
+              onClick={() => onQuestionChange(suggestion)}
             >
               {suggestion}
             </button>
@@ -61,7 +61,7 @@ export function FollowUpReading({ suggestions, initialQuestion = "", onSubmit, t
           className="min-h-11 rounded-xl border border-antique-gold/25 bg-midnight-navy/55 px-4 text-sm text-ivory outline-none placeholder:text-ivory/45 focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy"
           id="reading-follow-up-question"
           value={question}
-          onChange={(event) => setQuestion(event.target.value)}
+          onChange={(event) => onQuestionChange(event.target.value)}
           placeholder={t("reading.followUpInput")}
           disabled={isLoading}
         />

@@ -29,21 +29,20 @@ export function ReadingPanel({
   return (
     <aside className="reading-panel reading-panel--midnight-navy relative flex max-h-full min-h-0 flex-col overflow-hidden bg-midnight-navy text-ivory shadow-[0_20px_70px_rgba(4,10,30,0.36)]" aria-label={t("reading.panelLabel")}>
       <ReadingHeader session={session} t={t} />
-      <main className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <p className="reading-question border-b border-antique-gold/15 px-5 py-5 text-sm leading-7 text-ivory/80 sm:px-7">
           <span className="mr-2 font-medium text-antique-gold">{t("reading.questionLabel")}</span>
           {session.question}
         </p>
 
-        {(isLoading || error) && (
-          <div className="reading-status px-5 pt-5 sm:px-7" aria-live="polite" aria-busy={isLoading}>
-            {isLoading && <p className="text-sm text-antique-gold">{t("reading.loading")}</p>}
-            {error && <p className="mt-2 text-sm leading-6 text-rose-200" role="alert">{error}</p>}
-          </div>
-        )}
-
         {reading ? (
           <>
+            {(isLoading || error) && (
+              <div className="reading-status px-5 pt-5 sm:px-7" aria-live="polite" aria-busy={isLoading}>
+                {isLoading && <p className="text-sm text-antique-gold">{t("reading.loading")}</p>}
+                {error && <p className="mt-2 text-sm leading-6 text-rose-200" role="alert">{error}</p>}
+              </div>
+            )}
             <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} t={t} />
             <PersonalInsights items={reading.personalInsights} t={t} />
             <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />
@@ -59,23 +58,29 @@ export function ReadingPanel({
             )}
             {hasFollowUp && (
               <FollowUpReading
-                key={followUpQuestion || "reading-follow-up"}
                 suggestions={reading.followUpSuggestions}
-                initialQuestion={followUpQuestion}
+                question={followUpQuestion}
+                onQuestionChange={setFollowUpQuestion}
                 onSubmit={onFollowUpSubmit!}
                 t={t}
               />
             )}
           </>
+        ) : isLoading ? (
+          <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite" aria-busy="true">
+            <p className="text-sm text-antique-gold">{t("reading.loading")}</p>
+          </div>
+        ) : error ? (
+          <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite">
+            <p className="text-sm leading-6 text-rose-200" role="alert">{error}</p>
+          </div>
         ) : (
           <section className="reading-empty px-5 py-8 sm:px-7" aria-labelledby="reading-empty-title">
             <h3 id="reading-empty-title" className="text-lg font-medium text-ivory">{t("reading.emptyTitle")}</h3>
-            <p className="mt-3 max-w-[65ch] text-sm leading-7 text-ivory/70">
-              {error ? t("reading.emptyWithError") : t("reading.emptyDescription")}
-            </p>
+            <p className="mt-3 max-w-[65ch] text-sm leading-7 text-ivory/70">{t("reading.emptyDescription")}</p>
           </section>
         )}
-      </main>
+      </div>
       <footer className="reading-panel__actions flex shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-7">
         {onSave && (
           <button

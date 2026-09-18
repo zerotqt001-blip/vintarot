@@ -17,10 +17,16 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
     .map((component) => panel.indexOf(`<${component}`));
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
   assert.doesNotMatch(panel, /role=["']tablist/);
+  assert.doesNotMatch(panel, /<main[\s>]/);
+  assert.doesNotMatch(panel, /<FollowUpReading\s+key=/);
+  assert.match(panel, /question=\{followUpQuestion\}/);
+  assert.match(panel, /onQuestionChange=\{setFollowUpQuestion\}/);
   assert.match(panel, /<aside[\s\S]*aria-label=/);
   assert.match(panel, /aria-live=["']polite["']/);
   assert.match(header, /<header/);
-  assert.match(panel, /<main/);
+  assert.match(panel, /reading-panel__scroll/);
+  assert.match(panel, /\) : isLoading \?/);
+  assert.match(panel, /\) : error \?/);
   assert.match(panel, /reading-question/);
   assert.match(panel, /deeperReading/);
 });
@@ -36,6 +42,8 @@ test("TarotEvidence uses collapsed native disclosure and safe React text", () =>
 test("FollowUpReading owns an input, answer list, and injected submit callback", () => {
   assert.match(followUp, /useState/);
   assert.match(followUp, /<input/);
+  assert.match(followUp, /value=\{question\}/);
+  assert.match(followUp, /onQuestionChange\(event\.target\.value\)/);
   assert.match(followUp, /onSubmit\(/);
   assert.match(followUp, /aria-live/);
   assert.match(followUp, /reading-follow-up-answer/);
