@@ -50,6 +50,12 @@ test("Room mounts one editorial reading panel and keeps the question editor sepa
   assert.doesNotMatch(roomSource, /reading\.cards|reading\.connections|reading\.guidance|reading\.closing|reading\.disclaimer/);
 });
 
+test("Room keeps the guidebook closed until the BookOpen control is used", () => {
+  assert.match(roomSource, /\[guide,setGuide\]=useState\(false\)/);
+  assert.doesNotMatch(roomSource, /setGuide\(true\)/);
+  assert.match(roomSource, /\[BookOpen,t\('room\.guidebook'\),\(\)=>setGuide\(!guide\)\]/);
+});
+
 test("Room exposes the canonical reading hierarchy in source order", () => {
   const orderedMarkers = [
     "reading.directAnswer",
