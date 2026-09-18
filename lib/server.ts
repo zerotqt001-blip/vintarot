@@ -1,7 +1,7 @@
 import { getRuntimeDatabase } from '@/lib/runtime';
 import { attachIdentityCookie, readRequestIdentity } from '@/lib/request-identity';
 export function db(){return getRuntimeDatabase();}
-export async function identity(request:Request){return readRequestIdentity(request);}
+export async function identity(request:Request){return readRequestIdentity(request,db());}
 export { attachIdentityCookie };
 function requestOrigin(req: Request) {
   const forwardedProto = req.headers.get('x-forwarded-proto')?.split(',', 1)[0]?.trim();
