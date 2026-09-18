@@ -41,23 +41,41 @@ export type AuthHandlersDependencies = {
   readJson?: JsonReader;
   googleOAuth?: GoogleOAuthClient;
   trustForwardedFor?: boolean;
+  trustCloudflareIp?: boolean;
   scheduleBackground?: (task: Promise<void>) => void;
 };
 
-function requestUsesHttps(request: Request): boolean {
-  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase();
+function requestUsesHttps(request: Request, trustForwardedFor: boolean): boolean {
+  const forwardedProto = trustForwardedFor
+    ? request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase()
+    : undefined;
   return forwardedProto ? forwardedProto === "https" : new URL(request.url).protocol === "https:";
 }
 
-function clientAddress(request: Request, trustForwardedFor: boolean): string {
-  if (!trustForwardedFor) return "untrusted-client-address";
-  return request.headers.get("x-forwarded-for")?.split(",", 1)[0]?.trim()
-    || request.headers.get("x-real-ip")?.trim()
-    || "trusted-proxy-unknown";
+function clientAddress(request: Request, trustForwardedFor: boolean, trustCloudflareIp: boolean): string {
+  if (trustCloudflareIp) return request.headers.get("cf-connecting-ip")?.trim() || "cloudflare-unknown";
+  if (trustForwardedFor) {
+    return request.headers.get("x-forwarded-for")?.split(",", 1)[0]?.trim()
+      || request.headers.get("x-real-ip")?.trim()
+      || "trusted-proxy-unknown";
+  }
+  return "untrusted-client-address";
 }
 
-function rateLimitKey(action: string, identifier: string, request: Request, trustForwardedFor: boolean): string {
-  return `${action}:${identifier.trim().toLowerCase()}:${clientAddress(request, trustForwardedFor)}`;
+function rateLimitKey(action: string, identifier: string, request: Request, trustForwardedFor: boolean, trustCloudflareIp: boolean): string {
+  return `${action}:${identifier.trim().toLowerCase()}:${clientAddress(request, trustForwardedFor, trustCloudflareIp)}`;
+}
+
+function allowRateLimitedAction(
+  rateLimiter: { allow(key: string): boolean },
+  action: string,
+  identifier: string,
+  request: Request,
+  trustForwardedFor: boolean,
+  trustCloudflareIp: boolean,
+): boolean {
+  return rateLimiter.allow(rateLimitKey(`${action}-address`, "all", request, trustForwardedFor, trustCloudflareIp))
+    && rateLimiter.allow(rateLimitKey(action, identifier, request, trustForwardedFor, trustCloudflareIp));
 }
 
 async function defaultReadJson(request: Request): Promise<unknown> {
@@ -124,8 +142,8 @@ function clearGoogleTransactionCookie(secure: boolean): string {
   return `${GOOGLE_TRANSACTION_COOKIE_NAME}=; Max-Age=0; HttpOnly; SameSite=Lax; Path=/${secure ? "; Secure" : ""}`;
 }
 
-function withGoogleTransactionCleared(response: Response, request: Request): Response {
-  response.headers.append("Set-Cookie", clearGoogleTransactionCookie(requestUsesHttps(request)));
+function withGoogleTransactionCleared(response: Response, request: Request, trustForwardedFor: boolean): Response {
+  response.headers.append("Set-Cookie", clearGoogleTransactionCookie(requestUsesHttps(request, trustForwardedFor)));
   return response;
 }
 
@@ -133,20 +151,20 @@ function redirect(location: URL | string): Response {
   return new Response(null, { status: 303, headers: { Location: String(location) } });
 }
 
-function googleErrorRedirect(request: Request, clearTransaction = false): Response {
+function googleErrorRedirect(request: Request, clearTransaction = false, trustForwardedFor = false): Response {
   const response = redirect("/auth?error=google");
-  return clearTransaction ? withGoogleTransactionCleared(response, request) : response;
+  return clearTransaction ? withGoogleTransactionCleared(response, request, trustForwardedFor) : response;
 }
 
-function localRedirect(request: Request, returnPath: string, sessionRaw: string, clearGoogleTransaction = false): Response {
+function localRedirect(request: Request, returnPath: string, sessionRaw: string, clearGoogleTransaction = false, trustForwardedFor = false): Response {
   const response = new Response(null, {
     status: 303,
     headers: {
       Location: safeRelativeReturnPath(returnPath),
-      "Set-Cookie": buildSessionCookie(sessionRaw, requestUsesHttps(request)),
+      "Set-Cookie": buildSessionCookie(sessionRaw, requestUsesHttps(request, trustForwardedFor)),
     },
   });
-  return clearGoogleTransaction ? withGoogleTransactionCleared(response, request) : response;
+  return clearGoogleTransaction ? withGoogleTransactionCleared(response, request, trustForwardedFor) : response;
 }
 
 function googleCompletionPayload(value: unknown): { subject: string; email: string; displayName: string | null; returnPath: string } | null {
@@ -186,6 +204,7 @@ export function createAuthHandlers({
   readJson = defaultReadJson,
   googleOAuth,
   trustForwardedFor = false,
+  trustCloudflareIp = false,
   scheduleBackground = (task) => { void task; },
 }: AuthHandlersDependencies) {
   const store = createMemberAuthStore(database, now);
@@ -198,7 +217,7 @@ export function createAuthHandlers({
         const returnPath = query.get("return_to") ?? query.get("returnPath") ?? "/";
         const started = await googleOAuth.begin(returnPath);
         const response = redirect(started.url);
-        response.headers.append("Set-Cookie", googleTransactionCookie(await digestToken(started.rawState), requestUsesHttps(request)));
+        response.headers.append("Set-Cookie", googleTransactionCookie(await digestToken(started.rawState), requestUsesHttps(request, trustForwardedFor)));
         return response;
       } catch {
         return Response.json({ error: "Google sign-in is unavailable." }, { status: 503 });
@@ -206,37 +225,37 @@ export function createAuthHandlers({
     },
 
     async googleCallback(request: Request): Promise<Response> {
-      if (!googleOAuth) return googleErrorRedirect(request);
+      if (!googleOAuth) return googleErrorRedirect(request, false, trustForwardedFor);
       const query = new URL(request.url).searchParams;
       const state = query.get("state");
       const code = query.get("code");
       const transactionBinding = parseCookie(request.headers.get("cookie"), GOOGLE_TRANSACTION_COOKIE_NAME);
-      if (!state || !transactionBinding || transactionBinding !== await digestToken(state)) return googleErrorRedirect(request, true);
+      if (!state || !transactionBinding || transactionBinding !== await digestToken(state)) return googleErrorRedirect(request, true, trustForwardedFor);
       const statePayload = await store.consumeOAuthState(state);
-      if (!statePayload || query.get("error") || !code) return googleErrorRedirect(request, true);
+      if (!statePayload || query.get("error") || !code) return googleErrorRedirect(request, true, trustForwardedFor);
 
       try {
         const accessToken = await googleOAuth.exchange(code, statePayload.codeVerifier);
         const identity = await googleOAuth.readVerifiedIdentity(accessToken);
         const linked = await store.findByGoogleSubject(identity.subject);
         if (linked) {
-          if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request, true);
+          if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request, true, trustForwardedFor);
           await store.markLastLogin(linked.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw, true);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw, true, trustForwardedFor);
         }
 
         const byEmail = await store.findByEmail(identity.email);
         if (byEmail) {
-          if (byEmail.disabled !== 0 || byEmail.email_verified_at === null) return googleErrorRedirect(request, true);
+          if (byEmail.disabled !== 0 || byEmail.email_verified_at === null) return googleErrorRedirect(request, true, trustForwardedFor);
           try {
-            if (!(await store.linkGoogleSubject(byEmail.id, identity.subject))) return googleErrorRedirect(request, true);
+            if (!(await store.linkGoogleSubject(byEmail.id, identity.subject))) return googleErrorRedirect(request, true, trustForwardedFor);
           } catch (error) {
             if (!(error instanceof MemberConflictError)) throw error;
             const racedLink = await store.findByGoogleSubject(identity.subject);
-            if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request, true);
+            if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request, true, trustForwardedFor);
           }
           await store.markLastLogin(byEmail.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw, true);
+          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw, true, trustForwardedFor);
         }
 
         const completion = await store.createToken({
@@ -250,9 +269,9 @@ export function createAuthHandlers({
           },
         });
         const target = `/auth/complete?token=${encodeURIComponent(completion.raw)}`;
-        return withGoogleTransactionCleared(redirect(target), request);
+        return withGoogleTransactionCleared(redirect(target), request, trustForwardedFor);
       } catch {
-        return googleErrorRedirect(request, true);
+        return googleErrorRedirect(request, true, trustForwardedFor);
       }
     },
 
@@ -276,7 +295,7 @@ export function createAuthHandlers({
         });
         if (!member) return invalidToken();
         await store.markLastLogin(member.id);
-        return localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw);
+        return localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw, false, trustForwardedFor);
       } catch (error) {
         if (error instanceof MemberConflictError) return invalidInput();
         throw error;
@@ -286,8 +305,7 @@ export function createAuthHandlers({
     async register(request: Request): Promise<Response> {
       const parsed = parseRegistration(await readJson(request));
       if (!parsed) return invalidInput();
-      if (!rateLimiter.allow(rateLimitKey("register-address", "all", request, trustForwardedFor))
-        || !rateLimiter.allow(rateLimitKey("register", `${parsed.email}:${parsed.username}`, request, trustForwardedFor))) {
+      if (!allowRateLimitedAction(rateLimiter, "register", `${parsed.email}:${parsed.username}`, request, trustForwardedFor, trustCloudflareIp)) {
         return Response.json({ ok: true, next: "verify-email" });
       }
 
@@ -333,7 +351,8 @@ export function createAuthHandlers({
 
     async login(request: Request): Promise<Response> {
       const parsed = loginSchema.safeParse(await readJson(request));
-      if (!parsed.success || !rateLimiter.allow(rateLimitKey("login", parsed.success ? parsed.data.identifier : "invalid", request, trustForwardedFor))) {
+      const identifier = parsed.success ? parsed.data.identifier : "invalid";
+      if (!allowRateLimitedAction(rateLimiter, "login", identifier, request, trustForwardedFor, trustCloudflareIp) || !parsed.success) {
         return invalidCredentials();
       }
       const member = await store.findByIdentifier(parsed.data.identifier);
@@ -348,14 +367,14 @@ export function createAuthHandlers({
       await store.markLastLogin(member.id);
       return Response.json(
         { ok: true, member: { id: member.id, username: member.username, email: member.email, displayName: member.display_name } },
-        { headers: { "Set-Cookie": buildSessionCookie(session.raw, requestUsesHttps(request)) } },
+        { headers: { "Set-Cookie": buildSessionCookie(session.raw, requestUsesHttps(request, trustForwardedFor)) } },
       );
     },
 
     async logout(request: Request): Promise<Response> {
       const rawSessionToken = parseCookie(request.headers.get("cookie"), SESSION_COOKIE_NAME);
       if (rawSessionToken) await store.revokeSession(rawSessionToken);
-      return Response.json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie(requestUsesHttps(request)) } });
+      return Response.json({ ok: true }, { headers: { "Set-Cookie": clearSessionCookie(requestUsesHttps(request, trustForwardedFor)) } });
     },
 
     async me(request: Request): Promise<Response> {
@@ -367,8 +386,8 @@ export function createAuthHandlers({
 
     async requestPasswordReset(request: Request): Promise<Response> {
       const parsed = passwordResetRequestSchema.safeParse(await readJson(request));
-      if (!parsed.success) return invalidInput();
-      if (!rateLimiter.allow(rateLimitKey("password-reset", parsed.data.identifier, request, trustForwardedFor))) {
+      const identifier = parsed.success ? parsed.data.identifier : "invalid";
+      if (!allowRateLimitedAction(rateLimiter, "password-reset", identifier, request, trustForwardedFor, trustCloudflareIp) || !parsed.success) {
         return Response.json({ ok: true, next: "check-email" });
       }
       const member = await store.findByIdentifier(parsed.data.identifier);
@@ -396,11 +415,11 @@ export function createAuthHandlers({
     async confirmPasswordReset(request: Request): Promise<Response> {
       const parsed = resetPasswordSchema.safeParse(await readJson(request));
       if (!parsed.success) return invalidInput();
+      if (!rateLimiter.allow(rateLimitKey("password-reset-confirm-address", "all", request, trustForwardedFor, trustCloudflareIp))) return invalidToken();
       const tokenHash = await digestToken(parsed.data.token);
       const available = await store.peekToken("password-reset", parsed.data.token);
       if (!available?.memberId) return invalidToken();
-      if (!rateLimiter.allow(rateLimitKey("password-reset-confirm-address", "all", request, trustForwardedFor))
-        || !rateLimiter.allow(`password-reset-confirm-account:${available.memberId}`)
+      if (!rateLimiter.allow(`password-reset-confirm-account:${available.memberId}`)
         || !rateLimiter.allow(`password-reset-confirm-token:${tokenHash}`)) return invalidToken();
       const member = await database.prepare("SELECT * FROM members WHERE id=?").bind(available.memberId).first<MemberRow>();
       if (!member || member.disabled !== 0 || !member.password_hash) return invalidToken();
@@ -418,8 +437,7 @@ export function createAuthHandlers({
     async resendVerification(request: Request): Promise<Response> {
       const parsed = passwordResetRequestSchema.safeParse(await readJson(request));
       if (!parsed.success) return invalidInput();
-      if (!rateLimiter.allow(rateLimitKey("verification-resend-address", "all", request, trustForwardedFor))
-        || !rateLimiter.allow(rateLimitKey("verification-resend", parsed.data.identifier, request, trustForwardedFor))) {
+      if (!allowRateLimitedAction(rateLimiter, "verification-resend", parsed.data.identifier, request, trustForwardedFor, trustCloudflareIp)) {
         return Response.json({ ok: true, next: "verify-email" });
       }
       const member = await store.findByIdentifier(parsed.data.identifier);

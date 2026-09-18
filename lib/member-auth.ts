@@ -269,8 +269,8 @@ function parsePayload(value: string | null): unknown {
 }
 
 function uniqueMarker(timestamp: number): number {
-  const random = (randomBytes(2)[0] << 8 | randomBytes(2)[1]) % 1_000;
-  return timestamp * 1_000 + random;
+  const bytes = randomBytes(2);
+  return timestamp * 1_000 + ((bytes[0] << 8 | bytes[1]) % 1_000);
 }
 
 export function createMemberAuthStore(database: D1Database, now: () => number = Date.now) {
@@ -492,21 +492,35 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       passwordHash: string;
     }): Promise<boolean> {
       const timestamp = now();
-      const marker = uniqueMarker(timestamp);
-      const results = await database.batch([
-        database.prepare(`UPDATE members SET password_hash=?, updated_at=?
-          WHERE id=? AND password_hash=? AND disabled=0
-            AND EXISTS (SELECT 1 FROM auth_tokens
-              WHERE token_hash=? AND kind='password-reset' AND consumed_at IS NULL AND expires_at > ?)`)
-          .bind(input.passwordHash, marker, input.memberId, input.expectedPasswordHash, input.tokenHash, timestamp),
-        database.prepare(`UPDATE auth_tokens SET consumed_at=?
-          WHERE token_hash=? AND kind='password-reset' AND consumed_at IS NULL AND expires_at > ?
+      try {
+        const results = await database.batch([
+          database.prepare(`UPDATE members SET password_hash=?, updated_at=?
+            WHERE id=? AND password_hash=? AND disabled=0
+              AND EXISTS (SELECT 1 FROM auth_tokens
+                WHERE token_hash=? AND kind='password-reset' AND member_id=? AND consumed_at IS NULL AND expires_at > ?)`)
+            .bind(input.passwordHash, timestamp, input.memberId, input.expectedPasswordHash, input.tokenHash, input.memberId, timestamp),
+          database.prepare(`UPDATE auth_tokens SET consumed_at=?
+            WHERE token_hash=? AND kind='password-reset' AND member_id=? AND consumed_at IS NULL AND expires_at > ?
+              AND EXISTS (SELECT 1 FROM members WHERE id=? AND password_hash=? AND updated_at=?)`)
+            .bind(timestamp, input.tokenHash, input.memberId, timestamp, input.memberId, input.passwordHash, timestamp),
+          // D1 batches roll back on a statement error, but do not infer failure from
+          // changes=0. Duplicate the token row only when the preceding update did
+          // not consume exactly one row, forcing the whole batch to abort.
+          database.prepare(`INSERT INTO auth_tokens
+            (token_hash, kind, member_id, payload, created_at, expires_at, consumed_at)
+            SELECT token_hash, kind, member_id, payload, created_at, expires_at, consumed_at
+            FROM auth_tokens WHERE token_hash=? AND changes() != 1`)
+            .bind(input.tokenHash),
+          database.prepare(`UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND revoked_at IS NULL
+            AND EXISTS (SELECT 1 FROM auth_tokens WHERE token_hash=? AND kind='password-reset' AND member_id=? AND consumed_at=?)
             AND EXISTS (SELECT 1 FROM members WHERE id=? AND password_hash=? AND updated_at=?)`)
-          .bind(marker, input.tokenHash, timestamp, input.memberId, input.passwordHash, marker),
-        database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND revoked_at IS NULL")
-          .bind(marker, input.memberId),
-      ]);
-      return Number(results[0]?.meta.changes) === 1 && Number(results[1]?.meta.changes) === 1;
+            .bind(timestamp, input.memberId, input.tokenHash, input.memberId, timestamp, input.memberId, input.passwordHash, timestamp),
+        ]);
+        return Number(results[0]?.meta.changes) === 1 && Number(results[1]?.meta.changes) === 1;
+      } catch (error) {
+        if (isUniqueConstraint(error)) return false;
+        throw error;
+      }
     },
 
     async completeGoogleMemberAtomically(input: MemberRegistration & { tokenHash: string }): Promise<MemberView | null> {

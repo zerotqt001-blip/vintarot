@@ -74,8 +74,8 @@ export function AuthScreen({ mode: initialMode, returnTo, token, verified, googl
     }
   }
 
-  const heading = mode === "register" ? "auth.registerTitle" : mode === "forgot" || mode === "reset" ? "auth.resetPassword" : "auth.loginTitle";
-  const help = mode === "register" ? "auth.registerHelp" : mode === "forgot" ? "auth.forgotHelp" : mode === "reset" ? "auth.resetHelp" : "auth.loginHelp";
+  const heading = mode === "register" ? "auth.registerTitle" : mode === "verify" ? "auth.verifyTitle" : mode === "forgot" || mode === "reset" ? "auth.resetPassword" : "auth.loginTitle";
+  const help = mode === "register" ? "auth.registerHelp" : mode === "verify" ? "auth.verifyHelp" : mode === "forgot" ? "auth.forgotHelp" : mode === "reset" ? "auth.resetHelp" : "auth.loginHelp";
   const submitKey = mode === "register" ? "auth.submitRegister" : mode === "forgot" ? "auth.sendReset" : mode === "reset" ? "auth.submitReset" : mode === "verify" ? "auth.resendVerificationSubmit" : "auth.submitLogin";
 
   return (

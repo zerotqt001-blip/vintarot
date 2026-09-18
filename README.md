@@ -63,10 +63,10 @@ NATAROT_EMAIL_FROM=NaTarot <hello@example.test>
 GOOGLE_CLIENT_ID=replace-with-server-client-id
 GOOGLE_CLIENT_SECRET=replace-with-server-secret
 GOOGLE_REDIRECT_URI=https://example.test/api/auth/google/callback
-NATAROT_TRUSTED_PROXY=false
+NATAROT_TRUSTED_PROXY=true
 ```
 
-Keep `NATAROT_TRUSTED_PROXY=false` unless the public ingress strips and overwrites `X-Forwarded-For` and `X-Real-IP`. Set it to `true` only when the application is reachable through that trusted proxy; otherwise client-controlled forwarding headers are ignored for auth rate limits.
+The included Nginx config overwrites `X-Forwarded-For`, `X-Real-IP` and `X-Forwarded-Proto` with the direct client/proxy values, so its deployment should use `NATAROT_TRUSTED_PROXY=true`. Keep it `false` for a directly exposed Node process or any ingress that preserves client-supplied forwarding headers; in that mode those headers are ignored for auth rate limits and cookie security.
 
 ## Local D1 migrations
 

@@ -22,6 +22,7 @@ export const messages = {
     auth: {
       loginTitle: "Sign in",
       registerTitle: "Create your account",
+      verifyTitle: "Verify your email",
       email: "Email",
       username: "Username",
       phone: "Phone number",
@@ -45,6 +46,7 @@ export const messages = {
       phonePrivacy: "Your phone number is used for NaTarot customer care and is not shown publicly.",
       loginHelp: "Sign in to continue to your NaTarot space.",
       registerHelp: "Create an account to save your readings and journal.",
+      verifyHelp: "Check your inbox to verify your account. If the link expired, request a new email below.",
       forgotHelp: "Enter your email and we’ll send you a reset link.",
       resetHelp: "Choose a new password for your account.",
       submitReset: "Reset password",
@@ -936,6 +938,7 @@ export const messages = {
     auth: {
       loginTitle: "Đăng nhập",
       registerTitle: "Tạo tài khoản",
+      verifyTitle: "Xác minh email",
       email: "Email",
       username: "Tên người dùng",
       phone: "Số điện thoại",
@@ -959,6 +962,7 @@ export const messages = {
       phonePrivacy: "Số điện thoại của bạn được dùng để chăm sóc khách hàng NaTarot và không hiển thị công khai.",
       loginHelp: "Đăng nhập để tiếp tục vào không gian NaTarot.",
       registerHelp: "Tạo tài khoản để lưu các phiên đọc và nhật ký.",
+      verifyHelp: "Hãy kiểm tra hộp thư để xác minh tài khoản. Nếu liên kết đã hết hạn, hãy gửi lại email bên dưới.",
       forgotHelp: "Nhập email để nhận liên kết đặt lại mật khẩu.",
       resetHelp: "Chọn mật khẩu mới cho tài khoản của bạn.",
       submitReset: "Đặt lại mật khẩu",

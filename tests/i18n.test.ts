@@ -9,6 +9,7 @@ const authKeys = [
   "username",
   "phone",
   "password",
+  "verifyTitle",
   "identifier",
   "verificationIdentifier",
   "submitLogin",
@@ -28,6 +29,7 @@ const authKeys = [
   "phonePrivacy",
   "loginHelp",
   "registerHelp",
+  "verifyHelp",
   "forgotHelp",
   "resetHelp",
   "submitReset",
@@ -66,6 +68,7 @@ test("provides the complete bilingual auth dictionary", () => {
 
   assert.equal(messages.en.auth.loginTitle, "Sign in");
   assert.equal(messages.en.auth.registerTitle, "Create your account");
+  assert.equal(messages.en.auth.verifyTitle, "Verify your email");
   assert.equal(messages.en.auth.phone, "Phone number");
   assert.equal(messages.en.auth.continueGoogle, "Continue with Google");
   assert.equal(messages.en.auth.identifier, "Email or username");
@@ -74,6 +77,7 @@ test("provides the complete bilingual auth dictionary", () => {
   assert.match(messages.en.auth.phonePrivacy, /not shown publicly/);
   assert.equal(messages.vi.auth.loginTitle, "Đăng nhập");
   assert.equal(messages.vi.auth.registerTitle, "Tạo tài khoản");
+  assert.equal(messages.vi.auth.verifyTitle, "Xác minh email");
   assert.equal(messages.vi.auth.phone, "Số điện thoại");
   assert.equal(messages.vi.auth.continueGoogle, "Tiếp tục với Google");
   assert.equal(messages.vi.auth.identifier, "Email hoặc tên người dùng");

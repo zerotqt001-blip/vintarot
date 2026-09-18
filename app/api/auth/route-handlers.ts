@@ -5,6 +5,7 @@ import { createGoogleOAuthClient } from "@/lib/google-oauth";
 import { createMemberAuthStore } from "@/lib/member-auth";
 import { runtimeEnv } from "@/lib/runtime";
 import { boundary, db, json, originCheck } from "@/lib/server";
+import { getRequestExecutionContext } from "vinext/shims/request-context";
 
 const rateLimiter = createAuthRateLimiter({
   now: Date.now,
@@ -14,6 +15,14 @@ const rateLimiter = createAuthRateLimiter({
 
 function isProduction(): boolean {
   return runtimeEnv.NODE_ENV === "production" || (typeof process !== "undefined" && process.env.NODE_ENV === "production");
+}
+
+function trustForwardedFor(): boolean {
+  return /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? "");
+}
+
+function trustCloudflareIp(): boolean {
+  return typeof process === "undefined" || !process.versions?.node;
 }
 
 function requestDerivedGoogleRedirectUri(request: Request, trustForwardedFor: boolean): string | null {
@@ -30,8 +39,7 @@ function googleOAuthFor(request: Request, database: ReturnType<typeof db>) {
   const clientId = runtimeEnv.GOOGLE_CLIENT_ID?.trim();
   const clientSecret = runtimeEnv.GOOGLE_CLIENT_SECRET?.trim();
   const configuredRedirectUri = runtimeEnv.GOOGLE_REDIRECT_URI?.trim();
-  const trustForwardedFor = /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? "");
-  const redirectUri = configuredRedirectUri || (!isProduction() ? requestDerivedGoogleRedirectUri(request, trustForwardedFor) : null);
+  const redirectUri = configuredRedirectUri || (!isProduction() ? requestDerivedGoogleRedirectUri(request, trustForwardedFor()) : null);
   if (!clientId || !clientSecret || !redirectUri) return null;
   try {
     return createGoogleOAuthClient({
@@ -67,8 +75,13 @@ function runtimeHandlers(request?: Request) {
     readJson: json,
     sendVerification: (message) => getSender().sendVerification(message),
     sendPasswordReset: (message) => getSender().sendPasswordReset(message),
-    trustForwardedFor: /^(1|true|yes)$/i.test(runtimeEnv.NATAROT_TRUSTED_PROXY ?? ""),
-    scheduleBackground: (task) => { void task; },
+    trustForwardedFor: trustForwardedFor(),
+    trustCloudflareIp: trustCloudflareIp(),
+    scheduleBackground: (task) => {
+      const context = getRequestExecutionContext();
+      if (context) context.waitUntil(task);
+      else void task;
+    },
     googleOAuth: request ? googleOAuthFor(request, database) ?? undefined : undefined,
   });
 }

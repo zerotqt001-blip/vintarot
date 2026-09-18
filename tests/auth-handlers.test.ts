@@ -28,6 +28,7 @@ function jsonRequest(path: string, body: unknown, headers: HeadersInit = {}): Re
 function createHarness(options: {
   sendVerification?: (message: SentMail) => Promise<void>;
   sendPasswordReset?: (message: SentMail) => Promise<void>;
+  trustForwardedFor?: boolean;
 } = {}) {
   let clock = 1_700_000_000_000;
   const sqlite = new DatabaseSync(":memory:");
@@ -42,6 +43,7 @@ function createHarness(options: {
     rateLimiter: createAuthRateLimiter({ now: () => clock, windowMs: 60_000, maxAttempts: 10 }),
     sendVerification: options.sendVerification ?? (async (message) => { verificationMail.push(message); }),
     sendPasswordReset: options.sendPasswordReset ?? (async (message) => { resetMail.push(message); }),
+    trustForwardedFor: options.trustForwardedFor ?? true,
     scheduleBackground: (task) => { backgroundTasks.push(task); },
   });
   return {
@@ -245,6 +247,31 @@ test("reset mail failure is generic for known and unknown identifiers and preser
   assert.deepEqual(await unknown.json(), { ok: true, next: "check-email" });
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens WHERE kind=?").bind("password-reset").first<{ count: number }>())?.count, 0);
   assert.deepEqual(await harness.store.readSession(rawSessionToken), (await harness.store.getPublicMember((await harness.store.findByIdentifier("moon_rider"))?.id ?? "")));
+});
+
+test("reset request rate limiting has an address-wide cap across identifiers", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  await registerAndVerify(harness);
+  for (let index = 0; index < 10; index += 1) {
+    await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: `unknown-${index}@example.test` }));
+  }
+  await harness.handlers.requestPasswordReset(jsonRequest("/api/auth/password-reset/request", { identifier: "moon_rider" }));
+  await harness.flushBackground();
+  assert.equal(harness.resetMail.length, 0);
+});
+
+test("untrusted forwarded protocol cannot force a secure auth cookie", async (t) => {
+  const harness = createHarness({ trustForwardedFor: false });
+  t.after(() => harness.sqlite.close());
+  await registerAndVerify(harness);
+  const response = await harness.handlers.login(new Request("http://natarot.test/api/auth/login", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-forwarded-proto": "https" },
+    body: JSON.stringify({ identifier: "moon_rider", password: validRegistration.password }),
+  }));
+  assert.equal(response.status, 200);
+  assert.doesNotMatch(response.headers.get("set-cookie") ?? "", /; Secure$/);
 });
 
 test("password-reset responses do not wait for the mail provider", async (t) => {

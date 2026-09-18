@@ -208,7 +208,38 @@ test("conditional login sessions cannot survive a password reset", async (t) => 
     passwordHash: await hashPassword("new secure password"),
   });
   assert.equal(reset, true);
+  const updated = await database.prepare("SELECT updated_at FROM members WHERE id=?").bind(member.id).first<{ updated_at: number }>();
+  assert.equal(updated?.updated_at, now());
   assert.equal(await store.createSessionIfPasswordMatches(member.id, oldHash, true), null);
+
+  const staleSession = await store.createSession(member.id, true);
+  const failed = await store.resetPasswordAtomically({
+    memberId: member.id,
+    tokenHash: await digestToken("missing-token"),
+    expectedPasswordHash: oldHash,
+    passwordHash: await hashPassword("another secure password"),
+  });
+  assert.equal(failed, false);
+  assert.equal((await store.readSession(staleSession.raw))?.id, member.id);
+
+  const other = await store.createMember({
+    email: "other-reset@example.test",
+    username: "other_reset",
+    phone: "+84987654321",
+    passwordHash: await hashPassword("other current password"),
+  });
+  const otherToken = await store.createToken({ kind: "password-reset", memberId: other.id, ttlMs: 60_000 });
+  const currentHash = (await database.prepare("SELECT password_hash FROM members WHERE id=?").bind(member.id).first<{ password_hash: string }>())?.password_hash;
+  const wrongMember = await store.resetPasswordAtomically({
+    memberId: member.id,
+    tokenHash: await digestToken(otherToken.raw),
+    expectedPasswordHash: currentHash ?? "",
+    passwordHash: await hashPassword("should not apply"),
+  });
+  assert.equal(wrongMember, false);
+  assert.equal((await database.prepare("SELECT password_hash FROM members WHERE id=?").bind(member.id).first<{ password_hash: string }>())?.password_hash, currentHash);
+  assert.equal((await database.prepare("SELECT consumed_at FROM auth_tokens WHERE token_hash=?").bind(await digestToken(otherToken.raw)).first<{ consumed_at: number | null }>())?.consumed_at, null);
+  assert.equal((await store.readSession(staleSession.raw))?.id, member.id);
 });
 
 test("single-use tokens expire and cannot be consumed twice", async (t) => {
