@@ -66,11 +66,15 @@ test("provides the complete bilingual auth dictionary", () => {
   assert.equal(messages.en.auth.phone, "Phone number");
   assert.equal(messages.en.auth.continueGoogle, "Continue with Google");
   assert.equal(messages.en.auth.checkEmail, "Check your email");
+  assert.match(messages.en.auth.phonePrivacy, /NaTarot customer care/);
+  assert.match(messages.en.auth.phonePrivacy, /not shown publicly/);
   assert.equal(messages.vi.auth.loginTitle, "Đăng nhập");
   assert.equal(messages.vi.auth.registerTitle, "Tạo tài khoản");
   assert.equal(messages.vi.auth.phone, "Số điện thoại");
   assert.equal(messages.vi.auth.continueGoogle, "Tiếp tục với Google");
   assert.equal(messages.vi.auth.checkEmail, "Kiểm tra email");
+  assert.match(messages.vi.auth.phonePrivacy, /chăm sóc khách hàng NaTarot/);
+  assert.match(messages.vi.auth.phonePrivacy, /không hiển thị công khai/);
 });
 
 test("resolves representative auth messages by locale and dotted key", () => {
