@@ -19,7 +19,10 @@ export function createDeepSeekProvider(
   model: string,
   dependencies: TarotHTTPDependencies = {},
 ): TarotAIProvider {
-  const request = createTarotHTTPClient(dependencies);
+  const request = createTarotHTTPClient({
+    ...dependencies,
+    timeoutMs: dependencies.timeoutMs ?? 20_000,
+  });
 
   return {
     id: "deepseek",
@@ -31,6 +34,7 @@ export function createDeepSeekProvider(
         body: JSON.stringify({
           model,
           temperature: 0.35,
+          thinking: { type: "disabled" },
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: TAROT_SYSTEM_PROMPT },

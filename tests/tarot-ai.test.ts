@@ -211,6 +211,7 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
       assert.equal(headerValue(calls[0].init?.headers, "authorization"), "Bearer test-provider-key");
       assert.equal(body.model, "deepseek-tarot-model");
       assert.equal(body.temperature, 0.35);
+      assert.deepEqual(body.thinking, { type: "disabled" });
       assert.deepEqual(body.response_format, { type: "json_object" });
       const messages = body.messages as Array<{ role: string; content: string }>;
       assert.equal(messages[0].role, "system");
