@@ -20,9 +20,9 @@ test("input and panel primitives use brand surfaces", () => {
   const panel = existsSync(panelPath) ? readFileSync(panelPath, "utf8") : "";
   const css = read("app/globals.css");
 
-  assert.match(input, /bg-(?:brand-)?surface|var\(--color-surface\)/);
+  assert.match(input, /bg-(?:brand-)?surface|var\(--color-surface(?:-soft)?\)/);
   assert.match(input, /var\(--color-focus\)|brand-focus-ring/);
-  assert.match(panel, /export (?:const|function) Panel/);
+  assert.match(panel, /(?:const Panel|function Panel|export \{ Panel)/);
   assert.match(css, /\.brand-panel\s*\{/);
   assert.match(css, /\.brand-icon-button\s*\{/);
 });

@@ -5,30 +5,35 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-brand-md)] border text-sm font-medium whitespace-nowrap transition-[background,color,border-color,box-shadow,transform] outline-none focus-visible:border-[var(--color-border-active)] focus-visible:ring-[3px] focus-visible:ring-[var(--color-focus)] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-[var(--color-text)] hover:border-[var(--color-border-active)] hover:bg-[var(--color-surface)]",
+        primary:
+          "border-[var(--color-gold-bright)] bg-[var(--color-gold)] text-[var(--color-bg-deep)] shadow-[0_8px_24px_rgba(215,179,106,.16)] hover:bg-[var(--color-gold-bright)] hover:shadow-[0_12px_28px_rgba(215,179,106,.24)]",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[var(--color-border-active)] hover:bg-[var(--color-gold-subtle)]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-border-active)] hover:bg-[var(--color-surface-elevated)]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border-transparent bg-transparent text-[var(--color-text-muted)] hover:border-[var(--color-border)] hover:bg-[var(--color-gold-subtle)] hover:text-[var(--color-text)]",
+        icon:
+          "size-11 border-[var(--color-border)] bg-transparent p-0 text-[var(--color-text-muted)] hover:border-[var(--color-border-active)] hover:bg-[var(--color-gold-subtle)] hover:text-[var(--color-gold-bright)]",
+        link: "border-transparent bg-transparent text-[var(--color-gold-bright)] underline-offset-4 hover:text-[var(--color-ivory)] hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        default: "h-11 px-4 py-2 has-[>svg]:px-3",
         xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        lg: "h-11 rounded-[var(--radius-brand-md)] px-6 has-[>svg]:px-4",
+        icon: "size-11",
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        "icon-lg": "size-11",
       },
     },
     defaultVariants: {

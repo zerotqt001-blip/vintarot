@@ -1096,3 +1096,12 @@
 .brand-logo--compact .brand-logo-image{width:clamp(142px,15vw,196px)}
 .brand-logo-link:focus-visible{outline:2px solid var(--color-focus);outline-offset:5px;border-radius:var(--radius-brand-sm)}
 @media(max-width:700px){.brand-logo-image{width:clamp(130px,31vw,174px)}.brand-logo--icon .brand-logo-image{width:36px;height:36px}.brand-logo--compact .brand-logo-image{width:clamp(118px,29vw,154px)}}
+
+/* Shared dark primitives. Route-specific shells may tune composition, not identity. */
+.brand-panel{position:relative;border:1px solid var(--color-border);border-radius:var(--radius-brand-lg);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-brand-panel)}
+.brand-panel--elevated{background:var(--color-surface-elevated)}
+.brand-panel--soft{background:var(--color-surface-soft);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.brand-icon-button{display:inline-grid;min-width:44px;min-height:44px;place-items:center;border:1px solid var(--color-border);border-radius:50%;background:transparent;color:var(--color-text-muted);transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease}
+.brand-icon-button:hover{border-color:var(--color-border-active);background:var(--color-gold-subtle);color:var(--color-gold-bright);transform:translateY(-1px)}
+.brand-focus-ring:focus-visible{outline:2px solid var(--color-focus);outline-offset:4px}
+.brand-input:-webkit-autofill,.brand-input:-webkit-autofill:hover,.brand-input:-webkit-autofill:focus{-webkit-text-fill-color:var(--color-text);-webkit-box-shadow:0 0 0 1000px var(--color-surface) inset;transition:background-color 9999s ease-out 0s}
