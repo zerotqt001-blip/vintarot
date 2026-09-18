@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "@/lib/client";
 import { messageFor, messages, normalizeLocale, type Locale } from "@/lib/i18n";
 
@@ -15,13 +15,14 @@ const STORAGE_KEY = "vintarot-locale";
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children, user }: { children: React.ReactNode; user: User }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>("vi");
+  const localeHydrating = useRef(true);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      const timer = window.setTimeout(() => setLocaleState(normalizeLocale(stored)), 0);
-      return () => window.clearTimeout(timer);
+      setLocaleState(normalizeLocale(stored));
+      return;
     }
     if (!user) return;
     let active = true;
@@ -37,8 +38,12 @@ export function LanguageProvider({ children, user }: { children: React.ReactNode
   }, [user]);
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, locale);
     document.documentElement.lang = locale;
+    if (localeHydrating.current) {
+      localeHydrating.current = false;
+      return;
+    }
+    window.localStorage.setItem(STORAGE_KEY, locale);
   }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
