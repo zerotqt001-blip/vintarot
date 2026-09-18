@@ -43,6 +43,7 @@ test("Room mounts one editorial reading panel and keeps the question editor sepa
   assert.match(roomSource, /artworkByReadingCardId/);
   assert.match(roomSource, /saveJournal/);
   assert.match(roomSource, /onFollowUpSubmit/);
+  assert.match(roomSource, /followUpResetKey=\{readingEpoch\.current\}/);
   assert.match(roomSource, /ReflectionPanel/);
   assert.match(roomSource, /room-reading-panel-retry/);
   assert.match(roomSource, /interpretationRetryAction/);

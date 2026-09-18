@@ -8,6 +8,7 @@ type FollowUpReadingProps = {
   question: string;
   onQuestionChange: (question: string) => void;
   onSubmit: (question: string) => Promise<string>;
+  resetEpoch?: number;
   t: ReadingTranslator;
 };
 

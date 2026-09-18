@@ -35,4 +35,5 @@ export type ReadingPanelProps = {
   onClose?: () => void;
   onSave?: () => void;
   onFollowUpSubmit?: (question: string) => Promise<string>;
+  followUpResetKey?: number;
 };

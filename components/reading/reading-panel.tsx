@@ -22,6 +22,7 @@ export function ReadingPanel({
   onClose,
   onSave,
   onFollowUpSubmit,
+  followUpResetKey = 0,
 }: ReadingPanelProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState("");
   const hasFollowUp = Boolean(onFollowUpSubmit);
@@ -58,10 +59,12 @@ export function ReadingPanel({
             )}
             {hasFollowUp && (
               <FollowUpReading
+                key={followUpResetKey}
                 suggestions={reading.followUpSuggestions}
                 question={followUpQuestion}
                 onQuestionChange={setFollowUpQuestion}
                 onSubmit={onFollowUpSubmit!}
+                resetEpoch={followUpResetKey}
                 t={t}
               />
             )}

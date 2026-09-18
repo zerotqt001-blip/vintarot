@@ -20,7 +20,9 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
   assert.doesNotMatch(panel, /role=["']tablist/);
   assert.doesNotMatch(panel, /<main[\s>]/);
-  assert.doesNotMatch(panel, /<FollowUpReading\s+key=/);
+  assert.match(panel, /<FollowUpReading[\s\S]*key=\{followUpResetKey\}/);
+  assert.match(panel, /resetEpoch=\{followUpResetKey\}/);
+  assert.doesNotMatch(panel, /key=\{followUpQuestion\}/);
   assert.match(panel, /question=\{followUpQuestion\}/);
   assert.match(panel, /onQuestionChange=\{setFollowUpQuestion\}/);
   assert.match(panel, /<aside[\s\S]*aria-label=/);
@@ -49,6 +51,15 @@ test("FollowUpReading owns an input, answer list, and injected submit callback",
   assert.match(followUp, /onSubmit\(/);
   assert.match(followUp, /aria-live/);
   assert.match(followUp, /reading-follow-up-answer/);
+});
+
+test("follow-up history resets by reading epoch without persisting a transcript", () => {
+  assert.match(followUp, /resetEpoch\?: number/);
+  assert.match(panel, /key=\{followUpResetKey\}/);
+  assert.match(panel, /resetEpoch=\{followUpResetKey\}/);
+  assert.doesNotMatch(panel, /key=\{followUpQuestion\}/);
+  assert.doesNotMatch(followUp, /sessionStorage|localStorage|records|tarot\/follow-up/);
+  assert.match(room, /followUpResetKey=\{readingEpoch\.current\}/);
 });
 
 test("splitReadingParagraphs removes empty entries and caps the primary reading", () => {
