@@ -93,15 +93,11 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.doesNotMatch(readingRoute, /portraitCard|obstacleCard|solutionCard/);
 });
 
-test("repository saves the V3 payload through the existing legacy reading columns", () => {
+test("repository saves the V3 payload through legacy columns and the normalized payload column", () => {
   assert.doesNotMatch(repository, /input\.reading\.(?:overview|cards|connections|guidance|closing)/);
-  assert.doesNotMatch(repository, /reading_payload/);
-  assert.match(repository, /input\.reading\.directAnswer/);
-  assert.match(repository, /JSON\.stringify\(input\.reading\.cardEvidence\)/);
-  assert.match(repository, /input\.reading\.personalInsights/);
-  assert.match(repository, /input\.reading\.nextSteps/);
-  assert.match(repository, /input\.reading\.deeperReading \|\| input\.reading\.directAnswer/);
-  assert.match(repository, /input\.reading\.disclaimer/);
+  assert.match(repository, /reading_payload/);
+  assert.match(repository, /serializeLegacyReadingFields\(input\.reading\)/);
+  assert.match(repository, /JSON\.stringify\(input\.reading\)/);
   assert.match(repository, /input\.modelName/);
   assert.match(repository, /input\.promptVersion/);
 });
