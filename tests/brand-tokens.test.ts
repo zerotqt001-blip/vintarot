@@ -25,9 +25,9 @@ test("canonical NaTarot tokens exist", () => {
     assert.match(css, new RegExp(`${token}\\s*:`));
   }
 
-  assert.match(css, /--color-bg-deep\\s*:\s*#061522/);
-  assert.match(css, /--color-gold\\s*:\s*#d7b36a/);
-  assert.match(css, /--color-ivory\\s*:\s*#f4ebdd/);
+  assert.match(css, /--color-bg-deep\s*:\s*#061522/);
+  assert.match(css, /--color-gold\s*:\s*#d7b36a/);
+  assert.match(css, /--color-ivory\s*:\s*#f4ebdd/);
 });
 
 test("stable logo asset paths exist", () => {

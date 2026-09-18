@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-labelledby="title desc">
+  <title id="title">NaTarot</title>
+  <desc id="desc">NaTarot celestial crescent and star wordmark for dark backgrounds.</desc>
+  <g transform="translate(4 4) scale(.94)">
+    <circle cx="64" cy="64" r="58" fill="#061522"/>
+    <circle cx="64" cy="64" r="48" fill="none" stroke="#d7b36a" stroke-width="1" stroke-opacity=".62"/>
+    <circle cx="64" cy="64" r="38" fill="none" stroke="#e7c77d" stroke-width="1.4"/>
+    <path d="M64 5v13M64 110v13M5 64h13M110 64h13" stroke="#d7b36a" stroke-width="1.2"/>
+    <path fill="#e7c77d" d="M71 26c-16 3-27 17-27 34 0 19 15 34 34 34 10 0 19-4 25-11-5 12-17 20-31 20-20 0-37-16-37-37 0-19 15-35 36-37z"/>
+    <path fill="#061522" d="M76 29c-10 7-16 18-16 31 0 15 9 28 23 33-2 0-4 1-6 1-17 0-31-14-31-31 0-17 13-31 30-34z"/>
+    <path fill="#f4ebdd" d="m91 39 3 16 14 9-14 8-3 17-4-17-14-8 14-9z"/>
+  </g>
+  <text x="142" y="76" fill="#f4ebdd" font-family="Georgia, 'Times New Roman', serif" font-size="66" letter-spacing="-2">NaTarot</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">NaTarot icon</title>
+  <desc id="desc">A gold crescent and guiding star inside a celestial compass.</desc>
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e7c77d" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#e7c77d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4ebdd"/>
+      <stop offset=".46" stop-color="#e7c77d"/>
+      <stop offset="1" stop-color="#b7833d"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="58" fill="url(#halo)"/>
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round">
+    <circle cx="64" cy="64" r="38" stroke-width="1.5"/>
+    <circle cx="64" cy="64" r="47" stroke-width=".8" stroke-opacity=".62"/>
+    <path d="M64 5v13M64 110v13M5 64h13M110 64h13" stroke-width="1.2"/>
+    <path d="m23 23 9 9m64 64 9 9m0-82-9 9m-64 64-9 9" stroke-width=".8" stroke-opacity=".7"/>
+  </g>
+  <path fill="url(#gold)" d="M71 26c-16 3-27 17-27 34 0 19 15 34 34 34 10 0 19-4 25-11-5 12-17 20-31 20-20 0-37-16-37-37 0-19 15-35 36-37z"/>
+  <path fill="#061522" d="M76 29c-10 7-16 18-16 31 0 15 9 28 23 33-2 0-4 1-6 1-17 0-31-14-31-31 0-17 13-31 30-34z"/>
+  <path fill="#f4ebdd" d="m91 39 3 16 14 9-14 8-3 17-4-17-14-8 14-9z"/>
+  <path fill="#d7b36a" d="m91 44 2 16 11 4-11 4-2 12-3-12-10-4 10-5z"/>
+  <circle cx="64" cy="13" r="2" fill="#f4ebdd"/>
+</svg>

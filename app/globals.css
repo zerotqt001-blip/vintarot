@@ -3,6 +3,7 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 @font-face{font-family:"Work Sans";src:url("/fonts/worksans-WorkSans[wght].woff2") format("woff2");font-weight:100 900;font-display:swap}
 @font-face{font-family:"Instrument Serif";src:url("/fonts/instrumentserif-InstrumentSerif-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+:root{--color-bg-deep:#061522;--color-bg:#081a2a;--color-surface:#0b2032;--color-surface-elevated:#10283b;--color-surface-soft:rgba(11,32,50,.72);--color-gold:#d7b36a;--color-gold-bright:#e7c77d;--color-gold-muted:rgba(215,179,106,.52);--color-gold-subtle:rgba(215,179,106,.16);--color-ivory:#f4ebdd;--color-text:#eee5d7;--color-text-muted:rgba(238,229,215,.62);--color-text-subtle:rgba(238,229,215,.42);--color-border:rgba(215,179,106,.25);--color-border-active:rgba(231,199,125,.75);--color-focus:rgba(231,199,125,.9);--radius-brand-sm:.5rem;--radius-brand-md:.75rem;--radius-brand-lg:1rem;--shadow-brand-panel:0 18px 48px rgba(0,0,0,.28)}
 :root{--background:#f5f5f5;--foreground:#111;--card:#fff;--card-foreground:#111;--popover:#fff;--popover-foreground:#111;--primary:#111;--primary-foreground:#fff;--secondary:#eaeaea;--secondary-foreground:#111;--muted:#ededed;--muted-foreground:#777;--accent:#eee;--accent-foreground:#111;--destructive:#b33;--border:#bbb;--input:#bbb;--ring:#b191d5;--radius:1rem;--sidebar:#f5f5f5;--sidebar-foreground:#111}
 @theme inline{--color-background:var(--background);--color-foreground:var(--foreground);--color-card:var(--card);--color-card-foreground:var(--card-foreground);--color-popover:var(--popover);--color-popover-foreground:var(--popover-foreground);--color-primary:var(--primary);--color-primary-foreground:var(--primary-foreground);--color-muted:var(--muted);--color-muted-foreground:var(--muted-foreground);--color-accent:var(--accent);--color-accent-foreground:var(--accent-foreground);--color-border:var(--border);--color-input:var(--input);--color-ring:var(--ring);--color-sidebar:var(--sidebar);--color-sidebar-foreground:var(--sidebar-foreground);--font-sans:'Work Sans',Arial,sans-serif}
 @theme inline{--color-midnight-navy:var(--tarot-bg,#081A2B);--color-ivory:var(--tarot-ivory,#EEE7D8);--color-antique-gold:var(--tarot-gold,#C7A66A)}
@@ -1086,3 +1087,12 @@
 }
 @keyframes room-reading-panel-mobile-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.room-reading-panel-shell,.room-reading-panel-shell *,.room-reading-panel-shell *::before,.room-reading-panel-shell *::after{animation:none!important;transition:none!important}.room-reading-panel-shell details[open] summary{transition:none!important}}
+
+/* NaTarot brand foundation: stable logo sizing and canonical identity hooks. */
+.brand-logo-link,.brand-logo{display:inline-flex;align-items:center;flex:0 0 auto;color:inherit;text-decoration:none}
+.brand-logo{line-height:0}
+.brand-logo-image{display:block;width:clamp(168px,18vw,236px);height:auto;max-width:100%;object-fit:contain}
+.brand-logo--icon .brand-logo-image{width:clamp(32px,3vw,48px);height:clamp(32px,3vw,48px)}
+.brand-logo--compact .brand-logo-image{width:clamp(142px,15vw,196px)}
+.brand-logo-link:focus-visible{outline:2px solid var(--color-focus);outline-offset:5px;border-radius:var(--radius-brand-sm)}
+@media(max-width:700px){.brand-logo-image{width:clamp(130px,31vw,174px)}.brand-logo--icon .brand-logo-image{width:36px;height:36px}.brand-logo--compact .brand-logo-image{width:clamp(118px,29vw,154px)}}
