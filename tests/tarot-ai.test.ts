@@ -202,21 +202,33 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
         generationConfig: {
           temperature: 0.35,
           responseMimeType: "application/json",
-          responseSchema: TAROT_RESPONSE_SCHEMA,
+          responseJsonSchema: TAROT_RESPONSE_SCHEMA,
         },
       });
+      assert.equal("responseSchema" in (body.generationConfig as Record<string, unknown>), false);
     } else {
       assert.equal(url, "https://api.deepseek.com/chat/completions");
       assert.equal(headerValue(calls[0].init?.headers, "authorization"), "Bearer test-provider-key");
-      assert.deepEqual(body, {
-        model: "deepseek-tarot-model",
-        temperature: 0.35,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: TAROT_SYSTEM_PROMPT },
-          { role: "user", content: buildTarotPromptContext(tarotReadingQualityFixture) },
-        ],
-      });
+      assert.equal(body.model, "deepseek-tarot-model");
+      assert.equal(body.temperature, 0.35);
+      assert.deepEqual(body.response_format, { type: "json_object" });
+      const messages = body.messages as Array<{ role: string; content: string }>;
+      assert.equal(messages[0].role, "system");
+      assert.equal(messages[0].content, TAROT_SYSTEM_PROMPT);
+      assert.equal(messages[1].role, "user");
+      assert.match(messages[1].content, /exact JSON output contract/i);
+      for (const key of [
+        "overview",
+        "cards",
+        "reading_card_id",
+        "position_key",
+        "interpretation",
+        "reflection_prompt",
+        "connections",
+        "guidance",
+        "closing",
+      ]) assert.match(messages[1].content, new RegExp(`"${key}"`));
+      assert.match(messages[1].content, new RegExp(buildTarotPromptContext(tarotReadingQualityFixture).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     }
     assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
   });
@@ -245,6 +257,31 @@ test("factory enforces the bounded timeout range", () => {
       (error) => error instanceof TarotAIError && error.code === "configuration",
     );
   }
+});
+
+test("factory trims the selected provider key and model before transport", async () => {
+  const calls: FetchCall[] = [];
+  const provider = createTarotAIProvider({
+    TAROT_AI_PROVIDER: "openai",
+    OPENAI_API_KEY: "  trimmed-provider-key  ",
+    OPENAI_TAROT_MODEL: "  trimmed-tarot-model  ",
+    GEMINI_API_KEY: "unused-gemini-key",
+    GEMINI_TAROT_MODEL: "unused-gemini-model",
+  }, {
+    fetch: async (input, init) => {
+      calls.push({ input, init });
+      return jsonResponse(providerEnvelope("openai"));
+    },
+  });
+
+  await provider.generateReading(tarotReadingQualityFixture);
+
+  assert.equal(provider.id, "openai");
+  assert.equal(provider.model, "trimmed-tarot-model");
+  assert.equal(headerValue(calls[0].init?.headers, "authorization"), "Bearer trimmed-provider-key");
+  const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
+  assert.equal(body.model, "trimmed-tarot-model");
+  assert.doesNotMatch(String(calls[0].init?.body), /unused-gemini/);
 });
 
 for (const status of [408, 429, 500, 502, 503, 504]) {

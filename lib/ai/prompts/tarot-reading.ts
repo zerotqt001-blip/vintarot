@@ -28,6 +28,12 @@ export const TAROT_RESPONSE_SCHEMA = {
   },
 } as const;
 
+export const TAROT_JSON_OUTPUT_CONTRACT = [
+  "Follow this exact JSON output contract:",
+  '{"overview":"string","cards":[{"reading_card_id":"string","position_key":"string","interpretation":"string","reflection_prompt":"string"}],"connections":"string","guidance":"string","closing":"string"}',
+  "Use exactly these keys and preserve every supplied reading_card_id and position_key.",
+].join("\n");
+
 export function buildTarotPromptContext(input: TarotReadingInput): string {
   return JSON.stringify({
     knowledge_version: input.knowledgeVersion,

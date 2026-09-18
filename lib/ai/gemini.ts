@@ -33,7 +33,7 @@ export function createGeminiProvider(
           generationConfig: {
             temperature: 0.35,
             responseMimeType: "application/json",
-            responseSchema: TAROT_RESPONSE_SCHEMA,
+            responseJsonSchema: TAROT_RESPONSE_SCHEMA,
           },
         }),
       });

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { CardMeaningRow, ReadingCardWithDetails, ReadingSessionRow, ReadingTemplateWithPositions } from "../lib/tarot-repository";
-import { selectCombinationHints } from "../lib/ai/knowledge-v5";
+import { inferTarotDomain, selectCombinationHints, v5Guidance } from "../lib/ai/knowledge-v5";
 import { buildTarotPromptContext } from "../lib/ai/prompts/tarot-reading";
 import { tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import { buildTarotReadingInput } from "../lib/tarot-reading-context";
@@ -165,6 +165,27 @@ test("does not claim uncertainty moves toward truth when directional positions a
     { nameEn: "The Moon", positionKey: "current" },
   ]);
   assert.equal(swapped.some((hint) => hint.kind === "triad" && hint.signals.some((signal) => /ambiguity toward verification/i.test(signal))), false);
+});
+
+test("uses non-advisory financial guidance for money and debt questions", () => {
+  for (const question of ["How can I reflect on my debt?", "What options do I have for my finances?"]) {
+    assert.equal(inferTarotDomain("fool-journey", question), "money");
+  }
+
+  const guidance = v5Guidance("money");
+  const domainGuidance = guidance.domain.join(" ");
+
+  assert.match(domainGuidance, /financial/i);
+  assert.match(domainGuidance, /reflect/i);
+  assert.match(domainGuidance, /uncertain/i);
+  assert.match(domainGuidance, /options/i);
+  assert.match(domainGuidance, /verify/i);
+  assert.match(domainGuidance, /professional advice/i);
+  assert.match(domainGuidance, /do not/i);
+  assert.doesNotMatch(domainGuidance, /For self-reflection/i);
+  assert.deepEqual(guidance.safety, [
+    "Keep claims conditional and evidence-aware; do not present symbolic cards as proof of private thoughts, diagnoses, legal/medical/financial advice, or certain events.",
+  ]);
 });
 
 test("preserves every localized D1 evidence field and only supplements known handbook cards", () => {

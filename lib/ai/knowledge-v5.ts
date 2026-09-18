@@ -280,6 +280,8 @@ export function v5Guidance(domain: string): TarotRetrievedGuidance {
     ? "For relationship questions, translate cards into dynamics, communication, reciprocity, boundaries, and observable behavior; do not issue a yes/no verdict."
     : domain === "career"
       ? "For career questions, translate cards into role, agency, environment, resources, trade-offs, and next moves; avoid guaranteed outcomes."
+      : domain === "money"
+        ? "For money questions, keep the reading to financial reflection: name uncertainty, compare options and trade-offs, verify assumptions and figures, and suggest qualified professional advice when appropriate; do not prescribe transactions, debt actions, or guaranteed outcomes."
       : domain === "decision"
         ? "For decisions, show trade-offs and conditions so the reader can choose with agency; do not command a single irreversible action."
         : domain === "future"

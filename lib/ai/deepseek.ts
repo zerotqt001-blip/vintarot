@@ -1,4 +1,4 @@
-import { buildTarotPromptContext, TAROT_SYSTEM_PROMPT } from "./prompts/tarot-reading";
+import { buildTarotPromptContext, TAROT_JSON_OUTPUT_CONTRACT, TAROT_SYSTEM_PROMPT } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
 import { parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
@@ -34,7 +34,7 @@ export function createDeepSeekProvider(
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: TAROT_SYSTEM_PROMPT },
-            { role: "user", content: buildTarotPromptContext(input) },
+            { role: "user", content: `${TAROT_JSON_OUTPUT_CONTRACT}\n\n${buildTarotPromptContext(input)}` },
           ],
         }),
       });

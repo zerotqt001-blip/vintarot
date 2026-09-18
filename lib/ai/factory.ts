@@ -37,5 +37,5 @@ export function createTarotAIProvider(
     throw new TarotAIError("configuration", `Tarot AI ${providerId} configuration is incomplete.`);
   }
 
-  return selected.create(apiKey, model, dependencies);
+  return selected.create(apiKey.trim(), model.trim(), dependencies);
 }
