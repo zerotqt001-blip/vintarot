@@ -117,6 +117,7 @@ test("phone remains private to the profile surface", () => {
 test("auth entry validates its query state before rendering a localized form", () => {
   const page = read("app/auth/page.tsx");
   const screen = read("app/auth/auth.tsx");
+  const shell = read("components/auth/auth-shell.tsx");
 
   assert.match(page, /dynamic\s*=\s*["']force-dynamic["']/);
   assert.match(page, /safeRelativeReturnPath/);
@@ -127,7 +128,7 @@ test("auth entry validates its query state before rendering a localized form", (
   assert.match(page, /reset/);
   assert.match(screen, /useLanguage/);
   assert.match(screen, /t\(["']auth\./);
-  assert.match(screen, /LanguageSelect/);
+  assert.match(shell, /LanguageSelect/);
   assert.match(screen, /auth\/verification\/resend/);
   assert.match(screen, /phonePrivacy/);
 });
@@ -150,14 +151,15 @@ test("auth forms use the member endpoints and Google uses top-level navigation",
 test("Google completion submits the token only to its endpoint and keeps phone private", () => {
   const completion = read("app/auth/complete/page.tsx");
   const completionUi = read("app/auth/auth.tsx");
-  const authSources = [read("app/auth/page.tsx"), completionUi, completion].join("\n");
+  const shell = read("components/auth/auth-shell.tsx");
+  const authSources = [read("app/auth/page.tsx"), completionUi, completion, shell].join("\n");
 
   assert.match(completion, /dynamic\s*=\s*["']force-dynamic["']/);
   assert.match(completion, /searchParams/);
   assert.match(completionUi, /auth\/google\/complete/);
   assert.match(completionUi, /\{\s*token\s*,\s*username\s*,\s*phone\s*\}/);
   assert.match(completionUi, /phonePrivacy/);
-  assert.match(completionUi, /LanguageSelect/);
+  assert.match(shell, /LanguageSelect/);
   assert.match(completionUi, /window\.location\.assign/);
   assert.doesNotMatch(authSources, /localStorage/);
   assert.doesNotMatch(authSources, /ChatGPT/);
@@ -165,13 +167,15 @@ test("Google completion submits the token only to its endpoint and keeps phone p
 
 test("auth forms expose localized inline field errors and safe client rules", () => {
   const screen = read("app/auth/auth.tsx");
+  const shell = read("components/auth/auth-shell.tsx");
+  const authSources = `${screen}\n${shell}`;
   const client = read("lib/client.ts");
   const messages = read("lib/i18n.ts");
 
   assert.match(screen, /fieldErrors/);
   assert.match(screen, /noValidate/);
   assert.match(screen, /aria-invalid/);
-  assert.match(screen, /role=["']alert["']/);
+  assert.match(authSources, /role=["']alert["']/);
   assert.match(screen, /auth\.invalidEmail/);
   assert.match(screen, /auth\.invalidUsername/);
   assert.match(screen, /auth\.invalidPhone/);

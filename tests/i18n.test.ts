@@ -44,6 +44,19 @@ const authKeys = [
   "signedOut",
   "googleError",
   "loginSuccess",
+  "brandTagline",
+  "brandSubline",
+  "headerTagline",
+  "placeholderEmail",
+  "placeholderUsername",
+  "placeholderPhone",
+  "placeholderPassword",
+  "decorativeLeft",
+  "decorativeRight",
+  "footerGuide",
+  "footerPrivacy",
+  "footerContact",
+  "footerCopyright",
 ] as const;
 
 test("normalizes supported language values and falls back to English", () => {
@@ -66,7 +79,7 @@ test("provides the complete bilingual auth dictionary", () => {
     assert.equal(typeof messages.vi.auth[key], "string", `missing Vietnamese auth.${key}`);
   }
 
-  assert.equal(messages.en.auth.loginTitle, "Sign in");
+  assert.equal(messages.en.auth.loginTitle, "Welcome back");
   assert.equal(messages.en.auth.registerTitle, "Create your account");
   assert.equal(messages.en.auth.verifyTitle, "Verify your email");
   assert.equal(messages.en.auth.phone, "Phone number");
@@ -75,7 +88,7 @@ test("provides the complete bilingual auth dictionary", () => {
   assert.equal(messages.en.auth.checkEmail, "Check your email");
   assert.match(messages.en.auth.phonePrivacy, /NaTarot customer care/);
   assert.match(messages.en.auth.phonePrivacy, /not shown publicly/);
-  assert.equal(messages.vi.auth.loginTitle, "Đăng nhập");
+  assert.equal(messages.vi.auth.loginTitle, "Chào mừng trở lại");
   assert.equal(messages.vi.auth.registerTitle, "Tạo tài khoản");
   assert.equal(messages.vi.auth.verifyTitle, "Xác minh email");
   assert.equal(messages.vi.auth.phone, "Số điện thoại");
@@ -87,7 +100,7 @@ test("provides the complete bilingual auth dictionary", () => {
 });
 
 test("resolves representative auth messages by locale and dotted key", () => {
-  assert.equal(messageFor("en", "auth.loginTitle"), "Sign in");
+  assert.equal(messageFor("en", "auth.loginTitle"), "Welcome back");
   assert.equal(messageFor("vi", "auth.phone"), "Số điện thoại");
   assert.equal(messageFor("en", "auth.verifySuccess"), "Email verified successfully");
   assert.equal(messageFor("vi", "auth.resetPassword"), "Đặt lại mật khẩu");
