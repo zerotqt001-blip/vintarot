@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import type { ReadingPayload } from "../lib/tarot-interpretation";
+import { messageFor } from "../lib/i18n";
 import { shuffleDeck } from "../lib/tarot";
 import { spreadCardPosition } from "../lib/room-motion";
 import { consumeDrawPlan, hydrateLegacySpread, isRoomRequestCurrent, remainingFanCardNumbers, roomPositionLabels } from "../lib/tarot-room";
 
 const roomSource = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf8");
+const roomModule = await import("../app/room/room");
 
 test("legacy spread labels hydrate without changing their order", () => {
   const result = hydrateLegacySpread(["Persona", "Obstacle", "Solution"]);
@@ -35,6 +38,63 @@ test("Room reflection surface exposes interpretation and dynamic session data", 
   assert.match(roomSource, /reading\.disclaimer/);
   assert.doesNotMatch(roomSource, /local-fallback|card_readings|reading\.opening|reading\.synthesis|reading\.advice/);
   assert.match(roomSource, /cardId/);
+});
+
+test("reading cards use trusted localized names and always expose orientation", () => {
+  const identity = (roomModule as unknown as {
+    roomReadingCardIdentity?: (
+      card: ReadingPayload["cards"][number],
+      locale: "en" | "vi",
+      translate: (key: string) => string,
+    ) => { cardName: string; orientationLabel: string };
+  }).roomReadingCardIdentity;
+  assert.equal(typeof identity, "function");
+
+  const card = {
+    reading_card_id: "reading-card-1",
+    position_key: "persona",
+    position: { id: "position-1", key: "persona", order: 0, name: "Persona", meaning: "", prompt: "" },
+    card: { id: "card-1", nameEn: "The Star", nameVi: "Ngôi Sao", arcana: "major", suit: null, keywords: [] },
+    orientation: "upright" as const,
+    interpretation: "Interpretation",
+    reflection_prompt: "Reflection",
+  };
+
+  assert.deepEqual(identity!(card, "en", (key) => messageFor("en", key)), {
+    cardName: "The Star",
+    orientationLabel: "UPRIGHT",
+  });
+  assert.deepEqual(identity!({ ...card, orientation: "reversed" }, "vi", (key) => messageFor("vi", key)), {
+    cardName: "Ngôi Sao",
+    orientationLabel: "ĐẢO CHIỀU",
+  });
+});
+
+test("overview presents canonical reading sections in the approved order", () => {
+  const overviewPanel = roomSource.slice(roomSource.indexOf("tab==='overview'"), roomSource.indexOf("tab==='cards'"));
+  const orderedMarkers = [
+    "reading.overview",
+    "readings.map",
+    "reading.connections",
+    "reading.guidance",
+    "reading.closing",
+    "reading.disclaimer",
+  ];
+  const offsets = orderedMarkers.map((marker) => overviewPanel.indexOf(marker));
+  assert.ok(offsets.every((offset) => offset >= 0), `missing canonical section: ${JSON.stringify(offsets)}`);
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right));
+});
+
+test("reading errors have bilingual provider-neutral unavailable and retry labels", () => {
+  for (const locale of ["en", "vi"] as const) {
+    const unavailable = messageFor(locale, "room.interpretationUnavailable");
+    const retry = messageFor(locale, "room.interpretationRetryAction");
+    assert.notEqual(unavailable, "room.interpretationUnavailable");
+    assert.notEqual(retry, "room.interpretationRetryAction");
+    assert.doesNotMatch(`${unavailable} ${retry}`, /OpenAI|Gemini|DeepSeek/i);
+  }
+  assert.match(roomSource, /interpretationUnavailable/);
+  assert.match(roomSource, /interpretationRetryAction/);
 });
 
 test("fan keeps all 78 cards until the customer selects a card", () => {
