@@ -367,8 +367,11 @@ export function getTarotRepository(database: D1Database): TarotRepository {
     },
     async saveReading(input) {
       const now = Date.now();
+      const synthesis = input.reading.personalInsights.map(({ title, body }) => `${title}: ${body}`).join("\n\n");
+      const advice = input.reading.nextSteps.map(({ title, body }) => `${title}: ${body}`).join("\n\n");
+      const closing = input.reading.deeperReading || input.reading.directAnswer;
       await database.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        .bind(input.id, input.sessionId, input.reading.overview, JSON.stringify(input.reading.cards), input.reading.connections, input.reading.guidance, input.reading.closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
+        .bind(input.id, input.sessionId, input.reading.directAnswer, JSON.stringify(input.reading.cardEvidence), synthesis, advice, closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
         .run();
       return input.id;
     },

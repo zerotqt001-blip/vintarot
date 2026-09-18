@@ -90,9 +90,20 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(interpretation, /disclaimer/);
   assert.match(repository, /getReadingTemplate/);
   assert.match(repository, /getMeaningPair/);
-  assert.match(repository, /input\.reading\.overview/);
-  assert.match(repository, /JSON\.stringify\(input\.reading\.cards\)/);
   assert.doesNotMatch(readingRoute, /portraitCard|obstacleCard|solutionCard/);
+});
+
+test("repository saves the V3 payload through the existing legacy reading columns", () => {
+  assert.doesNotMatch(repository, /input\.reading\.(?:overview|cards|connections|guidance|closing)/);
+  assert.doesNotMatch(repository, /reading_payload/);
+  assert.match(repository, /input\.reading\.directAnswer/);
+  assert.match(repository, /JSON\.stringify\(input\.reading\.cardEvidence\)/);
+  assert.match(repository, /input\.reading\.personalInsights/);
+  assert.match(repository, /input\.reading\.nextSteps/);
+  assert.match(repository, /input\.reading\.deeperReading \|\| input\.reading\.directAnswer/);
+  assert.match(repository, /input\.reading\.disclaimer/);
+  assert.match(repository, /input\.modelName/);
+  assert.match(repository, /input\.promptVersion/);
 });
 
 test("Node runtime exposes the SQLite database through the D1-shaped boundary", async (t) => {
