@@ -6,6 +6,7 @@ import type {
   TarotLocale,
 } from "./tarot-catalog";
 import type { ReadingOwner } from "./tarot-guest";
+import { serializeLegacyReadingFields, type StoredReadingRow } from "./tarot-reading-compat";
 import type { ReadingPayload } from "./tarot-interpretation";
 
 export type CatalogCategoryRow = {
@@ -63,6 +64,7 @@ export type TarotRepository = {
   createReadingSession(input: NewReadingSession): Promise<string>;
   createReadingCards(rows: NewReadingCard[]): Promise<void>;
   getSessionForOwner(sessionId: string, owner: ReadingOwner): Promise<ReadingSessionWithCards | null>;
+  getLatestReadingForOwner(sessionId: string, owner: ReadingOwner): Promise<StoredReadingRow | null>;
   getMeaning(cardId: string, locale: TarotLocale, orientation: "upright" | "reversed"): Promise<CardMeaningRow | null>;
   getMeaningPair(cardId: string, locale: TarotLocale): Promise<{ upright: CardMeaningRow; reversed: CardMeaningRow } | null>;
   saveReading(input: NewReading): Promise<string>;
@@ -336,6 +338,10 @@ export function getTarotRepository(database: D1Database): TarotRepository {
       const cards = cardRows.map(({ promptEn, promptVi, descriptionEn, descriptionVi, ...card }) => ({ ...card, positionPrompt: session.locale === "vi" ? promptVi : promptEn, positionDescription: session.locale === "vi" ? descriptionVi : descriptionEn }));
       return { session, cards };
     },
+    async getLatestReadingForOwner(sessionId, owner) {
+      const ownerColumn = owner.kind === "user" ? "s.user_id" : "s.guest_id";
+      return first<StoredReadingRow>(database, `SELECT r.id, r.session_id AS sessionId, r.opening, r.card_readings AS cardReadings, r.synthesis, r.advice, r.closing, r.disclaimer, r.reading_payload AS readingPayload, r.model_name AS modelName, r.prompt_version AS promptVersion, r.created_at AS createdAt, r.updated_at AS updatedAt FROM readings r JOIN reading_sessions s ON s.id = r.session_id WHERE r.session_id = ? AND ${ownerColumn} = ? ORDER BY r.created_at DESC, r.id DESC LIMIT 1`, sessionId, owner.kind === "user" ? owner.userId : owner.guestId);
+    },
     async getMeaning(cardId, locale, orientation) {
       const row = await first<Omit<CardMeaningRow, "journalQuestions"> & { journalQuestions: string }>(database, "SELECT id, card_id AS cardId, locale, orientation, summary, energy, actions, relationships, work, creativity, home, symbolism, journal_questions AS journalQuestions, keywords FROM card_meanings WHERE card_id = ? AND locale = ? AND orientation = ?", cardId, locale, orientation);
       if (!row) return null;
@@ -367,11 +373,9 @@ export function getTarotRepository(database: D1Database): TarotRepository {
     },
     async saveReading(input) {
       const now = Date.now();
-      const synthesis = input.reading.personalInsights.map(({ title, body }) => `${title}: ${body}`).join("\n\n");
-      const advice = input.reading.nextSteps.map(({ title, body }) => `${title}: ${body}`).join("\n\n");
-      const closing = input.reading.deeperReading || input.reading.directAnswer;
-      await database.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        .bind(input.id, input.sessionId, input.reading.directAnswer, JSON.stringify(input.reading.cardEvidence), synthesis, advice, closing, input.reading.disclaimer, input.modelName, input.promptVersion, now, now)
+      const legacy = serializeLegacyReadingFields(input.reading);
+      await database.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, reading_payload, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(input.id, input.sessionId, legacy.opening, legacy.cardReadings, legacy.synthesis, legacy.advice, legacy.closing, legacy.disclaimer, JSON.stringify(input.reading), input.modelName, input.promptVersion, now, now)
         .run();
       return input.id;
     },

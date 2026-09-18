@@ -24,6 +24,15 @@ function database(t: TestContext) {
   return sqlite;
 }
 
+test("0004 adds the nullable normalized reading payload column", (t) => {
+  const sqlite = database(t);
+  sqlite.exec(migration("0004_reading_payload.sql"));
+  const columns = sqlite.prepare("PRAGMA table_info(readings)").all() as Array<{ name: string; notnull: number }>;
+  const payload = columns.find((column) => column.name === "reading_payload");
+  assert.ok(payload);
+  assert.equal(payload.notnull, 0);
+});
+
 function d1Database(sqlite: DatabaseSync): D1Database {
   const prepare = (sql: string) => {
     let values: SQLInputValue[] = [];
@@ -74,10 +83,14 @@ test("0003 preserves referenced legacy relationship IDs and stored readings rema
   canonicalPositions.forEach((position, index) => {
     insertCard.run(`legacy-reading-card-${index}`, "legacy-relationship-reading", cards[index].id, position.legacyId, position.key, position.order, `Legacy ${index}`, index === 1 ? "reversed" : "upright", index);
   });
+  sqlite.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .run("legacy-reading-result", "legacy-relationship-reading", "Legacy opening", "[]", "Legacy synthesis", "Legacy advice", "Legacy closing", "Legacy disclaimer", "legacy/model", "tarot-reading-v2", 1, 1);
 
   const catalogMigration = migration("0003_moonlight_spread_catalog.sql");
   assert.doesNotThrow(() => sqlite.exec(catalogMigration));
   assert.doesNotThrow(() => sqlite.exec(catalogMigration));
+  sqlite.exec(migration("0004_reading_payload.sql"));
+  assert.equal(sqlite.prepare("SELECT reading_payload AS readingPayload FROM readings WHERE id = ?").get("legacy-reading-result")!.readingPayload, null);
   assert.deepEqual(relationshipRows(sqlite), canonicalPositions.map(({ legacyId: id, key, order }) => ({ id, key, order })));
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
 

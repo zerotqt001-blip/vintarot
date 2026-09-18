@@ -104,6 +104,7 @@ function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
     createReadingSession: async () => session.id,
     createReadingCards: async () => undefined,
     getSessionForOwner: async () => ({ session, cards: storedCards }),
+    getLatestReadingForOwner: async () => null,
     getMeaning: async () => null,
     getMeaningPair: async (cardId) => ({ upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") }),
     saveReading: async () => "saved-reading",
@@ -168,7 +169,9 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.reading.cardEvidence[1].orientation, "reversed");
   assert.equal(saved?.reading.directAnswer, result.reading.directAnswer);
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
+  assert.deepEqual(saved?.reading, result.reading);
   assert.equal(saved?.modelName, "openai:test-model");
+  assert.equal(saved?.promptVersion, "tarot-reading-v3");
 });
 
 test("loads the owner's stored template, exact cards, and requested-locale meaning pairs", async () => {

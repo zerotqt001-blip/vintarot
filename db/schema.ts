@@ -222,6 +222,7 @@ export const readings = sqliteTable(
     advice: text("advice").notNull(),
     closing: text("closing").notNull(),
     disclaimer: text("disclaimer").notNull(),
+    readingPayload: text("reading_payload"),
     modelName: text("model_name").notNull(),
     promptVersion: text("prompt_version").notNull(),
     createdAt: integer("created_at").notNull(),

@@ -4,6 +4,7 @@ import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import test, { type TestContext } from "node:test";
 import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
+import { parseStoredReading } from "../lib/tarot-reading-compat";
 import { buildTarotReadingInput } from "../lib/tarot-reading-context";
 import { getTarotRepository } from "../lib/tarot-repository";
 
@@ -11,7 +12,7 @@ import { getTarotRepository } from "../lib/tarot-repository";
 function database(t: TestContext) {
   const sqlite = new DatabaseSync(":memory:");
   t.after(() => sqlite.close());
-  for (const file of ["0001_dynamic_tarot.sql", "0002_tarot_seed.sql"]) {
+  for (const file of ["0001_dynamic_tarot.sql", "0002_tarot_seed.sql", "0004_reading_payload.sql"]) {
     sqlite.exec(readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8"));
   }
   const prepare = (sql: string) => {
@@ -117,20 +118,82 @@ test("D1 context orders exact stored cards and persists the validated payload in
   assert.equal(input.cards[0].knowledge.upright.summary, meanings.get(cards[0].id)!.upright.summary);
   assert.equal(input.cards[1].position.prompt, template.positions[1].prompt);
   assert.equal(input.locale, "en");
-  const output = { overview: "Overview '); DROP TABLE readings; --", cards: input.cards.map((c) => ({ reading_card_id: c.readingCardId, position_key: c.position.key, interpretation: "Interpretation", reflection_prompt: "Reflection?" })).reverse(), connections: "Connections", guidance: "Guidance", closing: "Closing" };
-  assert.throws(() => parseReadingPayload({ ...output, cards: [{ ...output.cards[0], reading_card_id: "other-session-card" }, ...output.cards.slice(1)] }, input.cards, "en"), /coverage/i);
+  const output = {
+    direct_answer: "Overview '); DROP TABLE readings; --\n\nA second paragraph.",
+    personal_insights: [{ title: "Connections", body: "Connections" }],
+    reflection_prompts: ["Reflection?"],
+    next_steps: [{ title: "Guidance", body: "Guidance" }],
+    card_evidence: input.cards.map((c) => ({ reading_card_id: c.readingCardId, position_key: c.position.key, interpretation: "Interpretation" })).reverse(),
+    deeper_reading: "Closing",
+    follow_up_suggestions: [],
+  };
+  assert.throws(() => parseReadingPayload({ ...output, card_evidence: [{ ...output.card_evidence[0], reading_card_id: "other-session-card" }, ...output.card_evidence.slice(1)] }, input.cards, "en"), /coverage/i);
   const reading = parseReadingPayload(output, input.cards, "en");
   assert.equal(await repository.saveReading({ id: "saved-reading", sessionId: stored.session.id, reading, modelName: "openai/test-model", promptVersion: TAROT_PROMPT_VERSION }), "saved-reading");
   const saved = sqlite.prepare("SELECT * FROM readings WHERE id = ?").get("saved-reading")!;
   assert.equal(saved.session_id, "guest-session");
-  assert.equal(saved.opening, output.overview);
-  assert.deepEqual(JSON.parse(saved.card_readings as string), reading.cards);
-  assert.equal(saved.synthesis, "Connections");
-  assert.equal(saved.advice, "Guidance");
+  assert.equal(saved.opening, output.direct_answer);
+  assert.deepEqual(JSON.parse(saved.card_readings as string), reading.cardEvidence);
+  assert.equal(saved.synthesis, "Connections: Connections");
+  assert.equal(saved.advice, "Guidance: Guidance");
   assert.equal(saved.closing, "Closing");
   assert.equal(saved.disclaimer, "This is a reflective reading, not a certain prediction or professional advice.");
   assert.equal(saved.model_name, "openai/test-model");
-  assert.equal(saved.prompt_version, "tarot-reading-v2");
+  assert.equal(saved.prompt_version, "tarot-reading-v3");
+  assert.deepEqual(JSON.parse(saved.reading_payload as string), reading);
+  const freshRow = await repository.getLatestReadingForOwner(stored.session.id, { kind: "guest", guestId: "owner-guest" });
+  assert.ok(freshRow);
+  assert.deepEqual(parseStoredReading(freshRow, input.cards, "en"), reading);
   assert.equal(typeof saved.created_at, "number");
   assert.equal(saved.updated_at, saved.created_at);
+});
+
+test("repository returns the latest owned reading and hydrates historical rows with trusted card metadata", async (t) => {
+  const { sqlite, repository, template, cards } = await storedReading(t);
+  const stored = (await repository.getSessionForOwner("guest-session", { kind: "guest", guestId: "owner-guest" }))!;
+  const historical = (await repository.getReadingTemplate(template.id, "en"))!;
+  const meanings = new Map(await Promise.all(cards.map(async (card) => [card.id, (await repository.getMeaningPair(card.id, "en"))!] as const)));
+  const input = buildTarotReadingInput({ ...stored, template: historical, meanings, locale: "en" });
+  const legacyCardReadings = JSON.stringify(input.cards.map((card) => ({
+    reading_card_id: card.readingCardId,
+    position_key: card.position.key,
+    interpretation: `Legacy interpretation for ${card.readingCardId}`,
+    reflection_prompt: `Notice ${card.position.key}`,
+  })));
+  sqlite.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, reading_payload, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)")
+    .run("legacy-reading", "guest-session", "A legacy opening.\n\nA legacy second paragraph.", legacyCardReadings, "A legacy synthesis.", "A legacy next step.", "A legacy closing.", "Legacy disclaimer.", "legacy/model", "tarot-reading-v2", 10, 10);
+  sqlite.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, reading_payload, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .run("newer-reading", "guest-session", "Newer opening", "[]", "Newer synthesis", "Newer advice", "Newer closing", "Newer disclaimer", JSON.stringify({ directAnswer: "Newer answer", personalInsights: [], reflectionPrompts: [], nextSteps: [], cardEvidence: [], deeperReading: null, followUpSuggestions: [], disclaimer: "Newer disclaimer" }), "new/model", "tarot-reading-v3", 20, 20);
+
+  assert.equal(await repository.getLatestReadingForOwner("guest-session", { kind: "guest", guestId: "wrong" }), null);
+  assert.equal(await repository.getLatestReadingForOwner("guest-session", { kind: "user", userId: "owner-guest" }), null);
+  const latest = await repository.getLatestReadingForOwner("guest-session", { kind: "guest", guestId: "owner-guest" });
+  assert.ok(latest);
+  assert.equal(latest.id, "newer-reading");
+
+  const legacy = {
+    ...latest,
+    id: "legacy-reading",
+    readingPayload: null,
+    opening: "A legacy opening.\n\nA legacy second paragraph.",
+    cardReadings: legacyCardReadings,
+    synthesis: "A legacy synthesis.",
+    advice: "A legacy next step.",
+    closing: "A legacy closing.",
+    disclaimer: "Legacy disclaimer.",
+  };
+  const hydrated = parseStoredReading(legacy, input.cards, "en");
+  assert.equal(hydrated.directAnswer, legacy.opening);
+  assert.deepEqual(hydrated.cardEvidence.map((evidence) => ({
+    readingCardId: evidence.readingCardId,
+    positionId: evidence.position.id,
+    orientation: evidence.orientation,
+  })), input.cards.map((card) => ({
+    readingCardId: card.readingCardId,
+    positionId: card.position.id,
+    orientation: card.orientation,
+  })));
+  assert.deepEqual(hydrated.reflectionPrompts, input.cards.map((card) => `Notice ${card.position.key}`));
+  assert.equal(hydrated.personalInsights[0]?.body, legacy.synthesis);
+  assert.equal(hydrated.nextSteps[0]?.body, legacy.advice);
 });
