@@ -2,6 +2,7 @@
 
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
+import { Panel } from "@/components/ui/panel";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, guidebookMapLayout, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
@@ -184,7 +185,7 @@ export function CardPicker({
 export function SignIn() {
   const { t } = useLanguage();
   return (
-    <div className="empty">
+    <Panel tone="elevated" className="empty sign-in-panel">
       <Moon size={34} />
       <h2>{t("pages.yourSpace")}</h2>
       <p>{t("pages.signInText")}</p>
@@ -195,7 +196,7 @@ export function SignIn() {
       >
         {t("common.signIn")}
       </a>
-    </div>
+    </Panel>
   );
 }
 

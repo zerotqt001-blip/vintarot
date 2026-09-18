@@ -7,7 +7,7 @@ type NextStepsProps = {
 
 export function NextSteps({ items, t }: NextStepsProps) {
   return (
-    <section className="reading-section reading-section--next-steps px-5 py-6 sm:px-7" aria-labelledby="reading-next-steps">
+    <section className="reading-section reading-section--next-steps brand-reading-section reading-surface px-5 py-6 sm:px-7" aria-labelledby="reading-next-steps">
       <h3 id="reading-next-steps" className="text-lg font-medium tracking-[-0.02em] text-ivory">
         {t("reading.nextSteps")}
       </h3>

@@ -7,7 +7,7 @@ type ReadingHeaderProps = {
 
 export function ReadingHeader({ session, t }: ReadingHeaderProps) {
   return (
-    <header className="reading-header reading-surface reading-surface--midnight-navy border-b border-antique-gold/20 px-5 py-6 sm:px-7">
+    <header className="reading-header brand-reading-header reading-surface reading-surface--midnight-navy border-b border-antique-gold/20 px-5 py-6 sm:px-7">
       <h2 className="max-w-2xl text-balance text-2xl font-medium tracking-[-0.03em] text-ivory sm:text-3xl">
         {t("reading.title")}
       </h2>

@@ -7,7 +7,7 @@ type PersonalInsightsProps = {
 
 export function PersonalInsights({ items, t }: PersonalInsightsProps) {
   return (
-    <section className="reading-section reading-section--personal-insights px-5 py-6 sm:px-7" aria-labelledby="reading-personal-insights">
+    <section className="reading-section reading-section--personal-insights brand-reading-section reading-surface px-5 py-6 sm:px-7" aria-labelledby="reading-personal-insights">
       <h3 id="reading-personal-insights" className="text-lg font-medium tracking-[-0.02em] text-ivory">
         {t("reading.personalInsights")}
       </h3>

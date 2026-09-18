@@ -28,7 +28,7 @@ export function ReadingPanel({
   const hasFollowUp = Boolean(onFollowUpSubmit);
 
   return (
-    <aside className="reading-panel reading-panel--midnight-navy relative flex max-h-full min-h-0 flex-col overflow-hidden bg-midnight-navy text-ivory shadow-[0_20px_70px_rgba(4,10,30,0.36)]" aria-label={t("reading.panelLabel")}>
+    <aside className="reading-panel brand-panel brand-reading-panel reading-surface reading-panel--midnight-navy relative flex max-h-full min-h-0 flex-col overflow-hidden bg-midnight-navy text-ivory shadow-[0_20px_70px_rgba(4,10,30,0.36)]" aria-label={t("reading.panelLabel")}>
       <ReadingHeader session={session} t={t} />
       <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <p className="reading-question border-b border-antique-gold/15 px-5 py-5 text-sm leading-7 text-ivory/80 sm:px-7">

@@ -7,7 +7,7 @@ type DirectAnswerProps = {
 
 export function DirectAnswer({ paragraphs, t }: DirectAnswerProps) {
   return (
-    <section className="reading-section reading-section--direct-answer reading-surface reading-surface--midnight-navy px-5 py-6 sm:px-7" aria-labelledby="reading-direct-answer">
+    <section className="reading-section reading-section--direct-answer brand-reading-section reading-surface reading-surface--midnight-navy px-5 py-6 sm:px-7" aria-labelledby="reading-direct-answer">
       <h3 id="reading-direct-answer" className="text-lg font-medium tracking-[-0.02em] text-antique-gold">
         {t("reading.directAnswer")}
       </h3>

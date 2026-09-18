@@ -8,7 +8,7 @@ type ReflectionPromptsProps = {
 
 export function ReflectionPrompts({ prompts, onSelect, t }: ReflectionPromptsProps) {
   return (
-    <section className="reading-section reading-section--reflection-prompts px-5 py-6 sm:px-7" aria-labelledby="reading-reflection-prompts">
+    <section className="reading-section reading-section--reflection-prompts brand-reading-section reading-surface px-5 py-6 sm:px-7" aria-labelledby="reading-reflection-prompts">
       <h3 id="reading-reflection-prompts" className="text-lg font-medium tracking-[-0.02em] text-ivory">
         {t("reading.reflectionPrompts")}
       </h3>

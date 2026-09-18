@@ -38,7 +38,7 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
   }
 
   return (
-    <section className="reading-section reading-section--follow-up px-5 py-6 sm:px-7" aria-labelledby="reading-follow-up">
+    <section className="reading-section reading-section--follow-up brand-reading-section reading-surface px-5 py-6 sm:px-7" aria-labelledby="reading-follow-up">
       <h3 id="reading-follow-up" className="text-lg font-medium tracking-[-0.02em] text-ivory">
         {t("reading.followUp")}
       </h3>
@@ -59,7 +59,7 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
       <form className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]" onSubmit={submit}>
         <label className="sr-only" htmlFor="reading-follow-up-question">{t("reading.followUpInput")}</label>
         <input
-          className="min-h-11 rounded-xl border border-antique-gold/25 bg-midnight-navy/55 px-4 text-sm text-ivory outline-none placeholder:text-ivory/45 focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy"
+          className="reading-follow-up-input min-h-11 rounded-xl border-antique-gold/25 bg-midnight-navy/55 px-4 text-sm text-ivory outline-none placeholder:text-ivory/45 focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy"
           id="reading-follow-up-question"
           value={question}
           onChange={(event) => onQuestionChange(event.target.value)}
