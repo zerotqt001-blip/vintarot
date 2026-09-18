@@ -109,6 +109,6 @@ test("Node runtime exposes the SQLite database through the D1-shaped boundary", 
   const database = runtime.getRuntimeDatabase();
   await database.prepare("CREATE TABLE runtime_probe (value TEXT NOT NULL)").run();
   await database.prepare("INSERT INTO runtime_probe (value) VALUES (?)").bind("node").run();
-  const row = await database.prepare("SELECT value FROM runtime_probe").first<{ value: string }>();
+  const row = await database.prepare("SELECT value FROM runtime_probe").first() as { value: string } | null;
   assert.deepEqual(row, { value: "node" });
 });

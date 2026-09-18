@@ -24,7 +24,7 @@ function normalizeValues(values: unknown[]): SqliteValue[] {
   });
 }
 
-function resultMeta(changes = 0, lastRowId = 0) {
+function resultMeta(changes = 0, lastRowId: number | bigint = 0) {
   return {
     duration: 0,
     size_after: 0,

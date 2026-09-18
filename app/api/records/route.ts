@@ -1,6 +1,94 @@
-import {boundary,db,identity,originCheck,json} from '@/lib/server';
-import {z} from 'zod';
-const journalCardSchema=z.object({id:z.number().int().min(0).max(77),reversed:z.boolean(),cardId:z.string().max(100).optional(),positionKey:z.string().max(100).optional(),positionOrder:z.number().int().min(0).max(9).optional(),orientation:z.enum(['upright','reversed']).optional()});
-const schemas={journal:z.object({question:z.string().min(1).max(500),notes:z.string().max(15000),session_id:z.string().max(100).optional(),category_id:z.string().max(100).optional(),spread_template_id:z.string().max(100).optional(),optional_context:z.string().max(5000).optional(),cards:z.array(journalCardSchema).max(10)}),practice:z.object({question:z.string().max(500),notes:z.string().min(1).max(15000),cards:z.array(z.object({id:z.number().int().min(0).max(77),reversed:z.boolean()})).max(10)}),profile:z.object({name:z.string().min(1).max(80),bio:z.string().max(3000),timezone:z.string().max(100),language:z.string().max(100)}),game:z.object({day:z.string().max(20),guesses:z.number().int().min(0).max(5),won:z.boolean(),round:z.number().int().min(0).max(4)}),reader:z.object({name:z.string().min(1).max(80),bio:z.string().min(20).max(3000),timezone:z.string().max(100),language:z.string().max(100),duration:z.number().int().min(15).max(120),price:z.number().int().min(0).max(100000000),published:z.boolean(),slots:z.array(z.string().datetime()).max(50)}),booking:z.object({readerId:z.string().max(100),slot:z.string().datetime(),question:z.string().max(500),status:z.literal('requested')})};
-export async function GET(req:Request){return boundary(async()=>{const u=await identity(),kind=new URL(req.url).searchParams.get('kind')||'journal';if(!(kind in schemas))return Response.json({error:'Unknown record type'},{status:400});const rows=await db().prepare('SELECT id,data,created,updated FROM records WHERE owner=? AND kind=? ORDER BY updated DESC LIMIT 100').bind(u.userId,kind).all();return Response.json({items:rows.results.map((r:any)=>({...r,...JSON.parse(r.data),data:undefined}))})})}
-export async function POST(req:Request){return boundary(async()=>{originCheck(req);const u=await identity(),body=await json(req);const kind=body.kind as keyof typeof schemas;if(!(kind in schemas))return Response.json({error:'Unknown record type'},{status:400});const result=schemas[kind].safeParse(body.data);if(!result.success)return Response.json({error:'Please check all required fields.'},{status:400});if(kind==='booking')return Response.json({error:'Booking is not open yet. Payment and notification services need to be connected.'},{status:503});const id=kind==='profile'||kind==='reader'?kind+'_'+u.userId:typeof body.id==='string'?body.id:crypto.randomUUID();const now=Date.now();const existing=await db().prepare('SELECT owner FROM records WHERE id=?').bind(id).first<{owner:string}>();if(existing&&existing.owner!==u.userId)return Response.json({error:'Not found'},{status:404});await db().prepare('INSERT INTO records(id,owner,kind,data,created,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated=excluded.updated WHERE records.owner=excluded.owner AND records.kind=excluded.kind').bind(id,u.userId,kind,JSON.stringify(result.data),now,now).run();return Response.json({id,...result.data,created:now})})}
+import { attachIdentityCookie, boundary, db, identity, json, originCheck } from "@/lib/server";
+import { z } from "zod";
+
+const journalCardSchema = z.object({
+  id: z.number().int().min(0).max(77),
+  reversed: z.boolean(),
+  cardId: z.string().max(100).optional(),
+  positionKey: z.string().max(100).optional(),
+  positionOrder: z.number().int().min(0).max(9).optional(),
+  orientation: z.enum(["upright", "reversed"]).optional(),
+});
+
+const schemas = {
+  journal: z.object({
+    question: z.string().min(1).max(500),
+    notes: z.string().max(15000),
+    session_id: z.string().max(100).optional(),
+    category_id: z.string().max(100).optional(),
+    spread_template_id: z.string().max(100).optional(),
+    optional_context: z.string().max(5000).optional(),
+    cards: z.array(journalCardSchema).max(10),
+  }),
+  practice: z.object({
+    question: z.string().max(500),
+    notes: z.string().min(1).max(15000),
+    cards: z.array(z.object({ id: z.number().int().min(0).max(77), reversed: z.boolean() })).max(10),
+  }),
+  profile: z.object({
+    name: z.string().min(1).max(80),
+    bio: z.string().max(3000),
+    timezone: z.string().max(100),
+    language: z.string().max(100),
+  }),
+  game: z.object({
+    day: z.string().max(20),
+    guesses: z.number().int().min(0).max(5),
+    won: z.boolean(),
+    round: z.number().int().min(0).max(4),
+  }),
+  reader: z.object({
+    name: z.string().min(1).max(80),
+    bio: z.string().min(20).max(3000),
+    timezone: z.string().max(100),
+    language: z.string().max(100),
+    duration: z.number().int().min(15).max(120),
+    price: z.number().int().min(0).max(100000000),
+    published: z.boolean(),
+    slots: z.array(z.string().datetime()).max(50),
+  }),
+  booking: z.object({
+    readerId: z.string().max(100),
+    slot: z.string().datetime(),
+    question: z.string().max(500),
+    status: z.literal("requested"),
+  }),
+};
+
+export async function GET(req: Request) {
+  return boundary(async () => {
+    const user = await identity(req);
+    const respond = (body: unknown, init?: ResponseInit) => attachIdentityCookie(Response.json(body, init), user);
+    const kind = new URL(req.url).searchParams.get("kind") || "journal";
+    if (!(kind in schemas)) return respond({ error: "Unknown record type" }, { status: 400 });
+    const rows = await db().prepare("SELECT id,data,created,updated FROM records WHERE owner=? AND kind=? ORDER BY updated DESC LIMIT 100")
+      .bind(user.userId, kind)
+      .all();
+    return respond({ items: rows.results.map((row: any) => ({ ...row, ...JSON.parse(row.data), data: undefined })) });
+  });
+}
+
+export async function POST(req: Request) {
+  return boundary(async () => {
+    originCheck(req);
+    const user = await identity(req);
+    const respond = (body: unknown, init?: ResponseInit) => attachIdentityCookie(Response.json(body, init), user);
+    const body = await json(req);
+    const kind = body.kind as keyof typeof schemas;
+    if (!(kind in schemas)) return respond({ error: "Unknown record type" }, { status: 400 });
+    const result = schemas[kind].safeParse(body.data);
+    if (!result.success) return respond({ error: "Please check all required fields." }, { status: 400 });
+    if (kind === "booking") return respond({ error: "Booking is not open yet. Payment and notification services need to be connected." }, { status: 503 });
+
+    const id = kind === "profile" || kind === "reader"
+      ? `${kind}_${user.userId}`
+      : typeof body.id === "string" ? body.id : crypto.randomUUID();
+    const now = Date.now();
+    const existing = await db().prepare("SELECT owner FROM records WHERE id=?").bind(id).first<{ owner: string }>();
+    if (existing && existing.owner !== user.userId) return respond({ error: "Not found" }, { status: 404 });
+    await db().prepare("INSERT INTO records(id,owner,kind,data,created,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated=excluded.updated WHERE records.owner=excluded.owner AND records.kind=excluded.kind")
+      .bind(id, user.userId, kind, JSON.stringify(result.data), now, now)
+      .run();
+    return respond({ id, ...result.data, created: now });
+  });
+}

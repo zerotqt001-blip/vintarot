@@ -19,9 +19,9 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   execFileSync(process.execPath, ["scripts/node-migrate.mjs"], { cwd: repoRoot, env, stdio: "pipe" });
 
   const sqlite = new DatabaseSync(dbPath);
-  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get().count, 78);
-  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get().count, 312);
-  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get().count, 4);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get() as { count: number }).count, 78);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get() as { count: number }).count, 312);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 4);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
 });
