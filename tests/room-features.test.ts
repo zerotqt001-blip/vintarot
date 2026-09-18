@@ -18,6 +18,6 @@ test("Room keeps annotation and spread controls out of the pan gesture", () => {
 });
 
 test("Shared room state accepts bounded text annotations", () => {
-  assert.match(roomApiSource, /texts:z\.array/);
-  assert.match(roomApiSource, /text:z\.string\(\)\.max\(500\)/);
+  assert.match(roomApiSource, /texts:\s*z\.array/);
+  assert.match(roomApiSource, /text:\s*z\.string\(\)\.max\(500\)/);
 });
