@@ -1,14 +1,14 @@
-import "server-only";
-
 import { cookies } from "next/headers";
-import { getMemberFromCookieHeader, type MemberView } from "@/lib/member-auth";
-import { getRuntimeDatabase } from "@/lib/runtime";
+import { getMemberFromCookieHeader, SESSION_COOKIE_NAME, type MemberView } from "@/lib/member-auth";
 
 export type MemberShellUser = { name: string; email: string; username: string } | null;
 export type MemberProfileUser = { name: string; email: string; username: string; phone?: string } | null;
 
 export async function getPageMember(): Promise<MemberView | null> {
   const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (!sessionCookie) return null;
+  const { getRuntimeDatabase } = await import("@/lib/runtime");
   return getMemberFromCookieHeader(getRuntimeDatabase(), cookieStore.toString());
 }
 

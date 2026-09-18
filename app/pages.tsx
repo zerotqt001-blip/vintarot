@@ -184,7 +184,9 @@ export function CardPicker({
   );
 }
 
-export function SignIn() {
+type SignInReturnPath = "/profile" | "/journal" | "/bookings" | "/invites";
+
+export function SignIn({ returnTo }: { returnTo: SignInReturnPath }) {
   const { t } = useLanguage();
   return (
     <div className="empty">
@@ -193,7 +195,7 @@ export function SignIn() {
       <p>{t("pages.signInText")}</p>
       <a
         className="button black"
-        href="/auth?return_to=/profile"
+        href={`/auth?return_to=${returnTo}`}
       >
         {t("common.signIn")}
       </a>
@@ -214,10 +216,10 @@ export default function Pages({
   if (section === "game") return <Game user={user} />;
   if (section === "journal") return <Journal user={user} />;
   if (section === "community") return <Practice user={user} />;
-  if (section === "profile") return <Profile user={user} />;
+  if (section === "profile") return user ? <Profile user={user} /> : <SignIn returnTo="/profile" />;
   if (section === "book") return <Book />;
-  if (!user) return <SignIn />;
-  if (section === "bookings")
+  if (section === "bookings") {
+    if (!user) return <SignIn returnTo="/bookings" />;
     return (
       <>
         <Header title={t("pages.bookings")} text={t("pages.bookingsText")} />
@@ -231,6 +233,8 @@ export default function Pages({
         </div>
       </>
     );
+  }
+  if (!user) return <SignIn returnTo="/invites" />;
   return <Invites />;
 }
 
@@ -704,7 +708,7 @@ function Journal({ user }: { user: PublicMemberUser }) {
       setBusy(false);
     }
   }
-  if (!user) return <SignIn />;
+  if (!user) return <SignIn returnTo="/journal" />;
   return (
     <>
       <div className="journal-head">
@@ -884,7 +888,7 @@ function Profile({ user }: { user: MemberUser }) {
         })
         .catch((error) => setMessage(error.message));
   }, [user]);
-  if (!user) return <SignIn />;
+      if (!user) return <SignIn returnTo="/profile" />;
   return (
     <>
       <Header title={t("pages.yourSpace")} text={t("pages.yourSpaceText")} />
