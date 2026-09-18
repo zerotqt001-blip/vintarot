@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { D1Database } from "@cloudflare/workers-types";
 
 export const SESSION_COOKIE_NAME = "natarot_session";
 export const SESSION_MAX_AGE_SECONDS = 2_592_000;
@@ -39,6 +40,36 @@ export interface MemberRegistration {
   passwordHash: string;
   emailVerifiedAt?: number | null;
   displayName?: string | null;
+}
+
+export class MemberConflictError extends Error {
+  readonly code = "MEMBER_CONFLICT";
+
+  constructor() {
+    super("A member with that identifier already exists");
+    this.name = "MemberConflictError";
+  }
+}
+
+export interface AuthSession {
+  raw: string;
+  expiresAt: number;
+}
+
+export interface AuthToken {
+  raw: string;
+  expiresAt: number;
+}
+
+export interface AuthTokenPayload {
+  kind: AuthTokenKind;
+  memberId: string | null;
+  payload: unknown;
+}
+
+export interface OAuthStatePayload {
+  codeVerifier: string;
+  returnPath: string;
 }
 
 const emailValue = z.string().trim().email().max(254);
@@ -208,3 +239,214 @@ export function clearSessionCookie(secure = false): string {
 
 export const sessionCookie = buildSessionCookie;
 export const clearSession = clearSessionCookie;
+
+function toMemberView(row: MemberRow): MemberView {
+  return {
+    id: row.id,
+    username: row.username,
+    email: row.email,
+    phone: row.phone,
+    displayName: row.display_name,
+  };
+}
+
+function isUniqueConstraint(error: unknown): boolean {
+  return error instanceof Error && /unique constraint failed/i.test(error.message);
+}
+
+function jsonPayload(value: unknown): string | null {
+  return value === undefined ? null : JSON.stringify(value);
+}
+
+function parsePayload(value: string | null): unknown {
+  return value === null ? null : JSON.parse(value);
+}
+
+export function createMemberAuthStore(database: D1Database, now: () => number = Date.now) {
+  const memberById = async (id: string): Promise<MemberRow | null> => database
+    .prepare("SELECT * FROM members WHERE id=?")
+    .bind(id)
+    .first<MemberRow>();
+
+  return {
+    async createMember(input: MemberRegistration): Promise<MemberView> {
+      const timestamp = now();
+      const row: MemberRow = {
+        id: crypto.randomUUID(),
+        username: normalizeUsername(input.username),
+        email: normalizeEmail(input.email),
+        phone: normalizePhone(input.phone),
+        display_name: input.displayName ?? null,
+        password_hash: input.passwordHash,
+        google_subject: null,
+        email_verified_at: input.emailVerifiedAt ?? null,
+        created_at: timestamp,
+        updated_at: timestamp,
+        last_login_at: null,
+        disabled: 0,
+      };
+      try {
+        await database.prepare(`INSERT INTO members (
+          id, username, email, phone, display_name, password_hash, google_subject,
+          email_verified_at, created_at, updated_at, last_login_at, disabled
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+          .bind(
+            row.id, row.username, row.email, row.phone, row.display_name, row.password_hash,
+            row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
+            row.last_login_at, row.disabled,
+          )
+          .run();
+      } catch (error) {
+        if (isUniqueConstraint(error)) throw new MemberConflictError();
+        throw error;
+      }
+      return toMemberView(row);
+    },
+
+    async findByIdentifier(identifier: string): Promise<MemberRow | null> {
+      const normalized = identifier.trim().toLowerCase();
+      return database.prepare("SELECT * FROM members WHERE email=? OR username=?")
+        .bind(normalized, normalized)
+        .first<MemberRow>();
+    },
+
+    async findByEmail(email: string): Promise<MemberRow | null> {
+      return database.prepare("SELECT * FROM members WHERE email=?")
+        .bind(normalizeEmail(email))
+        .first<MemberRow>();
+    },
+
+    async findByGoogleSubject(subject: string): Promise<MemberRow | null> {
+      return database.prepare("SELECT * FROM members WHERE google_subject=?")
+        .bind(subject)
+        .first<MemberRow>();
+    },
+
+    async getPublicMember(id: string): Promise<MemberView | null> {
+      const row = await memberById(id);
+      return row ? toMemberView(row) : null;
+    },
+
+    async createSession(memberId: string, _remember: boolean, ttlMs = SESSION_MAX_AGE_SECONDS * 1_000): Promise<AuthSession> {
+      const token = await createOpaqueToken();
+      const timestamp = now();
+      const expiresAt = timestamp + ttlMs;
+      await database.prepare(`INSERT INTO auth_sessions
+        (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
+        VALUES (?, ?, ?, ?, ?, NULL)`)
+        .bind(token.hash, memberId, timestamp, expiresAt, timestamp)
+        .run();
+      return { raw: token.raw, expiresAt };
+    },
+
+    async readSession(raw: string): Promise<MemberView | null> {
+      const hash = await digestToken(raw);
+      const timestamp = now();
+      const session = await database.prepare(`SELECT member_id FROM auth_sessions
+        WHERE token_hash=? AND revoked_at IS NULL AND expires_at > ?`)
+        .bind(hash, timestamp)
+        .first<{ member_id: string }>();
+      if (!session) return null;
+      await database.prepare("UPDATE auth_sessions SET last_seen_at=? WHERE token_hash=?")
+        .bind(timestamp, hash)
+        .run();
+      const member = await memberById(session.member_id);
+      return member && member.disabled === 0 ? toMemberView(member) : null;
+    },
+
+    async revokeSession(raw: string): Promise<void> {
+      await database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE token_hash=? AND revoked_at IS NULL")
+        .bind(now(), await digestToken(raw))
+        .run();
+    },
+
+    async revokeAllSessions(memberId: string): Promise<void> {
+      await database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND revoked_at IS NULL")
+        .bind(now(), memberId)
+        .run();
+    },
+
+    async createToken(input: { kind: AuthTokenKind; memberId?: string | null; payload?: unknown; ttlMs: number }): Promise<AuthToken> {
+      const token = await createOpaqueToken();
+      const timestamp = now();
+      const expiresAt = timestamp + input.ttlMs;
+      await database.prepare(`INSERT INTO auth_tokens
+        (token_hash, kind, member_id, payload, created_at, expires_at, consumed_at)
+        VALUES (?, ?, ?, ?, ?, ?, NULL)`)
+        .bind(token.hash, input.kind, input.memberId ?? null, jsonPayload(input.payload), timestamp, expiresAt)
+        .run();
+      return { raw: token.raw, expiresAt };
+    },
+
+    async consumeToken(kind: AuthTokenKind, raw: string): Promise<AuthTokenPayload | null> {
+      const hash = await digestToken(raw);
+      const timestamp = now();
+      const update = await database.prepare(`UPDATE auth_tokens SET consumed_at=?
+        WHERE token_hash=? AND kind=? AND consumed_at IS NULL AND expires_at > ?`)
+        .bind(timestamp, hash, kind, timestamp)
+        .run();
+      if (Number(update.meta.changes) !== 1) return null;
+      const row = await database.prepare("SELECT member_id, payload FROM auth_tokens WHERE token_hash=?")
+        .bind(hash)
+        .first<{ member_id: string | null; payload: string | null }>();
+      return row ? { kind, memberId: row.member_id, payload: parsePayload(row.payload) } : null;
+    },
+
+    async createOAuthState(input: OAuthStatePayload & { ttlMs: number }): Promise<AuthToken> {
+      const token = await createOpaqueToken();
+      const timestamp = now();
+      const expiresAt = timestamp + input.ttlMs;
+      await database.prepare(`INSERT INTO oauth_states
+        (state_hash, code_verifier, return_path, created_at, expires_at, consumed_at)
+        VALUES (?, ?, ?, ?, ?, NULL)`)
+        .bind(token.hash, input.codeVerifier, safeRelativeReturnPath(input.returnPath), timestamp, expiresAt)
+        .run();
+      return { raw: token.raw, expiresAt };
+    },
+
+    async consumeOAuthState(raw: string): Promise<OAuthStatePayload | null> {
+      const hash = await digestToken(raw);
+      const timestamp = now();
+      const update = await database.prepare(`UPDATE oauth_states SET consumed_at=?
+        WHERE state_hash=? AND consumed_at IS NULL AND expires_at > ?`)
+        .bind(timestamp, hash, timestamp)
+        .run();
+      if (Number(update.meta.changes) !== 1) return null;
+      return database.prepare("SELECT code_verifier, return_path FROM oauth_states WHERE state_hash=?")
+        .bind(hash)
+        .first<{ code_verifier: string; return_path: string }>()
+        .then((row) => row ? { codeVerifier: row.code_verifier, returnPath: row.return_path } : null);
+    },
+
+    async linkGoogleSubject(memberId: string, subject: string): Promise<void> {
+      try {
+        await database.prepare("UPDATE members SET google_subject=?, updated_at=? WHERE id=?")
+          .bind(subject, now(), memberId)
+          .run();
+      } catch (error) {
+        if (isUniqueConstraint(error)) throw new MemberConflictError();
+        throw error;
+      }
+    },
+
+    async markVerified(memberId: string): Promise<void> {
+      const timestamp = now();
+      await database.prepare("UPDATE members SET email_verified_at=?, updated_at=? WHERE id=?")
+        .bind(timestamp, timestamp, memberId)
+        .run();
+    },
+
+    async markLastLogin(memberId: string): Promise<void> {
+      const timestamp = now();
+      await database.prepare("UPDATE members SET last_login_at=?, updated_at=? WHERE id=?")
+        .bind(timestamp, timestamp, memberId)
+        .run();
+    },
+
+    async updatePassword(memberId: string, passwordHash: string): Promise<void> {
+      await database.prepare("UPDATE members SET password_hash=?, updated_at=? WHERE id=?")
+        .bind(passwordHash, now(), memberId)
+        .run();
+    },
+  };
+}
