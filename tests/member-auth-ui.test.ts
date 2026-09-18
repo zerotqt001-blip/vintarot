@@ -29,17 +29,21 @@ test("server entrypoints use the member page projection instead of ChatGPT ident
   assert.match(read("lib/member-auth.ts"), /export async function getMemberFromCookieHeader\(database: D1Database, cookieHeader: string \| null\)/);
 });
 
-test("drawing and individual card detail pages require a member session", () => {
-  const room = read("app/room/page.tsx");
+test("Room stays public until the first draw while card detail remains protected", () => {
+  const roomPage = read("app/room/page.tsx");
+  const room = read("app/room/room.tsx");
   const cardDetail = read("app/guidebook/[card]/page.tsx");
   const helper = read("lib/member-page.ts");
 
-  assert.match(helper, /export async function requirePageMember\(returnTo: string\)/);
-  assert.match(helper, /redirect\(/);
-  assert.match(room, /const returnTo\s*=[\s\S]*["']\/room["']/);
-  assert.match(room, /requirePageMember\(returnTo\)/);
+  assert.match(roomPage, /getPageMember/);
+  assert.doesNotMatch(roomPage, /requirePageMember/);
+  assert.match(roomPage, /toMemberShellUser\(await getPageMember\(\)\)/);
+  assert.match(room, /function ensureMemberBeforeDraw\(\)/);
+  assert.match(room, /sessionStorage/);
+  assert.match(room, /window\.location\.assign\(.*\/auth\?return_to=/);
+  assert.match(room, /if\(!ensureMemberBeforeDraw\(\)\)return;/);
   assert.match(cardDetail, /requirePageMember\(`\/guidebook\/\$\{slug\}`\)/);
-  assert.match(helper, /safeRelativeReturnPath/);
+  assert.match(helper, /export async function requirePageMember\(returnTo: string\)/);
 });
 
 test("anonymous page identity skips runtime database initialization", () => {
