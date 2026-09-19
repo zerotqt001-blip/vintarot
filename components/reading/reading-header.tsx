@@ -22,13 +22,13 @@ export function ReadingHeader({ session, t }: ReadingHeaderProps) {
       {(session.spreadName || session.deckName) && (
         <dl className="reading-header__meta mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[0.68rem] tracking-[0.14em] text-antique-gold/85 uppercase">
           {session.spreadName && (
-            <div>
+            <div className="reading-header__positions" data-reading-meta="positions">
               <dt className="sr-only">{t("reading.spreadLabel")}</dt>
               <dd>{session.spreadName}</dd>
             </div>
           )}
           {session.deckName && (
-            <div>
+            <div className="reading-header__deck" data-reading-meta="deck">
               <dt className="sr-only">{t("reading.deckLabel")}</dt>
               <dd>{session.deckName}</dd>
             </div>
