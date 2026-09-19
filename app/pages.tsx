@@ -28,6 +28,7 @@ import {
   RotateCcw,
   Sparkles,
   Users,
+  LogOut,
 } from "lucide-react";
 
 export function CardFace({
@@ -207,7 +208,7 @@ export default function Pages({
   user,
 }: {
   section: string;
-  user: { name: string; email: string } | null;
+  user: { name: string; email: string; phone?: string } | null;
 }) {
   const { t } = useLanguage();
   if (section === "decks" || section === "guidebook") return <Library />;
@@ -217,7 +218,10 @@ export default function Pages({
   if (section === "community") return <Practice user={user} />;
   if (section === "profile") return <Profile user={user} />;
   if (section === "book") return <Book />;
-  if (!user) return <SignIn />;
+  if (!user) {
+    const returnTo = section === "bookings" ? "/bookings" : section === "invites" ? "/invites" : "/profile";
+    return <SignIn returnTo={returnTo} />;
+  }
   if (section === "bookings")
     return (
       <>
@@ -881,6 +885,7 @@ function Profile({ user }: { user: any }) {
   const [timezone, setTimezone] = useState("Asia/Ho_Chi_Minh");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
     if (user)
       api("records?kind=profile")
@@ -894,6 +899,20 @@ function Profile({ user }: { user: any }) {
         })
         .catch((error) => setMessage(error.message));
   }, [user]);
+
+  async function logout() {
+    setLoggingOut(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+      if (!response.ok) throw new Error();
+      window.location.assign("/");
+    } catch {
+      setLoggingOut(false);
+      setMessage(t("auth.genericError"));
+    }
+  }
+
   if (!user) return <SignIn returnTo="/profile" />;
   return (
     <>
@@ -910,10 +929,17 @@ function Profile({ user }: { user: any }) {
         <div className="profile-avatar"><Moon size={43} /></div>
         <label>{t("pages.displayName")}<input value={name} required maxLength={80} onChange={(event) => setName(event.target.value)} /></label>
         <label>{t("pages.email")}<input readOnly value={user.email} /></label>
+        <label>{t("pages.phone")}<input readOnly value={user.phone || ""} /></label>
         <label>{t("pages.aboutYou")}<textarea value={bio} rows={4} onChange={(event) => setBio(event.target.value)} /></label>
         <label>{t("common.language")}<select value={locale} onChange={(event) => setLocale(event.target.value === "vi" ? "vi" : "en")}><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label>
         <label>{t("pages.timezone")}<select value={timezone} onChange={(event) => setTimezone(event.target.value)}>{["Asia/Ho_Chi_Minh", "Asia/Bangkok", "Asia/Singapore", "Europe/London", "America/New_York", "America/Los_Angeles", "UTC"].map((zone) => <option key={zone}>{zone}</option>)}</select></label>
-        <button className="button black" disabled={busy}>{busy ? t("common.saving") : t("pages.saveProfile")}</button>
+        <div className="profile-actions">
+          <button className="button black" disabled={busy || loggingOut}>{busy ? t("common.saving") : t("pages.saveProfile")}</button>
+          <button className="button profile-logout" type="button" disabled={busy || loggingOut} aria-busy={loggingOut} onClick={() => void logout()}>
+            <LogOut size={17} strokeWidth={1.5} />
+            {t("pages.logOut")}
+          </button>
+        </div>
         <p role="status">{message}</p>
       </form>
       <div className="service-status">

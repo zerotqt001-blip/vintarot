@@ -77,25 +77,35 @@ export function createSqliteD1Database(sqlite: SqliteConnection): D1Database {
     return statement as unknown as D1PreparedStatement;
   };
 
+  let batchTail: Promise<void> = Promise.resolve();
+
   return {
     prepare,
     batch: async <T = unknown>(statements: D1PreparedStatement[]) => {
-      const results: D1Result<T>[] = [];
-      sqlite.exec("BEGIN IMMEDIATE");
-      try {
-        for (const statement of statements) {
-          results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
-        }
-        sqlite.exec("COMMIT");
-      } catch (error) {
+      const operation = batchTail.then(async () => {
+        const results: D1Result<T>[] = [];
+        let transactionStarted = false;
         try {
-          sqlite.exec("ROLLBACK");
-        } catch {
-          // Preserve the original statement failure.
+          sqlite.exec("BEGIN IMMEDIATE");
+          transactionStarted = true;
+          for (const statement of statements) {
+            results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
+          }
+          sqlite.exec("COMMIT");
+        } catch (error) {
+          if (transactionStarted) {
+            try {
+              sqlite.exec("ROLLBACK");
+            } catch {
+              // Preserve the original statement failure.
+            }
+          }
+          throw error;
         }
-        throw error;
-      }
-      return results;
+        return results;
+      });
+      batchTail = operation.then(() => undefined, () => undefined);
+      return operation;
     },
   } as unknown as D1Database;
 }

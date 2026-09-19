@@ -34,3 +34,10 @@ test("logged-out profile entrypoints resolve through the member auth screen", ()
   assert.match(shell, /profileHref\s*=\s*user\s*\?\s*[\s\S]*?\/auth\?return_to=\/profile/);
   assert.match(room, /profileHref\s*=\s*user\s*\?\s*[\s\S]*?\/auth\?return_to=\/profile/);
 });
+
+test("protected page entrypoints preserve their requested return paths", () => {
+  const pages = readFileSync(resolve(root, "app/pages.tsx"), "utf8");
+
+  assert.match(pages, /section\s*===\s*["']bookings["']\s*\?\s*["']\/bookings["']/);
+  assert.match(pages, /section\s*===\s*["']invites["']\s*\?\s*["']\/invites["']/);
+});
