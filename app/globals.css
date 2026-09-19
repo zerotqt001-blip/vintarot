@@ -1074,6 +1074,65 @@
 @keyframes room-reading-panel-mobile-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.room-reading-panel-shell,.room-reading-panel-shell *,.room-reading-panel-shell *::before,.room-reading-panel-shell *::after{animation:none!important;transition:none!important}.room-reading-panel-shell details[open] summary{transition:none!important}}
 
+/* Home mobile polish: keep the supplied celestial artwork and align every CTA to its axis. */
+.home-shell{
+  --home-artwork-center-y:46%;
+  --home-portal-size:172px;
+}
+.home-shell .cosmic-sky{background-position:center var(--home-artwork-center-y)}
+.home-shell .ritual{
+  width:var(--home-portal-size);
+  height:var(--home-portal-size);
+  overflow:visible;
+  isolation:isolate;
+  border-color:transparent;
+  touch-action:manipulation;
+}
+.home-shell .ritual::before,.home-shell .ritual::after{content:"";position:absolute;z-index:0;border-radius:50%;pointer-events:none}
+.home-shell .ritual::before{inset:-11px;border:1px solid rgba(229,203,152,.46);box-shadow:0 0 0 7px rgba(201,166,107,.05),0 0 28px rgba(201,166,107,.18)}
+.home-shell .ritual::after{inset:10px;border:1px solid rgba(229,203,152,.34);box-shadow:inset 0 0 18px rgba(201,166,107,.08)}
+.home-shell .ritual-markers{position:absolute;z-index:1;inset:0;left:auto;right:auto;top:auto;bottom:auto;transform:none;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 50% 4%,var(--na-gold-bright) 0 1.5px,transparent 2.8px),radial-gradient(circle at 96% 50%,var(--na-gold-light) 0 1.2px,transparent 2.5px),radial-gradient(circle at 50% 96%,var(--na-gold-bright) 0 1.5px,transparent 2.8px),radial-gradient(circle at 4% 50%,var(--na-gold-light) 0 1.2px,transparent 2.5px);opacity:.72}
+.home-shell .ritual>svg{position:relative;z-index:2}
+.home-shell .ritual:hover{transform:scale(1.035);box-shadow:0 0 0 1px rgba(229,203,152,.2),0 0 48px rgba(201,166,107,.32),inset 0 0 32px rgba(201,166,107,.1)}
+.home-shell .ritual:active{transform:scale(.98);box-shadow:0 0 0 1px rgba(229,203,152,.26),0 0 58px rgba(201,166,107,.38),inset 0 0 34px rgba(201,166,107,.13)}
+.home-shell .ritual:focus-visible{outline:2px solid var(--na-gold-bright);outline-offset:8px}
+.home-shell .nav-orb{position:relative;isolation:isolate;overflow:visible}
+.home-shell .nav-orb::before,.home-shell .nav-orb::after{content:"";position:absolute;z-index:0;border-radius:50%;pointer-events:none}
+.home-shell .nav-orb::before{inset:-3px;border:1px solid rgba(229,203,152,.32)}
+.home-shell .nav-orb::after{inset:-7px;border:1px solid rgba(229,203,152,.16);border-left-color:transparent;border-right-color:rgba(229,203,152,.28);transform:rotate(24deg)}
+.home-shell .nav-orb svg{position:relative;z-index:2;width:25px;height:25px}
+.home-shell .main-nav a.active{background:linear-gradient(135deg,rgba(229,203,152,.18),rgba(201,166,107,.06));border:1px solid rgba(229,203,152,.18);box-shadow:inset 0 0 22px rgba(201,166,107,.06)}
+.home-shell .main-nav a.active .nav-orb{box-shadow:0 0 22px rgba(201,166,107,.16),inset 0 0 14px rgba(201,166,107,.08)}
+.home-shell .home-help{position:absolute;top:50%;right:16px;bottom:auto;display:grid;width:40px;height:40px;margin:0;padding:0;place-items:center;transform:translateY(-50%);z-index:3}
+.home-shell .home-help:hover,.home-shell .home-help:focus-visible{transform:translateY(-50%) scale(1.04)}
+.home-shell .home-help:focus-visible{outline:2px solid var(--na-gold-bright);outline-offset:4px}
+
+@media(max-width:700px){
+  .home-shell{--home-artwork-center-y:44%;--home-portal-size:136px}
+  .home-shell .main-nav a{overflow:visible}
+  .home-shell .main-nav .mobile-nav-label{overflow:visible;text-overflow:clip;white-space:nowrap;font-size:clamp(8px,2.45vw,10px);letter-spacing:0}
+  .home-shell .site-sidebar{height:calc(86px + env(safe-area-inset-bottom))!important}
+  .home-shell .main{padding-bottom:calc(114px + env(safe-area-inset-bottom))!important}
+  .home-shell .ritual-hero{height:500px}
+  .home-shell .ritual{margin-top:clamp(32px,8vw,42px)}
+  .home-shell .daily-panel{padding-right:48px;padding-left:48px;background:linear-gradient(145deg,rgba(9,31,55,.88),rgba(3,15,30,.84));box-shadow:0 20px 44px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.03)}
+  .home-shell .daily-cards,.home-shell .daily-quote,.home-shell .daily-panel-link{display:none}
+  .home-shell .home-help{right:10px;width:38px;height:38px}
+}
+@media(max-width:430px){
+  .home-shell{--home-artwork-center-y:43%;--home-portal-size:126px}
+  .home-shell .topbar{padding-inline:8px;gap:6px}
+  .home-shell .brand-lockup .brand-logo-image{width:clamp(118px,34vw,136px)}
+  .home-shell .top-actions{gap:3px}
+  .home-shell .top-actions>button{min-width:30px;padding-inline:6px}
+  .home-shell .top-actions .button.black{min-width:52px;padding-inline:8px}
+  .home-shell .ritual-hero{height:488px}
+  .home-shell .daily-panel{padding-right:42px;padding-left:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-shell .ritual,.home-shell .home-help,.home-shell .nav-orb::after{transition:none!important;animation:none!important}
+}
+
 /* NaTarot brand foundation: stable logo sizing and canonical identity hooks. */
 .brand-logo-link,.brand-logo{display:inline-flex;align-items:center;flex:0 0 auto;color:inherit;text-decoration:none}
 .brand-logo{line-height:0}
