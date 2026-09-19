@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import type { TarotAIProvider } from "../lib/ai/provider";
 import { TarotAIError } from "../lib/ai/provider";
 import type { TarotProviderOutputV3 } from "../lib/ai/types";
@@ -162,7 +163,7 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.readingId, saved?.id);
   assert.equal(result.provider, "openai");
   assert.equal(result.modelName, "openai:test-model");
-  assert.equal(result.promptVersion, "tarot-reading-v4.2");
+  assert.equal(result.promptVersion, TAROT_PROMPT_VERSION);
   assert.match(result.reading.directAnswer, /spread-level direct answer/);
   assert.equal(result.reading.cardEvidence.length, 3);
   assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
@@ -172,7 +173,7 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
   assert.deepEqual(saved?.reading, result.reading);
   assert.equal(saved?.modelName, "openai:test-model");
-  assert.equal(saved?.promptVersion, "tarot-reading-v4.2");
+  assert.equal(saved?.promptVersion, TAROT_PROMPT_VERSION);
 });
 
 test("loads the owner's stored template, exact cards, and requested-locale meaning pairs", async () => {
