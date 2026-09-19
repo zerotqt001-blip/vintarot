@@ -3,8 +3,15 @@ import type { TarotAIEnvironment } from "./ai/factory";
 import { createSqliteD1Database, type SqliteConnection } from "./sqlite-d1";
 
 export type RuntimeEnvironment = TarotAIEnvironment & {
+  NODE_ENV?: string;
   DB?: D1Database;
   NATAROT_DB_PATH?: string;
+  RESEND_API_KEY?: string;
+  NATAROT_EMAIL_FROM?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  GOOGLE_REDIRECT_URI?: string;
+  NATAROT_TRUSTED_PROXY?: string;
 };
 
 type RuntimeContext = {
