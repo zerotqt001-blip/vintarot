@@ -10,8 +10,8 @@ import {
 
 const escaped = (value: string) => new RegExp(value.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&"));
 
-test("v4.2.1 publishes a natural, customer-first reader voice contract", () => {
-  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.2.1");
+test("v4.2.2 publishes a natural, customer-first reader voice contract", () => {
+  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.2.2");
   for (const line of [
     "Write in natural, contemporary Vietnamese when target_language is Vietnamese: use everyday syntax a skilled human reader would say aloud, with clear concrete words rather than ornamental or translated-English phrasing.",
     "Prefer the customer's situation and the answer over Tarot terminology; mention cards after the situation is clear.",
@@ -36,10 +36,19 @@ test("v4.2.1 publishes a natural, customer-first reader voice contract", () => {
     "Before returning JSON, silently check each customer-facing sentence by asking whether an experienced Vietnamese Tarot reader would say it aloud to a client; simplify, rewrite, or remove any sentence that only sounds insightful instead of telling the customer something concrete.",
     "Make direct_answer follow answer → why → what matters now; do not explain one card after another in the primary reading.",
     "Keep next_steps practical and proportionate; prefer choosing one delayed task and deciding the next move over invented numeric durations or productivity routines.",
+    "Stop trying to sound profound: when simple Vietnamese communicates the same insight, always choose the simpler Vietnamese.",
+    "Write as if an experienced Vietnamese Tarot reader were sitting across from the customer and explaining the reading aloud; before finalizing each sentence, silently ask whether you would naturally say it, not whether it would look impressive in an article.",
+    "Do not invent poetic imagery merely to make an insight sound deeper; avoid constructed metaphors such as 'mắt bị hút về phía đau', 'phần của chính bạn bị bỏ lại phía sau', 'một điều còn nguyên vẹn', 'một nhịp tiến', 'công việc sống lại', 'đà tự quay lại', or 'gọi tên điều đã mất' unless the expression is genuinely the clearest natural wording.",
+    "Never invent a timeframe unless the user's question or provided context explicitly contains one; Tarot symbolism alone is not sufficient justification for minutes, hours, days, weeks, months, 'tuần này', 'tuần vừa rồi', or an arbitrary deadline, and the customer may choose their own timeframe.",
+    "Target 2 to 3 direct_answer paragraphs; do not produce a fourth paragraph unless essential information would otherwise be lost. Give paragraph one the answer, paragraph two the main situation or pattern, and paragraph three what matters now only if needed; keep secondary insights in personal_insights.",
+    "Before emitting each personal_insight, compare it semantically with direct_answer and omit it if the customer would not learn something new; one strong insight is better than two overlapping insights.",
+    "Treat deeper_reading as an exception and default it to null; only populate it when a genuinely new relationship among multiple parts of the reading is not already present in direct_answer, personal_insights, or next_steps.",
+    "Keep next_steps concrete and remove invented productivity mechanics such as artificial deadlines, arbitrary durations, and numerical routines unless supplied by user context.",
+    "Use ordinary Vietnamese for insight and action titles; prefer clear titles such as 'Bạn đang nhìn nhiều vào điều chưa thành công', 'Bạn đang cho đi nhiều hơn mức cần thiết', or 'Bạn chưa nói ra điều mình đã biết' over titles constructed to sound profound.",
   ]) assert.match(TAROT_SYSTEM_PROMPT, escaped(line));
 });
 
-test("v4.2.1 preserves the v4.1 safety and structured-output boundaries", () => {
+test("v4.2.2 preserves the v4.1 safety and structured-output boundaries", () => {
   assert.match(TAROT_SYSTEM_PROMPT, /feeling is not intention, action, capacity, or commitment/);
   assert.match(TAROT_SYSTEM_PROMPT, /Never suggest 'rút thêm lá', 'draw another card', 'ask the cards again', or 'repeat the reading'/);
   assert.match(TAROT_SYSTEM_PROMPT, /Return exactly one card_evidence item for each supplied drawn card/);
