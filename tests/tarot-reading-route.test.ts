@@ -127,6 +127,39 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
   }
 });
 
+test("logs only safe invalid-response diagnostics", async () => {
+  const events: unknown[] = [];
+  const privateDetail = "private provider prose and customer question";
+  const error = new TarotAIError("invalid_response", privateDetail, { retryable: true });
+  Object.assign(error, {
+    failureStage: "position_key_invalid",
+    expectedCardCount: 3,
+    actualCardEvidenceCount: 3,
+    schemaIssuePath: "card_evidence.0.position_key",
+    schemaIssueCode: "custom",
+  });
+
+  const response = await handleTarotReadingRoute({
+    loadBody: async () => ({ session_id: "session-runtime", locale: "vi" }),
+    execute: async (_input, metadata) => {
+      metadata.provider = "deepseek";
+      metadata.modelName = "deepseek:deepseek-flash";
+      throw error;
+    },
+    log: (event) => events.push(event),
+    now: () => 50,
+  });
+
+  assert.equal(response.status, 503);
+  const event = events[0] as Record<string, unknown>;
+  assert.equal(event.failureStage, "position_key_invalid");
+  assert.equal(event.expectedCardCount, 3);
+  assert.equal(event.actualCardEvidenceCount, 3);
+  assert.equal(event.schemaIssuePath, "card_evidence.0.position_key");
+  assert.equal(event.schemaIssueCode, "custom");
+  assert.doesNotMatch(JSON.stringify(events), /private provider prose|customer question/);
+});
+
 test("maps not-found, incomplete, and persistence service failures to their HTTP contracts", async (t) => {
   const cases = [
     ["not_found", 404, "Reading session not found."],

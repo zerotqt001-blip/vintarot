@@ -629,3 +629,35 @@ test("maps malformed V4 output to a safe retryable invalid response with an inte
       && error.cause.message.includes("direct_answer"),
   );
 });
+
+test("classifies invalid provider responses without retaining private content", async () => {
+  const privateQuestion = "private customer question marker";
+  const cases = [
+    ["provider_http_json_invalid", () => jsonReaderResponse(async () => { throw new SyntaxError("private provider body"); })],
+    ["provider_envelope_invalid", () => jsonResponse({ choices: [] })],
+    ["provider_content_missing", () => jsonResponse({ choices: [{ message: {} }] })],
+    ["provider_content_json_invalid", () => jsonResponse({ choices: [{ message: { content: "private provider prose" } }] })],
+    ["reading_schema_invalid", () => jsonResponse(providerEnvelope("deepseek", { ...providerOutput(), direct_answer: "" }))],
+    ["card_evidence_count_invalid", () => jsonResponse(providerEnvelope("deepseek", providerOutput(tarotReadingQualityAssertions.cardIds.slice(0, 2))))],
+    ["card_identity_invalid", () => jsonResponse(providerEnvelope("deepseek", providerOutput([tarotReadingQualityAssertions.cardIds[0], "private-provider-card-id", tarotReadingQualityAssertions.cardIds[2]])))],
+    ["position_key_invalid", () => {
+      const output = providerOutput();
+      output.card_evidence[0].position_key = "private-provider-position";
+      return jsonResponse(providerEnvelope("deepseek", output));
+    }],
+  ] as const;
+
+  for (const [stage, responseFactory] of cases) {
+    const provider = createTarotAIProvider(providerEnv("deepseek"), { fetch: async () => responseFactory() });
+    await assert.rejects(
+      provider.generateReading({ ...tarotReadingQualityFixture, question: privateQuestion }),
+      (error) => {
+        assert.ok(error instanceof TarotAIError);
+        assert.equal(error.failureStage, stage);
+        assert.doesNotMatch(error.message, /private customer question marker|private provider body|private provider prose|private-provider-card-id|private-provider-position/);
+        assert.doesNotMatch(JSON.stringify(error), /private customer question marker|private provider body|private provider prose|private-provider-card-id|private-provider-position/);
+        return true;
+      },
+    );
+  }
+});

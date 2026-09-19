@@ -297,6 +297,101 @@ test("classifies persistence failure after one provider call", async () => {
   assert.equal(providerCalls, 1);
 });
 
+test("retries one invalid provider response, reuses the same context, and persists once", async () => {
+  let providerCalls = 0;
+  let saveCalls = 0;
+  const inputs: unknown[] = [];
+  const events: unknown[] = [];
+  const firstError = new TarotAIError("invalid_response", "safe invalid response", { retryable: true });
+  Object.assign(firstError, {
+    failureStage: "card_evidence_count_invalid",
+    expectedCardCount: 3,
+    actualCardEvidenceCount: 2,
+  });
+
+  const result = await generateTarotReading({
+    repository: repository({ saveReading: async () => { saveCalls += 1; return "saved-reading"; } }),
+    ownerId: "user-service",
+    sessionId: session.id,
+    locale: "en",
+    provider: provider({
+      generateReading: async (input) => {
+        providerCalls += 1;
+        inputs.push(input);
+        if (providerCalls === 1) throw firstError;
+        return provider().generateReading(input);
+      },
+    }),
+    onProviderFailure: (event) => events.push(event),
+  });
+
+  assert.equal(providerCalls, 2);
+  assert.equal(saveCalls, 1);
+  assert.strictEqual(inputs[0], inputs[1]);
+  assert.equal(result.reading.cardEvidence.length, 3);
+  assert.equal(events.length, 1);
+  const event = events[0] as Record<string, unknown>;
+  assert.equal(event.attemptNumber, 1);
+  assert.equal(event.failureStage, "card_evidence_count_invalid");
+  assert.equal(event.expectedCardCount, 3);
+  assert.equal(event.actualCardEvidenceCount, 2);
+  assert.equal(event.retryScheduled, true);
+  assert.doesNotMatch(JSON.stringify(events), /What is the next useful step|Keep this reflective|spread-level direct answer|Choose one practical next step/);
+});
+
+test("returns the safe failure after exactly two invalid provider responses without persistence", async () => {
+  let providerCalls = 0;
+  let saveCalls = 0;
+  const firstError = new TarotAIError("invalid_response", "first safe invalid response", { retryable: true });
+  Object.assign(firstError, { failureStage: "card_evidence_count_invalid", expectedCardCount: 3, actualCardEvidenceCount: 2 });
+  const secondError = new TarotAIError("invalid_response", "second safe invalid response", { retryable: true });
+  Object.assign(secondError, { failureStage: "position_key_invalid", expectedCardCount: 3, actualCardEvidenceCount: 3 });
+  const events: unknown[] = [];
+
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository({ saveReading: async () => { saveCalls += 1; return "saved-reading"; } }),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({
+        generateReading: async () => {
+          providerCalls += 1;
+          throw providerCalls === 1 ? firstError : secondError;
+        },
+      }),
+      onProviderFailure: (event) => events.push(event),
+    }),
+    (error) => error === secondError,
+  );
+
+  assert.equal(providerCalls, 2);
+  assert.equal(saveCalls, 0);
+  assert.deepEqual(events.map((event) => [
+    (event as Record<string, unknown>).attemptNumber,
+    (event as Record<string, unknown>).failureStage,
+    (event as Record<string, unknown>).retryScheduled,
+  ]), [[1, "card_evidence_count_invalid", true], [2, "position_key_invalid", false]]);
+});
+
+test("does not retry non-invalid-response provider errors", async () => {
+  for (const code of ["configuration", "upstream", "timeout"] as const) {
+    let providerCalls = 0;
+    const expected = new TarotAIError(code, `safe ${code}`, { retryable: code !== "configuration" });
+    await assert.rejects(
+      generateTarotReading({
+        repository: repository(),
+        ownerId: "user-service",
+        sessionId: session.id,
+        locale: "en",
+        provider: provider({ generateReading: async () => { providerCalls += 1; throw expected; } }),
+      }),
+      (error) => error === expected,
+    );
+    assert.equal(providerCalls, 1);
+  }
+});
+
 test("fails before provider work when a historical template or meaning pair is missing", async () => {
   let calls = 0;
   const countingProvider = provider({ generateReading: async () => { calls += 1; throw new Error("should not run"); } });
