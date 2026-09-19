@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/panel";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, guidebookMapLayout, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
+import { SavedReadingJournal } from "@/components/reading/saved-reading-journal";
 import {
   Dialog,
   DialogContent,
@@ -722,6 +723,7 @@ function Journal({ user }: { user: any }) {
           {t("pages.physicalEntry")}
         </button>
       </div>
+      <SavedReadingJournal />
       <p role="status" className="status">{message}</p>
       {loading ? (
         <p className="empty">{t("pages.openingJournal")}</p>

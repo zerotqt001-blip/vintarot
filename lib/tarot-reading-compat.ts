@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TarotLocale, TarotReadingCardContext, TarotReadingPayload } from "./ai/types";
+import type { TarotLocale, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 import { assertPersonalOpening, tarotReadingPayloadSchema } from "./tarot-interpretation";
 
 export type StoredReadingRow = {
@@ -62,7 +62,7 @@ function parseJson(value: string, field: string): unknown {
 
 function expectedCardEvidence(
   evidence: Array<{ readingCardId: string; interpretation: string; positionKey?: string }>,
-  expectedCards: TarotReadingCardContext[],
+  expectedCards: TarotReadingCardIdentity[],
 ): TarotReadingPayload["cardEvidence"] {
   const expectedIds = expectedCards.map((card) => card.readingCardId);
   if (expectedIds.length === 0 || expectedIds.length > 10 || new Set(expectedIds).size !== expectedIds.length) {
@@ -92,7 +92,7 @@ function expectedCardEvidence(
   });
 }
 
-function parseNormalizedPayload(row: StoredReadingRow, expectedCards: TarotReadingCardContext[]): TarotReadingPayload {
+function parseNormalizedPayload(row: StoredReadingRow, expectedCards: TarotReadingCardIdentity[]): TarotReadingPayload {
   const parsed = tarotReadingPayloadSchema.safeParse(parseJson(row.readingPayload!, "reading_payload"));
   if (!parsed.success) {
     throw new TarotReadingCompatibilityError("Stored Tarot reading payload does not match the normalized contract.", { cause: parsed.error });
@@ -112,7 +112,7 @@ function parseNormalizedPayload(row: StoredReadingRow, expectedCards: TarotReadi
   };
 }
 
-function parseLegacyPayload(row: StoredReadingRow, expectedCards: TarotReadingCardContext[], locale: TarotLocale): TarotReadingPayload {
+function parseLegacyPayload(row: StoredReadingRow, expectedCards: TarotReadingCardIdentity[], locale: TarotLocale): TarotReadingPayload {
   const rawCards = parseJson(row.cardReadings, "card_readings");
   if (!Array.isArray(rawCards)) {
     throw new TarotReadingCompatibilityError("Legacy Tarot card readings must be an array.");
@@ -177,7 +177,7 @@ export function serializeLegacyReadingFields(reading: TarotReadingPayload): {
   };
 }
 
-export function parseStoredReading(row: StoredReadingRow, expectedCards: TarotReadingCardContext[], locale: TarotLocale): TarotReadingPayload {
+export function parseStoredReading(row: StoredReadingRow, expectedCards: TarotReadingCardIdentity[], locale: TarotLocale): TarotReadingPayload {
   if (row.readingPayload !== null) return parseNormalizedPayload(row, expectedCards);
   return parseLegacyPayload(row, expectedCards, locale);
 }

@@ -86,6 +86,7 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
     });
     return new Response(JSON.stringify({
       session_id: result.sessionId,
+      reading_id: result.readingId,
       locale: result.locale,
       source: result.source,
       provider: result.provider,

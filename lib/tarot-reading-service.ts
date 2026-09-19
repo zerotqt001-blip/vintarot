@@ -28,6 +28,7 @@ export type GenerateTarotReadingArgs = {
 };
 
 export type GeneratedTarotReading = {
+  readingId: string;
   sessionId: string;
   locale: TarotLocale;
   source: "ai";
@@ -78,9 +79,10 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
   }
 
   const modelName = `${args.provider.id}:${args.provider.model}`;
+  const readingId = globalThis.crypto.randomUUID();
   try {
     await args.repository.saveReading({
-      id: globalThis.crypto.randomUUID(),
+      id: readingId,
       sessionId: args.sessionId,
       reading,
       modelName,
@@ -91,6 +93,7 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
   }
 
   return {
+    readingId,
     sessionId: args.sessionId,
     locale: args.locale,
     source: "ai",

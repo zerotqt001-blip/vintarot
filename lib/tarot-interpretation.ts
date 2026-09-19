@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TarotLocale, TarotOrientation, TarotReadingCardContext, TarotReadingPayload } from "./ai/types";
+import type { TarotLocale, TarotOrientation, TarotReadingCardContext, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 
 export { TAROT_PROMPT_VERSION as PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 export type { TarotReadingPayload } from "./ai/types";
@@ -100,7 +100,7 @@ function startsWithPhrase(value: string, phrase: string): boolean {
   return next.length === 0 || /^[\s,:;.!?—–-]/u.test(next);
 }
 
-export function assertPersonalOpening(value: string, expectedCards: TarotReadingCardContext[]): void {
+export function assertPersonalOpening(value: string, expectedCards: TarotReadingCardIdentity[]): void {
   const opening = openingText(value);
   if (openingMechanicsPattern.test(opening)) {
     throw new Error("direct_answer must begin with the reader's situation, not spread mechanics");

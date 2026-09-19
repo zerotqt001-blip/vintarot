@@ -31,6 +31,7 @@ export type ReadingPanelProps = {
   artworkByReadingCardId: Record<string, ReadingArtwork>;
   t: ReadingTranslator;
   isLoading?: boolean;
+  isSaving?: boolean;
   error?: string | null;
   onClose?: () => void;
   onSave?: () => void;

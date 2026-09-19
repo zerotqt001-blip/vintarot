@@ -60,6 +60,8 @@ export type TarotReadingCardContext = {
   knowledge: { upright: TarotMeaningEvidence; reversed: TarotMeaningEvidence };
 };
 
+export type TarotReadingCardIdentity = Pick<TarotReadingCardContext, "readingCardId" | "orientation" | "position" | "card">;
+
 export type TarotReadingInput = {
   knowledgeVersion: "5.0";
   domain: string;

@@ -18,6 +18,7 @@ export function ReadingPanel({
   artworkByReadingCardId,
   t,
   isLoading = false,
+  isSaving = false,
   error = null,
   onClose,
   onSave,
@@ -85,9 +86,9 @@ export function ReadingPanel({
             className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
             type="button"
             onClick={onSave}
-            disabled={!reading}
+            disabled={!reading || isSaving}
           >
-            {t("reading.save")}
+            {isSaving ? t("common.saving") : t("reading.save")}
           </button>
         )}
         {onClose && (

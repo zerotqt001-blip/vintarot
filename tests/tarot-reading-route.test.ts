@@ -5,6 +5,7 @@ import { handleTarotReadingRoute } from "../lib/tarot-reading-route";
 import { TarotReadingServiceError } from "../lib/tarot-reading-service";
 
 const canonicalResult = {
+  readingId: "reading-runtime",
   sessionId: "session-runtime",
   locale: "en" as const,
   source: "ai" as const,
@@ -184,6 +185,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
   assert.equal((((responseBody.reading as Record<string, unknown>).cardEvidence as Array<Record<string, unknown>>)[0].position as Record<string, unknown>).key, "present");
   assert.deepEqual(responseBody, {
     session_id: canonicalResult.sessionId,
+    reading_id: canonicalResult.readingId,
     locale: canonicalResult.locale,
     source: "ai",
     provider: "openai",

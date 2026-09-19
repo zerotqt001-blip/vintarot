@@ -159,6 +159,7 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
 
   assert.equal(providerCalls, 1);
   assert.equal(result.source, "ai");
+  assert.equal(result.readingId, saved?.id);
   assert.equal(result.provider, "openai");
   assert.equal(result.modelName, "openai:test-model");
   assert.equal(result.promptVersion, "tarot-reading-v4.1");
@@ -211,7 +212,7 @@ test("loads the owner's stored template, exact cards, and requested-locale meani
     "meaning:major-temperance:en",
   ]);
   assert.deepEqual(providerCardIds, ["wands-eight", "pentacles-ten", "major-temperance"]);
-  assert.deepEqual(Object.keys(result).sort(), ["locale", "modelName", "promptVersion", "provider", "reading", "sessionId", "source"]);
+  assert.deepEqual(Object.keys(result).sort(), ["locale", "modelName", "promptVersion", "provider", "reading", "readingId", "sessionId", "source"]);
   assert.equal(JSON.stringify(result).includes(session.question), false);
   assert.equal(JSON.stringify(result).includes(session.optionalContext), false);
 });
