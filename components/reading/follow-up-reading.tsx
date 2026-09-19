@@ -16,6 +16,7 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
   const [answers, setAnswers] = useState<ReadingFollowUp[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const visibleSuggestions = suggestions.slice(0, 3);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,20 +39,21 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
   }
 
   return (
-    <section className="reading-section reading-section--follow-up brand-reading-section reading-surface px-5 py-6 sm:px-7" aria-labelledby="reading-follow-up">
+    <section className="reading-section reading-section--follow-up brand-reading-section reading-surface px-5 py-8 sm:px-9 sm:py-10" aria-labelledby="reading-follow-up">
       <h3 id="reading-follow-up" className="text-lg font-medium tracking-[-0.02em] text-ivory">
         {t("reading.followUp")}
       </h3>
-      {suggestions.length > 0 && (
-        <div className="mt-4 grid gap-2">
-          {suggestions.map((suggestion) => (
+      <p className="reading-follow-up__hint mt-3 max-w-[55ch] text-sm leading-7 text-ivory/60">{t("reading.followUpHint")}</p>
+      {visibleSuggestions.length > 0 && (
+        <div className="reading-follow-up__suggestions mt-5 grid gap-1">
+          {visibleSuggestions.map((suggestion) => (
             <button
-              className="min-h-11 rounded-xl border border-antique-gold/20 px-4 py-2 text-left text-sm leading-6 text-ivory/75 hover:border-antique-gold/55 hover:text-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy motion-reduce:transition-none"
+              className="flex min-h-12 w-full items-center justify-between gap-4 border-b border-antique-gold/15 py-3 text-left text-sm leading-6 text-ivory/78 transition-colors hover:border-antique-gold/45 hover:text-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-inset motion-reduce:transition-none"
               key={suggestion}
               type="button"
               onClick={() => onQuestionChange(suggestion)}
             >
-              {suggestion}
+              <span>{suggestion}</span><span className="shrink-0 text-lg text-antique-gold" aria-hidden="true">→</span>
             </button>
           ))}
         </div>

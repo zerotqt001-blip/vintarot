@@ -1186,3 +1186,62 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .home-shell .language-select select,.site-shell .language-select select,.room-page .language-select select{width:44px;min-height:31px;padding:6px 3px;font-size:9px}
   .home-shell .avatar,.site-shell .avatar,.room-page .avatar{width:32px;height:32px}
 }
+
+/* The completed reading is an editorial companion to the table, not a modal report. */
+.room-reading-panel-shell{width:min(62vw,1180px);min-width:420px;border-color:rgba(199,166,106,.38);border-radius:18px;background:linear-gradient(150deg,rgba(5,18,32,.985),rgba(4,14,27,.98))}
+.room-page.has-interpretation .tabletop{right:min(62vw,1180px);width:auto}
+.room-page.has-interpretation .room-question{left:4%;right:calc(min(62vw,1180px) + 4%)}
+.room-reading-panel-shell .reading-panel__scroll{padding-bottom:clamp(30px,6vh,72px);scroll-behavior:smooth}
+.room-reading-panel-shell .brand-reading-panel{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.room-reading-panel-shell .brand-reading-header{border-bottom:1px solid rgba(199,166,106,.2);background:linear-gradient(180deg,rgba(16,40,59,.48),rgba(5,18,32,.1));color:var(--color-text)}
+.room-reading-panel-shell .reading-header__title{font-family:'Instrument Serif','Times New Roman',serif;font-size:clamp(2rem,3vw,3rem);font-weight:400;letter-spacing:-.035em}
+.room-reading-panel-shell .reading-header__question{font-family:'Instrument Serif','Times New Roman',serif;font-weight:400;letter-spacing:-.025em}
+.room-reading-panel-shell .reading-header__meta{color:var(--color-gold-bright)}
+.room-reading-panel-shell .brand-reading-section{border:0;background:transparent;color:var(--color-text)}
+.room-reading-panel-shell .reading-section--direct-answer{background:transparent;box-shadow:none}
+.room-reading-panel-shell .reading-takeaway{border:1px solid rgba(199,166,106,.34);border-radius:14px;background:linear-gradient(145deg,rgba(8,24,40,.82),rgba(5,18,32,.96));padding:clamp(20px,2.5vw,32px);box-shadow:inset 0 1px 0 rgba(238,231,216,.04),0 18px 40px rgba(2,8,18,.22)}
+.room-reading-panel-shell .reading-direct-answer__body p{color:var(--color-text);font-size:clamp(1rem,1.1vw,1.08rem);line-height:1.85}
+.room-reading-panel-shell .reading-section>h3{font-family:'Instrument Serif','Times New Roman',serif;font-size:clamp(1.45rem,2vw,1.85rem);font-weight:400;letter-spacing:-.025em;color:var(--color-ivory)}
+.room-reading-panel-shell .reading-editorial-list{margin:0;padding:0;list-style:none}
+.room-reading-panel-shell .reading-editorial-list__item{display:grid;grid-template-columns:2.25rem minmax(0,1fr);gap:1rem;padding:1.15rem 0}
+.room-reading-panel-shell .reading-editorial-list__item+ .reading-editorial-list__item{border-top:1px solid rgba(199,166,106,.15)}
+.room-reading-panel-shell .reading-editorial-list__index{padding-top:.2rem;color:var(--color-gold-bright);font-size:.72rem;letter-spacing:.12em}
+.room-reading-panel-shell .reading-light-disclosure{border-top:1px solid rgba(199,166,106,.15);border-bottom:1px solid rgba(199,166,106,.15)}
+.room-reading-panel-shell .reading-light-disclosure summary{display:flex;align-items:center;justify-content:flex-start;gap:.2rem}
+.room-reading-panel-shell .reading-light-disclosure summary::-webkit-details-marker,.room-reading-panel-shell .reading-evidence-disclosure summary::-webkit-details-marker{display:none}
+.room-reading-panel-shell .reading-light-disclosure summary::marker,.room-reading-panel-shell .reading-evidence-disclosure summary::marker{content:''}
+.room-reading-panel-shell .reading-light-disclosure summary span:last-child{transition:transform .2s ease}
+.room-reading-panel-shell .reading-light-disclosure[open] summary span:last-child{transform:rotate(45deg)}
+.room-reading-panel-shell .reading-evidence-disclosure{position:relative}
+.room-reading-panel-shell .reading-evidence-disclosure summary{position:relative}
+.room-reading-panel-shell .reading-disclosure-mark{position:absolute;right:0;top:50%;transform:translateY(-50%);color:var(--color-gold-bright);font-size:1.3rem;transition:transform .2s ease}
+.room-reading-panel-shell .reading-evidence-disclosure[open] .reading-disclosure-mark{transform:translateY(-50%) rotate(45deg)}
+.room-reading-panel-shell .reading-card-evidence{background:transparent;transition:border-color .2s ease,background .2s ease}
+.room-reading-panel-shell .reading-card-evidence:hover{background:rgba(199,166,106,.06)}
+.room-reading-panel-shell .reading-card-evidence img,.room-reading-panel-shell .reading-card-evidence>span{border-radius:8px}
+.room-reading-panel-shell .reading-follow-up__suggestions button{border-radius:0}
+.room-reading-panel-shell .reading-follow-up-input{border:1px solid rgba(199,166,106,.28);background:rgba(5,18,32,.68)}
+.room-reading-panel-shell .reading-panel__actions{padding-bottom:max(16px,env(safe-area-inset-bottom));background:rgba(5,18,32,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.room-reading-panel-shell .reading-action--primary{background:rgba(199,166,106,.12)}
+
+@media(max-width:1100px) and (min-width:769px){
+  .room-reading-panel-shell{width:min(58vw,720px);min-width:380px}
+  .room-page.has-interpretation .tabletop{right:min(58vw,720px)}
+  .room-page.has-interpretation .room-question{right:calc(min(58vw,720px) + 4%)}
+}
+
+@media(max-width:768px){
+  .room-reading-panel-shell{top:calc(58px + env(safe-area-inset-top));right:0;bottom:0;left:0;width:100vw;min-width:0;max-width:100vw;height:auto;border:0;border-radius:0}
+  .room-page.has-interpretation .tabletop{right:0;width:100%}
+  .room-page.has-interpretation .room-question{left:16px;right:16px}
+  .room-reading-panel-shell .reading-header__question{max-width:22ch;font-size:clamp(1.7rem,8vw,2.35rem)}
+  .room-reading-panel-shell .reading-editorial-list__item{grid-template-columns:2rem minmax(0,1fr);gap:.75rem}
+  .room-reading-panel-shell .reading-card-evidence{grid-template-columns:4rem minmax(0,1fr)}
+  .room-reading-panel-shell .reading-panel__actions{padding-inline:clamp(18px,5vw,28px)}
+  .room-reading-panel-shell .reading-panel__actions .reading-action{flex:1}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .room-reading-panel-shell .reading-panel__scroll{scroll-behavior:auto}
+  .room-reading-panel-shell .reading-light-disclosure summary span:last-child,.room-reading-panel-shell .reading-disclosure-mark{transition:none}
+}

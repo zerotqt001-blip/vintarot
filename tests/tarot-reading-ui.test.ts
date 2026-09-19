@@ -16,7 +16,7 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
     assert.match(panel, new RegExp(component));
   }
 
-  const order = ["ReadingHeader", "DirectAnswer", "PersonalInsights", "ReflectionPrompts", "NextSteps", "TarotEvidence", "FollowUpReading"]
+  const order = ["ReadingHeader", "DirectAnswer", "PersonalInsights", "NextSteps", "ReflectionPrompts", "TarotEvidence", "FollowUpReading"]
     .map((component) => panel.indexOf(`<${component}`));
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
   assert.doesNotMatch(panel, /role=["']tablist/);
@@ -32,11 +32,44 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.match(panel, /reading-panel__scroll/);
   assert.match(panel, /\) : isLoading \?/);
   assert.match(panel, /\) : error \?/);
-  assert.match(panel, /reading-question/);
   assert.match(panel, /deeperReading/);
   assert.match(panel, /reading\.personalInsights\.length > 0/);
   assert.match(panel, /reading\.reflectionPrompts\.length > 0/);
   assert.match(panel, /reading\.nextSteps\.length > 0/);
+});
+
+test("ReadingHeader makes the original question the reading title hierarchy", () => {
+  assert.match(header, /session\.question/);
+  assert.match(header, /reading-header__question/);
+  assert.match(header, /reading-header__meta/);
+  assert.doesNotMatch(panel, /reading-question/);
+});
+
+test("DirectAnswer gives the first deterministic paragraph one editorial takeaway", () => {
+  assert.match(directAnswer, /const \[opening, \.\.\.remaining\] = paragraphs/);
+  assert.match(directAnswer, /reading-takeaway/);
+  assert.match(directAnswer, /reading-direct-answer__body/);
+  assert.match(directAnswer, /remaining\.map/);
+  assert.match(directAnswer, /reading\.takeaway/);
+});
+
+test("Insights and next steps keep all data while making the first two easy to scan", () => {
+  const personalInsights = readFileSync(new URL("../components/reading/personal-insights.tsx", import.meta.url), "utf8");
+  const nextSteps = readFileSync(new URL("../components/reading/next-steps.tsx", import.meta.url), "utf8");
+  for (const component of [personalInsights, nextSteps]) {
+    assert.match(component, /slice\(0, 2\)/);
+    assert.match(component, /items\.slice\(2\)/);
+    assert.match(component, /<details/);
+    assert.match(component, /reading\.showMore/);
+  }
+});
+
+test("Reflection prompts stay secondary inside a collapsed disclosure", () => {
+  const reflection = readFileSync(new URL("../components/reading/reflection-prompts.tsx", import.meta.url), "utf8");
+  assert.match(reflection, /<details/);
+  assert.match(reflection, /<summary/);
+  assert.match(reflection, /reading\.reflectionPrompts/);
+  assert.match(reflection, /onSelect\(prompt\)/);
 });
 
 test("direct answers keep the Room's dark reading surface and readable palette", () => {
@@ -55,6 +88,9 @@ test("TarotEvidence uses collapsed native disclosure and safe React text", () =>
   assert.match(evidence, /<details/);
   assert.match(evidence, /<summary/);
   assert.match(evidence, /reading-card-evidence/);
+  assert.match(evidence, /evidenceDisclosure/);
+  assert.match(evidence, /data-reading-card-id/);
+  assert.match(evidence, /data-position-key/);
   assert.match(evidence, /alt=/);
   assert.doesNotMatch(evidence, /dangerouslySetInnerHTML|innerHTML/);
 });
@@ -67,6 +103,9 @@ test("FollowUpReading owns an input, answer list, and injected submit callback",
   assert.match(followUp, /onSubmit\(/);
   assert.match(followUp, /aria-live/);
   assert.match(followUp, /reading-follow-up-answer/);
+  assert.match(followUp, /suggestions\.slice\(0, 3\)/);
+  assert.match(followUp, /onQuestionChange\(suggestion\)/);
+  assert.match(followUp, /aria-hidden=["']true["']/);
 });
 
 test("follow-up history resets by reading epoch without persisting a transcript", () => {
@@ -110,4 +149,11 @@ test("Room reading surface is a single responsive editorial column", () => {
   assert.match(css, /safe-area-inset/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /reading-card-evidence/);
+});
+
+test("Room gives the completed reading the larger editorial share on desktop", () => {
+  assert.match(css, /\.room-reading-panel-shell\{[^}]*width:min\(62vw,1180px\)/);
+  assert.match(css, /\.room-page\.has-interpretation \.tabletop\{right:min\(62vw,1180px\)/);
+  assert.match(css, /\.room-page\.has-interpretation \.room-question\{left:4%;right:calc\(min\(62vw,1180px\)/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom/);
 });

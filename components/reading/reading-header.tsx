@@ -7,15 +7,20 @@ type ReadingHeaderProps = {
 
 export function ReadingHeader({ session, t }: ReadingHeaderProps) {
   return (
-    <header className="reading-header brand-reading-header reading-surface reading-surface--midnight-navy border-b border-antique-gold/20 px-5 py-6 sm:px-7">
-      <h2 className="max-w-2xl text-balance text-2xl font-medium tracking-[-0.03em] text-ivory sm:text-3xl">
+    <header className="reading-header brand-reading-header reading-surface reading-surface--midnight-navy px-5 py-7 sm:px-9 sm:py-9">
+      <h2 className="reading-header__title max-w-2xl text-balance text-2xl font-medium tracking-[-0.03em] text-ivory sm:text-3xl">
         {t("reading.title")}
       </h2>
-      <p className="mt-3 max-w-[70ch] text-sm leading-7 text-ivory/75">
-        {session.readerName ? t("reading.forReader").replace("{name}", session.readerName) : t("reading.forYou")}
+      <p className="reading-header__question mt-4 max-w-[30ch] text-balance text-2xl leading-[1.18] text-ivory sm:text-[clamp(1.8rem,3.1vw,2.7rem)]">
+        {session.question}
       </p>
+      {session.readerName && (
+        <p className="reading-header__context mt-4 max-w-[60ch] text-sm leading-7 text-ivory/65">
+          {t("reading.forReader").replace("{name}", session.readerName)}
+        </p>
+      )}
       {(session.spreadName || session.deckName) && (
-        <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs tracking-[0.08em] text-antique-gold/85 uppercase">
+        <dl className="reading-header__meta mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[0.68rem] tracking-[0.14em] text-antique-gold/85 uppercase">
           {session.spreadName && (
             <div>
               <dt className="sr-only">{t("reading.spreadLabel")}</dt>
