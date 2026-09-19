@@ -108,17 +108,25 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       </div>
     </header>
     <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-      <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav>
+      <nav className="main-nav">{nav.map(([key, Icon, href]) => {
+        const isActive = href === path || (href === "/guidebook" && path === "/decks");
+        const variant = href === "/" ? "home" : href === "/guidebook" ? "cards" : href === "/community" ? "practice" : "book";
+        return <a className={isActive ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={isActive ? "page" : undefined}>
+          <div className={`nav-orb nav-orb-${variant}`} data-nav-icon={variant}><Icon size={29} strokeWidth={1.3} aria-hidden="true" /></div>
+          <ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
+          <span className="mobile-nav-label">{t(key)}</span>
+        </a>;
+      })}</nav>
       <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
     </SidebarContent></Sidebar>
     <main className="main">{children || <>
-      <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><Plus size={28} /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} />{t("home.video")}</p></section>
-      <section className="daily-panel"><h2>{t("home.daily")}</h2><p>{t("home.dailyText")}</p><a className="pill" href="/daily-spread">{t("home.social")} <ArrowRight size={15} /></a><div className="daily-cards">{[["home.feel", "feel"], ["home.need", "need"]].map(([key, id]) => <div key={id}><p>{t(key)}:</p><a href="/daily-spread" className="card-back" aria-label={t("home.pull")}><CardMark /></a></div>)}</div><p className="daily-quote">“{t("home.dailyQuote")}”</p><a href="/daily-spread" className="daily-panel-link">{t("home.pull")} <ArrowUpRight size={16} /></a></section>
+      <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><span className="ritual-markers" aria-hidden="true" /><Plus size={28} aria-hidden="true" /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} aria-hidden="true" />{t("home.video")}</p></section>
+      <section className="daily-panel"><h2>{t("home.daily")}</h2><p>{t("home.dailyText")}</p><a className="pill" href="/daily-spread">{t("home.social")} <ArrowRight size={15} aria-hidden="true" /></a><div className="daily-cards">{[["home.feel", "feel"], ["home.need", "need"]].map(([key, id]) => <div key={id}><p>{t(key)}:</p><a href="/daily-spread" className="card-back" aria-label={t("home.pull")}><CardMark /></a></div>)}</div><p className="daily-quote">“{t("home.dailyQuote")}”</p><a href="/daily-spread" className="daily-panel-link">{t("home.pull")} <ArrowUpRight size={16} aria-hidden="true" /></a>{isHome && <button className="help home-help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} aria-hidden="true" /></button>}</section>
       <section className="feature-row"><div><h2>{t("home.rhythm")}</h2><p>{t("home.rhythmText")}</p><a href="/community" className="button peach">{t("home.practice")} <ArrowUpRight size={16} /></a></div><div className="feature-cards"><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div></div></section>
       <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/guidebook">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
     </>}</main>
     <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>
-    <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
+    {!isHome && <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} aria-hidden="true" /></button>}
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
 }

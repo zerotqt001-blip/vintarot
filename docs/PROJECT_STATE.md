@@ -122,6 +122,11 @@ Validation for the recovery pass: focused auth tests `69/69`, Room tests `46/46`
 
 Public verification returned `200` for `/login`, `/register`, `/forgot-password`, `/reset-password`, `/auth/complete`, `/privacy` and `/terms`; Google start returned the expected `303`, and logged-out `/api/auth/me` returned `401`. The public profile link now reaches `/auth?return_to=/profile`. Room no longer contains the removed shuffle CTA or `room-bottom`; a deck interaction starts shuffle, direct card selection leaves meaning closed, and BookOpen opens the guide/meaning surface. Desktop browser QA and the previously verified exact Room viewports confirm the cleanup and no horizontal overflow. Physical iOS Safari was not used, and low-level CUA did not expose browser dev-log export.
 
+## Auth-baseline Home release (2026-09-19)
+This release branch is based directly on `c94c29371c8e921facf00fd1144eaff96990bbc7` (`fix: harden auth recovery runtime`) and adds only the approved Home mobile polish. The Auth recovery routes and Room implementation from the baseline remain intact; the later diverged reading/UI commits on `codex/tooling-and-version-history` are intentionally not included. The Home portal keeps the supplied celestial artwork, the four mobile navigation items use the existing destinations and accessible active state, and the daily panel keeps its help affordance contained at mobile widths.
+
+Pre-switch validation: Auth + Room regression `153/153`; full tracked suite plus the new Home contract `303/303`; `npx tsc --noEmit`, production `npm run build`, and `git diff --check` pass. No secrets, runtime database, or provider configuration are part of the release artifact. Production push and switch verification remain to be recorded after the remote checks complete.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
