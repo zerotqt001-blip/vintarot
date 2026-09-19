@@ -1,4 +1,5 @@
-import { getChatGPTUser } from "@/app/chatgpt-auth";
+import type { D1Database } from "@cloudflare/workers-types";
+import { createMemberAuthStore, parseCookie, SESSION_COOKIE_NAME, type MemberView } from "@/lib/member-auth";
 
 export const GUEST_COOKIE_NAME = "vintarot_guest";
 const GUEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
@@ -11,6 +12,12 @@ export type ReadingOwner =
 export type GuestIdentity = {
   guestId: string;
   setCookie: string;
+};
+
+export type OptionalOwner = {
+  owner: ReadingOwner;
+  member?: MemberView;
+  setCookie?: string;
 };
 
 export function createGuestIdentity(guestId = globalThis.crypto.randomUUID(), secure = true): GuestIdentity {
@@ -38,14 +45,11 @@ function requestUsesHttps(request: Request): boolean {
   return new URL(request.url).protocol === "https:";
 }
 
-export async function readOptionalOwner(request: Request): Promise<{ owner: ReadingOwner; setCookie?: string }> {
-  let user: Awaited<ReturnType<typeof getChatGPTUser>> = null;
-  try {
-    user = await getChatGPTUser();
-  } catch {
-    user = null;
-  }
-  if (user) return { owner: { kind: "user", userId: user.userId } };
+export async function readOptionalOwner(request: Request, database?: D1Database): Promise<OptionalOwner> {
+  const rawSession = parseCookie(request.headers.get("cookie"), SESSION_COOKIE_NAME);
+  const runtimeDatabase = database ?? (rawSession ? (await import("@/lib/runtime")).getRuntimeDatabase() : undefined);
+  const member = rawSession && runtimeDatabase ? await createMemberAuthStore(runtimeDatabase).readSession(rawSession) : null;
+  if (member) return { owner: { kind: "user", userId: `member:${member.id}` }, member };
 
   const existingGuestId = readGuestId(request);
   if (existingGuestId) return { owner: { kind: "guest", guestId: existingGuestId } };

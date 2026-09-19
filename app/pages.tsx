@@ -182,7 +182,9 @@ export function CardPicker({
   );
 }
 
-export function SignIn() {
+type SignInReturnPath = "/profile" | "/journal" | "/daily-spread" | "/bookings" | "/invites";
+
+export function SignIn({ returnTo = "/profile" }: { returnTo?: SignInReturnPath } = {}) {
   const { t } = useLanguage();
   return (
     <Panel tone="elevated" className="empty sign-in-panel">
@@ -191,7 +193,7 @@ export function SignIn() {
       <p>{t("pages.signInText")}</p>
       <a
         className="button black"
-        href="/signin-with-chatgpt?return_to=/profile"
+        href={`/auth?return_to=${returnTo}`}
         target="_top"
       >
         {t("common.signIn")}
@@ -570,7 +572,7 @@ function Daily({ user }: { user: any }) {
                   {saved ? t("pages.savedReflection") : t("pages.saveJournal")}
                 </button>
               ) : (
-                <a className="button" href="/signin-with-chatgpt?return_to=/daily-spread" target="_top">
+                <a className="button" href="/auth?return_to=/daily-spread" target="_top">
                   {t("common.signIn")}
                 </a>
               )}
@@ -713,7 +715,7 @@ function Journal({ user }: { user: any }) {
       setBusy(false);
     }
   }
-  if (!user) return <SignIn />;
+  if (!user) return <SignIn returnTo="/journal" />;
   return (
     <>
       <div className="journal-head">
@@ -892,7 +894,7 @@ function Profile({ user }: { user: any }) {
         })
         .catch((error) => setMessage(error.message));
   }, [user]);
-  if (!user) return <SignIn />;
+  if (!user) return <SignIn returnTo="/profile" />;
   return (
     <>
       <Header title={t("pages.yourSpace")} text={t("pages.yourSpaceText")} />

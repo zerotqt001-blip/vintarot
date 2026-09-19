@@ -81,8 +81,19 @@ export function createSqliteD1Database(sqlite: SqliteConnection): D1Database {
     prepare,
     batch: async <T = unknown>(statements: D1PreparedStatement[]) => {
       const results: D1Result<T>[] = [];
-      for (const statement of statements) {
-        results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
+      sqlite.exec("BEGIN IMMEDIATE");
+      try {
+        for (const statement of statements) {
+          results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
+        }
+        sqlite.exec("COMMIT");
+      } catch (error) {
+        try {
+          sqlite.exec("ROLLBACK");
+        } catch {
+          // Preserve the original statement failure.
+        }
+        throw error;
       }
       return results;
     },
