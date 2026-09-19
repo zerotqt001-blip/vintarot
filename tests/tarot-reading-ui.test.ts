@@ -157,3 +157,22 @@ test("Room gives the completed reading the larger editorial share on desktop", (
   assert.match(css, /\.room-page\.has-interpretation \.room-question\{left:4%;right:calc\(min\(62vw,1180px\)/);
   assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom/);
 });
+
+test("V1.1 makes the question subordinate and the takeaway editorial", () => {
+  assert.match(css, /\.room-reading-panel-shell \.reading-header__question\{[^}]*font-size:clamp\(1\.4rem,2\.1vw,2rem\)/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-header__question\{[^}]*max-width:38ch/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-takeaway\{[^}]*border:0;[^}]*border-top:1px solid/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-takeaway\{[^}]*box-shadow:none/);
+});
+
+test("V1.1 keeps prose measured and reserves a real footer boundary", () => {
+  assert.match(css, /\.room-reading-panel-shell \.reading-direct-answer__body,\.room-reading-panel-shell \.reading-section--deeper-reading p,\.room-reading-panel-shell \.reading-follow-up-answer p\{[^}]*max-width:72ch/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*scroll-padding-bottom:clamp\(84px,12vh,150px\)/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__actions\{[^}]*flex:0 0 auto/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__actions\{[^}]*position:relative/);
+});
+
+test("V1.1 keeps mobile reading content clear of the action footer", () => {
+  assert.match(css, /\.room-reading-panel-shell \.reading-header__question\{[^}]*font-size:clamp\(1\.5rem,7\.5vw,2rem\)/);
+  assert.match(css, /@media\(max-width:768px\)\{[\s\S]*?\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom:calc\(100px \+ env\(safe-area-inset-bottom\)\)/);
+});

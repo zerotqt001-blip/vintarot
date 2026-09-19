@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { clampPan, clampZoom, fanSwipeProgress, pointerCenter, pointerDistance, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
+import { clampPan, clampZoom, fanSwipeProgress, pointerCenter, pointerDistance, resolveSpreadLayout, spreadCardPosition, spreadCardPose, zoomFromPinch } from "../lib/room-motion";
 
 test("focused spread cards lift with a symmetric 3D tilt", () => {
   const left = spreadCardPose(0, 3, false);
@@ -38,6 +38,17 @@ test("drawn cards use aligned rows when the reading has more cards than slots", 
   assert.deepEqual(spreadCardPosition(3, 1), { x: 0, y: 1065 });
   assert.deepEqual(spreadCardPosition(0, 10), { x: -250, y: 0 });
   assert.deepEqual(spreadCardPosition(3, 10), { x: -250, y: 355 });
+});
+
+test("four-card readings keep the intentional row while giving the stage a readable scale", () => {
+  const layout = resolveSpreadLayout("row-4", ["one", "two", "three", "four"].map((key) => ({ key })));
+
+  assert.deepEqual(layout.map(({ x, y, scale }) => ({ x, y, scale })), [
+    { x: -322.5, y: 34, scale: 0.9 },
+    { x: -107.5, y: 34, scale: 0.9 },
+    { x: 107.5, y: 34, scale: 0.9 },
+    { x: 322.5, y: 34, scale: 0.9 },
+  ]);
 });
 
 test("pinch zoom follows the two-finger distance and stays bounded", () => {

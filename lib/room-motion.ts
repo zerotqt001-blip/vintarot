@@ -64,7 +64,7 @@ export function resolveSpreadLayout(layoutKey: string | undefined, positions: re
       resolved = row(keys.length, 250);
       break;
     case "row-4":
-      resolved = row(keys.length, 215, 0.84, 34);
+      resolved = row(keys.length, 215, 0.9, 34);
       break;
     case "row-5":
       resolved = row(keys.length, 178, 0.68, 38);
