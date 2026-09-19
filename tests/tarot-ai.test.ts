@@ -119,8 +119,8 @@ test("does not serialize secrets, artwork paths, the full catalog, or raw provid
   assert.match(context, /reading-card-persona/);
 });
 
-test("publishes the versioned v4.1 situation-first prompt contract", () => {
-  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.1");
+test("publishes the versioned v4.2 situation-first prompt contract", () => {
+  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.2");
   for (const line of [
     "You are NaTarot's Tarot interpretation engine.",
     "Analyze the complete spread before writing any section.",

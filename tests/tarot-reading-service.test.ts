@@ -162,7 +162,7 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.readingId, saved?.id);
   assert.equal(result.provider, "openai");
   assert.equal(result.modelName, "openai:test-model");
-  assert.equal(result.promptVersion, "tarot-reading-v4.1");
+  assert.equal(result.promptVersion, "tarot-reading-v4.2");
   assert.match(result.reading.directAnswer, /spread-level direct answer/);
   assert.equal(result.reading.cardEvidence.length, 3);
   assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
@@ -172,7 +172,7 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
   assert.deepEqual(saved?.reading, result.reading);
   assert.equal(saved?.modelName, "openai:test-model");
-  assert.equal(saved?.promptVersion, "tarot-reading-v4.1");
+  assert.equal(saved?.promptVersion, "tarot-reading-v4.2");
 });
 
 test("loads the owner's stored template, exact cards, and requested-locale meaning pairs", async () => {

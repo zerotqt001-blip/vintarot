@@ -51,8 +51,13 @@ export function ReadingPanel({
             )}
             {reading.personalInsights.length > 0 && <PersonalInsights items={reading.personalInsights} t={t} />}
             {reading.nextSteps.length > 0 && <NextSteps items={reading.nextSteps} t={t} />}
-            {reading.reflectionPrompts.length > 0 && <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />}
-            {reading.cardEvidence.length > 0 && <TarotEvidence items={reading.cardEvidence} artwork={artworkByReadingCardId} locale={locale} t={t} />}
+            {(reading.reflectionPrompts.length > 0 || reading.cardEvidence.length > 0) && (
+              <section className="reading-supporting" aria-labelledby="reading-supporting-title">
+                <h3 id="reading-supporting-title" className="reading-supporting__title">{t("reading.supportingMaterial")}</h3>
+                {reading.reflectionPrompts.length > 0 && <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />}
+                {reading.cardEvidence.length > 0 && <TarotEvidence items={reading.cardEvidence} artwork={artworkByReadingCardId} locale={locale} t={t} />}
+              </section>
+            )}
             {hasFollowUp && (
               <FollowUpReading
                 key={followUpResetKey}

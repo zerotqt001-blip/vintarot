@@ -11,7 +11,7 @@ const canonicalResult = {
   source: "ai" as const,
   provider: "openai" as const,
   modelName: "openai:gpt-test",
-  promptVersion: "tarot-reading-v4.1",
+  promptVersion: "tarot-reading-v4.2",
   reading: {
     directAnswer: "A grounded direct answer.\n\nA grounded next step.",
     personalInsights: [{ title: "A pattern", body: "A grounded pattern." }],
@@ -81,7 +81,7 @@ test("returns a real 400 JSON response and metadata-only log for an invalid requ
     status: "failure",
     httpStatus: 400,
     failureCategory: "invalid_request",
-    promptVersion: "tarot-reading-v4.1",
+    promptVersion: "tarot-reading-v4.2",
     latencyMs: 0,
   }]);
   assert.equal(JSON.stringify(events).includes(secret), false);
@@ -118,7 +118,7 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
         sessionId: "session-runtime",
         provider: "openai",
         modelName: "openai:gpt-test",
-        promptVersion: "tarot-reading-v4.1",
+        promptVersion: "tarot-reading-v4.2",
         latencyMs: 0,
       }]);
       assert.equal(JSON.stringify(events).includes(secret), false);
@@ -156,7 +156,7 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
         sessionId: "session-runtime",
         provider: "gemini",
         modelName: "gemini:model-test",
-        promptVersion: "tarot-reading-v4.1",
+        promptVersion: "tarot-reading-v4.2",
         latencyMs: 0,
       }]);
     });
@@ -190,7 +190,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
     source: "ai",
     provider: "openai",
     model_name: "openai:gpt-test",
-    prompt_version: "tarot-reading-v4.1",
+    prompt_version: "tarot-reading-v4.2",
     reading: canonicalResult.reading,
   });
   assert.deepEqual(events, [{
@@ -199,7 +199,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
     sessionId: "session-runtime",
     provider: "openai",
     modelName: "openai:gpt-test",
-    promptVersion: "tarot-reading-v4.1",
+    promptVersion: "tarot-reading-v4.2",
     cardCount: 1,
     latencyMs: 0,
   }]);
@@ -226,7 +226,7 @@ test("rethrows request rejection responses after logging only allowlisted metada
     sessionId: undefined,
     provider: undefined,
     modelName: undefined,
-    promptVersion: "tarot-reading-v4.1",
+    promptVersion: "tarot-reading-v4.2",
     latencyMs: 0,
   }]);
 });

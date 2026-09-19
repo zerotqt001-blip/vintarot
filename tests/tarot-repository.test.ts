@@ -139,7 +139,7 @@ test("D1 context orders exact stored cards and persists the validated payload in
   assert.equal(saved.closing, "Closing");
   assert.equal(saved.disclaimer, "This is a reflective reading, not a certain prediction or professional advice.");
   assert.equal(saved.model_name, "openai/test-model");
-  assert.equal(saved.prompt_version, "tarot-reading-v4.1");
+  assert.equal(saved.prompt_version, "tarot-reading-v4.2");
   assert.deepEqual(JSON.parse(saved.reading_payload as string), reading);
   const freshRow = await repository.getLatestReadingForOwner(stored.session.id, { kind: "guest", guestId: "owner-guest" });
   assert.ok(freshRow);
