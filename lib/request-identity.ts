@@ -1,12 +1,6 @@
 import { getChatGPTUser, type ChatGPTUser } from "@/app/chatgpt-auth";
 import { readOptionalOwner, type ReadingOwner } from "@/lib/tarot-guest";
 
-const USER_ID_HEADER = "oai-authenticated-user-id";
-const USER_EMAIL_HEADER = "oai-authenticated-user-email";
-const USER_FULL_NAME_HEADER = "oai-authenticated-user-full-name";
-const USER_FULL_NAME_ENCODING_HEADER = "oai-authenticated-user-full-name-encoding";
-const PERCENT_ENCODED_UTF8 = "percent-encoded-utf-8";
-
 export type RequestIdentity = {
   kind: "user" | "guest";
   userId: string;
@@ -17,24 +11,6 @@ export type RequestIdentity = {
   guestId?: string;
   setCookie?: string;
 };
-
-function decodeFullName(headers: Headers): string | null {
-  const encoded = headers.get(USER_FULL_NAME_HEADER);
-  if (!encoded || headers.get(USER_FULL_NAME_ENCODING_HEADER) !== PERCENT_ENCODED_UTF8) return null;
-  try {
-    return decodeURIComponent(encoded);
-  } catch {
-    return null;
-  }
-}
-
-function userFromRequestHeaders(headers: Headers): ChatGPTUser | null {
-  const userId = headers.get(USER_ID_HEADER);
-  const email = headers.get(USER_EMAIL_HEADER);
-  if (!userId || !email) return null;
-  const fullName = decodeFullName(headers);
-  return { userId, displayName: fullName ?? email, email, fullName };
-}
 
 function authenticatedIdentity(user: ChatGPTUser): RequestIdentity {
   return {
@@ -48,9 +24,8 @@ function authenticatedIdentity(user: ChatGPTUser): RequestIdentity {
 }
 
 export async function readRequestIdentity(request: Request): Promise<RequestIdentity> {
-  const requestUser = userFromRequestHeaders(request.headers);
-  if (requestUser) return authenticatedIdentity(requestUser);
-
+  // The framework/platform helper is the only application authentication boundary.
+  // Never promote arbitrary headers on a Request object to a user identity.
   try {
     const contextUser = await getChatGPTUser();
     if (contextUser) return authenticatedIdentity(contextUser);

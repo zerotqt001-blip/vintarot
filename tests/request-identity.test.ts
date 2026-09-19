@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { readRequestIdentity } from "../lib/request-identity";
 
@@ -18,16 +19,29 @@ test("missing ChatGPT headers creates a stable guest owner and cookie", async ()
   assert.equal(JSON.stringify(second).includes(first.guestId), true);
 });
 
-test("ChatGPT headers remain the authenticated owner", async () => {
+test("untrusted ChatGPT identity headers remain a guest request", async () => {
   const request = new Request("https://natarot.com/api/rooms", { headers: {
-    "oai-authenticated-user-id": "user-123",
-    "oai-authenticated-user-email": "reader@example.test",
-    "oai-authenticated-user-full-name": "Reader%20Name",
+    "oai-authenticated-user-id": "victim-id",
+    "oai-authenticated-user-email": "attacker@example.test",
+    "oai-authenticated-user-full-name": "Attacker%20Name",
     "oai-authenticated-user-full-name-encoding": "percent-encoded-utf-8",
   }});
   const identity = await readRequestIdentity(request);
-  assert.deepEqual({ kind: identity.kind, userId: identity.userId, email: identity.email, fullName: identity.fullName }, {
-    kind: "user", userId: "user-123", email: "reader@example.test", fullName: "Reader Name",
-  });
-  assert.equal(identity.setCookie, undefined);
+  assert.equal(identity.kind, "guest");
+  assert.notEqual(identity.userId, "victim-id");
+  assert.equal(identity.email, "guest@local.invalid");
+  assert.equal(identity.fullName, "Guest");
+  assert.equal(identity.owner.kind, "guest");
+});
+
+test("the VPS proxy clears every discovered ChatGPT identity header", () => {
+  const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.meta.url), "utf8");
+  for (const header of [
+    "oai-authenticated-user-id",
+    "oai-authenticated-user-email",
+    "oai-authenticated-user-full-name",
+    "oai-authenticated-user-full-name-encoding",
+  ]) {
+    assert.match(nginx, new RegExp(`proxy_set_header ${header} \\"\\";`));
+  }
 });
