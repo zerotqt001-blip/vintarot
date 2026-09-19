@@ -167,12 +167,25 @@ test("V1.1 makes the question subordinate and the takeaway editorial", () => {
 
 test("V1.1 keeps prose measured and reserves a real footer boundary", () => {
   assert.match(css, /\.room-reading-panel-shell \.reading-direct-answer__body,\.room-reading-panel-shell \.reading-section--deeper-reading p,\.room-reading-panel-shell \.reading-follow-up-answer p\{[^}]*max-width:72ch/);
-  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*scroll-padding-bottom:clamp\(84px,12vh,150px\)/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*scroll-padding-bottom:clamp\(28px,4vh,48px\)/);
   assert.match(css, /\.room-reading-panel-shell \.reading-panel__actions\{[^}]*flex:0 0 auto/);
   assert.match(css, /\.room-reading-panel-shell \.reading-panel__actions\{[^}]*position:relative/);
 });
 
 test("V1.1 keeps mobile reading content clear of the action footer", () => {
   assert.match(css, /\.room-reading-panel-shell \.reading-header__question\{[^}]*font-size:clamp\(1\.5rem,7\.5vw,2rem\)/);
-  assert.match(css, /@media\(max-width:768px\)\{[\s\S]*?\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom:calc\(100px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css, /@media\(max-width:768px\)\{[\s\S]*?\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom:clamp\(24px,6vw,36px\)/);
+});
+
+test("final V1.1 polish aligns reading content to one centered editorial grid", () => {
+  assert.match(css, /\.room-reading-panel-shell \.reading-section\{[^}]*width:100%;max-width:none/);
+  assert.match(css, /\.room-reading-panel-shell \.brand-reading-section\{[^}]*--reading-content-width:min\(100%,800px\)/);
+  assert.match(css, /\.room-reading-panel-shell \.brand-reading-section>\*\{[^}]*width:100%;max-width:var\(--reading-content-width\);[^}]*margin-inline:auto/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-takeaway\{[^}]*padding:clamp\(22px,2\.8vw,36px\) clamp\(18px,2vw,28px\) clamp\(30px,3\.5vw,44px\)/);
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__actions\{[^}]*--reading-grid-gutter:max\(clamp\(24px,3\.6vw,48px\),calc\(\(100% - 800px\)\/2\)\);[^}]*padding-inline:var\(--reading-grid-gutter\)/);
+});
+
+test("final V1.1 polish lets the scroll region size to content before it shrinks", () => {
+  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*flex:0 1 auto;[^}]*padding-bottom:clamp\(28px,4vh,48px\)/);
+  assert.match(css, /@media\(max-width:768px\)\{[\s\S]*?\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*flex:0 1 auto;[^}]*padding-bottom:clamp\(24px,6vw,36px\)/);
 });

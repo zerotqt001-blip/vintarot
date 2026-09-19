@@ -1247,3 +1247,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .room-reading-panel-shell .reading-panel__scroll{scroll-behavior:auto}
   .room-reading-panel-shell .reading-light-disclosure summary span:last-child,.room-reading-panel-shell .reading-disclosure-mark{transition:none}
 }
+
+/* Final reading polish: keep the editorial content centered while the footer follows it. */
+.room-reading-panel-shell .reading-section{width:100%;max-width:none}
+.room-reading-panel-shell .brand-reading-section{--reading-content-width:min(100%,800px);padding-inline:clamp(24px,3.6vw,48px)}
+.room-reading-panel-shell .brand-reading-section>*{width:100%;max-width:var(--reading-content-width);margin-inline:auto}
+.room-reading-panel-shell .reading-panel__scroll{flex:0 1 auto;padding-bottom:clamp(28px,4vh,48px);scroll-padding-bottom:clamp(28px,4vh,48px)}
+.room-reading-panel-shell .reading-takeaway{padding:clamp(22px,2.8vw,36px) clamp(18px,2vw,28px) clamp(30px,3.5vw,44px)}
+.room-reading-panel-shell .reading-direct-answer__body p,.room-reading-panel-shell .reading-section--deeper-reading>p,.room-reading-panel-shell .reading-follow-up-answer p,.room-reading-panel-shell .reading-editorial-list__item p,.room-reading-panel-shell .reading-card-evidence p{max-width:72ch}
+.room-reading-panel-shell .reading-panel__actions{--reading-grid-gutter:max(clamp(24px,3.6vw,48px),calc((100% - 800px)/2));padding-inline:var(--reading-grid-gutter)}
+
+@media(max-width:768px){
+  .room-reading-panel-shell .brand-reading-section{padding-inline:clamp(18px,5vw,28px)}
+  .room-reading-panel-shell .reading-panel__scroll{flex:0 1 auto;padding-bottom:clamp(24px,6vw,36px);scroll-padding-bottom:clamp(24px,6vw,36px)}
+  .room-reading-panel-shell .reading-panel__actions{--reading-grid-gutter:clamp(18px,5vw,28px);padding-inline:var(--reading-grid-gutter)}
+}
