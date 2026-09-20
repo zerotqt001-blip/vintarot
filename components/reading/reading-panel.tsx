@@ -22,6 +22,10 @@ export function ReadingPanel({
   error = null,
   onClose,
   onSave,
+  onShare,
+  isSharing = false,
+  shareUrl = null,
+  shareError = null,
   onFollowUpSubmit,
   followUpResetKey = 0,
 }: ReadingPanelProps) {
@@ -85,7 +89,18 @@ export function ReadingPanel({
           </section>
         )}
       </div>
-      <footer className="reading-panel__actions flex shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-9">
+      <footer className="reading-panel__actions flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-9">
+        {onShare && (
+          <button
+            className="reading-action min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
+            type="button"
+            onClick={() => { void onShare(); }}
+            disabled={!reading || isSaving || isSharing}
+            aria-busy={isSharing}
+          >
+            {isSharing ? t("reading.sharing") : t("reading.share")}
+          </button>
+        )}
         {onSave && (
           <button
             className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
@@ -105,6 +120,24 @@ export function ReadingPanel({
           >
             {t("reading.close")}
           </button>
+        )}
+        {(shareUrl || shareError) && (
+          <div className="min-w-0 basis-full pt-1" aria-live="polite">
+            {shareUrl && (
+              <label className="block min-w-0 text-xs text-ivory/70">
+                <span className="sr-only">{t("reading.shareReady")}</span>
+                <input
+                  className="mt-1 block min-h-10 w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg border border-antique-gold/30 bg-midnight-navy px-3 text-xs text-ivory outline-none focus-visible:ring-2 focus-visible:ring-antique-gold"
+                  type="url"
+                  readOnly
+                  value={shareUrl}
+                  aria-label={t("share.copyLink")}
+                  onFocus={(event) => event.currentTarget.select()}
+                />
+              </label>
+            )}
+            {shareError && <p className="mt-2 text-sm leading-6 text-rose-200" role="alert">{shareError}</p>}
+          </div>
         )}
       </footer>
     </aside>

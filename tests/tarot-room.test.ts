@@ -113,6 +113,24 @@ test("completed readings expose the reference CTA and interpretation panel", () 
   assert.match(roomSource, /redrawReading/);
 });
 
+test("completed readings expose a transient owner share action without persisting the link", () => {
+  assert.match(roomSource, /api\(['"]tarot\/shares['"]/);
+  assert.match(roomSource, /reading_id/);
+  assert.match(roomSource, /session_id/);
+  assert.match(roomSource, /share_url/);
+  assert.match(roomSource, /onShare=/);
+  assert.match(readingPanelSource, /onShare/);
+  assert.match(readingPanelSource, /isSharing/);
+  assert.match(readingPanelSource, /shareUrl/);
+  assert.match(readingPanelSource, /shareError/);
+  assert.doesNotMatch(roomSource, /(?:localStorage|sessionStorage)\.[^\n]*share/i);
+  for (const locale of ["en", "vi"] as const) {
+    for (const key of ["reading.share", "reading.sharing", "reading.shareReady", "reading.shareUnavailable"]) {
+      assert.notEqual(messageFor(locale, key), key);
+    }
+  }
+});
+
 test("stale room requests cannot commit after a newer reading starts", () => {
   assert.equal(isRoomRequestCurrent({ epoch: 3, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
   assert.equal(isRoomRequestCurrent({ epoch: 4, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);

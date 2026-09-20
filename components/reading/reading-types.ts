@@ -35,6 +35,10 @@ export type ReadingPanelProps = {
   error?: string | null;
   onClose?: () => void;
   onSave?: () => void;
+  onShare?: () => void | Promise<void>;
+  isSharing?: boolean;
+  shareUrl?: string | null;
+  shareError?: string | null;
   onFollowUpSubmit?: (question: string) => Promise<string>;
   followUpResetKey?: number;
 };
