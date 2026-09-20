@@ -225,7 +225,7 @@ Run focused security/ownership tests, `npx tsx --test tests/*.test.ts`, `npx tsc
 
 Stage only the plan, external research record, safe code/tests, dependency files if retained, audit, and minimal project-state update. Inspect `git diff --cached` for secrets and unrelated changes. Use focused messages such as `security: harden API cache boundaries`, `ops: add read-only readiness contract`, `security: update compatible dependency patches`, and `docs: record security production audit` only when the staged content matches.
 
-- [ ] **Step 4: Push and verify the remote branch**
+- [x] **Step 4: Push and verify the remote branch**
 
 Run `git push -u origin codex/natarot-security-production-readiness`, then `git fetch origin`, `git status`, and compare local `HEAD` with `origin/codex/natarot-security-production-readiness`. Do not merge, deploy, restart, or create a PR.
 
