@@ -162,6 +162,15 @@ The reading service performs one fresh provider generation only when the first g
 
 Validation on the isolated base `bce0f4c3a95319a97e1cf0a1dd35224d27087b56`: focused provider/parser/route/service/API tests passed `77/77`; all Tarot plus F-001/request-identity tests passed `180/180` tests across `171` top-level subtests; the full tracked suite passed `272/272` tests across `263` top-level subtests; `npx tsc --noEmit`, production `npm run build`, and `git diff --check` passed. No DeepSeek request, deployment, merge or push was performed.
 
+## NaTarot Level 4 canonical baseline integration (2026-09-20)
+The canonical Level 4 product baseline was verified after a branch-scoped fetch: `origin/codex/tooling-and-version-history` remained exactly `4db459a016f6335fc94a044a76318663c1b40af5` (`feat: restore approved member authentication`), with no remote advancement during this audit. The clean integration worktree started at that product commit on `codex/natarot-level4-baseline`; no product implementation, deployment, merge, rebase, reset, or push was performed.
+
+Governance was imported only from `c5c1851aedb0dbd474e66a302356331958e0bfdf` for the Level 4 documents and retained historical bootstrap plan. The older `docs/PROJECT_STATE.md` from that governance branch was not replayed: this entry is added to the newer canonical state file so the later product history through Provider Reliability V1 remains intact. The governance documents were re-audited against the actual `4db459a` source, including local member sessions, Google OAuth, verification/reset email boundaries, the two `0004` migration files, F-001 identity-boundary coverage, metadata-only provider diagnostics, one invalid-response retry, and the V1.3/v4.2.2 reading surfaces.
+
+Security status remains observational. The canonical source rejects spoofed `oai-authenticated-user-*` headers and has the tracked F-001 boundary test; no `app/chatgpt-auth.ts` platform-auth implementation exists. The bearer-style guest cookie and missing-`Origin` behavior remain documented as future security work and were not changed. Dirty F-001/auth worktree changes and dirty Home/CSS/Project State work were preserved outside this integration.
+
+Canonical-source validation for this integration: `npx tsx --test tests/*.test.ts` passed 339/339 tests; `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed. `npm run lint` remains a baseline failure with 89 errors and 124 warnings from existing application/generated/legacy rules; no application files were changed to address it. The integration is governance-only and is not a production deployment or production-readiness approval.
+
 ## Remaining work
 Continue reference fidelity review, physical-device motion tuning and provision real service accounts. Full cross-device smoothness and production integrations remain incomplete.
 
