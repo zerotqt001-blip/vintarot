@@ -4,6 +4,7 @@ import type { TarotProviderFailureStage } from "./ai/diagnostics";
 import type { TarotLocale, TarotReadingPayload } from "./ai/types";
 import type { ReadingOwner } from "./tarot-guest";
 import { buildTarotReadingInput } from "./tarot-reading-context";
+import { selectContextualFollowUpSuggestions } from "./tarot-follow-up-suggestions";
 import type { TarotRepository } from "./tarot-repository";
 
 export type TarotReadingServiceErrorCode = "not_found" | "incomplete" | "persistence";
@@ -129,6 +130,10 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
   }
 
   if (!reading) throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true });
+  reading = {
+    ...reading,
+    followUpSuggestions: selectContextualFollowUpSuggestions(reading, input.question, args.locale),
+  };
   const readingId = globalThis.crypto.randomUUID();
   try {
     await args.repository.saveReading({

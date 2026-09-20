@@ -168,6 +168,9 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.reading.cardEvidence.length, 3);
   assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
   assert.equal(result.reading.cardEvidence[1].position.key, template.positions[1].key);
+  assert.equal(result.reading.followUpSuggestions.length, 3);
+  assert.doesNotMatch(result.reading.followUpSuggestions.join(" "), /Explore the pattern/);
+  assert.equal(saved?.reading.followUpSuggestions.join(" | "), result.reading.followUpSuggestions.join(" | "));
   assert.equal(result.reading.cardEvidence[1].orientation, "reversed");
   assert.equal(saved?.reading.directAnswer, result.reading.directAnswer);
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
