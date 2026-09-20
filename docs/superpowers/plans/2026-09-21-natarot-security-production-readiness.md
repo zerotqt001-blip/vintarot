@@ -213,15 +213,15 @@ Search the new/modified docs for placeholders, unsupported production claims, ab
 - Consumes: code/docs/dependency changes and all focused/full validation output.
 - Produces: focused commits, remote branch equality, clean isolated worktree, and one final report.
 
-- [ ] **Step 1: Review from six required lenses**
+- [x] **Step 1: Review from six required lenses**
 
 Re-read the diff as application security, backend security, auth, infrastructure/SRE, privacy, and abuse/cost reviewers. Resolve or document every finding; do not leave a safe independent Critical/High issue unresolved.
 
-- [ ] **Step 2: Run the final verification matrix**
+- [x] **Step 2: Run the final verification matrix**
 
 Run focused security/ownership tests, `npx tsx --test tests/*.test.ts`, `npx tsc --noEmit`, `npm run build`, `npm run lint` (report only pre-existing failures), `git diff --check`, secret scan, `npm audit --omit=dev`, `npm audit`, and final status/diff checks. Confirm the root checkout and protected worktrees remain untouched. Re-run external research if the selected local solution is shown to be materially weak; do not claim the loop is closed until the post-fix security review and retest are complete.
 
-- [ ] **Step 3: Inspect staged diffs and commit focused changes**
+- [x] **Step 3: Inspect staged diffs and commit focused changes**
 
 Stage only the plan, external research record, safe code/tests, dependency files if retained, audit, and minimal project-state update. Inspect `git diff --cached` for secrets and unrelated changes. Use focused messages such as `security: harden API cache boundaries`, `ops: add read-only readiness contract`, `security: update compatible dependency patches`, and `docs: record security production audit` only when the staged content matches.
 
