@@ -213,3 +213,19 @@ The milestone adds a professional bilingual VI/EN verification-link transactiona
 Verification evidence: email tests `6/6 PASS`; auth/security matrix `65/66 PASS`; production build PASS; targeted ESLint PASS; `git diff --check` PASS; review reported no Critical/Important/Minor findings. The single auth-matrix failure is the pre-existing local-phone validation failure in `tests/auth-handlers.test.ts`. Separate pre-existing technical debt remains unmodified: 30 Tarot payload TypeScript errors and repository-wide lint debt. These are not attributed to the email milestone.
 
 `Localization & Natural Copy VI/EN` and `Global Typography VI/EN` remain `PLANNED`. The email-specific typography improvement does not complete global typography work. This synchronization performs no merge, deployment, or next-milestone start.
+
+## NaTarot UI/UX + Liquid Glass research checkpoint (2026-09-21)
+
+This documentation-only mission is complete on the isolated branch `codex/natarot-design-system-research`, based on committed baseline `60db3db7db535560feb6ff1178a975793bec26bf`. It inspected the committed React/Vinext source, the local Home/Create/Guidebook/Room/Profile routes, the current token/typography/i18n/responsive architecture, and the named component and Liquid Glass references. It preserves the Moonlight reference, NaTarot brand assets, current Tarot behavior, Room L1 geometry, AI/Knowledge Base contracts, auth/ownership boundaries, persistence, and future commercial scope.
+
+The research deliverables are:
+
+- `docs/design/NATAROT_UI_RESEARCH.md` — source and live-route audit, UX findings, localization/responsive/accessibility review, and current-to-future inventory.
+- `docs/design/NATAROT_LIQUID_GLASS_RESEARCH.md` — basic glass versus advanced Liquid Glass, five progressive material levels, browser/performance model, fallbacks, and named repository classification.
+- `docs/design/NATAROT_DESIGN_SYSTEM_V1.md` — semantic tokens, typography, icon/motion rules, responsive contracts, accessibility, and component recipes.
+- `docs/design/NATAROT_COMPONENT_ARCHITECTURE.md` — shell, primitive, SpreadBoard, reading, sharing, and future trust/commerce boundaries.
+- `docs/design/NATAROT_UI_ROADMAP.md` — page blueprints, UI-0 through UI-10 rollout, regression strategy, rollback rules, and release gates.
+
+The recommendation is to keep functional glass sparse and progressive: Level 1 opaque fallback, Level 2 frosted functional chrome, Level 3 clear focal controls, and Level 4/5 refraction or living optics only as measured localized accents. Editorial reading, card meaning, payment/trust surfaces, and primary content remain calm and readable. Existing Radix/shadcn-style behavior primitives and Lucide remain the foundation; no global Liquid Glass package or duplicate UI library is approved for V1.
+
+Validation on the research worktree: `npx tsx --test tests/*.test.ts` passed `257/257`; `npx tsc --noEmit` passed; `npm run build` passed; `git diff --check` passed. `npm run lint` remains red on the repository baseline with 93 errors and 122 warnings, including `.codex` skill assets and pre-existing runtime/legacy rules; no runtime source was changed to address it. The worktree contains documentation and the required planning file only; no application code, dependency, schema, auth, AI, environment, runtime database, deployment, merge, or restart change was made. The research branch is ready to push and review; integration remains intentionally separate.
