@@ -36,6 +36,7 @@ database.prepare(`
 
 const { GET: getSession } = await import("../app/api/tarot/session/route");
 const { POST: drawTarot } = await import("../app/api/tarot/draw/route");
+const { GET: getHealth } = await import("../app/api/health/route");
 
 const readingResult: GeneratedTarotReading = {
   readingId: "reading-cache-test",
@@ -114,6 +115,13 @@ test("draw responses that create owner-scoped state are non-cacheable", async ()
   }));
   assert.equal(response.status, 201);
   assert.equal(response.headers.get("cache-control"), "no-store");
+});
+
+test("health is a read-only database readiness check", async () => {
+  const response = await getHealth();
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await response.json(), { status: "ok" });
 });
 
 test("reading and follow-up responses are non-cacheable on success and validation failure", async () => {
