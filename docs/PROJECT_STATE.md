@@ -167,3 +167,24 @@ The 2026-09-18 DeepSeek verification configures the selected local provider as `
 Production AI activation and recovery (2026-09-18): after explicit user confirmation, the selected DeepSeek provider configuration was transferred over SSH into the VPS-only `/etc/natarot.env` file; the secret value was never printed, committed, or returned by the API. The first production request reached DeepSeek but exposed a strict-contract formatting mismatch because `direct_answer` arrived as one paragraph. Commit `4e6e3e6` adds the prompt instruction and regression coverage requiring 2–4 blank-line-separated paragraphs, then was rebuilt and deployed with the verified `dist/` artifact. The active `natarot.service` now serves the fixed release. A fresh public guest flow returned HTTP `200` from `/api/tarot/reading` with three card-evidence items, three direct-answer paragraphs, personal insights, reflection prompts and next steps; the production Room retry was also verified in the browser and rendered the complete reading panel.
 
 DeepSeek schema follow-up (2026-09-18): a second exact-room retry exposed that the provider could still return an out-of-bounds `reflection_prompts` array even when the JSON was otherwise valid. Commit `7cd410d` adds explicit cardinality requirements for personal insights, reflection prompts, next steps, card evidence and follow-up suggestions to both the system prompt and JSON contract. The Tarot suite passes 137/137, TypeScript/build/diff checks pass, the release is deployed on the active VPS service, and the exact public room retry now returns HTTP `200` and renders the complete Vietnamese reading panel. The latest production log records the successful DeepSeek response with four cards and prompt version `tarot-reading-v3`.
+
+## NaTarot Level 4 governance bootstrap (2026-09-20)
+
+This mission created the source-grounded governance system in `docs/project/` plus the implementation plan `docs/superpowers/plans/2026-09-20-natarot-level4-governance-bootstrap.md`. It intentionally made no product behavior, application code, authentication, AI prompt, database schema/migration, deployment, environment, secret, production, merge, push, or restart change. The existing Home/UI changes and untracked tests in the working tree were preserved.
+
+Baseline: repository `/Users/tranquangthanh/Documents/ChatGPT/test astra`; branch `codex/tooling-and-version-history`; starting `HEAD` `757b3b366eb9e16635712302b2f59b889f113f62`; branch was six commits behind its remote tracking ref. Pre-existing modified files were `app/globals.css`, `app/vintarot.tsx`, and this state file; pre-existing untracked files included the Home tests and `docs/superpowers/plans/2026-09-17-homepage-3d.md`. Ignored runtime/env/build/worktree data was not changed intentionally.
+
+Discovered architecture: React 19 + TypeScript on Vinext/Vite with Cloudflare D1-compatible persistence, a Node `node:sqlite` D1 adapter for the VPS topology, ChatGPT header auth plus guest cookie ownership, dynamic Tarot catalog/draw/session persistence, and server-side OpenAI/Gemini/DeepSeek provider adapters with a structured parser and normalized/legacy reading compatibility path. The governance docs classify features and zones from source evidence and explicitly mark missing integrations and unverified production claims.
+
+Validation evidence for this bootstrap:
+
+- `npx tsx --test tests/*.test.ts`: baseline FAIL, 265 tests total, 263 passed, 2 failed. `tests/celestial-surfaces.test.ts` and `tests/homepage-celestial.test.ts` expect the `cosmic-stars-far` marker that is absent from the current user-owned Home source. No application change was made to alter this baseline.
+- `npx tsc --noEmit`: PASS.
+- `npm run build`: PASS; Vinext built all current application and API routes.
+- `npm run lint`: baseline FAIL with 2,017 errors and 13,301 warnings across generated/runtime/tooling and legacy application rules; not fixed in this mission.
+- `git diff --check`: PASS after the final state-file append and final audit.
+- Governance self-check: all seven required `docs/project/*.md` files, all PHASE 0–9 headings, referenced test files, placeholder scan, secret-like literal scan, and path checks passed.
+
+Security observations are documented, not fixed: the guest owner cookie is a bearer identity without a server signature/binding visible in source (medium severity estimate, threat-model review required), and write routes only compare `Origin` when present (low/unknown severity until browser threat-model validation). No credentials were written to governance files.
+
+Unfinished work: resolve the pre-existing Home source/test mismatch in its own scoped mission; run the pending task-observer review when accepted; complete physical-device motion QA, production service provisioning, and any authorized security/integration missions. This bootstrap did not deploy or claim production readiness.

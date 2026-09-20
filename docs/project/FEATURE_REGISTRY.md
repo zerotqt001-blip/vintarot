@@ -1,0 +1,45 @@
+# NaTarot Feature Registry
+
+Evidence snapshot: source and tests inspected on 2026-09-20. Status is an engineering confidence classification, not a claim of user acceptance or production readiness.
+
+## Status definitions
+
+- **STABLE:** implementation, current entry point, relevant tests, and no unresolved transition in the inspected source provide reasonable confidence for the scoped behavior.
+- **ACTIVE DEVELOPMENT:** implemented and used, but recent changes, incomplete integration, broad coupling, or known missing verification make it unsafe to treat as stable.
+- **EXPERIMENTAL:** implemented as a bounded experiment or game-like surface without evidence of a settled product contract.
+- **PLANNED:** source or documentation explicitly presents the capability as pending/not connected.
+- **DEPRECATED:** retained for compatibility but no longer the canonical entry point.
+- **UNKNOWN:** no sufficient source evidence to classify the requested feature as implemented or planned.
+
+## Registry
+
+| Feature | Status | Protection | Entry points | Dependencies | Tests | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Home / NaTarot shell | ACTIVE DEVELOPMENT | SOFT / ACTIVE | `/`, `app/vintarot.tsx` | global CSS, i18n, navigation, brand primitives | `homepage-celestial`, `home-celestial-theme`, `home-mobile-polish`, `celestial-surfaces`, brand tests | Current working tree contains uncommitted Home/mobile polish; preserve it. |
+| Create Ritual question flow | ACTIVE DEVELOPMENT | SOFT | `/create`, `app/create/ritual.tsx` | i18n, `sessionStorage`, Room draft restoration | `create-celestial`, `create-borderless` | Two-step topic/question flow exists; it hands off to Room. |
+| Platform ChatGPT authentication | ACTIVE DEVELOPMENT | HARD | `app/chatgpt-auth.ts`, server route user lookup | platform headers, redirect paths, record/room ownership | `f001-identity-boundary`, `request-identity`, `server-origin` | Dispatch-owned sign-in/callback routes are not implemented in this repo. |
+| Guest identity and owner cookie | ACTIVE DEVELOPMENT | HARD | `lib/tarot-guest.ts`, request APIs | `vintarot_guest`, SameSite/Secure policy, session ownership | `tarot-guest`, `request-identity`, room guest persistence | Cookie is the guest ownership mechanism; threat-model observation is recorded in this bootstrap report. |
+| Profile and language preference | ACTIVE DEVELOPMENT | SOFT | `/profile`, `app/pages.tsx`, `components/language.tsx` | `/api/records`, localStorage, i18n | `i18n`, `language-default` | Authenticated profile persistence exists; locale starts Vietnamese unless stored preference exists. |
+| Tarot Room | ACTIVE DEVELOPMENT | ACTIVE / HARD dependencies | `/room`, `app/room/room.tsx` | catalog, room persistence, draw/session, UI motion, reading panel | Room content/default/mobile/gesture/motion/guest-persistence/UI-cleanup suites | Largest stateful surface and highest ordinary feature blast radius. |
+| Spread catalog | STABLE | HARD data dependency | `/api/tarot/catalog`, `lib/tarot-catalog.ts` | D1 seeded categories/templates/positions, locale | `tarot-catalog`, `tarot-api-contract`, migration/seed tests | Bilingual catalog is seeded by migration `0003`. |
+| Card drawing and orientation | STABLE | HARD data dependency | `/api/tarot/draw`, `lib/tarot-draw.ts` | active deck/cards, spread positions, secure randomness, guest/user owner | `tarot-draw`, `tarot-room`, `tarot-api-contract`, `tarot-seed` | Supports server-created plans and exact selected-card plans. |
+| Reading session persistence | ACTIVE DEVELOPMENT | HARD | `/api/tarot/session`, repository/session tables | owner identity, catalog, reading cards, D1/SQLite | `tarot-repository`, `tarot-reading-route`, `tarot-room` | Contract is implemented, but the subsystem is still evolving with saved readings. |
+| AI Tarot reading engine | ACTIVE DEVELOPMENT | HARD | `/api/tarot/reading`, compatibility `/api/tarot/interpret` | provider config, V5 knowledge, prompt contract, parser, persisted reading | `tarot-ai`, `tarot-interpretation`, `tarot-reading-context`, `tarot-reading-service`, `tarot-reading-route`, API contract | Provider keys are runtime-only; local no-provider behavior is intentionally unavailable. |
+| Reading results presentation | ACTIVE DEVELOPMENT | HARD AI semantics / SOFT UI | `components/reading/`, Room ReadingPanel | structured payload, i18n, card artwork, responsive panel | `tarot-reading-ui`, `tarot-room`, reading component coverage | Visual design is coupled to structured output fields. |
+| AI follow-up reflection | ACTIVE DEVELOPMENT | HARD AI semantics | `/api/tarot/follow-up`, follow-up components/services | saved reading, session owner, provider follow-up capability | `tarot-follow-up`, `tarot-follow-up-route`, reading UI tests | Follow-up is not available if provider lacks the optional method. |
+| Saved Tarot readings | ACTIVE DEVELOPMENT | HARD data/identity | `/api/tarot/saved-readings`, journal saved-reading component | authenticated owner, exact session/reading, `records` marker, normalized/legacy payload | `tarot-saved-reading`, `tarot-saved-reading-route`, `saved-reading-room`, `saved-reading-journal` | V1 is on the current HEAD; guest Save intentionally opens sign-in. |
+| Manual journal and practice | ACTIVE DEVELOPMENT | SOFT / identity | `/journal`, `/community`, `/api/records` | owner-scoped `records`, card metadata, i18n | `saved-reading-journal`, UI/page contract tests | Manual journal entries and practice reflections share the records API. |
+| Guidebook / card library | STABLE | SOFT shared shell | `/guidebook`, `/decks`, `/guidebook/:card` | static card data, meanings, Moonlight artwork fallback, i18n | `guidebook`, `guidebook-celestial`, `navigation-guidebook`, `card-narrative` | `/decks` is a compatibility route to the Guidebook; no deck switcher is evidenced. |
+| Daily spread | ACTIVE DEVELOPMENT | SOFT / records | `/daily-spread` | local shuffle, card UI, optional journal save | `daily-spread-ui`, i18n/UI tests | Two-card local daily flow; it is not the dynamic Tarot API draw path. |
+| Pairing game (PAIROT) | EXPERIMENTAL | SOFT | `/game` | local puzzle data, card picker, optional game record | `brand-*`/page coverage; no dedicated game behavior suite found | Implemented client interaction with five local puzzles; product maturity is not established. |
+| Private rooms and invites | ACTIVE DEVELOPMENT | HARD identity/data | `/room`, `/invites`, `/api/rooms` | room owner/member tables, revision updates, invite token, guest/user identity | `room-guest-persistence`, room tests, `deployment-contract` | Private room sharing is implemented; public reading links are not. |
+| Booking UI | PLANNED | HARD deployment/integrations when activated | `/book`, `/bookings`, `/api/records` booking schema | payment, email, calendar/notification services | No booking completion test; page and rejected API contract are source evidence | UI is a preview and the API returns “Booking is not open yet.” |
+| Video, payments, email, public access integrations | PLANNED | HARD deployment | `/api/integrations`, service status UI | external providers and access policy | `deployment-contract`; no integration execution tests | Route reports all four as false; not connected. |
+| Public share links, QR, image export, Google Drive | UNKNOWN | HARD if introduced | No source entry point found | would require storage/public ownership model | No automated coverage found | Do not describe as implemented or planned without a new discovery decision. |
+| Membership, affiliate, admin | UNKNOWN | UNKNOWN | No source entry point found | business/auth/payment boundaries unknown | No automated coverage found | Not implemented in inspected repository. |
+| Localization | ACTIVE DEVELOPMENT | SOFT shared shell | `lib/i18n.ts`, `components/language.tsx` | all user-facing strings, profile preference, localStorage | `i18n`, `language-default`, route/UI suites | English and Vietnamese are implemented; parity changes have broad surface impact. |
+| Cloudflare/Sites and VPS deployment | ACTIVE DEVELOPMENT | HARD | `vite.config.ts`, `.openai/hosting.json`, `deploy/`, scripts | D1/R2 bindings, Node/Vinext, Nginx, systemd, env | `deployment-contract`, build/typecheck | Source supports more than one topology; live deployment is documented but not re-verified by this bootstrap. |
+
+## Classification gaps
+
+The registry deliberately does not mark the whole product STABLE. Recent commits, current uncommitted UI work, provider/runtime dependencies, and the absence of a single end-to-end test command mean future missions must use the protection and test matrix rather than relying on this table as a release approval.
