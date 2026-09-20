@@ -69,7 +69,7 @@ export type TarotReadingInput = {
   question: string;
   optionalContext: string | null;
   category: { id: string; key: string; name: string } | null;
-  spread: { id: string; key: string; name: string; description: string };
+  spread: { id: string; key: string; name: string; description: string; semantics?: import("../tarot-spread-semantics").TarotSpreadSemantics };
   cards: TarotReadingCardContext[];
   retrievedGuidance: TarotRetrievedGuidance;
   combinationHints: TarotCombinationHint[];

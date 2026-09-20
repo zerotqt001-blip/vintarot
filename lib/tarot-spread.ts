@@ -15,6 +15,7 @@ export type ResolvedTarotSpread = {
   cardCount: TarotCatalogTemplate["cardCount"];
   spreadType: TarotCatalogTemplate["spreadType"];
   positions: ResolvedTarotSpreadPosition[];
+  semantics?: TarotCatalogTemplate["semantics"];
 };
 
 /** Resolve one already-localized catalog template without changing its semantics. */
@@ -54,5 +55,6 @@ export function resolveTarotSpread(
     cardCount: template.cardCount,
     spreadType: template.spreadType,
     positions,
+    ...(template.semantics ? { semantics: template.semantics } : {}),
   };
 }

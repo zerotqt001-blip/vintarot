@@ -12,6 +12,8 @@ test("catalog response groups active categories and ordered templates/positions"
   assert.deepEqual(catalog.categories[0].templates[0].positions.map((position) => position.key), ["next_step"]);
   assert.equal(catalog.categories[0].templates[0].cardCount, 1);
   assert.equal(catalog.categories[0].templates[0].name, "One Small Step");
+  assert.equal(catalog.categories[0].templates[0].semantics?.interpretationStrategy, "sequence");
+  assert.deepEqual(catalog.categories[0].templates[0].semantics?.positionRelationships, []);
 });
 
 test("catalog rejects a template whose position count disagrees with card_count", () => {

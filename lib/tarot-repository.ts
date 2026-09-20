@@ -8,6 +8,8 @@ import type {
 import type { ReadingOwner } from "./tarot-guest";
 import { serializeLegacyReadingFields, type StoredReadingRow } from "./tarot-reading-compat";
 import type { ReadingPayload } from "./tarot-interpretation";
+import { deriveTarotSpreadSemantics, localizeTarotSpreadSemantics } from "./tarot-spread-semantics";
+import type { TarotSpreadSemantics } from "./tarot-spread-semantics";
 
 export type CatalogCategoryRow = {
   id: string;
@@ -141,6 +143,7 @@ export type ReadingTemplateWithPositions = {
     meaning: string;
     prompt: string;
   }>;
+  semantics?: TarotSpreadSemantics;
 };
 
 export type NewReadingSession = {
@@ -223,20 +226,42 @@ export function mapCatalogRows(rows: CatalogRows, locale: TarotLocale): TarotCat
   }
 
   const localized = (en: string, vi: string) => (locale === "vi" ? vi : en);
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
   const mappedTemplates = new Map<string, TarotCatalogTemplate>();
   for (const template of orderBy(templates)) {
-    const templatePositions: TarotCatalogPosition[] = positionOrder(positionsByTemplate.get(template.id) || []).map((position) => ({
+    const sourcePositions = positionOrder(positionsByTemplate.get(template.id) || []);
+    const templatePositions: TarotCatalogPosition[] = sourcePositions.map((position) => ({
       ...position,
       label: localized(position.labelEn, position.labelVi),
       description: localized(position.descriptionEn, position.descriptionVi),
       prompt: localized(position.promptEn, position.promptVi),
     }));
+    const category = categoryById.get(template.categoryId);
+    const semantics = category ? localizeTarotSpreadSemantics(deriveTarotSpreadSemantics({
+      categorySlug: category.slug,
+      categoryName: { en: category.nameEn, vi: category.nameVi },
+      categoryDescription: { en: category.descriptionEn, vi: category.descriptionVi },
+      template: {
+        slug: template.slug,
+        name: { en: template.nameEn, vi: template.nameVi },
+        description: { en: template.descriptionEn, vi: template.descriptionVi },
+        spreadType: template.spreadType,
+        cardCount: template.cardCount,
+      },
+      positions: sourcePositions.map((position) => ({
+        key: position.key,
+        order: position.order,
+        label: { en: position.labelEn, vi: position.labelVi },
+        description: { en: position.descriptionEn, vi: position.descriptionVi },
+      })),
+    }), locale) : undefined;
     mappedTemplates.set(template.id, {
       ...template,
       active: true,
       name: localized(template.nameEn, template.nameVi),
       description: localized(template.descriptionEn, template.descriptionVi),
       positions: templatePositions,
+      ...(semantics ? { semantics } : {}),
     });
   }
 
@@ -313,6 +338,24 @@ export function getTarotRepository(database: D1Database): TarotRepository {
           meaning: localized(position.descriptionEn, position.descriptionVi),
           prompt: localized(position.promptEn, position.promptVi),
         })),
+        semantics: localizeTarotSpreadSemantics(deriveTarotSpreadSemantics({
+          categorySlug: category.slug,
+          categoryName: { en: category.nameEn, vi: category.nameVi },
+          categoryDescription: { en: category.descriptionEn, vi: category.descriptionVi },
+          template: {
+            slug: template.slug,
+            name: { en: template.nameEn, vi: template.nameVi },
+            description: { en: template.descriptionEn, vi: template.descriptionVi },
+            spreadType: template.spreadType,
+            cardCount: template.cardCount,
+          },
+          positions: positionRows.map((position) => ({
+            key: position.key,
+            order: position.order,
+            label: { en: position.labelEn, vi: position.labelVi },
+            description: { en: position.descriptionEn, vi: position.descriptionVi },
+          })),
+        }), locale),
       };
     },
     async listCards(deckId) {

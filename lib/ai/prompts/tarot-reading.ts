@@ -154,12 +154,20 @@ export const TAROT_FOLLOW_UP_JSON_OUTPUT_CONTRACT = [
 export const MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH = 1000;
 
 export function buildTarotFollowUpPromptContext(input: TarotFollowUpInput): string {
+  const spread = input.spread.semantics ? {
+    ...input.spread,
+    semantics: {
+      ...input.spread.semantics,
+      positionRelationships: input.spread.semantics.positionRelationships.slice(0, 6),
+      interpretationEmphasis: input.spread.semantics.interpretationEmphasis.slice(0, 4),
+    },
+  } : input.spread;
   return JSON.stringify({
     target_language: input.locale,
     question: input.question.trim().slice(0, MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH),
     follow_up_question: input.followUpQuestion.trim().slice(0, MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH),
     category: input.category,
-    spread: input.spread,
+    spread,
     drawn_cards: input.cards.map((card) => ({
       reading_card_id: card.readingCardId,
       position: card.position,
@@ -171,6 +179,14 @@ export function buildTarotFollowUpPromptContext(input: TarotFollowUpInput): stri
 }
 
 export function buildTarotPromptContext(input: TarotReadingInput): string {
+  const spread = input.spread.semantics ? {
+    ...input.spread,
+    semantics: {
+      ...input.spread.semantics,
+      positionRelationships: input.spread.semantics.positionRelationships.slice(0, 6),
+      interpretationEmphasis: input.spread.semantics.interpretationEmphasis.slice(0, 4),
+    },
+  } : input.spread;
   return JSON.stringify({
     knowledge_version: input.knowledgeVersion,
     domain: input.domain,
@@ -178,7 +194,7 @@ export function buildTarotPromptContext(input: TarotReadingInput): string {
     question: input.question,
     optional_context: input.optionalContext,
     category: input.category,
-    spread: input.spread,
+    spread,
     drawn_cards: input.cards.map((card) => ({ reading_card_id: card.readingCardId, orientation: card.orientation, position: card.position, card: card.card, knowledge: card.knowledge })),
     retrieved_guidance: input.retrievedGuidance,
     combination_hints: input.combinationHints.slice(0, 2),

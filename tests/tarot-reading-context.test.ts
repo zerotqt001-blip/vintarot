@@ -114,7 +114,10 @@ test("builds a bounded V5 context from the exact stored cards and positions", ()
     key: template.template.slug,
     name: template.template.name,
     description: template.template.description,
+    semantics: input.spread.semantics,
   });
+  assert.equal(input.spread.semantics?.interpretationStrategy, "tension-resolution");
+  assert.ok(input.spread.semantics?.positionRelationships.some((relationship) => relationship.from === "obstacle" && relationship.to === "solution"));
   assert.deepEqual(input.cards.map((current) => current.readingCardId), [
     "reading-card-persona",
     "reading-card-obstacle",
@@ -133,6 +136,7 @@ test("builds a bounded V5 context from the exact stored cards and positions", ()
   const prompt = buildTarotPromptContext(input);
   assert.match(prompt, /"knowledge_version":"5\.0"/);
   assert.match(prompt, /emotional fulfillment|shared belonging/i);
+  assert.match(prompt, /positionRelationships/);
   assert.doesNotMatch(prompt, /G001|B01|benchmark|evaluation/);
   assert.doesNotMatch(prompt, /The Fool/);
 });
