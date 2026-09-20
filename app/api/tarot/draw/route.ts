@@ -2,12 +2,13 @@ import { boundary, db, json, originCheck } from "@/lib/server";
 import { getTarotRepository } from "@/lib/tarot-repository";
 import { drawRequestSchema, makeDrawPlan, makeSelectedDrawPlan } from "@/lib/tarot-draw";
 import { readOptionalOwner } from "@/lib/tarot-guest";
+import { noStoreResponse } from "@/lib/request-identity";
 
 export async function POST(req: Request) {
   return boundary(async () => {
     originCheck(req);
     const validation = drawRequestSchema.safeParse(await json(req));
-    if (!validation.success) return Response.json({ error: "Invalid Tarot draw request." }, { status: 400 });
+    if (!validation.success) return noStoreResponse(Response.json({ error: "Invalid Tarot draw request." }, { status: 400 }));
     const parsed = validation.data;
     const { owner, setCookie } = await readOptionalOwner(req);
     const repository = getTarotRepository(db());
@@ -15,10 +16,10 @@ export async function POST(req: Request) {
       repository.getActiveDeck(parsed.deck_id),
       repository.getActiveTemplate(parsed.category_id, parsed.spread_template_id),
     ]);
-    if (!deck) return Response.json({ error: "Deck not found." }, { status: 404 });
-    if (!activeTemplate) return Response.json({ error: "Spread not found for this category." }, { status: 404 });
+    if (!deck) return noStoreResponse(Response.json({ error: "Deck not found." }, { status: 404 }));
+    if (!activeTemplate) return noStoreResponse(Response.json({ error: "Spread not found for this category." }, { status: 404 }));
     if (activeTemplate.positions.length !== activeTemplate.template.cardCount) {
-      return Response.json({ error: "Spread position count is invalid." }, { status: 409 });
+      return noStoreResponse(Response.json({ error: "Spread position count is invalid." }, { status: 409 }));
     }
 
     const positions = activeTemplate.positions.map((position) => ({
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
           })
         : makeDrawPlan({ cards, positions, reversals: parsed.reversals });
     } catch (error) {
-      return Response.json({ error: error instanceof Error ? error.message : "Selected cards are invalid." }, { status: 400 });
+      return noStoreResponse(Response.json({ error: error instanceof Error ? error.message : "Selected cards are invalid." }, { status: 400 }));
     }
     const sessionId = globalThis.crypto.randomUUID();
     await repository.createReadingSession({
@@ -109,6 +110,6 @@ export async function POST(req: Request) {
     };
     const headers = new Headers({ "Content-Type": "application/json" });
     if (setCookie) headers.set("Set-Cookie", setCookie);
-    return new Response(JSON.stringify(response), { status: 201, headers });
+    return noStoreResponse(new Response(JSON.stringify(response), { status: 201, headers }));
   });
 }

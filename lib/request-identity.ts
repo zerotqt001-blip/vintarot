@@ -56,7 +56,13 @@ export async function readRequestIdentity(request: Request): Promise<RequestIden
   };
 }
 
+export function noStoreResponse(response: Response): Response {
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
+
 export function attachIdentityCookie(response: Response, identity: RequestIdentity): Response {
+  noStoreResponse(response);
   if (identity.setCookie) response.headers.set("Set-Cookie", identity.setCookie);
   return response;
 }
