@@ -28,7 +28,7 @@
 - [x] Write `NATAROT_UI_ROADMAP.md` with page blueprints, phased migration, regression strategy, and future commercial surfaces.
 - [x] Self-review for unresolved critical or important architecture issues; verify documentation-only scope.
 - [x] Run the repository's documented tests, typecheck, build, diff checks, and secret scan; record exact outcomes.
-- [ ] Update `docs/PROJECT_STATE.md`, commit related documentation, push the research branch, and verify remote parity.
+- [x] Update `docs/PROJECT_STATE.md`, commit related documentation, push the research branch, and verify remote parity.
 
 ## Verification Evidence
 
