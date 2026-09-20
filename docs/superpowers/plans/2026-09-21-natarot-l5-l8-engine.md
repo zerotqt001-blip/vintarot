@@ -120,7 +120,7 @@
 
 **Interfaces:**
 - `TarotClarificationInput` carries the original validated reading context plus one trusted supplementary card.
-- `TarotAIProvider.generateClarification?(input)` returns the existing strict `{ answer: string }` payload; DeepSeek implements it with a dedicated clarification system prompt and the same JSON transport.
+- `TarotAIProvider.generateClarification?(input)` returns the existing strict `{ answer: string }` payload; each configured provider implements it with a dedicated clarification system prompt and its native structured JSON transport.
 - `TarotRepository.updateReadingPayload(readingId, sessionId, payload, expectedPayload?): Promise<boolean>` updates only the exact reading row and supports request-id idempotency checks.
 - `TarotReadingPayload.supplementaryDraws?` is optional and capped; old payloads parse without it.
 

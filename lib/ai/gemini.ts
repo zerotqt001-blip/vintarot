@@ -1,6 +1,9 @@
 import {
+  buildTarotClarificationPromptContext,
   buildTarotFollowUpPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
   TAROT_RESPONSE_SCHEMA,
@@ -8,7 +11,7 @@ import {
 } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
 import type { TarotProviderFailureStage } from "./diagnostics";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 type ExtractedCandidateText = { content: string } | { failureStage: Extract<TarotProviderFailureStage, "provider_envelope_invalid" | "provider_content_missing"> };
 
@@ -78,6 +81,27 @@ export function createGeminiProvider(
         throw new TarotAIError("invalid_response", "Gemini returned an invalid follow-up response.", { retryable: true, failureStage: extracted.failureStage });
       }
       return parseTarotFollowUpContent(extracted.content);
+    },
+    async generateClarification(input) {
+      const envelope = await request(url, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: TAROT_CLARIFICATION_SYSTEM_PROMPT }] },
+          contents: [{ role: "user", parts: [{ text: buildTarotClarificationPromptContext(input) }] }],
+          generationConfig: {
+            temperature: 0.35,
+            responseMimeType: "application/json",
+            responseJsonSchema: TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+          },
+        }),
+      });
+
+      const extracted = extractCandidateText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "Gemini returned an invalid clarification response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotClarificationContent(extracted.content);
     },
   };
 }

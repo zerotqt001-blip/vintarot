@@ -1,21 +1,26 @@
 'use client';
 
 import { FormEvent, useState } from "react";
-import type { ReadingFollowUp, ReadingTranslator } from "./reading-types";
+import type { ReadingClarification, ReadingFollowUp, ReadingTranslator } from "./reading-types";
 
 type FollowUpReadingProps = {
   suggestions: string[];
   question: string;
   onQuestionChange: (question: string) => void;
   onSubmit: (question: string) => Promise<string>;
+  onClarificationSubmit?: (question: string) => Promise<ReadingClarification>;
+  initialClarifications?: ReadingClarification[];
   resetEpoch?: number;
   t: ReadingTranslator;
 };
 
-export function FollowUpReading({ suggestions, question, onQuestionChange, onSubmit, t }: FollowUpReadingProps) {
+export function FollowUpReading({ suggestions, question, onQuestionChange, onSubmit, onClarificationSubmit, initialClarifications = [], t }: FollowUpReadingProps) {
   const [answers, setAnswers] = useState<ReadingFollowUp[]>([]);
+  const [clarifications, setClarifications] = useState<ReadingClarification[]>(initialClarifications);
   const [isLoading, setIsLoading] = useState(false);
+  const [clarificationLoading, setClarificationLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clarificationError, setClarificationError] = useState<string | null>(null);
   const visibleSuggestions = suggestions.slice(0, 3);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -35,6 +40,26 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
       setError(t("reading.followUpError"));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function drawClarification() {
+    const nextQuestion = question.trim();
+    if (!onClarificationSubmit || clarificationLoading || isLoading) return;
+    if (!nextQuestion) {
+      setClarificationError(t("reading.clarificationEmpty"));
+      return;
+    }
+    setClarificationError(null);
+    setClarificationLoading(true);
+    try {
+      const clarification = await onClarificationSubmit(nextQuestion);
+      setClarifications((current) => [...current, clarification]);
+      onQuestionChange("");
+    } catch {
+      setClarificationError(t("reading.clarificationError"));
+    } finally {
+      setClarificationLoading(false);
     }
   }
 
@@ -66,25 +91,55 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
           value={question}
           onChange={(event) => onQuestionChange(event.target.value)}
           placeholder={t("reading.followUpInput")}
-          disabled={isLoading}
+          disabled={isLoading || clarificationLoading}
         />
-        <button
-          className="min-h-11 rounded-xl bg-antique-gold px-5 text-sm font-medium text-midnight-navy transition-colors hover:bg-antique-gold/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-55 motion-reduce:transition-none"
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? t("reading.followUpLoading") : t("reading.followUpSubmit")}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="min-h-11 rounded-xl bg-antique-gold px-5 text-sm font-medium text-midnight-navy transition-colors hover:bg-antique-gold/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-55 motion-reduce:transition-none"
+            type="submit"
+            disabled={isLoading || clarificationLoading}
+          >
+            {isLoading ? t("reading.followUpLoading") : t("reading.followUpSubmit")}
+          </button>
+          {onClarificationSubmit && (
+            <button
+              className="min-h-11 rounded-xl border border-antique-gold/45 px-4 text-sm font-medium text-ivory transition-colors hover:border-antique-gold hover:bg-antique-gold/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-55 motion-reduce:transition-none"
+              type="button"
+              onClick={() => void drawClarification()}
+              disabled={isLoading || clarificationLoading || clarifications.length >= 3}
+            >
+              {clarificationLoading ? t("reading.clarificationLoading") : t("reading.clarificationAction")}
+            </button>
+          )}
+        </div>
       </form>
-      <div className="mt-4 min-h-6 text-sm" aria-live="polite" aria-busy={isLoading}>
+      <div className="mt-4 min-h-6 text-sm" aria-live="polite" aria-busy={isLoading || clarificationLoading}>
         {isLoading && <p className="text-antique-gold">{t("reading.followUpLoading")}</p>}
         {error && <p className="text-rose-200" role="alert">{error}</p>}
+        {clarificationLoading && <p className="text-antique-gold">{t("reading.clarificationLoading")}</p>}
+        {clarificationError && <p className="text-rose-200" role="alert">{clarificationError}</p>}
       </div>
       {answers.length > 0 && (
         <ol className="mt-2 space-y-5" aria-label={t("reading.followUpAnswers")}>
           {answers.map((entry) => (
             <li className="reading-follow-up-answer border-t border-antique-gold/15 pt-4" key={entry.id}>
               <p className="text-sm font-medium text-antique-gold">{entry.question}</p>
+              <p className="mt-2 max-w-[70ch] text-sm leading-7 text-ivory/78">{entry.answer}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+      {clarifications.length > 0 && (
+        <ol className="mt-6 space-y-5" aria-label={t("reading.clarificationAnswers")}>
+          {clarifications.map((entry) => (
+            <li className="reading-clarification border-t border-antique-gold/15 pt-4" data-reading-clarification-id={entry.id} key={entry.id}>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p className="text-sm font-medium text-antique-gold">{t("reading.clarificationCard")}: {entry.card.nameVi || entry.card.nameEn}</p>
+                <span className="text-xs uppercase tracking-[0.08em] text-ivory/55">
+                  {entry.orientation === "reversed" ? t("reading.reversedLabel") : t("reading.uprightLabel")}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-ivory/65">{entry.question}</p>
               <p className="mt-2 max-w-[70ch] text-sm leading-7 text-ivory/78">{entry.answer}</p>
             </li>
           ))}

@@ -109,6 +109,7 @@ function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
     getMeaning: async () => null,
     getMeaningPair: async (cardId) => ({ upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") }),
     saveReading: async () => "saved-reading",
+    updateReadingPayload: async () => false,
     ...overrides,
   };
 }

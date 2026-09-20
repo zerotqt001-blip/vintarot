@@ -1,7 +1,7 @@
 import { parseReadingPayload, TarotReadingValidationError } from "../tarot-interpretation";
 import type { TarotAIDiagnosticDetails } from "./diagnostics";
 import { z } from "zod";
-import type { TarotFollowUpInput, TarotFollowUpPayload, TarotProviderId, TarotReadingInput, TarotReadingPayload } from "./types";
+import type { TarotClarificationInput, TarotClarificationPayload, TarotFollowUpInput, TarotFollowUpPayload, TarotProviderId, TarotReadingInput, TarotReadingPayload } from "./types";
 
 export type TarotAIErrorCode =
   | "configuration"
@@ -42,11 +42,14 @@ export type TarotAIProvider = {
   model: string;
   generateReading(input: TarotReadingInput): Promise<TarotReadingPayload>;
   generateFollowUp?(input: TarotFollowUpInput): Promise<TarotFollowUpPayload>;
+  generateClarification?(input: TarotClarificationInput): Promise<TarotClarificationPayload>;
 };
 
 export const tarotFollowUpPayloadSchema = z.object({
   answer: z.string().min(1).max(3000),
 }).strict();
+
+export const tarotClarificationPayloadSchema = tarotFollowUpPayloadSchema;
 
 export function parseTarotProviderContent(content: string, input: TarotReadingInput): TarotReadingPayload {
   let value: unknown;
@@ -82,6 +85,21 @@ export function parseTarotFollowUpContent(content: string): TarotFollowUpPayload
   const parsed = tarotFollowUpPayloadSchema.safeParse(value);
   if (!parsed.success) {
     throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid follow-up.", { retryable: true, cause: parsed.error });
+  }
+  return parsed.data;
+}
+
+export function parseTarotClarificationContent(content: string): TarotClarificationPayload {
+  let value: unknown;
+  try {
+    value = JSON.parse(content);
+  } catch (error) {
+    throw new TarotAIError("invalid_response", "Tarot AI provider returned invalid clarification JSON.", { retryable: true, cause: error });
+  }
+
+  const parsed = tarotClarificationPayloadSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new TarotAIError("invalid_response", "Tarot AI provider returned an invalid clarification.", { retryable: true, cause: parsed.error });
   }
   return parsed.data;
 }

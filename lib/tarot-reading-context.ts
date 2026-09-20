@@ -80,7 +80,7 @@ function keywords(value: string): string[] {
   return value.split(/[,·]/).map((part) => part.trim()).filter(Boolean);
 }
 
-function meaningEvidence(row: CardMeaningRow, supplemental?: TarotMeaningEvidence): TarotMeaningEvidence {
+export function meaningEvidence(row: CardMeaningRow, supplemental?: TarotMeaningEvidence): TarotMeaningEvidence {
   // Allowlist V5-only guidance. It may never overwrite localized D1 evidence.
   return {
     ...(supplemental ? {

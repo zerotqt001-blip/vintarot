@@ -29,6 +29,7 @@ test("consuming any fan card uses its server position order and prevents duplica
 test("Room reflection surface exposes normalized personal reading and follow-up boundary", () => {
   assert.match(roomSource, /api\(['"]tarot\/reading/);
   assert.match(roomSource, /api\(['"]tarot\/follow-up/);
+  assert.match(roomSource, /api\(['"]tarot\/clarification/);
   assert.match(roomSource, /sessionId/);
   for (const field of ["directAnswer", "personalInsights", "reflectionPrompts", "nextSteps", "cardEvidence"]) {
     assert.match(`${roomSource}\n${readingPanelSource}`, new RegExp(`reading\\.${field}`));
@@ -43,6 +44,7 @@ test("Room mounts one editorial reading panel and keeps the question editor sepa
   assert.match(roomSource, /artworkByReadingCardId/);
   assert.match(roomSource, /saveJournal/);
   assert.match(roomSource, /onFollowUpSubmit/);
+  assert.match(roomSource, /onClarificationSubmit/);
   assert.match(roomSource, /followUpResetKey=\{readingEpoch\.current\}/);
   assert.match(roomSource, /ReflectionPanel/);
   assert.match(roomSource, /room-reading-panel-retry/);

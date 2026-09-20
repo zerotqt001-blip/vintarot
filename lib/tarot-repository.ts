@@ -70,6 +70,7 @@ export type TarotRepository = {
   getMeaning(cardId: string, locale: TarotLocale, orientation: "upright" | "reversed"): Promise<CardMeaningRow | null>;
   getMeaningPair(cardId: string, locale: TarotLocale): Promise<{ upright: CardMeaningRow; reversed: CardMeaningRow } | null>;
   saveReading(input: NewReading): Promise<string>;
+  updateReadingPayload(readingId: string, sessionId: string, payload: ReadingPayload, expectedPayload?: string | null): Promise<boolean>;
 };
 
 export type DeckRow = {
@@ -413,6 +414,27 @@ export function getTarotRepository(database: D1Database): TarotRepository {
       const upright = parsed.get("upright");
       const reversed = parsed.get("reversed");
       return upright && reversed ? { upright, reversed } : null;
+    },
+    async updateReadingPayload(readingId, sessionId, payload, expectedPayload) {
+      const now = Date.now();
+      const serialized = JSON.stringify(payload);
+      let result;
+      if (expectedPayload === undefined) {
+        result = await database.prepare("UPDATE readings SET reading_payload = ?, updated_at = ? WHERE id = ? AND session_id = ?")
+          .bind(serialized, now, readingId, sessionId)
+          .run();
+      } else if (expectedPayload === null) {
+        result = await database.prepare("UPDATE readings SET reading_payload = ?, updated_at = ? WHERE id = ? AND session_id = ? AND reading_payload IS NULL")
+          .bind(serialized, now, readingId, sessionId)
+          .run();
+      } else {
+        result = await database.prepare("UPDATE readings SET reading_payload = ?, updated_at = ? WHERE id = ? AND session_id = ? AND reading_payload = ?")
+          .bind(serialized, now, readingId, sessionId, expectedPayload)
+          .run();
+      }
+      const changes = (result as unknown as { meta?: { changes?: number }; changes?: number }).meta?.changes
+        ?? (result as unknown as { changes?: number }).changes;
+      return Number(changes) === 1;
     },
     async saveReading(input) {
       const now = Date.now();

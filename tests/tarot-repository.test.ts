@@ -148,6 +148,43 @@ test("D1 context orders exact stored cards and persists the validated payload in
   assert.equal(saved.updated_at, saved.created_at);
 });
 
+test("updates only the exact reading payload with a session-scoped compare-and-set", async (t) => {
+  const { sqlite, repository, template, cards } = await storedReading(t);
+  const stored = (await repository.getSessionForOwner("guest-session", { kind: "guest", guestId: "owner-guest" }))!;
+  const historical = (await repository.getReadingTemplate(template.id, "en"))!;
+  const meanings = new Map(await Promise.all(cards.map(async (card) => [card.id, (await repository.getMeaningPair(card.id, "en"))!] as const)));
+  const input = buildTarotReadingInput({ ...stored, template: historical, meanings, locale: "en" });
+  const reading = parseReadingPayload({
+    direct_answer: "A grounded answer.\n\nA grounded second paragraph.",
+    personal_insights: [{ title: "Pattern", body: "A useful pattern." }],
+    reflection_prompts: [],
+    next_steps: [{ title: "Step", body: "Take one step." }],
+    card_evidence: input.cards.map((card) => ({ reading_card_id: card.readingCardId, position_key: card.position.key, interpretation: "Evidence." })),
+    deeper_reading: null,
+    follow_up_suggestions: ["What should I notice next?"],
+  }, input.cards, "en");
+  await repository.saveReading({ id: "cas-reading", sessionId: stored.session.id, reading, modelName: "test/model", promptVersion: "test-prompt" });
+
+  const updated = {
+    ...reading,
+    supplementaryDraws: [{
+      id: "clarification-1",
+      requestId: "request-1",
+      sequence: 1,
+      question: "What should I notice next?",
+      relationship: "clarification" as const,
+      card: { id: cards[3]?.id || cards[0].id, nameEn: "The Sun", nameVi: "The Sun", arcana: "major", suit: null },
+      orientation: "upright" as const,
+      answer: "Notice the choice you can make today.",
+    }],
+  };
+  const originalPayload = JSON.stringify(reading);
+  assert.equal(await repository.updateReadingPayload("cas-reading", stored.session.id, updated, originalPayload), true);
+  assert.deepEqual(JSON.parse(sqlite.prepare("SELECT reading_payload FROM readings WHERE id = ?").get("cas-reading")!.reading_payload as string), updated);
+  assert.equal(await repository.updateReadingPayload("cas-reading", "other-session", updated, JSON.stringify(updated)), false);
+  assert.equal(await repository.updateReadingPayload("cas-reading", stored.session.id, updated, originalPayload), false);
+});
+
 test("hydrates historical v3 normalized payloads with their original list cardinalities", async (t) => {
   const { repository, template, cards } = await storedReading(t);
   const stored = (await repository.getSessionForOwner("guest-session", { kind: "guest", guestId: "owner-guest" }))!;

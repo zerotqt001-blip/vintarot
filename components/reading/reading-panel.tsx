@@ -23,6 +23,7 @@ export function ReadingPanel({
   onClose,
   onSave,
   onFollowUpSubmit,
+  onClarificationSubmit,
   followUpResetKey = 0,
 }: ReadingPanelProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState("");
@@ -65,6 +66,8 @@ export function ReadingPanel({
                 question={followUpQuestion}
                 onQuestionChange={setFollowUpQuestion}
                 onSubmit={onFollowUpSubmit!}
+                onClarificationSubmit={onClarificationSubmit}
+                initialClarifications={reading.supplementaryDraws || []}
                 resetEpoch={followUpResetKey}
                 t={t}
               />

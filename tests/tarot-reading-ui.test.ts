@@ -108,6 +108,19 @@ test("FollowUpReading owns an input, answer list, and injected submit callback",
   assert.match(followUp, /aria-hidden=["']true["']/);
 });
 
+test("FollowUpReading exposes a clarification-card action without replacing manual follow-up", () => {
+  assert.match(followUp, /onClarificationSubmit/);
+  assert.match(followUp, /initialClarifications/);
+  assert.match(followUp, /clarifications\.length >= 3/);
+  assert.match(followUp, /clarificationLoading/);
+  assert.match(followUp, /reading\.clarification/);
+  assert.match(followUp, /reading-clarification/);
+  assert.match(panel, /onClarificationSubmit/);
+  assert.match(panel, /supplementaryDraws/);
+  assert.match(room, /api\(['"]tarot\/clarification/);
+  assert.match(room, /request_id/);
+});
+
 test("follow-up history resets by reading epoch without persisting a transcript", () => {
   assert.match(followUp, /resetEpoch\?: number/);
   assert.match(panel, /key=\{followUpResetKey\}/);
