@@ -43,7 +43,7 @@ export default async function SharePage({ params }: SharePageProps) {
   let errorKind: "not-found" | "unavailable" = "not-found";
   if (isShareToken(token)) {
     try {
-      view = await getProductionShareService().resolvePublicShare(token);
+      view = await (await getProductionShareService()).resolvePublicShare(token);
       if (!view) errorKind = "not-found";
     } catch (error) {
       if (error instanceof ShareTokenError) errorKind = "not-found";

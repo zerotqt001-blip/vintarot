@@ -13,7 +13,13 @@ import {
 } from "./tarot-share-contract";
 import { generateShareToken, hashShareToken, assertShareToken } from "./tarot-share-identity";
 import { projectPublicReading } from "./tarot-share-projection";
-import { ShareStorageUnavailableError } from "./tarot-share-store";
+import {
+  ShareActiveConflictError,
+  ShareIdConflictError,
+  ShareOwnershipError,
+  ShareStorageUnavailableError,
+  ShareTokenHashConflictError,
+} from "./tarot-share-store";
 import type { ReadingOwner } from "./tarot-guest";
 
 export class ShareNotFoundError extends Error {
@@ -31,6 +37,15 @@ export class ShareServiceUnavailableError extends Error {
   constructor(message = "Shared reading is temporarily unavailable.", options?: { cause?: unknown }) {
     super(message, options?.cause === undefined ? undefined : { cause: options.cause });
     this.name = "ShareServiceUnavailableError";
+  }
+}
+
+export class ShareAlreadyExistsError extends Error {
+  readonly code = "share_already_exists" as const;
+
+  constructor() {
+    super("An active share already exists for this reading.");
+    this.name = "ShareAlreadyExistsError";
   }
 }
 
@@ -62,6 +77,8 @@ function activeRecord(record: ShareRecord, now: number): boolean {
   return record.status === "active" && (record.expiresAt === null || record.expiresAt > now);
 }
 
+const MAX_CREATE_ATTEMPTS = 4;
+
 export class ShareService {
   private readonly now: () => number;
 
@@ -72,45 +89,64 @@ export class ShareService {
   async createShare(input: { owner: ReadingOwner; readingId: string; sessionId: string }): Promise<CreatedShare> {
     const snapshot = await this.options.source.loadShareableReading(input);
     if (!snapshot) throw new ShareNotFoundError();
-    const token = generateShareToken();
-    const tokenHash = await hashShareToken(token);
     const now = this.now();
-    const record: ShareRecord = {
-      id: shareId(tokenHash),
-      tokenHash,
-      owner: { ...input.owner },
-      readingId: input.readingId,
-      sessionId: input.sessionId,
-      status: "active",
-      locale: snapshot.locale,
-      projectionVersion: SHARE_PROJECTION_VERSION,
-      geometryVersion: SHARE_GEOMETRY_VERSION,
-      rendererVersion: SHARE_RENDERER_VERSION,
-      createdAt: now,
-      updatedAt: now,
-      revokedAt: null,
-      expiresAt: null,
-    };
-    await this.options.store.create(record);
-    await this.options.store.insertEvent({
-      shareId: record.id,
-      tokenHash,
-      now,
-      event: {
-        event_id: eventId(),
-        event_name: "share_created",
+    let lastCollision: unknown;
+    for (let attempt = 0; attempt < MAX_CREATE_ATTEMPTS; attempt += 1) {
+      const token = generateShareToken();
+      const tokenHash = await hashShareToken(token);
+      const record: ShareRecord = {
+        id: shareId(tokenHash),
+        tokenHash,
+        owner: { ...input.owner },
+        readingId: input.readingId,
+        sessionId: input.sessionId,
+        status: "active",
         locale: snapshot.locale,
-        source: "share",
-        renderer_version: record.rendererVersion,
-        created_at: now,
-      },
-    });
-    return {
-      token,
-      publicUrl: buildPublicShareUrl(token, this.options.origin),
-      imageUrl: buildShareImageUrl(token, this.options.origin),
-      createdAt: now,
-    };
+        projectionVersion: SHARE_PROJECTION_VERSION,
+        geometryVersion: SHARE_GEOMETRY_VERSION,
+        rendererVersion: SHARE_RENDERER_VERSION,
+        createdAt: now,
+        updatedAt: now,
+        revokedAt: null,
+        expiresAt: null,
+      };
+      try {
+        await this.options.store.create(record);
+      } catch (error) {
+        if (error instanceof ShareActiveConflictError) throw new ShareAlreadyExistsError();
+        if (error instanceof ShareOwnershipError) throw new ShareNotFoundError();
+        if (error instanceof ShareTokenHashConflictError || error instanceof ShareIdConflictError) {
+          lastCollision = error;
+          continue;
+        }
+        throw error;
+      }
+
+      try {
+        await this.options.store.insertEvent({
+          shareId: record.id,
+          tokenHash,
+          now,
+          event: {
+            event_id: eventId(),
+            event_name: "share_created",
+            locale: snapshot.locale,
+            source: "share",
+            renderer_version: record.rendererVersion,
+            created_at: now,
+          },
+        });
+      } catch {
+        // Analytics must not undo or expose a successfully-created bearer link.
+      }
+      return {
+        token,
+        publicUrl: buildPublicShareUrl(token, this.options.origin),
+        imageUrl: buildShareImageUrl(token, this.options.origin),
+        createdAt: now,
+      };
+    }
+    throw new ShareServiceUnavailableError("Share links are temporarily unavailable.", { cause: lastCollision });
   }
 
   async resolvePublicShare(token: string, now = this.now()) {
@@ -139,6 +175,15 @@ export class ShareService {
 
   async revokeShare(input: { shareId: string; owner: ReadingOwner; now?: number }): Promise<boolean> {
     return this.options.store.revoke({ ...input, now: input.now ?? this.now() });
+  }
+
+  async revokeShareByToken(input: { token: string; owner: ReadingOwner; now?: number }): Promise<boolean> {
+    assertShareToken(input.token);
+    const now = input.now ?? this.now();
+    const tokenHash = await hashShareToken(input.token);
+    const record = await this.options.store.findByTokenHash(tokenHash);
+    if (!record || !activeRecord(record, now)) return false;
+    return this.options.store.revoke({ shareId: record.id, owner: input.owner, now });
   }
 
   async recordEvent(input: { token: string; event: ShareEventInput; now?: number }): Promise<{ accepted: boolean; duplicate: boolean }> {

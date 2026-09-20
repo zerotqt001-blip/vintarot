@@ -13,7 +13,7 @@ export async function GET(_request: Request, context: { params: Promise<{ token:
   const { token } = await context.params;
   if (!isShareToken(token)) return shareNotFoundResponse();
   try {
-    const service = getProductionShareService();
+    const service = await getProductionShareService();
     const view = await service.resolvePublicShare(token);
     if (!view) return shareNotFoundResponse();
     const origin = new URL(view.publicUrl).origin;

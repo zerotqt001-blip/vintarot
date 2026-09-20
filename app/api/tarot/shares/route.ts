@@ -21,7 +21,7 @@ export async function POST(request: Request): Promise<Response> {
     if (!parsed.success) return response({ error: "A reading and session are required." }, 400);
     const requestIdentity = await identity(request);
     try {
-      const created = await getProductionShareService().createShare({
+      const created = await (await getProductionShareService()).createShare({
         owner: requestIdentity.owner,
         readingId: parsed.data.reading_id,
         sessionId: parsed.data.session_id,

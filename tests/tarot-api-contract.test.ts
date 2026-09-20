@@ -15,6 +15,7 @@ const interpretRoute = readFileSync(new URL("../app/api/tarot/interpret/route.ts
 const readingRoute = readFileSync(new URL("../app/api/tarot/reading/route.ts", import.meta.url), "utf8");
 const readingRouteRuntime = readFileSync(new URL("../lib/tarot-reading-route.ts", import.meta.url), "utf8");
 const runtimeBridge = readFileSync(new URL("../lib/runtime.ts", import.meta.url), "utf8");
+const shareRuntime = readFileSync(new URL("../lib/tarot-share-runtime.ts", import.meta.url), "utf8");
 const interpretation = readFileSync(new URL("../lib/tarot-interpretation.ts", import.meta.url), "utf8");
 const repository = readFileSync(new URL("../lib/tarot-repository.ts", import.meta.url), "utf8");
 
@@ -138,6 +139,14 @@ test("Node runtime exposes the SQLite database through the D1-shaped boundary", 
   await database.prepare("INSERT INTO runtime_probe (value) VALUES (?)").bind("node").run();
   const row = await database.prepare("SELECT value FROM runtime_probe").first() as { value: string } | null;
   assert.deepEqual(row, { value: "node" });
+});
+
+test("share runtime factory is database-backed after the S6 migration", () => {
+  assert.match(shareRuntime, /getRuntimeDatabase/);
+  assert.match(shareRuntime, /getTarotRepository/);
+  assert.match(shareRuntime, /DatabaseShareStore/);
+  assert.match(shareRuntime, /createDatabaseReadingShareSource/);
+  assert.match(shareRuntime, /store:\s+new DatabaseShareStore/);
 });
 
 test("Cloudflare's process shim is not mistaken for the standalone Node runtime", () => {

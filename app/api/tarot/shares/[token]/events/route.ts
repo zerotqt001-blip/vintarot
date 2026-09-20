@@ -13,7 +13,7 @@ export async function POST(request: Request, context: { params: Promise<{ token:
     const { token } = await context.params;
     if (isShareToken(token)) {
       try {
-        await getProductionShareService().recordEvent({ token, event: parsed.data });
+        await (await getProductionShareService()).recordEvent({ token, event: parsed.data });
       } catch {
         // Analytics is best-effort and must not reveal token existence or storage state.
       }

@@ -38,6 +38,15 @@ export class ShareTokenHashConflictError extends Error {
   }
 }
 
+export class ShareIdConflictError extends Error {
+  readonly code = "share_id_conflict" as const;
+
+  constructor() {
+    super("The share id already exists.");
+    this.name = "ShareIdConflictError";
+  }
+}
+
 type ShareRow = {
   id: string;
   tokenHash: string;
@@ -66,6 +75,10 @@ function isTokenHashConstraint(error: unknown): boolean {
 
 function isActiveReadingConstraint(error: unknown): boolean {
   return error instanceof Error && /reading_id|reading_shares_active_reading_unique/i.test(error.message);
+}
+
+function isShareIdConstraint(error: unknown): boolean {
+  return error instanceof Error && /reading_shares\.id|share_id_conflict/i.test(error.message);
 }
 
 function mapRow(row: ShareRow): ShareRecord | null {
@@ -160,6 +173,7 @@ export class DatabaseShareStore implements ShareStore {
       if (error instanceof ShareOwnershipError) throw error;
       if (isUniqueConstraint(error)) {
         if (isTokenHashConstraint(error)) throw new ShareTokenHashConflictError();
+        if (isShareIdConstraint(error)) throw new ShareIdConflictError();
         if (isActiveReadingConstraint(error)) throw new ShareActiveConflictError();
       }
       if (error instanceof ShareStorageUnavailableError) throw error;
