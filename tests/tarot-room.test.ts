@@ -45,6 +45,7 @@ test("Room mounts one editorial reading panel and keeps the question editor sepa
   assert.match(roomSource, /saveJournal/);
   assert.match(roomSource, /onFollowUpSubmit/);
   assert.match(roomSource, /onClarificationSubmit/);
+  assert.match(roomSource, /clarification\.requestId/);
   assert.match(roomSource, /followUpResetKey=\{readingEpoch\.current\}/);
   assert.match(roomSource, /ReflectionPanel/);
   assert.match(roomSource, /room-reading-panel-retry/);
@@ -124,4 +125,9 @@ test("stale room requests cannot commit after a newer reading starts", () => {
   assert.match(roomSource, /requestSessionId/);
   assert.match(roomSource, /readingEpoch\.current/);
   assert.match(roomSource, /follow_up_question/);
+});
+
+test("the local catalog fallback keeps L5 semantics available", () => {
+  assert.match(roomSource, /localizedTarotSpreadSemantics/);
+  assert.match(roomSource, /semantics/);
 });

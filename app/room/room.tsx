@@ -8,6 +8,7 @@ import {useState,useEffect,useRef,useCallback} from 'react';
 import {useIsMobile} from '@/hooks/use-mobile';
 import {cardMeaning,cards,spreads,shuffleDeck} from '@/lib/tarot';
 import {currentSpreadCatalog,type TarotCatalog,type TarotCatalogTemplate,type TarotDrawPlanCard,type TarotLocale} from '@/lib/tarot-catalog';
+import {localizedTarotSpreadSemantics} from '@/lib/tarot-spread-semantics';
 import {findCanonicalSpread,recommendTarotSpread,type TarotSpreadSelectionMode,type TarotTopic} from '@/lib/tarot-recommendation';
 import {hydrateLegacySpread,isRoomRequestCurrent,remainingFanCardNumbers,type DynamicRoomCard} from '@/lib/tarot-room';
 import {shuffleTapAction} from '@/lib/shuffle';
@@ -38,12 +39,23 @@ function localCatalogFor(locale:TarotLocale):TarotCatalog{
   ...category,
   name:category.name[locale],
   description:category.description[locale],
-  templates:currentSpreadCatalog.templates.filter(template=>template.categoryId===category.id).sort((left,right)=>left.displayOrder-right.displayOrder).map(template=>({
-   ...template,
-   name:template.name[locale],
-   description:template.description[locale],
-   positions:currentSpreadCatalog.positions.filter(position=>position.templateId===template.id).sort((left,right)=>left.order-right.order).map(position=>({...position,label:position.label[locale],description:position.description[locale],prompt:position.prompt[locale]})),
-  })),
+  templates:currentSpreadCatalog.templates.filter(template=>template.categoryId===category.id).sort((left,right)=>left.displayOrder-right.displayOrder).map(template=>{
+   const positions=currentSpreadCatalog.positions.filter(position=>position.templateId===template.id).sort((left,right)=>left.order-right.order);
+   const localizedPositions=positions.map(position=>({...position,label:position.label[locale],description:position.description[locale],prompt:position.prompt[locale]}));
+   return {
+    ...template,
+    name:template.name[locale],
+    description:template.description[locale],
+    positions:localizedPositions,
+    semantics:localizedTarotSpreadSemantics({
+     categorySlug:category.slug,
+     categoryName:category.name[locale],
+     categoryDescription:category.description[locale],
+     template:{slug:template.slug,name:template.name[locale],description:template.description[locale],spreadType:template.spreadType,cardCount:template.cardCount},
+     positions:positions.map(position=>({key:position.key,order:position.order,label:position.label[locale],description:position.description[locale]})),
+    },locale),
+   };
+  }),
  }))};
 }
 
@@ -209,7 +221,7 @@ export default function Room({user}:{user:{name:string,email:string,username:str
  function strokePoint(e:React.PointerEvent){const rect=canvas.current!.getBoundingClientRect();return `${((e.clientX-rect.left)/rect.width*1000).toFixed(1)},${((e.clientY-rect.top)/rect.height*700).toFixed(1)}`}
  async function interpretReading(){const current=stateRef.current;if(!current.sessionId||!current.cards.length||current.cards.length!==current.spread.length)return;const requestEpoch=readingEpoch.current,requestId=++interpretationRequest.current,requestSessionId=current.sessionId,requestStamp={epoch:requestEpoch,id:`${requestSessionId}:${requestId}`},isCurrent=()=>isRoomRequestCurrent(requestStamp,{epoch:readingEpoch.current,id:`${stateRef.current.sessionId}:${interpretationRequest.current}`});setInterpreting(true);setInterpretationError('');try{const result=await api('tarot/reading',{session_id:current.sessionId,locale});if(isCurrent())setInterpretation(result as RoomInterpretation)}catch{if(isCurrent())setInterpretationError(tRef.current('room.interpretationUnavailable'))}finally{if(isCurrent())setInterpreting(false)}}
  async function submitFollowUp(question:string){const nextQuestion=question.trim().slice(0,MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH),current=stateRef.current;if(!nextQuestion||!current.sessionId)throw new Error(tRef.current('reading.followUpEmpty'));const requestEpoch=readingEpoch.current,requestId=++followUpRequest.current,requestSessionId=current.sessionId,requestStamp={epoch:requestEpoch,id:`${requestSessionId}:${requestId}`},isCurrent=()=>isRoomRequestCurrent(requestStamp,{epoch:readingEpoch.current,id:`${stateRef.current.sessionId}:${followUpRequest.current}`});setFollowUpLoading(true);setFollowUpError('');try{const result=await api('tarot/follow-up',{session_id:requestSessionId,locale,follow_up_question:nextQuestion});if(!isCurrent())throw new Error('stale follow-up response');const answer=typeof result.answer==='string'?result.answer.trim():'';if(!answer)throw new Error(tRef.current('reading.followUpError'));setFollowUpAnswers(currentAnswers=>[...currentAnswers,{id:`${requestSessionId}:${requestId}`,question:nextQuestion,answer}]);return answer}catch(error){if(isCurrent())setFollowUpError(tRef.current('reading.followUpError'));throw error}finally{if(isCurrent())setFollowUpLoading(false)}}
- async function submitClarification(question:string):Promise<TarotSupplementaryDraw>{const nextQuestion=question.trim().slice(0,MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH),current=stateRef.current;if(!nextQuestion||!current.sessionId)throw new Error(tRef.current('reading.clarificationEmpty'));const requestEpoch=readingEpoch.current,requestId=++clarificationRequest.current,requestSessionId=current.sessionId,requestStamp={epoch:requestEpoch,id:`${requestSessionId}:${requestId}`},isCurrent=()=>isRoomRequestCurrent(requestStamp,{epoch:readingEpoch.current,id:`${stateRef.current.sessionId}:${clarificationRequest.current}`});setFollowUpError('');try{const result=await api('tarot/clarification',{session_id:requestSessionId,locale,question:nextQuestion,request_id:globalThis.crypto?.randomUUID?.()||`${requestSessionId}:${Date.now()}:${requestId}`});if(!isCurrent())throw new Error('stale clarification response');const clarification=result?.clarification as TarotSupplementaryDraw|undefined;if(!clarification||typeof clarification.answer!=='string'||!clarification.card)throw new Error(tRef.current('reading.clarificationError'));return clarification}catch(error){if(isCurrent())setFollowUpError(tRef.current('reading.clarificationError'));throw error}}
+ async function submitClarification(question:string):Promise<TarotSupplementaryDraw>{const nextQuestion=question.trim().slice(0,MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH),current=stateRef.current;if(!nextQuestion||!current.sessionId)throw new Error(tRef.current('reading.clarificationEmpty'));const requestEpoch=readingEpoch.current,requestId=++clarificationRequest.current,requestSessionId=current.sessionId,requestStamp={epoch:requestEpoch,id:`${requestSessionId}:${requestId}`},isCurrent=()=>isRoomRequestCurrent(requestStamp,{epoch:readingEpoch.current,id:`${stateRef.current.sessionId}:${clarificationRequest.current}`});setFollowUpError('');try{const result=await api('tarot/clarification',{session_id:requestSessionId,locale,question:nextQuestion,request_id:globalThis.crypto?.randomUUID?.()||`${requestSessionId}:${Date.now()}:${requestId}`});if(!isCurrent())throw new Error('stale clarification response');const clarification=result?.clarification as TarotSupplementaryDraw|undefined;if(!clarification||typeof clarification.answer!=='string'||!clarification.card)throw new Error(tRef.current('reading.clarificationError'));setInterpretation(currentInterpretation=>{if(!currentInterpretation||currentInterpretation.session_id!==requestSessionId)return currentInterpretation;const existing=currentInterpretation.reading.supplementaryDraws||[];if(existing.some(entry=>entry.id===clarification.id||entry.requestId===clarification.requestId))return currentInterpretation;return {...currentInterpretation,reading:{...currentInterpretation.reading,supplementaryDraws:[...existing,clarification]}}});return clarification}catch(error){if(isCurrent())setFollowUpError(tRef.current('reading.clarificationError'));throw error}}
  async function openInterpretation(){const current=stateRef.current;if(!current.sessionId||!current.cards.length||current.cards.length!==current.spread.length)return;setInterpretationOpen(true);if(!interpretation||interpretation.session_id!==current.sessionId)await interpretReading()}
  async function saveJournal(){const current=stateRef.current;if(!current.sessionId||!current.cards.length){setStatus(t('room.drawBeforeSave'));return}if(!user){setStatus(t('room.signInToSave'));setModal('signin');return}if(!interpretation?.reading_id||interpretation.session_id!==current.sessionId){setStatus(t('room.saveAfterInterpretation'));return}if(savedJournal||savingJournal)return;setSavingJournal(true);try{await api('tarot/saved-readings',{reading_id:interpretation.reading_id,session_id:current.sessionId});setSavedJournal(true);setStatus(t('room.readingSaved'))}catch(e:any){if(e?.status===401){setStatus(t('room.signInToSave'));setModal('signin')}else setStatus(e?.message||t('room.interpretationUnavailable'))}finally{setSavingJournal(false)}}
  async function openInvite(){pending.current=true;await persist();setModal('invite')}

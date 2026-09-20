@@ -68,6 +68,7 @@ export function ReadingPanel({
                 onSubmit={onFollowUpSubmit!}
                 onClarificationSubmit={onClarificationSubmit}
                 initialClarifications={reading.supplementaryDraws || []}
+                locale={locale}
                 resetEpoch={followUpResetKey}
                 t={t}
               />

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { TarotAIProvider } from "../lib/ai/provider";
 import { TarotAIError } from "../lib/ai/provider";
-import type { TarotReadingPayload } from "../lib/ai/types";
+import type { TarotReadingPayload, TarotSupplementaryDraw } from "../lib/ai/types";
 import type { StoredReadingRow } from "../lib/tarot-reading-compat";
 import type { CardMeaningRow, CardRow, ReadingCardWithDetails, ReadingSessionRow, ReadingTemplateWithPositions, TarotRepository } from "../lib/tarot-repository";
 import { generateTarotClarification, TarotClarificationServiceError } from "../lib/tarot-clarification-service";
@@ -212,6 +212,41 @@ test("excludes original and previous supplementary cards, applies orientation, a
   assert.equal(providerCalls, 0);
 });
 
+test("rejects duplicate or foreign persisted supplementary cards before provider work", async (t) => {
+  const baseDraw = {
+    id: "old-1",
+    requestId: "old-request-1",
+    sequence: 1,
+    question: "Old?",
+    relationship: "clarification" as const,
+    card: { id: "card-sun", nameEn: "The Sun", nameVi: "The Sun", arcana: "major", suit: "Major Arcana" },
+    orientation: "upright" as const,
+    answer: "Old answer.",
+  };
+  const malformedCases: Array<[string, TarotSupplementaryDraw[]]> = [
+    ["duplicate", [baseDraw, { ...baseDraw, id: "old-2", requestId: "old-request-2", sequence: 2 }]],
+    ["foreign", [{ ...baseDraw, card: { ...baseDraw.card, id: "card-foreign" } }]],
+  ];
+  for (const [name, draws] of malformedCases) {
+    await t.test(name, async () => {
+      let providerCalls = 0;
+      await assert.rejects(
+        generateTarotClarification({
+          repository: repository({ ...originalReading, supplementaryDraws: draws }),
+          owner: { kind: "guest", guestId: "guest-1" },
+          sessionId: session.id,
+          locale: "en",
+          followUpQuestion: "What changes now?",
+          requestId: `malformed-${name}`,
+          provider: provider({ generateClarification: async () => { providerCalls += 1; return { answer: "No" }; } }),
+        }),
+        (error) => error instanceof TarotClarificationServiceError && error.code === "incomplete",
+      );
+      assert.equal(providerCalls, 0);
+    });
+  }
+});
+
 test("returns an existing request id without another provider call and leaves failed payloads unchanged", async () => {
   const existing = {
     ...originalReading,
@@ -231,6 +266,37 @@ test("returns an existing request id without another provider call and leaves fa
     (error) => error === expectedError,
   );
   assert.equal(failedUpdates, 0);
+});
+
+test("coalesces concurrent requests with the same owner and request id", async () => {
+  let providerCalls = 0;
+  let updateCalls = 0;
+  const args = {
+    repository: repository(originalReading, {
+      updateReadingPayload: async () => { updateCalls += 1; return true; },
+    }),
+    owner: { kind: "guest" as const, guestId: "guest-1" },
+    sessionId: session.id,
+    locale: "en" as const,
+    followUpQuestion: "What should I notice concurrently?",
+    requestId: "concurrent-request",
+    provider: provider({
+      generateClarification: async () => {
+        providerCalls += 1;
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        return { answer: "Notice the smallest observable choice." };
+      },
+    }),
+    random: random([0, 0.99]),
+  };
+
+  const [first, second] = await Promise.all([
+    generateTarotClarification(args),
+    generateTarotClarification(args),
+  ]);
+  assert.equal(providerCalls, 1);
+  assert.equal(updateCalls, 1);
+  assert.equal(first.clarification.id, second.clarification.id);
 });
 
 test("retries one invalid clarification response and persists only the final answer", async () => {

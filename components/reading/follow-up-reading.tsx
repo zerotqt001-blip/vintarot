@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from "react";
+import type { TarotLocale } from "@/lib/ai/types";
 import type { ReadingClarification, ReadingFollowUp, ReadingTranslator } from "./reading-types";
 
 type FollowUpReadingProps = {
@@ -10,11 +11,12 @@ type FollowUpReadingProps = {
   onSubmit: (question: string) => Promise<string>;
   onClarificationSubmit?: (question: string) => Promise<ReadingClarification>;
   initialClarifications?: ReadingClarification[];
+  locale: TarotLocale;
   resetEpoch?: number;
   t: ReadingTranslator;
 };
 
-export function FollowUpReading({ suggestions, question, onQuestionChange, onSubmit, onClarificationSubmit, initialClarifications = [], t }: FollowUpReadingProps) {
+export function FollowUpReading({ suggestions, question, onQuestionChange, onSubmit, onClarificationSubmit, initialClarifications = [], locale, t }: FollowUpReadingProps) {
   const [answers, setAnswers] = useState<ReadingFollowUp[]>([]);
   const [clarifications, setClarifications] = useState<ReadingClarification[]>(initialClarifications);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +136,7 @@ export function FollowUpReading({ suggestions, question, onQuestionChange, onSub
           {clarifications.map((entry) => (
             <li className="reading-clarification border-t border-antique-gold/15 pt-4" data-reading-clarification-id={entry.id} key={entry.id}>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <p className="text-sm font-medium text-antique-gold">{t("reading.clarificationCard")}: {entry.card.nameVi || entry.card.nameEn}</p>
+                <p className="text-sm font-medium text-antique-gold">{t("reading.clarificationCard")}: {locale === "vi" ? entry.card.nameVi : entry.card.nameEn}</p>
                 <span className="text-xs uppercase tracking-[0.08em] text-ivory/55">
                   {entry.orientation === "reversed" ? t("reading.reversedLabel") : t("reading.uprightLabel")}
                 </span>

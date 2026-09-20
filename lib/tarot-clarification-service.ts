@@ -42,6 +42,8 @@ export type GeneratedTarotClarification = {
   clarification: TarotSupplementaryDraw;
 };
 
+const inFlightClarifications = new Map<string, Promise<GeneratedTarotClarification>>();
+
 function secureRandom(): number {
   const buffer = new Uint32Array(1);
   globalThis.crypto.getRandomValues(buffer);
@@ -61,6 +63,7 @@ function validateStoredDraws(reading: TarotReadingPayload): TarotSupplementaryDr
   if (draws.length > 3) throw new TarotClarificationServiceError("incomplete", "The saved clarification history is invalid.");
   if (new Set(draws.map((draw) => draw.requestId)).size !== draws.length
     || new Set(draws.map((draw) => draw.id)).size !== draws.length
+    || new Set(draws.map((draw) => draw.card.id)).size !== draws.length
     || new Set(draws.map((draw) => draw.sequence)).size !== draws.length
     || draws.some((draw, index) => draw.sequence !== index + 1)) {
     throw new TarotClarificationServiceError("incomplete", "The saved clarification history is invalid.");
@@ -100,6 +103,11 @@ function resultFrom(readingId: string, args: GenerateTarotClarificationArgs, cla
     promptVersion: TAROT_CLARIFICATION_PROMPT_VERSION,
     clarification,
   };
+}
+
+function clarificationKey(args: GenerateTarotClarificationArgs): string {
+  const ownerKey = args.owner.kind === "user" ? `user:${args.owner.userId}` : `guest:${args.owner.guestId}`;
+  return `${ownerKey}:${args.sessionId}:${args.requestId.trim()}`;
 }
 
 async function clarificationPayload(args: GenerateTarotClarificationArgs, input: TarotClarificationInput): Promise<TarotClarificationPayload> {
@@ -158,7 +166,7 @@ async function trustedReadingContext(
   return { input, reading };
 }
 
-export async function generateTarotClarification(args: GenerateTarotClarificationArgs): Promise<GeneratedTarotClarification> {
+async function generateTarotClarificationInternal(args: GenerateTarotClarificationArgs): Promise<GeneratedTarotClarification> {
   const followUpQuestion = args.followUpQuestion.trim();
   const requestId = args.requestId.trim();
   if (!followUpQuestion || followUpQuestion.length > MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH || !requestId || requestId.length > 100) {
@@ -184,8 +192,14 @@ export async function generateTarotClarification(args: GenerateTarotClarificatio
   if (deckIds.size !== 1) throw new TarotClarificationServiceError("incomplete", "The saved reading deck is invalid.");
   const deckId = stored.cards[0].deckId;
   if (!(await args.repository.getActiveDeck(deckId))) throw new TarotClarificationServiceError("incomplete", "The saved reading deck is unavailable.");
+  const deckCards = await args.repository.listCards(deckId);
+  const deckCardIds = new Set(deckCards.map((card) => card.id));
+  const originalCardIds = new Set(stored.cards.map((card) => card.cardId));
+  if (previousDraws.some((draw) => !deckCardIds.has(draw.card.id) || originalCardIds.has(draw.card.id))) {
+    throw new TarotClarificationServiceError("incomplete", "The saved clarification history is invalid.");
+  }
   const usedCardIds = new Set([...stored.cards.map((card) => card.cardId), ...previousDraws.map((draw) => draw.card.id)]);
-  const availableCards = (await args.repository.listCards(deckId)).filter((card) => !usedCardIds.has(card.id));
+  const availableCards = deckCards.filter((card) => !usedCardIds.has(card.id));
   if (!availableCards.length) throw new TarotClarificationServiceError("incomplete", "No unused clarification card is available.");
   const random = args.random || secureRandom;
   const selected = availableCards[Math.floor(boundedRandom(random) * availableCards.length)];
@@ -242,4 +256,17 @@ export async function generateTarotClarification(args: GenerateTarotClarificatio
     }
   }
   throw new TarotClarificationServiceError("persistence", "The Tarot clarification could not be saved.");
+}
+
+export async function generateTarotClarification(args: GenerateTarotClarificationArgs): Promise<GeneratedTarotClarification> {
+  const key = clarificationKey(args);
+  const existing = inFlightClarifications.get(key);
+  if (existing) return existing;
+  const operation = generateTarotClarificationInternal(args);
+  inFlightClarifications.set(key, operation);
+  try {
+    return await operation;
+  } finally {
+    if (inFlightClarifications.get(key) === operation) inFlightClarifications.delete(key);
+  }
 }
