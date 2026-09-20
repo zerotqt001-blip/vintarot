@@ -2,12 +2,32 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
+
+function createPreShareDatabase(dbPath: string): void {
+  const sqlite = new DatabaseSync(dbPath);
+  sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)");
+  const migrationDirectory = join(repoRoot, "drizzle");
+  const migrations = readdirSync(migrationDirectory)
+    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_"))
+    .sort();
+  for (const name of migrations) {
+    sqlite.exec(readFileSync(join(migrationDirectory, name), "utf8"));
+    sqlite.prepare("INSERT INTO natarot_migrations (name, applied_at) VALUES (?, ?)").run(name, Date.now());
+  }
+  sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .run("member-legacy", "legacy_reader", "legacy@example.test", "", 1, 1, 0);
+  sqlite.prepare("INSERT INTO reading_sessions (id, user_id, guest_id, question, optional_context, category_id, spread_template_id, spread_type, card_count, locale, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .run("session-legacy", "member-legacy", null, "A legacy question", "", "category-everyday", "spread-everyday-persona-obstacle-solution", "row-3", 3, "en", "complete", 1, 1);
+  sqlite.prepare("INSERT INTO readings (id, session_id, opening, card_readings, synthesis, advice, closing, disclaimer, model_name, prompt_version, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .run("reading-legacy", "session-legacy", "opening", "[]", "synthesis", "advice", "closing", "disclaimer", "legacy-model", "legacy-prompt", 1, 1);
+  sqlite.close();
+}
 
 test("Node migration bootstrap applies and repeats the full schema and seed", (t) => {
   const directory = mkdtempSync(join(tmpdir(), "natarot-migrate-"));
@@ -66,6 +86,33 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
       1,
     );
   }
+  assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
+  sqlite.close();
+});
+
+test("Node migration upgrades an existing pre-share database without losing member or reading data", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "natarot-migrate-upgrade-"));
+  const dbPath = join(directory, "natarot.sqlite");
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  createPreShareDatabase(dbPath);
+
+  execFileSync(process.execPath, ["scripts/node-migrate.mjs"], {
+    cwd: repoRoot,
+    env: { ...process.env, NATAROT_DB_PATH: dbPath },
+    stdio: "pipe",
+  });
+
+  const sqlite = new DatabaseSync(dbPath);
+  assert.deepEqual(
+    sqlite.prepare("SELECT id, username FROM members").all().map(({ id, username }) => ({ id, username })),
+    [{ id: "member-legacy", username: "legacy_reader" }],
+  );
+  assert.deepEqual(
+    sqlite.prepare("SELECT id, session_id FROM readings").all().map(({ id, session_id }) => ({ id, session_id })),
+    [{ id: "reading-legacy", session_id: "session-legacy" }],
+  );
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0005_%'").get() as { count: number }).count, 1);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM reading_shares").get() as { count: number }).count, 0);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
 });
