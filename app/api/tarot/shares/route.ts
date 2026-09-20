@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { attachIdentityCookie, boundary, identity, json, originCheck } from "@/lib/server";
-import { ShareNotFoundError, ShareServiceUnavailableError } from "@/lib/tarot-share-service";
+import { ShareAlreadyExistsError, ShareNotFoundError, ShareServiceUnavailableError } from "@/lib/tarot-share-service";
 import { getProductionShareService } from "@/lib/tarot-share-runtime";
 import { ShareStorageUnavailableError } from "@/lib/tarot-share-store";
 
@@ -29,6 +29,7 @@ export async function POST(request: Request): Promise<Response> {
       return response({ share_url: created.publicUrl, image_url: created.imageUrl, created_at: created.createdAt }, 201, requestIdentity);
     } catch (error) {
       if (error instanceof ShareNotFoundError) return response({ error: "Reading not found." }, 404, requestIdentity);
+      if (error instanceof ShareAlreadyExistsError) return response({ error: error.message }, 409, requestIdentity);
       if (error instanceof ShareStorageUnavailableError || error instanceof ShareServiceUnavailableError) return response({ error: "Share links are not configured." }, 503, requestIdentity);
       throw error;
     }
