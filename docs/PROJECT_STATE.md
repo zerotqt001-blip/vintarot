@@ -188,3 +188,13 @@ Validation evidence for this bootstrap:
 Security observations are documented, not fixed: the guest owner cookie is a bearer identity without a server signature/binding visible in source (medium severity estimate, threat-model review required), and write routes only compare `Origin` when present (low/unknown severity until browser threat-model validation). No credentials were written to governance files.
 
 Unfinished work: resolve the pre-existing Home source/test mismatch in its own scoped mission; run the pending task-observer review when accepted; complete physical-device motion QA, production service provisioning, and any authorized security/integration missions. This bootstrap did not deploy or claim production readiness.
+
+## NaTarot L1C Responsive SpreadBoard checkpoint (2026-09-20)
+
+L1C — Responsive SpreadBoard is verified and pushed, not merged and not deployed. The canonical baseline is `codex/natarot-level4-baseline` at `ed9d60883cae92d2395961199339b06c26b3e6b6`; L1A is `09365af65cca555e0a55dee95b2483edce048b7b`; L1A+B integration is `5668fb5bafca3052e47bd9fe7f4b1196ad640d60`; and L1C is on `codex/natarot-level4-spreadboard-l1c` at `a53dc44d5c088f2e9685e31f3e4a9dc51a09ebea`, with the remote commit matching local.
+
+The durable architecture is `L1A semantic positions → L1B normalized geometry → responsive projection → shared SpreadBoard`. L1B normalized geometry is the main-board authority, with deterministic responsive projection for 1–12 cards. Browser verification covers desktop, mobile 390px, mobile 375px and Celtic Cross 10 cards. Tablet and 12-card coverage are projection/unit verified only and must not be recorded as browser verification.
+
+Quality gates: L1C focused `17/17 PASS`; L1A+B focused `35/35 PASS`; full regression `358/358 PASS`; TypeScript PASS; production build PASS; `git diff --check` PASS; new L1C lint PASS. Historical full lint remains `89 errors / 124 warnings`, with no L1C-attributed increase.
+
+Draw semantics, orientation semantics, database, AI / Knowledge V5, auth/security, saved reading behavior and unrelated UI remain unchanged. Deployment state is explicit: `PUSHED ≠ MERGED ≠ DEPLOYED`; L1C is `VERIFIED + PUSHED`, merge is NO, and production deployment is NO. No next milestone is `IN_PROGRESS`. AI enhancements, Share/Public Reading/Image/QR, Credits/VIP/Payment/Affiliate, account/history improvements, Final UI/UX Design System, Icon System, Typography VI/EN, Localization & Natural Copy VI/EN, and responsive/content QA remain proposed/ready/waiting for explicit human confirmation.
