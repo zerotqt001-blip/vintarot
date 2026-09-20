@@ -38,6 +38,8 @@ Evidence used:
 | Local Home/Create/Guidebook/Room/Profile routes | Actual visual density, focus order, navigation, mobile-sensitive content, and presentation hierarchy. |
 | Official Radix, shadcn/ui, Lucide, Motion, Apple, and MDN references | Accessibility, ownership, icon, animation, browser, and material constraints. |
 
+The visual route audit ran against the isolated local preview without seeding or modifying a runtime database. The page shells and accessibility trees rendered, but API-backed requests for the Guidebook catalog and Profile records logged the expected local `no such table` 503 responses. This report therefore treats route composition, copy, controls, and fallback states as verified locally; it does not claim live-data or authenticated-service verification for this research branch.
+
 ## Current product surface map
 
 | Surface | Observed experience | Design implication |

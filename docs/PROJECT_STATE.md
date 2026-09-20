@@ -218,6 +218,8 @@ Verification evidence: email tests `6/6 PASS`; auth/security matrix `65/66 PASS`
 
 This documentation-only mission is complete on the isolated branch `codex/natarot-design-system-research`, based on committed baseline `60db3db7db535560feb6ff1178a975793bec26bf`. It inspected the committed React/Vinext source, the local Home/Create/Guidebook/Room/Profile routes, the current token/typography/i18n/responsive architecture, and the named component and Liquid Glass references. It preserves the Moonlight reference, NaTarot brand assets, current Tarot behavior, Room L1 geometry, AI/Knowledge Base contracts, auth/ownership boundaries, persistence, and future commercial scope.
 
+The visual route audit ran against the isolated local preview without seeding or modifying a runtime database. Page shells and accessibility trees rendered, while API-backed Guidebook/Profile requests logged local `no such table` 503 responses; this branch makes no live-data or authenticated-service claim.
+
 The research deliverables are:
 
 - `docs/design/NATAROT_UI_RESEARCH.md` — source and live-route audit, UX findings, localization/responsive/accessibility review, and current-to-future inventory.
