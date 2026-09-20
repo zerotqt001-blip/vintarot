@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { integer, index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const records = sqliteTable(
@@ -229,4 +230,42 @@ export const readings = sqliteTable(
     updatedAt: integer("updated_at").notNull(),
   },
   (table) => [index("idx_readings_session").on(table.sessionId)],
+);
+
+export const readingShares = sqliteTable(
+  "reading_shares",
+  {
+    id: text("id").primaryKey(),
+    readingId: text("reading_id").notNull().references(() => readings.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    status: text("status").notNull().default("active"),
+    locale: text("locale").notNull(),
+    publicContractVersion: text("public_contract_version").notNull(),
+    geometryVersion: text("geometry_version").notNull(),
+    rendererVersion: text("renderer_version").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    revokedAt: integer("revoked_at"),
+    expiresAt: integer("expires_at"),
+  },
+  (table) => [
+    uniqueIndex("reading_shares_token_hash_unique").on(table.tokenHash),
+    uniqueIndex("reading_shares_active_reading_unique").on(table.readingId).where(sql`${table.status} = 'active'`),
+    index("reading_shares_reading_status_idx").on(table.readingId, table.status),
+    index("reading_shares_expires_idx").on(table.status, table.expiresAt),
+  ],
+);
+
+export const shareEvents = sqliteTable(
+  "share_events",
+  {
+    id: text("id").primaryKey(),
+    shareId: text("share_id").notNull().references(() => readingShares.id, { onDelete: "cascade" }),
+    eventName: text("event_name").notNull(),
+    locale: text("locale").notNull(),
+    source: text("source"),
+    rendererVersion: text("renderer_version"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [index("share_events_share_created_idx").on(table.shareId, table.createdAt)],
 );

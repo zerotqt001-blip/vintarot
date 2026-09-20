@@ -9,6 +9,7 @@ import { buildTarotSeed } from "../db/tarot-seed";
 
 const schema = readFileSync(new URL("../db/schema.ts", import.meta.url), "utf8");
 const spreadMigration = readFileSync(new URL("../drizzle/0003_moonlight_spread_catalog.sql", import.meta.url), "utf8");
+const shareMigration = readFileSync(new URL("../drizzle/0005_natarot_share_persistence.sql", import.meta.url), "utf8");
 const drawRoute = readFileSync(new URL("../app/api/tarot/draw/route.ts", import.meta.url), "utf8");
 const interpretRoute = readFileSync(new URL("../app/api/tarot/interpret/route.ts", import.meta.url), "utf8");
 const readingRoute = readFileSync(new URL("../app/api/tarot/reading/route.ts", import.meta.url), "utf8");
@@ -20,8 +21,23 @@ const repository = readFileSync(new URL("../lib/tarot-repository.ts", import.met
 test("Drizzle schema declares every normalized Tarot table", () => {
   for (const table of [
     "decks", "tarotCards", "cardMeanings", "spreadCategories", "spreadTemplates",
-    "spreadPositions", "readingSessions", "readingCards", "readings",
+    "spreadPositions", "readingSessions", "readingCards", "readings", "readingShares", "shareEvents",
   ]) assert.match(schema, new RegExp(`export const ${table}\\s*=`));
+});
+
+test("share persistence migration is additive, owner-derived, and bounded", () => {
+  assert.ok(shareMigration.includes("CREATE TABLE `reading_shares`"));
+  assert.ok(shareMigration.includes("CREATE TABLE `share_events`"));
+  assert.ok(shareMigration.includes("FOREIGN KEY (`reading_id`) REFERENCES `readings`"));
+  assert.ok(shareMigration.includes("FOREIGN KEY (`share_id`) REFERENCES `reading_shares`"));
+  assert.match(shareMigration, /ON DELETE cascade/gi);
+  assert.ok(shareMigration.includes("reading_shares_token_hash_unique"));
+  assert.ok(shareMigration.includes("reading_shares_active_reading_unique"));
+  assert.ok(shareMigration.includes("WHERE `status` = 'active'"));
+  assert.ok(shareMigration.includes("CHECK (`status` IN ('active', 'revoked', 'expired'))"));
+  assert.ok(shareMigration.includes("CHECK (`event_name` IN ('share_created', 'share_opened', 'share_image_generated', 'share_image_downloaded', 'share_cta_clicked'))"));
+  assert.doesNotMatch(shareMigration, /owner|user_id|guest_id/);
+  assert.doesNotMatch(shareMigration, /`token`/);
 });
 
 test("migration creates the dynamic Tarot tables and uniqueness constraints", () => {
