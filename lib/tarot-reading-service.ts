@@ -95,7 +95,10 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
       reading = await args.provider.generateReading(input);
       break;
     } catch (error) {
-      const shouldRetry = error instanceof TarotAIError && error.code === "invalid_response" && attemptNumber === 1;
+      const shouldRetry = error instanceof TarotAIError
+        && error.code === "invalid_response"
+        && error.retryable
+        && attemptNumber === 1;
       if (!(error instanceof TarotAIError)) {
         throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true, cause: error });
       }

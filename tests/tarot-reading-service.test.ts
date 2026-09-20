@@ -392,6 +392,23 @@ test("does not retry non-invalid-response provider errors", async () => {
   }
 });
 
+test("does not retry a non-retryable invalid provider response", async () => {
+  let providerCalls = 0;
+  const expected = new TarotAIError("invalid_response", "safe non-retryable invalid response", { retryable: false });
+
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository(),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({ generateReading: async () => { providerCalls += 1; throw expected; } }),
+    }),
+    (error) => error === expected,
+  );
+  assert.equal(providerCalls, 1);
+});
+
 test("fails before provider work when a historical template or meaning pair is missing", async () => {
   let calls = 0;
   const countingProvider = provider({ generateReading: async () => { calls += 1; throw new Error("should not run"); } });

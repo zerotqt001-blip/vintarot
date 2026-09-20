@@ -1,6 +1,6 @@
 import { TAROT_FOLLOW_UP_PROMPT_VERSION, MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH } from "./ai/prompts/tarot-reading";
 import { TarotAIError, type TarotAIProvider } from "./ai/provider";
-import type { TarotLocale, TarotMeaningEvidence, TarotReadingCardContext, TarotReadingPayload, TarotFollowUpInput } from "./ai/types";
+import type { TarotFollowUpInput, TarotFollowUpPayload, TarotLocale, TarotMeaningEvidence, TarotReadingCardContext, TarotReadingPayload } from "./ai/types";
 import type { ReadingOwner } from "./tarot-guest";
 import { parseStoredReading } from "./tarot-reading-compat";
 import type { ReadingCardWithDetails, ReadingTemplateWithPositions, TarotRepository } from "./tarot-repository";
@@ -153,16 +153,29 @@ export async function generateTarotFollowUp(args: GenerateTarotFollowUpArgs): Pr
     throw new TarotFollowUpServiceError("incomplete", "The saved reading context is incomplete.", { cause: error });
   }
 
-  let answer: string;
+  let followUp: TarotFollowUpPayload | undefined;
   try {
     if (!args.provider.generateFollowUp) {
       throw new TarotAIError("configuration", "Tarot follow-up is not supported by the selected provider.");
     }
-    ({ answer } = await args.provider.generateFollowUp(input));
+    for (let attemptNumber = 1; attemptNumber <= 2; attemptNumber += 1) {
+      try {
+        followUp = await args.provider.generateFollowUp(input);
+        break;
+      } catch (error) {
+        const shouldRetry = error instanceof TarotAIError
+          && error.code === "invalid_response"
+          && error.retryable
+          && attemptNumber === 1;
+        if (!shouldRetry) throw error;
+      }
+    }
   } catch (error) {
     if (error instanceof TarotAIError) throw error;
     throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true, cause: error });
   }
+
+  if (!followUp) throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true });
 
   return {
     sessionId: args.sessionId,
@@ -171,6 +184,6 @@ export async function generateTarotFollowUp(args: GenerateTarotFollowUpArgs): Pr
     provider: args.provider.id,
     modelName: `${args.provider.id}:${args.provider.model}`,
     promptVersion: TAROT_FOLLOW_UP_PROMPT_VERSION,
-    answer,
+    answer: followUp.answer,
   };
 }
