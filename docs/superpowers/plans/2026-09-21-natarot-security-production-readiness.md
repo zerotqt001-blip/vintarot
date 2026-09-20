@@ -85,19 +85,19 @@ Adopt only patterns that fit the current request/identity, Node/SQLite, Cloudfla
 - Consumes: existing `RequestIdentity`, `attachIdentityCookie`, owner-scoped route handlers, and current isolated SQLite fixture pattern.
 - Produces: an explicit `Cache-Control: no-store` contract for owner-scoped/personalized API responses, including the session GET and expensive state-changing Tarot responses, without changing catalog caching or auth ownership.
 
-- [ ] **Step 1: Write failing cache-boundary tests**
+- [x] **Step 1: Write failing cache-boundary tests**
 
 Assert that an identity-attached response is `no-store`, that `GET /api/tarot/session?id=...` returns `no-store` for an owner-scoped response, and that Tarot draw/reading/follow-up success responses cannot be cached. Keep fixtures isolated and assert only response metadata and existing payload contracts.
 
-- [ ] **Step 2: Run the focused tests and verify the expected red state**
+- [x] **Step 2: Run the focused tests and verify the expected red state**
 
 Run `npx tsx --test tests/security-production-readiness.test.ts`. Expected: the new cache assertions fail against the unchanged baseline while existing F-001/ownership tests remain green.
 
-- [ ] **Step 3: Add the minimum no-store headers**
+- [x] **Step 3: Add the minimum no-store headers**
 
 Set `Cache-Control: no-store` in `attachIdentityCookie`; route the session response through that helper while preserving its owner lookup; set the same header on draw and the shared reading/follow-up success/error response paths. Do not modify `originCheck`, guest-token derivation, session ownership, SQL, prompt, or provider behavior.
 
-- [ ] **Step 4: Run focused security and ownership regressions**
+- [x] **Step 4: Run focused security and ownership regressions**
 
 Run `npx tsx --test tests/security-production-readiness.test.ts tests/f001-identity-boundary.test.ts tests/request-identity.test.ts tests/server-origin.test.ts tests/tarot-guest.test.ts tests/room-guest-persistence.test.ts tests/tarot-saved-reading-route.test.ts`. Expected: PASS with no cross-owner behavior change.
 
@@ -118,19 +118,19 @@ Run `npx tsx --test tests/security-production-readiness.test.ts tests/f001-ident
 - Consumes: `getRuntimeDatabase()` through the existing `db()` boundary.
 - Produces: `GET /api/health` returning `{ "status": "ok" }` and `Cache-Control: no-store` after `SELECT 1`; returns a generic `503` JSON status on database failure; never calls AI, email, draw, reading, or mutation APIs.
 
-- [ ] **Step 1: Add the failing endpoint contract test**
+- [x] **Step 1: Add the failing endpoint contract test**
 
 Import the route after pointing `NATAROT_DB_PATH` to an isolated temporary SQLite file and assert `GET` returns `200`, the exact status body, `no-store`, and no provider-facing side effect. Add a failure-path test only if it can be isolated without mocking the production database contract.
 
-- [ ] **Step 2: Run the focused test to verify red**
+- [x] **Step 2: Run the focused test to verify red**
 
 Run `npx tsx --test tests/security-production-readiness.test.ts`. Expected: the route import/contract is absent and the new test fails for the expected reason.
 
-- [ ] **Step 3: Implement the read-only check**
+- [x] **Step 3: Implement the read-only check**
 
 Create the route with an explicit `SELECT 1` and sanitized `503` response. Do not expose database paths, SQL errors, environment values, release metadata, or authentication data.
 
-- [ ] **Step 4: Verify the endpoint and route inventory**
+- [x] **Step 4: Verify the endpoint and route inventory**
 
 Run the focused test and `npx tsc --noEmit`; re-run the API inventory to classify `/api/health` as `PUBLIC / READINESS-ONLY`.
 
@@ -150,19 +150,19 @@ Run the focused test and `npx tsc --noEmit`; re-run the API inventory to classif
 - Consumes: npm audit results from the clean lockfile and direct dependency peer constraints.
 - Produces: lockfile/direct patch updates only where the advisory is applicable and the existing test/type/build matrix remains green.
 
-- [ ] **Step 1: Record the advisory baseline without printing dependency payloads**
+- [x] **Step 1: Record the advisory baseline without printing dependency payloads**
 
 Run `npm audit --omit=dev --json` and `npm audit --json`, summarize package/severity/range/fix availability, and distinguish production runtime from build-only advisories. Do not run a broad major upgrade.
 
-- [ ] **Step 2: Apply the smallest compatible production fix**
+- [x] **Step 2: Apply the smallest compatible production fix**
 
 Use lockfile-only remediation for the production `baseline-browser-mapping` advisory if npm resolves a same-major compatible version without changing runtime source. Inspect the lock diff before keeping it.
 
-- [ ] **Step 3: Evaluate direct patch fixes individually**
+- [x] **Step 3: Evaluate direct patch fixes individually**
 
 Only if the peer graph and build remain compatible, update the direct vulnerable patch-level `react`/`react-dom`/`react-server-dom-webpack` and `vite` versions. Leave `drizzle-kit`’s major/downgrade recommendation and any unproven advisory deferred with evidence.
 
-- [ ] **Step 4: Reinstall and verify dependency integrity**
+- [x] **Step 4: Reinstall and verify dependency integrity**
 
 Run `npm ci`, `npm audit --omit=dev`, `npm audit`, `npx tsx --test tests/*.test.ts`, `npx tsc --noEmit`, and `npm run build`. If any mission-caused failure occurs, diagnose and either make the smallest compatible correction or revert that dependency change.
 
@@ -184,19 +184,19 @@ Run `npm ci`, `npm audit --omit=dev`, `npm audit`, `npx tsx --test tests/*.test.
 - Consumes: completed audit evidence, focused/full validation output, dependency results, exact base/branch/commit state, and protected-worktree checks.
 - Produces: a durable source-grounded audit with API inventory, F-001/auth/ownership/abuse/secrets/dependency/ops/privacy findings, severity/remediation classes, safe fixes, deferred human actions, readiness level, and no secret values.
 
-- [ ] **Step 1: Write the audit matrix from source evidence**
+- [x] **Step 1: Write the audit matrix from source evidence**
 
 Include scope, threat model, base SHA, route classification, F-001 spoof test, auth/cookie/CSRF/open-redirect review, IDOR/XSS/SQL/SSRF/input/request-size/error/logging findings, abuse/cost risks, secret scan, dependency audit, Nginx/systemd/health/readiness/rollback/release-lock/backup/Google Drive boundary/observability/privacy review, baseline-vs-mission-vs-parallel ownership, and exact unverified production claims.
 
-- [ ] **Step 2: Record safe fixes and deferred actions**
+- [x] **Step 2: Record safe fixes and deferred actions**
 
 For each finding include severity, evidence path/line or command, risk, remediation class, action, test evidence, and owner. State that no database schema/migration, auth model, AI semantics, parallel work, deployment, restart, or merge changed.
 
-- [ ] **Step 3: Update project state minimally**
+- [x] **Step 3: Update project state minimally**
 
 Append a dated checkpoint stating `SECURITY / PRODUCTION READINESS → AUDITED → SAFE FIXES VERIFIED → PUSHED → NOT MERGED → NOT DEPLOYED`, exact validation, remaining human-gated actions, and the final readiness level without claiming live verification.
 
-- [ ] **Step 4: Self-review the documentation**
+- [x] **Step 4: Self-review the documentation**
 
 Search the new/modified docs for placeholders, unsupported production claims, absolute secret-like literals, stale base SHAs, and contradictions with `LOCKED_ZONES.md`/`MISSION_PROTOCOL.md`. Run `git diff --check`.
 
