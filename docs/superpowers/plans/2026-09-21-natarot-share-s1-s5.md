@@ -138,4 +138,4 @@ Files: `docs/PROJECT_STATE.md`, spec/plan as needed.
 - [x] Existing geometry/reading compatibility is reused.
 - [x] Renderer receives a sanitized projection, not a database row.
 - [x] Public headers/origin/token/privacy constraints are testable.
-- [x] Implementation, focused tests, full verification and browser fallback checks are complete; commit and remote equality are the remaining handoff steps.
+- [x] Implementation, focused tests, full verification, browser fallback checks, scoped commit, and remote equality are complete.
