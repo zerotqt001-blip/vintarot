@@ -246,3 +246,48 @@ This branch consumes only the already verified L1A/L1B/L1C geometry APIs. It doe
 ## Validation contract
 
 Focused tests cover token/ownership/projection/error handling, geometry for 1/3/10/12 cards, deterministic SVG/QR output, VI/EN text, analytics allowlisting/idempotency and route response headers. The relevant existing suite, typecheck, build, targeted lint, diff check and secret scan remain required. Browser QA covers the public shell only when a real store/fixture can be injected without a production bypass; otherwise the migration-gated state is reported explicitly.
+
+## External research loop and dependency decisions
+
+This section records the mandatory external research pass completed after the repository audit and before mechanism implementation. The research was used to narrow the implementation, not to broaden scope.
+
+### Current repository evidence
+
+- The application is React 19 / Next 16.3.4 through Vinext, with a Cloudflare Workers-compatible path and a Node 22 SQLite path.
+- L1A/L1B/L1C already provide the canonical Tarot spread and normalized geometry contracts; the share renderer must consume those contracts.
+- Card artwork is local under `/public/cards/*.webp`, and the approved NaTarot typography/assets are local under `/public/fonts` and `/public/brand`.
+- There is no public-share token, public reading projection, QR renderer, share-image renderer or share analytics sink in the selected base.
+- The mission forbids a database migration, so a production adapter must fail closed until a later authorized migration exists.
+
+### Official documentation reviewed
+
+- Node.js `node:crypto` documents cryptographically strong `randomBytes` and `createHash`; MDN documents the cross-runtime Web Crypto `getRandomValues` and `SubtleCrypto.digest` APIs. The implementation uses Web Crypto at the pure contract boundary so Cloudflare and Node share one mechanism.
+- Next.js/Vercel metadata documentation confirms page-level `noindex,nofollow`, Open Graph metadata, and image-route conventions; Vercel's OG documentation confirms that Satori/Resvg is a separate HTML/CSS-to-PNG stack with font/runtime constraints.
+- MDN's Referrer-Policy and HTTP caching guidance supports `no-referrer` plus `private, no-cache`/`no-store` handling for revocable private-derived content.
+
+### Mature repositories/libraries compared
+
+| Name | Purpose | Version/activity | License | Runtime/transitive/security notes | Decision |
+|---|---|---|---|---|---|
+| `soldair/node-qrcode` / `qrcode` | QR encoding, including server-side SVG | `1.5.4`; high adoption, package metadata modified 2025-11 | MIT | Node/browser compatible; 3 runtime dependencies (`dijkstrajs`, `pngjs`, `yargs`); strict options and no user-controlled colors in this feature | **ADOPT** for S4 SVG QR |
+| `nuintun/qrcode` / `qrcode` | TypeScript QR encode/decode alternative | `5.0.3`; released 2026-02 | MIT | 1 runtime dependency, active, but its public API is lower-level and does not provide the same direct server SVG-string contract used here | **REFERENCE ONLY** |
+| `alexeyten/qr-image` | Small QR image generator | `3.2.0`; last package update 2023-02 | MIT | No runtime dependencies, but older maintenance and narrower feature surface; not the best fit for the dual-runtime route | **REJECT** |
+| `nayuki/QR-Code-generator` | Correctness-focused QR core in TypeScript/JavaScript and other languages | stable release line, latest repository release 2022 | MIT | Would require maintaining a custom SVG renderer and copying attribution-bearing code into the app | **REFERENCE ONLY** |
+| `vercel/satori` | JSX/CSS-to-SVG renderer for image/OG output | active repository; 429 commits and recent activity at research time | MPL-2.0 | Node/browser/Worker capable but limited CSS, explicit font buffers, no WOFF2, and Vietnamese glyph coverage must be verified; extra renderer complexity | **REFERENCE ONLY**, not installed |
+| `thx/resvg-js` | SVG-to-PNG renderer | active 2.x line with native and WASM backends | MPL-2.0 | Native addon/WASM choice complicates Vinext/Workers and bundle/runtime compatibility; PNG is not needed for S3's first deliverable | **REFERENCE ONLY**, not installed |
+| `dubinc/dub` | Mature short-link and analytics product | active, large monorepo | AGPLv3 for core with commercial enterprise areas | Useful patterns for idempotent events and attribution boundaries, but broad product scope and copyleft/commercial split make code reuse inappropriate | **REFERENCE ONLY**, concepts only |
+
+### Patterns adopted, adapted and rejected
+
+- **Adopted:** opaque random identity, hash-at-rest lookup, explicit lifecycle state, allowlisted public projection, noindex/no-referrer policy, deterministic renderer input, event idempotency, and a storage/analytics adapter boundary.
+- **Adapted:** Dub-style event identity and attribution separation are reduced to five NaTarot share events; there is no affiliate, commission, conversion, cookie, IP or visitor profile model.
+- **Reference only:** Satori's explicit image dimensions/font discipline, resvg's future PNG adapter shape, Nayuki's QR correctness notes, and the existing `dub`/`Refferq` research concepts.
+- **Rejected:** browser screenshots, Google Drive as a CDN, host-derived public URLs, serializing private database rows, reusing `records` as a token table, embedding provider metadata, and adding Satori/resvg for an unneeded PNG path.
+
+### New dependency and license review
+
+Only `qrcode@1.5.4` is intended as a new production dependency, with `@types/qrcode@1.5.6` as a development-only type package. The runtime cost is the library's three small transitive dependencies; the package is MIT and is isolated behind `lib/tarot-share-qr.ts`. No MPL/AGPL code is copied or installed. Existing local assets and Web Crypto avoid new font, browser, native-addon or WASM dependencies.
+
+### Security review and fit
+
+The selected approach gives NaTarot 256-bit public-token entropy, SHA-256 at rest, a fixed trusted origin, a public field allowlist, escaped SVG text, approved local image paths, bounded event fields and a fail-closed production adapter. It fits the existing Node/Cloudflare split, preserves Moonlight/NaTarot visual assets, and leaves the later `reading_shares`/`share_events` migration as a clean seam. The main deferred research item is PNG conversion and image-cache semantics after a production storage adapter and runtime target are authorized.
