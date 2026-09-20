@@ -137,16 +137,16 @@ The only integration-test failure was the migration harness’s strict compariso
 
 - [x] **Step 1: Update project state from observed facts**
 
-Updated `docs/PROJECT_STATE.md` from observed facts without replaying historical state sections. It records the exact engine/S6/patch/code-head commits, L6 final-JSON versus intentionally absent token streaming, duplicate-`0004` migration behavior, validation evidence, security/privacy boundaries, and explicit `MERGED TO MAIN: NO`, `DEPLOYED: NO`, and `PRODUCTION DB: UNCHANGED` boundaries. The remote-push line remains pending until the final handoff check.
+Updated `docs/PROJECT_STATE.md` from observed facts without replaying historical state sections. It records the exact engine/S6/patch/code-head commits, L6 final-JSON versus intentionally absent token streaming, duplicate-`0004` migration behavior, validation evidence, security/privacy boundaries, and explicit `MERGED TO MAIN: NO`, `DEPLOYED: NO`, and `PRODUCTION DB: UNCHANGED` boundaries. The branch was pushed and remote equality was verified at `aaf6794d977fcb021f2cc6a33b37ee3109b34094` before this final state-note commit.
 
-- [ ] **Step 2: Inspect staged content for secrets and unrelated changes**
+- [x] **Step 2: Inspect staged content for secrets and unrelated changes**
 
-Review `git diff --cached`, search staged files for secret-like values, and ensure only integration, tests, dependency/migration, plan, and state files are included.
+Reviewed the staged state/plan diff, ran `git diff --cached --check`, and ran the staged secret scan; only the integration plan and observed project-state entry were included.
 
-- [ ] **Step 3: Commit the state reconciliation**
+- [x] **Step 3: Commit the state reconciliation**
 
-Create a clear final state commit after fresh verification; do not squash the auditable integration history.
+Created the clear state reconciliation commit `aaf6794`; the auditable integration history remains unsquashed.
 
-- [ ] **Step 4: Push and verify the remote**
+- [x] **Step 4: Push and verify the remote**
 
-Run `git push -u origin codex/natarot-integration-v1`, then verify local `HEAD == origin/codex/natarot-integration-v1`, the branch is clean, and no main/production operation occurred.
+Ran `git push -u origin codex/natarot-integration-v1`; local `HEAD` equals `origin/codex/natarot-integration-v1` at `aaf6794d977fcb021f2cc6a33b37ee3109b34094`, and the branch was clean. The follow-up state-only commit carries the final remote-verification note; main/production were not touched.
