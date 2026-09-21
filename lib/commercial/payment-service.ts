@@ -74,9 +74,21 @@ function assertSupportedEvidence(evidence: NormalizedSePayIpn): void {
   }
 }
 
-function assertExistingEventCompatible(existing: CommercialPaymentEvent | null, expected: { orderId: string; eventKey: string; payloadHash: string }): boolean {
+function assertExistingEventCompatible(
+  existing: CommercialPaymentEvent | null,
+  expected: { orderId: string; eventKey: string; payloadHash: string; providerOrderId: string; invoiceNumber: string; transactionId: string; amountMinor: number },
+  source: "ipn" | "reconciliation",
+): boolean {
   if (!existing) return false;
-  if (existing.orderId !== expected.orderId || existing.providerEventKey !== expected.eventKey || existing.payloadHash !== expected.payloadHash) {
+  if (
+    existing.orderId !== expected.orderId
+    || existing.providerEventKey !== expected.eventKey
+    || existing.providerOrderId !== expected.providerOrderId
+    || existing.providerInvoiceNumber !== expected.invoiceNumber
+    || existing.providerTransactionId !== expected.transactionId
+    || existing.amountMinor !== expected.amountMinor
+    || (existing.payloadHash !== expected.payloadHash && existing.source === source)
+  ) {
     throw new PaymentVerificationError("Provider event identity conflicts with an existing payment", "provider_transaction_conflict");
   }
   if (existing.verificationStatus !== "VERIFIED") throw new PaymentVerificationError("Provider event is not verified", "provider_event_rejected");
@@ -121,7 +133,16 @@ export async function applyVerifiedSePayPayment(input: {
   const eventKey = providerEventKey(input.evidence);
   const existingByTransaction = await getCommercialPaymentEventByTransaction(input.database, input.config, input.evidence.transactionId);
   const existingByKey = await getCommercialPaymentEventByKey(input.database, input.config, eventKey);
-  const duplicate = assertExistingEventCompatible(existingByTransaction ?? existingByKey, { orderId: order.id, eventKey, payloadHash: input.evidence.payloadHash });
+  const source = input.source ?? "ipn";
+  const duplicate = assertExistingEventCompatible(existingByTransaction ?? existingByKey, {
+    orderId: order.id,
+    eventKey,
+    payloadHash: input.evidence.payloadHash,
+    providerOrderId: input.evidence.providerOrderId,
+    invoiceNumber: input.evidence.invoiceNumber,
+    transactionId: input.evidence.transactionId,
+    amountMinor: input.evidence.amountMinor,
+  }, source);
   const id = eventId(input.config, eventKey);
   await recordVerifiedSePayEvent({
     database: input.database,
@@ -129,11 +150,11 @@ export async function applyVerifiedSePayPayment(input: {
     attempt,
     evidence: input.evidence,
     eventId: id,
-    source: input.source ?? "ipn",
+    source,
     now: input.now,
   });
   const event = await getCommercialPaymentEventByKey(input.database, input.config, eventKey);
-  if (!event || event.orderId !== order.id || event.payloadHash !== input.evidence.payloadHash) {
+  if (!event || event.orderId !== order.id || (event.payloadHash !== input.evidence.payloadHash && event.source === source)) {
     throw new PaymentVerificationError("Provider event was not durably accepted", "payment_event_unavailable");
   }
   let fulfillment: OrderFulfillment | null = null;
@@ -151,7 +172,7 @@ export async function applyVerifiedSePayPayment(input: {
   throw new PaymentVerificationError("Payment was confirmed but order state could not be returned", "order_state_unavailable");
 }
 
-function providerOrderIdFromList(payload: unknown, invoiceNumber: string): string | null {
+function providerOrderRowFromList(payload: unknown, invoiceNumber: string): Record<string, unknown> | null {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
   const data = (payload as { data?: unknown }).data;
   if (!Array.isArray(data)) return null;
@@ -161,9 +182,21 @@ function providerOrderIdFromList(payload: unknown, invoiceNumber: string): strin
     return (typeof record.order_invoice_number === "string" ? record.order_invoice_number.trim() : "") === invoiceNumber;
   });
   if (!row || typeof row !== "object" || Array.isArray(row)) return null;
-  const record = row as Record<string, unknown>;
+  return row as Record<string, unknown>;
+}
+
+function providerOrderIdFromList(payload: unknown, invoiceNumber: string): string | null {
+  const record = providerOrderRowFromList(payload, invoiceNumber);
+  if (!record) return null;
   const providerOrderId = record.order_id ?? record.id;
   return typeof providerOrderId === "string" && providerOrderId.trim() ? providerOrderId.trim() : null;
+}
+
+function providerOrderDetailIdFromList(payload: unknown, invoiceNumber: string): string | null {
+  const record = providerOrderRowFromList(payload, invoiceNumber);
+  if (!record) return null;
+  const detailId = record.id ?? record.order_id;
+  return typeof detailId === "string" && detailId.trim() ? detailId.trim() : null;
 }
 
 export async function reconcileSePayPayment(input: {
@@ -179,14 +212,13 @@ export async function reconcileSePayPayment(input: {
   const attempt = await getSePayPaymentAttemptByOrder(input.database, input.orderId);
   if (!attempt || attempt.environment !== input.config.environment) throw new PaymentVerificationError("Payment attempt was not found", "payment_attempt_not_found");
   const fetchImpl = input.fetchImpl ?? fetch;
-  let providerOrderId = attempt.providerOrderId;
-  if (!providerOrderId) {
-    const list = await fetchSePayJson(input.config, `/v1/order?per_page=50&page=1&q=${encodeURIComponent(attempt.invoiceNumber)}&sort=created_at%3Adesc`, fetchImpl);
-    providerOrderId = providerOrderIdFromList(list, attempt.invoiceNumber);
-    if (!providerOrderId) return { status: order.status === "FULFILLED" ? "FULFILLED" : order.status === "PAYMENT_CONFIRMED" ? "PAYMENT_CONFIRMED" : "PENDING", order, eventId: null, fulfillmentErrorCode: null };
-  }
+  const list = await fetchSePayJson(input.config, `/v1/order?per_page=50&page=1&q=${encodeURIComponent(attempt.invoiceNumber)}&sort=created_at%3Adesc`, fetchImpl);
+  const listedProviderOrderId = providerOrderIdFromList(list, attempt.invoiceNumber);
+  const providerOrderId = listedProviderOrderId ?? attempt.providerOrderId;
+  const providerDetailId = providerOrderDetailIdFromList(list, attempt.invoiceNumber) ?? providerOrderId;
+  if (!providerOrderId || !providerDetailId) return { status: order.status === "FULFILLED" ? "FULFILLED" : order.status === "PAYMENT_CONFIRMED" ? "PAYMENT_CONFIRMED" : "PENDING", order, eventId: null, fulfillmentErrorCode: null };
   await updateProviderOrderHint(input.database, { attemptId: attempt.id, providerOrderId, now: input.now });
-  const detail = await fetchSePayJson(input.config, `/v1/order/detail/${encodeURIComponent(providerOrderId)}`, fetchImpl);
+  const detail = await fetchSePayJson(input.config, `/v1/order/detail/${encodeURIComponent(providerDetailId)}`, fetchImpl);
   const evidence = await normalizeSePayOrderDetail(detail, (input.now ?? Date.now)());
   if (!evidence) {
     const refreshed = await getOrderById(input.database, input.orderId);

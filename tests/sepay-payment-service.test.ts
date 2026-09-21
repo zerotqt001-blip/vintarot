@@ -163,10 +163,10 @@ test("reconciliation resolves provider order detail and converges through the sa
     const url = String(input);
     calls.push(url);
     if (url.includes("/v1/order?") || url.includes("/v1/order%3F")) {
-      return new Response(JSON.stringify({ data: [{ id: "provider-order-reconcile", order_id: "provider-order-reconcile", order_invoice_number: "NT-SEPAY-RECONCILE" }] }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ data: [{ id: "provider-detail-reconcile", order_id: "provider-order-reconcile", order_invoice_number: "NT-SEPAY-RECONCILE" }] }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
     return new Response(JSON.stringify({ data: {
-      id: "provider-order-reconcile",
+      id: "provider-detail-reconcile",
       order_id: "provider-order-reconcile",
       order_status: "CAPTURED",
       order_currency: "VND",
@@ -178,9 +178,45 @@ test("reconciliation resolves provider order detail and converges through the sa
   const result = await reconcileSePayPayment({ database: fixture.database, creditStore: fixture.store, config, orderId: order.id, fetchImpl, now: () => fixture.now.value });
   assert.equal(result.status, "FULFILLED");
   assert.ok(calls.some((url) => url.includes("/v1/order?")));
-  assert.ok(calls.some((url) => url.includes("/v1/order/detail/provider-order-reconcile")));
+  assert.ok(calls.some((url) => url.includes("/v1/order/detail/provider-detail-reconcile")));
   assert.equal((fixture.sqlite.prepare("SELECT provider_order_id FROM commercial_payment_attempts WHERE order_id = ?").get(order.id) as { provider_order_id: string }).provider_order_id, "provider-order-reconcile");
   assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM commercial_payment_events").get() as { count: number }).count, 1);
+});
+
+test("reconciliation after IPN reuses the same provider transaction without a second fulfillment", async (context) => {
+  const fixture = makeFixture(context);
+  const order = await createOrder(fixture, "package-sepay-cross-source", "checkout-sepay-cross-source");
+  await createSePayPaymentAttempt({ database: fixture.database, config, order, invoiceNumber: "NT-SEPAY-CROSS-SOURCE", requestFingerprint: "checkout-fingerprint-cross-source", now: () => fixture.now.value });
+  const transaction = "provider-transaction-cross-source";
+  await applyVerifiedSePayPayment({
+    database: fixture.database,
+    creditStore: fixture.store,
+    config,
+    evidence: evidence({ invoiceNumber: "NT-SEPAY-CROSS-SOURCE", providerOrderId: "provider-order-cross-source", transactionId: transaction, payloadHash: "ipn-payload-cross-source" }),
+    now: () => fixture.now.value,
+  });
+  const fetchImpl: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.includes("/v1/order?")) {
+      return new Response(JSON.stringify({ data: [{ id: "provider-detail-cross-source", order_id: "provider-order-cross-source", order_invoice_number: "NT-SEPAY-CROSS-SOURCE" }] }), { status: 200 });
+    }
+    if (!url.includes("/v1/order/detail/provider-detail-cross-source")) return new Response("wrong detail id", { status: 404 });
+    return new Response(JSON.stringify({ data: {
+      id: "provider-detail-cross-source",
+      order_id: "provider-order-cross-source",
+      order_status: "CAPTURED",
+      order_currency: "VND",
+      order_amount: "10000",
+      order_invoice_number: "NT-SEPAY-CROSS-SOURCE",
+      transactions: [{ id: transaction, transaction_id: transaction, transaction_type: "PAYMENT", transaction_status: "APPROVED", transaction_amount: "10000", transaction_currency: "VND" }],
+    } }), { status: 200 });
+  };
+  const result = await reconcileSePayPayment({ database: fixture.database, creditStore: fixture.store, config, orderId: order.id, fetchImpl, now: () => fixture.now.value });
+  assert.equal(result.status, "FULFILLED");
+  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM commercial_payment_events").get() as { count: number }).count, 1);
+  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM order_fulfillments").get() as { count: number }).count, 1);
+  assert.equal((await fixture.store.getBalance(owner)).availableUnits, 10);
+  assert.equal((await getActiveEntitlements(fixture.database, owner, fixture.now.value)).length, 1);
 });
 
 test("reconciliation keeps a non-captured provider order pending", async (context) => {
