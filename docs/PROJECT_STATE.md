@@ -233,3 +233,20 @@ Migration verification covers the ordered `0000`–`0005` set, including both ca
 Validation for the integrated code head `734ce26`: S6/engine focused suite `148/148`; email/auth focused suite `50/50`; final security/auth matrix `49/49`; migration/share focused suite `21/21`; complete tracked suite `441/441`; `npx tsc --noEmit`; production `npm run build`; `npm audit --omit=dev` with `0 vulnerabilities`; and `git diff --check` all pass. Targeted ESLint passes for the newly integrated email/security/migration files. The broader changed-source lint still reports the inherited engine/S6 baseline (`26 errors`, `7 warnings`), concentrated outside those selective files. L6 remains final validated JSON with bounded retry/persistence behavior; real token streaming is deliberately not implemented.
 
 Operational boundary for this integration: `MERGED TO MAIN: NO`; `DEPLOYED: NO`; `PRODUCTION DB: UNCHANGED`; no production migration, VPS restart, provider credential, payment/Credits, Affiliate, or production secret action was performed. The branch was pushed normally as `codex/natarot-integration-v1`, and local/remote equality was verified at state commit `aaf6794d977fcb021f2cc6a33b37ee3109b34094`; no merge or deployment is part of this milestone.
+
+## NaTarot Commercial Readiness V1 (2026-09-21)
+Commercial Readiness V1 is documentation-only on branch codex/natarot-commercial-readiness-v1, created in an isolated worktree from exact Integration V1 commit f5452a35d7b4bbc9884e52d0890c4f5e9c39e9fe. The Credits/VIP architecture was treated as a reference boundary from c589441b78cb23bd5086d296f0deb389cf41f037; that branch and implementation were not modified.
+
+The approved V1 direction is SePay Gateway with VND checkout, server-created internal orders, signed checkout forms, browser redirects for display only, authenticated IPN as the primary payment signal, provider order-detail reconciliation for ambiguous or missed callbacks, exact amount/currency/order/invoice/transaction/status/destination verification, and an explicit idempotent fulfillment boundary. The separate direct bank-webhook product is not activated. Affiliate attribution, fulfilled-order conversion, append-only commission ledger, versioned tier snapshots, refund/reversal compensation, payout holds, admin RBAC, audit, and security controls are specified without seeding rates or making payout policy decisions.
+
+The five commercial documents are:
+
+- docs/commercial/NATAROT_COMMERCIAL_ARCHITECTURE_V1.md
+- docs/commercial/NATAROT_SEPAY_SPEC.md
+- docs/commercial/NATAROT_AFFILIATE_SPEC.md
+- docs/commercial/NATAROT_COMMERCIAL_SECURITY.md
+- docs/commercial/NATAROT_COMMERCIAL_IMPLEMENTATION_ROADMAP.md
+
+Official SePay documentation was used as the provider authority for Gateway flow, checkout fields/signing, sandbox endpoints, IPN behavior, and order-detail reconciliation. No credentials, provider account changes, migrations, dependencies, runtime code, UI, production configuration, production database, or deployment action were added by this readiness work. Production activation remains a separate release decision.
+
+Open items before implementation are the exact IPN authentication/rotation owner, enabled payment methods, order/refund/void/chargeback rules, affiliate attribution and tier policy, payout approval and retention policy, admin role separation, alert ownership, and the approved Credits/VIP fulfillment/reversal contract. The branch must remain documentation-only until those decisions and the roadmap gates are reviewed.
