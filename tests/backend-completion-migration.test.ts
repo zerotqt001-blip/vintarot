@@ -26,10 +26,9 @@ function tableExists(sqlite: DatabaseSync, table: string): boolean {
   return Boolean((sqlite.prepare("SELECT 1 AS present FROM sqlite_master WHERE type = 'table' AND name = ?").get(table) as { present?: number } | undefined)?.present);
 }
 
-test("0007 is the next additive migration and declares backend completion tables", () => {
+test("the two historical 0007 migrations are additive and preserve backend/commercial tables", () => {
   const names = migrationNames();
-  assert.equal(names[names.length - 1], "0007_backend_completion.sql");
-  assert.deepEqual(names.slice(-2), ["0006_credits_vip.sql", "0007_backend_completion.sql"]);
+  assert.deepEqual(names.slice(-3), ["0006_credits_vip.sql", "0007_backend_completion.sql", "0007_sepay_commercial.sql"]);
 
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec("PRAGMA foreign_keys = ON");
@@ -48,6 +47,8 @@ test("0007 is the next additive migration and declares backend completion tables
     "affiliate_policy_tiers",
     "affiliate_conversions",
     "affiliate_commission_ledger",
+    "commercial_payment_attempts",
+    "commercial_payment_events",
   ]) {
     assert.equal(tableExists(sqlite, table), true, `expected ${table}`);
   }
