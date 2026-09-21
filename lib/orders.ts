@@ -38,9 +38,11 @@ export type Order = {
 export type OrderFulfillment = {
   id: string;
   orderId: string;
+  paymentEventId: string | null;
   fulfillmentKey: string;
   resultSnapshot: string;
   createdAt: number;
+  updatedAt: number;
 };
 
 export type CreatePendingOrderInput = {
@@ -105,13 +107,13 @@ const orderSelect = `SELECT o.id, o.account_id AS accountId, a.owner_kind AS own
   o.payment_confirmed_at AS paymentConfirmedAt, o.fulfilled_at AS fulfilledAt, o.cancelled_at AS cancelledAt, o.refunded_at AS refundedAt
   FROM orders o JOIN credit_accounts a ON a.id = o.account_id`;
 
-async function getOrderById(database: D1Database, orderId: string): Promise<Order | null> {
+export async function getOrderById(database: D1Database, orderId: string): Promise<Order | null> {
   const row = await first<OrderRow>(database, `${orderSelect} WHERE o.id = ?`, orderId);
   return row ? mapOrder(row) : null;
 }
 
 async function getFulfillment(database: D1Database, orderId: string): Promise<OrderFulfillment | null> {
-  return first<FulfillmentRow>(database, "SELECT id, order_id AS orderId, fulfillment_key AS fulfillmentKey, result_snapshot AS resultSnapshot, created_at AS createdAt FROM order_fulfillments WHERE order_id = ?", orderId);
+  return first<FulfillmentRow>(database, "SELECT id, order_id AS orderId, payment_event_id AS paymentEventId, fulfillment_key AS fulfillmentKey, result_snapshot AS resultSnapshot, created_at AS createdAt, updated_at AS updatedAt FROM order_fulfillments WHERE order_id = ?", orderId);
 }
 
 export async function createPendingOrder(input: CreatePendingOrderInput): Promise<Order> {
@@ -159,7 +161,7 @@ export async function recordVerifiedPayment(database: D1Database, input: { order
   return order;
 }
 
-export async function fulfillOrder(input: { database: D1Database; creditStore: CreditStore; orderId: string; now?: () => number }): Promise<{ order: Order; fulfillment: OrderFulfillment }> {
+export async function fulfillOrder(input: { database: D1Database; creditStore: CreditStore; orderId: string; paymentEventId?: string | null; now?: () => number }): Promise<{ order: Order; fulfillment: OrderFulfillment }> {
   const now = input.now ?? Date.now;
   const existing = await getOrderById(input.database, input.orderId);
   if (!existing) throw new OrderError("Order not found", "order_not_found");
@@ -214,7 +216,7 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
   const eventKey = `order:${existing.id}:fulfilled`;
   await input.database.batch([
     input.database.prepare("UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?").bind(timestamp, existing.accountId),
-    input.database.prepare("INSERT OR IGNORE INTO order_fulfillments (id, order_id, fulfillment_key, result_snapshot, created_at) VALUES (?, ?, ?, ?, ?)").bind(fulfillmentId, existing.id, fulfillmentKey, resultSnapshot, timestamp),
+    input.database.prepare("INSERT OR IGNORE INTO order_fulfillments (id, order_id, payment_event_id, fulfillment_key, result_snapshot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(fulfillmentId, existing.id, input.paymentEventId ?? null, fulfillmentKey, resultSnapshot, timestamp, timestamp),
     input.database.prepare("INSERT OR IGNORE INTO commercial_events (id, event_type, aggregate_type, aggregate_id, payload, idempotency_key, created_at) VALUES (?, 'ORDER_FULFILLED', 'ORDER', ?, ?, ?, ?)").bind(`event:${eventKey}`, existing.id, resultSnapshot, eventKey, timestamp),
     input.database.prepare("UPDATE orders SET status = 'FULFILLED', fulfilled_at = ? WHERE id = ? AND status = 'PAYMENT_CONFIRMED'").bind(timestamp, existing.id),
   ]);

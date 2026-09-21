@@ -12,6 +12,11 @@ export type RuntimeEnvironment = TarotAIEnvironment & {
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_REDIRECT_URI?: string;
   NATAROT_TRUSTED_PROXY?: string;
+  NATAROT_PUBLIC_ORIGIN?: string;
+  SEPAY_ENVIRONMENT?: string;
+  SEPAY_MERCHANT_ID?: string;
+  SEPAY_SECRET_KEY?: string;
+  SEPAY_IPN_SECRET?: string;
 };
 
 type RuntimeContext = {

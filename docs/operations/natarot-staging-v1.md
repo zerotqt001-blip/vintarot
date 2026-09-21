@@ -21,9 +21,11 @@ stop, migrate, replace, or reconfigure `natarot.service`, `/opt/natarot`,
 | Environment | `/etc/natarot-staging.env` |
 | Public origin | `https://staging.natarot.com` |
 
-Staging has no provider, SePay, payment, Google, Resend, or production secret
-configuration during this bootstrap. The checked-in migration chain is the
-only schema input, and all runtime rows must be synthetic.
+Staging is the only authorized target for provider validation. Before the
+SePay release is installed, it may have no provider configuration; after the
+release, only SePay Sandbox values may be added to the staging environment
+file. The checked-in migration chain is the only schema input, and all
+runtime rows must be synthetic.
 
 ## 1. Preflight and DNS
 
@@ -236,17 +238,61 @@ directory owners to confirm staging paths are writable only by the staging
 identity. Confirm no process, database, environment file, or reverse-proxy
 setting points at production state.
 
-## 7. Future SePay callback boundary
+## 7. SePay Sandbox release and callback boundary
 
-The host capability is reserved as:
+The SePay implementation uses only the Gateway Sandbox, not the separate
+SePay bank-webhook product. The checked-in release adds migrations `0006` and
+`0007`, the server-priced checkout boundary, signed hosted form, raw-body
+IPN handler, provider order-detail reconciliation, and the existing
+Credits/VIP fulfillment boundary. The public callback is:
 
 ```text
 https://staging.natarot.com/api/commercial/sepay/ipn
 ```
 
-This mission does not create or test that route. Do not register an IPN, copy a
-SePay secret, enable real payments, or claim the endpoint works until the
-parent SePay implementation creates and deploys it.
+Before applying the release, make an isolated database backup/snapshot and
+record its path without printing database rows:
+
+```bash
+sudo install -d -o natarot-staging -g natarot-staging -m 0700 /var/lib/natarot-staging/backups
+sudo cp --reflink=auto /var/lib/natarot-staging/natarot.sqlite \
+  /var/lib/natarot-staging/backups/natarot.sqlite.before-sepay-$(date -u +%Y%m%dT%H%M%SZ)
+```
+
+The staging environment file may contain only these SePay variable names,
+with values supplied out-of-band and never committed, echoed, or logged:
+
+```text
+SEPAY_ENVIRONMENT=sandbox
+SEPAY_MERCHANT_ID=<staging-sandbox-merchant-id>
+SEPAY_SECRET_KEY=<staging-sandbox-secret>
+SEPAY_IPN_SECRET=<staging-sandbox-ipn-secret>
+NATAROT_PUBLIC_ORIGIN=https://staging.natarot.com
+```
+
+Run the synthetic catalog seed only against the isolated staging database:
+
+```bash
+sudo env NATAROT_STAGING_SEED=1 \
+  NATAROT_DB_PATH=/var/lib/natarot-staging/natarot.sqlite \
+  SEPAY_ENVIRONMENT=sandbox \
+  /usr/local/bin/node /opt/natarot-staging/scripts/seed-staging-commercial.mjs
+```
+
+Restart only `natarot-staging.service` after installing the release and
+environment. Configure the SePay Sandbox Gateway IPN setting to the callback
+above using the currently documented Gateway secret-key mode. Verify the URL
+with a synthetic callback and inspect only status/count metadata; do not put
+the secret or provider payload in a journal, shell history, fixture, or report.
+
+The required sandbox loop is: synthetic member baseline, server-created order,
+signed checkout form, Sandbox payment, real IPN, exact verified payment,
+Credits/VIP fulfillment, duplicate/concurrent callback, display-only return,
+restart persistence, and order-detail reconciliation. A provider UI
+password/OTP/2FA/CAPTCHA/device-confirmation or permission prompt is a human
+gate: stop at that point and report live E2E as blocked rather than using a
+mock or claiming completion. No production IPN, production secret, production
+database, real payment, or production service action is permitted.
 
 ## 8. Rollback
 

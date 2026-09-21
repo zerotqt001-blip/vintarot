@@ -486,12 +486,15 @@ export const orderFulfillments = sqliteTable(
   {
     id: text("id").primaryKey(),
     orderId: text("order_id").notNull().references(() => orders.id),
+    paymentEventId: text("payment_event_id"),
     fulfillmentKey: text("fulfillment_key").notNull(),
     resultSnapshot: text("result_snapshot").notNull(),
     createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull().default(0),
   },
   (table) => [
     uniqueIndex("order_fulfillments_order_unique").on(table.orderId),
+    uniqueIndex("order_fulfillments_payment_event_unique").on(table.paymentEventId).where(sql`${table.paymentEventId} IS NOT NULL`),
     uniqueIndex("order_fulfillments_key_unique").on(table.fulfillmentKey),
   ],
 );
@@ -510,5 +513,61 @@ export const commercialEvents = sqliteTable(
   (table) => [
     uniqueIndex("commercial_events_key_unique").on(table.idempotencyKey),
     index("commercial_events_aggregate_idx").on(table.aggregateType, table.aggregateId, table.createdAt),
+  ],
+);
+
+export const commercialPaymentAttempts = sqliteTable(
+  "commercial_payment_attempts",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    provider: text("provider").notNull(),
+    environment: text("environment").notNull(),
+    invoiceNumber: text("invoice_number").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    providerOrderId: text("provider_order_id"),
+    expiresAt: integer("expires_at"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_payment_attempts_order_unique").on(table.orderId),
+    uniqueIndex("commercial_payment_attempts_invoice_unique").on(table.provider, table.environment, table.invoiceNumber),
+    index("commercial_payment_attempts_provider_order_idx").on(table.provider, table.environment, table.providerOrderId),
+    index("commercial_payment_attempts_status_idx").on(table.status, table.updatedAt),
+  ],
+);
+
+export const commercialPaymentEvents = sqliteTable(
+  "commercial_payment_events",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").references(() => orders.id, { onDelete: "set null" }),
+    provider: text("provider").notNull(),
+    environment: text("environment").notNull(),
+    providerEventKey: text("provider_event_key").notNull(),
+    providerOrderId: text("provider_order_id").notNull(),
+    providerInvoiceNumber: text("provider_invoice_number").notNull(),
+    providerTransactionId: text("provider_transaction_id").notNull(),
+    notificationType: text("notification_type").notNull(),
+    providerOrderStatus: text("provider_order_status").notNull(),
+    providerTransactionStatus: text("provider_transaction_status").notNull(),
+    providerTransactionType: text("provider_transaction_type").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    source: text("source").notNull(),
+    payloadHash: text("payload_hash").notNull(),
+    verificationStatus: text("verification_status").notNull(),
+    rejectionCode: text("rejection_code"),
+    receivedAt: integer("received_at").notNull(),
+    verifiedAt: integer("verified_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_payment_events_provider_key_unique").on(table.provider, table.environment, table.providerEventKey),
+    uniqueIndex("commercial_payment_events_transaction_unique").on(table.provider, table.environment, table.providerTransactionId).where(sql`${table.providerTransactionId} IS NOT NULL`),
+    index("commercial_payment_events_order_idx").on(table.orderId, table.createdAt),
+    index("commercial_payment_events_status_idx").on(table.verificationStatus, table.createdAt),
   ],
 );
