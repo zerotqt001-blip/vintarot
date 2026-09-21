@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { createRequestFingerprint } from "./credits/ledger";
 import { creditAccountId, CreditIdempotencyError } from "./credits/repository";
 import type { CreditOwner } from "./credits/types";
+import { createAuditService } from "./audit/service";
 
 export type Entitlement = {
   id: string;
@@ -95,4 +96,65 @@ export async function expireEntitlements(database: D1Database, owner: CreditOwne
   const accountId = creditAccountId(owner);
   const result = await database.prepare("UPDATE entitlements SET status = 'EXPIRED', updated_at = ? WHERE account_id = ? AND status = 'ACTIVE' AND ends_at IS NOT NULL AND ends_at <= ?").bind(now, accountId, now).run();
   return Number(result.meta?.changes ?? 0);
+}
+
+export async function grantManualEntitlement(input: {
+  database: D1Database;
+  owner: CreditOwner;
+  entitlementType: string;
+  benefitVersion: string;
+  startsAt: number;
+  endsAt: number | null;
+  benefitSnapshot: unknown;
+  idempotencyKey: string;
+  reason: string;
+  actorId: string;
+  now?: number;
+}): Promise<Entitlement> {
+  if (!input.reason.trim() || input.reason.length > 500 || !input.idempotencyKey.trim() || input.idempotencyKey.length > 200 || !input.actorId.trim()) {
+    throw new Error("Invalid entitlement mutation");
+  }
+  const timestamp = input.now ?? Date.now();
+  const entitlement = await activateEntitlement(input.database, {
+    owner: input.owner,
+    entitlementType: input.entitlementType,
+    benefitVersion: input.benefitVersion,
+    startsAt: input.startsAt,
+    endsAt: input.endsAt,
+    sourceType: "ADMIN",
+    sourceId: input.actorId,
+    grantKey: `admin-vip:${input.idempotencyKey}`,
+    benefitSnapshot: input.benefitSnapshot,
+    now: timestamp,
+  });
+  await createAuditService(input.database).append({
+    actorKind: "member",
+    actorId: input.actorId,
+    action: "vip.granted",
+    targetType: "entitlement",
+    targetId: entitlement.id,
+    reason: input.reason,
+    idempotencyKey: `admin.vip.grant:${input.idempotencyKey}`,
+    metadata: { entitlementType: input.entitlementType, benefitVersion: input.benefitVersion },
+  });
+  return entitlement;
+}
+
+export async function revokeEntitlement(input: { database: D1Database; owner: CreditOwner; entitlementId: string; reason: string; actorId: string; idempotencyKey: string; now?: number }): Promise<boolean> {
+  if (!input.reason.trim() || input.reason.length > 500 || !input.idempotencyKey.trim() || input.idempotencyKey.length > 200 || !input.actorId.trim()) throw new Error("Invalid entitlement mutation");
+  const accountId = creditAccountId(input.owner);
+  const timestamp = input.now ?? Date.now();
+  const result = await input.database.prepare("UPDATE entitlements SET status='CANCELLED', cancelled_at=?, updated_at=? WHERE id=? AND account_id=? AND status IN ('PENDING', 'ACTIVE')").bind(timestamp, timestamp, input.entitlementId, accountId).run();
+  if (Number(result.meta.changes) === 0) return false;
+  await createAuditService(input.database).append({
+    actorKind: "member",
+    actorId: input.actorId,
+    action: "vip.revoked",
+    targetType: "entitlement",
+    targetId: input.entitlementId,
+    reason: input.reason,
+    idempotencyKey: `admin.vip.revoke:${input.idempotencyKey}`,
+    metadata: { ownerKind: input.owner.kind },
+  });
+  return true;
 }
