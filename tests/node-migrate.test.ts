@@ -14,7 +14,7 @@ function createPreShareDatabase(dbPath: string): void {
   sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)");
   const migrationDirectory = join(repoRoot, "drizzle");
   const migrations = readdirSync(migrationDirectory)
-    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_"))
+    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_") && !name.startsWith("0006_"))
     .sort();
   for (const name of migrations) {
     sqlite.exec(readFileSync(join(migrationDirectory, name), "utf8"));
@@ -41,7 +41,7 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   const sqlite = new DatabaseSync(dbPath);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get() as { count: number }).count, 78);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get() as { count: number }).count, 312);
-  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 7);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 8);
   assert.deepEqual(
     sqlite.prepare("SELECT name FROM natarot_migrations ORDER BY name").all().map((row) => row.name),
     [
@@ -52,6 +52,7 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
       "0004_member_auth.sql",
       "0004_reading_payload.sql",
       "0005_natarot_share_persistence.sql",
+      "0006_credits_vip.sql",
     ],
   );
   const columns = sqlite.prepare("PRAGMA table_info(readings)").all() as Array<{ name: string }>;
@@ -86,6 +87,37 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
       1,
     );
   }
+  for (const table of [
+    "credit_accounts",
+    "credit_grants",
+    "credit_ledger",
+    "credit_reservations",
+    "credit_reservation_allocations",
+    "packages",
+    "package_versions",
+    "orders",
+    "entitlements",
+    "order_fulfillments",
+    "commercial_events",
+  ]) {
+    assert.equal(
+      (sqlite.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name=?").get(table) as {
+        count: number;
+      }).count,
+      1,
+      `expected ${table} to exist`,
+    );
+  }
+  const creditAccountIndexes = sqlite.prepare("PRAGMA index_list('credit_accounts')").all() as Array<{ name: string; unique: number }>;
+  assert.ok(creditAccountIndexes.some((index) => index.name === "credit_accounts_owner_unique" && index.unique === 1));
+  const reservationIndexes = sqlite.prepare("PRAGMA index_list('credit_reservations')").all() as Array<{ name: string; unique: number }>;
+  assert.ok(reservationIndexes.some((index) => index.name === "credit_reservations_owner_key_unique" && index.unique === 1));
+  const grantSql = (sqlite.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='credit_grants'").get() as { sql: string }).sql;
+  assert.match(grantSql, /`available_units`\s+INTEGER\s+NOT NULL/i);
+  assert.match(grantSql, /CHECK\s*\(`available_units`\s*>=\s*0\s+AND\s+`available_units`\s*<=\s*`units`\)/i);
+  const ledgerSql = (sqlite.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='credit_ledger'").get() as { sql: string }).sql;
+  assert.match(ledgerSql, /`units`\s+INTEGER\s+NOT NULL/i);
+  assert.match(ledgerSql, /CHECK\s*\(`units`\s*<>\s*0\)/i);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
 });
@@ -112,7 +144,9 @@ test("Node migration upgrades an existing pre-share database without losing memb
     [{ id: "reading-legacy", session_id: "session-legacy" }],
   );
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0005_%'").get() as { count: number }).count, 1);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0006_%'").get() as { count: number }).count, 1);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM reading_shares").get() as { count: number }).count, 0);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM credit_accounts").get() as { count: number }).count, 0);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
 });

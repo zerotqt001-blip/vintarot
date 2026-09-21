@@ -269,3 +269,246 @@ export const shareEvents = sqliteTable(
   },
   (table) => [index("share_events_share_created_idx").on(table.shareId, table.createdAt)],
 );
+
+export const creditAccounts = sqliteTable(
+  "credit_accounts",
+  {
+    id: text("id").primaryKey(),
+    ownerKind: text("owner_kind").notNull(),
+    ownerId: text("owner_id").notNull(),
+    mutationVersion: integer("mutation_version").notNull().default(0),
+    mutationToken: text("mutation_token"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_accounts_owner_unique").on(table.ownerKind, table.ownerId),
+    index("credit_accounts_mutation_idx").on(table.mutationVersion, table.updatedAt),
+  ],
+);
+
+export const packages = sqliteTable(
+  "packages",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    nameEn: text("name_en").notNull(),
+    nameVi: text("name_vi").notNull(),
+    active: integer("active", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("packages_slug_unique").on(table.slug),
+    index("packages_active_idx").on(table.active, table.slug),
+  ],
+);
+
+export const packageVersions = sqliteTable(
+  "package_versions",
+  {
+    id: text("id").primaryKey(),
+    packageId: text("package_id").notNull().references(() => packages.id),
+    version: integer("version").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    creditUnits: integer("credit_units").notNull(),
+    vipDurationSeconds: integer("vip_duration_seconds"),
+    benefitSnapshot: text("benefit_snapshot").notNull(),
+    policyVersion: text("policy_version").notNull(),
+    status: text("status").notNull().default("active"),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("package_versions_package_version_unique").on(table.packageId, table.version),
+    index("package_versions_catalog_idx").on(table.status, table.startsAt, table.endsAt),
+  ],
+);
+
+export const creditGrants = sqliteTable(
+  "credit_grants",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    source: text("source").notNull(),
+    sourceType: text("source_type"),
+    sourceId: text("source_id"),
+    grantKey: text("grant_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    units: integer("units").notNull(),
+    availableUnits: integer("available_units").notNull(),
+    eligibleFrom: integer("eligible_from").notNull(),
+    expiresAt: integer("expires_at"),
+    policyVersion: text("policy_version").notNull(),
+    policySnapshot: text("policy_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_grants_account_key_unique").on(table.accountId, table.grantKey),
+    index("credit_grants_eligible_idx").on(table.accountId, table.eligibleFrom, table.expiresAt, table.createdAt),
+    index("credit_grants_source_idx").on(table.source, table.sourceType, table.sourceId),
+  ],
+);
+
+export const creditLedger = sqliteTable(
+  "credit_ledger",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    grantId: text("grant_id").references(() => creditGrants.id),
+    reservationId: text("reservation_id"),
+    eventType: text("event_type").notNull(),
+    units: integer("units").notNull(),
+    referenceType: text("reference_type"),
+    referenceId: text("reference_id"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    actorKind: text("actor_kind"),
+    actorId: text("actor_id"),
+    reason: text("reason").notNull(),
+    effectiveAt: integer("effective_at").notNull(),
+    createdAt: integer("created_at").notNull(),
+    reversedEntryId: text("reversed_entry_id"),
+  },
+  (table) => [
+    uniqueIndex("credit_ledger_account_key_unique").on(table.accountId, table.idempotencyKey),
+    index("credit_ledger_account_created_idx").on(table.accountId, table.createdAt, table.id),
+    index("credit_ledger_grant_idx").on(table.grantId, table.createdAt),
+    index("credit_ledger_reference_idx").on(table.referenceType, table.referenceId),
+  ],
+);
+
+export const creditReservations = sqliteTable(
+  "credit_reservations",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    usageType: text("usage_type").notNull(),
+    units: integer("units").notNull(),
+    resourceType: text("resource_type").notNull(),
+    resourceId: text("resource_id").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    leaseExpiresAt: integer("lease_expires_at"),
+    retryCount: integer("retry_count").notNull().default(0),
+    resultType: text("result_type"),
+    resultId: text("result_id"),
+    reason: text("reason"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    consumedAt: integer("consumed_at"),
+    releasedAt: integer("released_at"),
+  },
+  (table) => [
+    uniqueIndex("credit_reservations_owner_key_unique").on(table.accountId, table.idempotencyKey),
+    index("credit_reservations_owner_status_idx").on(table.accountId, table.status, table.updatedAt),
+    index("credit_reservations_lease_idx").on(table.status, table.leaseExpiresAt),
+  ],
+);
+
+export const creditReservationAllocations = sqliteTable(
+  "credit_reservation_allocations",
+  {
+    id: text("id").primaryKey(),
+    reservationId: text("reservation_id").notNull().references(() => creditReservations.id, { onDelete: "cascade" }),
+    grantId: text("grant_id").notNull().references(() => creditGrants.id),
+    heldUnits: integer("held_units").notNull(),
+    consumedUnits: integer("consumed_units").notNull().default(0),
+    releasedUnits: integer("released_units").notNull().default(0),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_reservation_allocations_reservation_grant_unique").on(table.reservationId, table.grantId),
+    index("credit_reservation_allocations_grant_idx").on(table.grantId, table.reservationId),
+  ],
+);
+
+export const orders = sqliteTable(
+  "orders",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    packageId: text("package_id").notNull().references(() => packages.id),
+    packageVersionId: text("package_version_id").notNull().references(() => packageVersions.id),
+    packageSnapshot: text("package_snapshot").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    paymentReference: text("payment_reference"),
+    createdAt: integer("created_at").notNull(),
+    paymentConfirmedAt: integer("payment_confirmed_at"),
+    fulfilledAt: integer("fulfilled_at"),
+    cancelledAt: integer("cancelled_at"),
+    refundedAt: integer("refunded_at"),
+  },
+  (table) => [
+    uniqueIndex("orders_account_key_unique").on(table.accountId, table.idempotencyKey),
+    uniqueIndex("orders_payment_reference_unique").on(table.paymentReference),
+    index("orders_account_status_idx").on(table.accountId, table.status, table.createdAt),
+    index("orders_package_idx").on(table.packageId, table.packageVersionId),
+  ],
+);
+
+export const entitlements = sqliteTable(
+  "entitlements",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    entitlementType: text("entitlement_type").notNull(),
+    benefitVersion: text("benefit_version").notNull(),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    status: text("status").notNull().default("ACTIVE"),
+    sourceType: text("source_type").notNull(),
+    sourceId: text("source_id").notNull(),
+    grantKey: text("grant_key").notNull(),
+    benefitSnapshot: text("benefit_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    cancelledAt: integer("cancelled_at"),
+  },
+  (table) => [
+    uniqueIndex("entitlements_account_key_unique").on(table.accountId, table.grantKey),
+    index("entitlements_account_status_idx").on(table.accountId, table.entitlementType, table.status, table.endsAt),
+    index("entitlements_source_idx").on(table.sourceType, table.sourceId),
+  ],
+);
+
+export const orderFulfillments = sqliteTable(
+  "order_fulfillments",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    fulfillmentKey: text("fulfillment_key").notNull(),
+    resultSnapshot: text("result_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("order_fulfillments_order_unique").on(table.orderId),
+    uniqueIndex("order_fulfillments_key_unique").on(table.fulfillmentKey),
+  ],
+);
+
+export const commercialEvents = sqliteTable(
+  "commercial_events",
+  {
+    id: text("id").primaryKey(),
+    eventType: text("event_type").notNull(),
+    aggregateType: text("aggregate_type").notNull(),
+    aggregateId: text("aggregate_id").notNull(),
+    payload: text("payload").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_events_key_unique").on(table.idempotencyKey),
+    index("commercial_events_aggregate_idx").on(table.aggregateType, table.aggregateId, table.createdAt),
+  ],
+);
