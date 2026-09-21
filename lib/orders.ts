@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { createRequestFingerprint } from "./credits/ledger";
 import { CreditIdempotencyError, type CreditStore } from "./credits/repository";
 import type { CreditOwner } from "./credits/types";
+import { createAffiliateConversion } from "./affiliate/service";
 import { activateEntitlement } from "./entitlements";
 import { getActivePackageVersion } from "./packages/catalog";
 import type { PackageBenefitSnapshot, PackageVersion } from "./packages/types";
@@ -114,6 +115,26 @@ async function getFulfillment(database: D1Database, orderId: string): Promise<Or
   return first<FulfillmentRow>(database, "SELECT id, order_id AS orderId, fulfillment_key AS fulfillmentKey, result_snapshot AS resultSnapshot, created_at AS createdAt FROM order_fulfillments WHERE order_id = ?", orderId);
 }
 
+async function ensureAffiliateFulfillmentConversion(database: D1Database, order: Order, fulfillment: OrderFulfillment, now: number): Promise<void> {
+  if (order.owner.kind !== "member" || !order.paymentReference || order.fulfilledAt === null) return;
+  await createAffiliateConversion({
+    database,
+    event: {
+      eventKey: `order:${order.id}:fulfilled`,
+      orderId: order.id,
+      fulfillmentId: fulfillment.id,
+      orderStatus: order.status,
+      memberOwnerId: order.owner.ownerId,
+      paymentReference: order.paymentReference,
+      amountMinor: order.amountMinor,
+      currency: order.currency,
+      packageSnapshot: createRequestFingerprint(order.packageSnapshot),
+      fulfilledAt: order.fulfilledAt,
+    },
+    now,
+  });
+}
+
 export async function createPendingOrder(input: CreatePendingOrderInput): Promise<Order> {
   if (!input.idempotencyKey.trim()) throw new OrderError("Order idempotency key is required", "invalid_idempotency_key");
   const now = input.now ?? Date.now;
@@ -166,6 +187,7 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
   if (existing.status === "FULFILLED") {
     const fulfillment = await getFulfillment(input.database, input.orderId);
     if (!fulfillment) throw new OrderError("Fulfilled order has no fulfillment record", "fulfillment_missing");
+    await ensureAffiliateFulfillmentConversion(input.database, existing, fulfillment, now());
     return { order: existing, fulfillment };
   }
   if (existing.status !== "PAYMENT_CONFIRMED") throw new OrderError("Order requires verified payment before fulfillment", "payment_required");
@@ -221,5 +243,6 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
   const order = await getOrderById(input.database, existing.id);
   const fulfillment = await getFulfillment(input.database, existing.id);
   if (!order || !fulfillment) throw new OrderError("Order fulfillment was not persisted", "fulfillment_unavailable");
+  await ensureAffiliateFulfillmentConversion(input.database, order, fulfillment, timestamp);
   return { order, fulfillment };
 }
