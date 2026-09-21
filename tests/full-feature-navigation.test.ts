@@ -24,7 +24,8 @@ test("full-feature commerce routes expose the existing owner-scoped contracts", 
   assert.match(commerce, /package_version_id/);
   assert.match(commerce, /idempotency_key/);
   assert.match(commerce, /checkout\.action/);
-  assert.match(commerce, /auth\?return_to=\/checkout/);
+  assert.match(commerce, /checkoutReturnPath\(packageId\)/);
+  assert.match(commerce, /setIdempotencyKey\(createCheckoutIdempotencyKey\(\)\)/);
   assert.match(commerce, /\/api\/account\/summary/);
   assert.match(commerce, /\/api\/account\/history\?kind=affiliate/);
   assert.match(commerce, /auth\?return_to=\/affiliate/);

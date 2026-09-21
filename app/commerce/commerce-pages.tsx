@@ -65,6 +65,17 @@ function vipLabel(seconds: number | null): string {
   return `${days} day${days === 1 ? "" : "s"} VIP access`;
 }
 
+function createCheckoutIdempotencyKey(): string {
+  const suffix = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now()}:${Math.random().toString(36).slice(2, 10)}`;
+  return `checkout:${suffix}`;
+}
+
+function checkoutReturnPath(packageId?: string): string {
+  return packageId ? `/checkout?package=${encodeURIComponent(packageId)}` : "/checkout";
+}
+
 function PackageCard({ item, locale }: { item: PackageVersion; locale: string }) {
   return (
     <article className="functional-section">
@@ -129,7 +140,7 @@ export function CheckoutPage({ authenticated, packageId }: { authenticated: bool
   const [message, setMessage] = useState("");
   const [order, setOrder] = useState<CheckoutResult["order"] | null>(null);
   const [checkout, setCheckout] = useState<CheckoutForm | null>(null);
-  const [idempotencyKey] = useState(() => `checkout:${Date.now()}:${Math.random().toString(36).slice(2, 10)}`);
+  const [idempotencyKey, setIdempotencyKey] = useState(createCheckoutIdempotencyKey);
 
   useEffect(() => {
     if (!authenticated) return;
@@ -175,7 +186,7 @@ export function CheckoutPage({ authenticated, packageId }: { authenticated: bool
         <CreditCard size={34} aria-hidden="true" />
         <h1>Member checkout</h1>
         <p>Sign in before creating an owner-scoped order.</p>
-        <Link className="button black" href="/auth?return_to=/checkout">Sign in</Link>
+        <Link className="button black" href={`/auth?return_to=${encodeURIComponent(checkoutReturnPath(packageId))}`}>Sign in</Link>
       </section>
     );
   }
@@ -194,7 +205,7 @@ export function CheckoutPage({ authenticated, packageId }: { authenticated: bool
         <section className="functional-section" aria-labelledby="checkout-package-title">
           <div className="functional-section-heading"><div><h2 id="checkout-package-title">Choose a package</h2><p>The order is created once with an idempotency key; payment confirmation happens only through verified SePay evidence.</p></div><CreditCard size={20} aria-hidden="true" /></div>
           <form onSubmit={startCheckout}>
-            <label>Package<select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setOrder(null); setCheckout(null); }}>{packages.map((item) => <option key={item.id} value={item.id}>{packageName(item, locale)} · {moneyLabel(item.amountMinor, item.currency, locale)}</option>)}</select></label>
+            <label>Package<select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setIdempotencyKey(createCheckoutIdempotencyKey()); setOrder(null); setCheckout(null); }}>{packages.map((item) => <option key={item.id} value={item.id}>{packageName(item, locale)} · {moneyLabel(item.amountMinor, item.currency, locale)}</option>)}</select></label>
             {selected && <p className="functional-status">{selected.creditUnits} Credits · {vipLabel(selected.vipDurationSeconds)}</p>}
             <button className="button black" type="submit" disabled={!selected || busy}>{busy ? "Preparing checkout…" : "Create Sandbox checkout"}</button>
           </form>
