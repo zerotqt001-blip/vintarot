@@ -40,7 +40,7 @@ try {
     const encode = (value) => value.toString("base64url");
     const passwordHash = `pbkdf2-sha256$v1$600000$${encode(salt)}$${encode(derived)}`;
     const memberId = "member-staging-sepay-sandbox-v1";
-    sqlite.prepare("INSERT OR IGNORE INTO members (id, username, email, phone, display_name, password_hash, google_subject, email_verified_at, created_at, updated_at, last_login_at, disabled) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, NULL, 0)")
+    sqlite.prepare("INSERT INTO members (id, username, email, phone, display_name, password_hash, google_subject, email_verified_at, created_at, updated_at, last_login_at, disabled) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, NULL, 0) ON CONFLICT(id) DO UPDATE SET password_hash=excluded.password_hash, email_verified_at=excluded.email_verified_at, updated_at=excluded.updated_at, disabled=0")
       .run(memberId, "sepay_staging", "sepay-staging-sandbox@example.test", "+849999999999", "SePay Staging", passwordHash, now, now, now);
     const memberRow = sqlite.prepare("SELECT id, username, email, email_verified_at, disabled FROM members WHERE id = ?").get(memberId);
     if (!memberRow || memberRow.username !== "sepay_staging" || memberRow.email !== "sepay-staging-sandbox@example.test" || memberRow.email_verified_at === null || Number(memberRow.disabled) !== 0) throw new Error("Staging member identity conflicts with the existing account");
