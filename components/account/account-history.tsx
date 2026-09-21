@@ -130,6 +130,11 @@ export default function AccountHistory({ authenticated }: { authenticated: boole
         <h1>Account history</h1>
         <p>Metadata-first activity for {summary?.member.displayName || summary?.member.username || "your NaTarot account"}.</p>
       </header>
+      <nav className="functional-toolbar" aria-label="Account destinations">
+        <Link className="button" href="/packages">Packages</Link>
+        <Link className="button" href="/affiliate">Affiliate activity</Link>
+        <Link className="button" href="/admin">Admin console</Link>
+      </nav>
       {summary && (
         <section className="functional-summary" aria-label="Account summary">
           <div><CreditCard size={17} aria-hidden="true" /><strong>{summary.credits.balance.availableUnits}</strong><span>Credits available</span></div>
