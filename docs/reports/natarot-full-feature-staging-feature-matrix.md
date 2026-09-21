@@ -37,6 +37,7 @@ Status vocabulary: `PASS` means the source and staging evidence are complete for
 - Local tracked suite: `527/527` passing; TypeScript, production build, `npm audit --omit=dev` (`0` vulnerabilities), `git diff --check`, targeted ESLint and staged secret scan pass.
 - Staging database: `PRAGMA integrity_check = ok`, zero foreign-key violations; 78 cards, 312 meanings, 57 templates, 174 positions; staging DB mode `600`, app mode `700`; timestamped backups retained before each staging replacement.
 - Live public smoke: staging HTTPS/HTTP redirect, health `200` with `{"status":"ok"}`, `noindex,nofollow`, no-store health, packages/checkout/affiliate/account/admin/room/catalog APIs reachable; production apex/www remained `200` and production service remained active.
+- Restart persistence: a staging-only service restart returned active and a bounded readiness poll reached health `200`; an immediate probe may see the short proxy warm-up before the Vinext listener is ready.
 - Live member/commerce smoke: ephemeral synthetic `sepay_staging` seed, login/me, account summary/history, billing reads, server-priced checkout `201`, display-only return `200`, reconcile `200`; no credentials or signed field values were printed.
 - Live guest/security smoke: catalog, 3-card draw `201`, owner session `200`, safe provider-gated reading `503`, spoofed OAI header rejected `401`, invalid share probes did not expose content.
 
