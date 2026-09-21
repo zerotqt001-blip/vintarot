@@ -40,6 +40,7 @@ test("backup service is a locked root-owned oneshot with explicit recovery paths
   assert.match(backupService, /NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
   assert.match(backupService, /NATAROT_NGINX_CONFIG=\/etc\/nginx\/sites-enabled\/natarot/);
   assert.match(backupService, /UMask=0077/);
+  assert.match(backupService, /ReadWritePaths=-\/var\/backups\/natarot/);
 });
 
 test("backup timer runs daily and survives a reboot", () => {
@@ -53,6 +54,7 @@ test("restore test service cannot replace production and runs isolated verificat
   assert.match(restoreService, /ExecStart=\/usr\/local\/sbin\/natarot-restore-test/);
   assert.match(restoreService, /NATAROT_PRODUCTION_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
   assert.match(restoreService, /PrivateTmp=true/);
+  assert.match(restoreService, /ReadWritePaths=-\/var\/backups\/natarot/);
   assert.doesNotMatch(restoreService, /systemctl restart natarot/);
 });
 

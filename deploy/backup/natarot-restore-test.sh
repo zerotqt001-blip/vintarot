@@ -94,7 +94,9 @@ command -v tar >/dev/null 2>&1 || { log 'missing tar'; exit 70; }
 
 stage="extract"
 restore_root=$(mktemp -d "${TMPDIR:-/tmp}/natarot-restore-test.XXXXXX")
-bundle_name=$(tar -tzf "$archive" | awk -F/ 'NF > 1 { print $1; exit }')
+archive_listing="$restore_root/archive-listing"
+tar -tzf "$archive" > "$archive_listing"
+bundle_name=$(awk -F/ 'NF > 1 { print $1; exit }' "$archive_listing")
 case "$bundle_name" in
   natarot-production-[A-Za-z0-9._-]*) ;;
   (*) log 'archive bundle root is invalid'; exit 65 ;;

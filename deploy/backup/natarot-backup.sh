@@ -9,7 +9,7 @@ readonly APP_ROOT="${NATAROT_APP_ROOT:-/opt/natarot}"
 readonly DB_PATH="${NATAROT_DB_PATH:-/var/lib/natarot/natarot.sqlite}"
 readonly ENV_FILE="${NATAROT_ENV_FILE:-/etc/natarot.env}"
 readonly SYSTEMD_UNIT="${NATAROT_SYSTEMD_UNIT:-/etc/systemd/system/natarot.service}"
-readonly NGINX_CONFIG="${NATAROT_NGINX_CONFIG:-/etc/nginx/sites-available/natarot-http.conf}"
+readonly NGINX_CONFIG="${NATAROT_NGINX_CONFIG:-/etc/nginx/sites-enabled/natarot}"
 readonly NODE_BIN="${NATAROT_NODE_BIN:-/usr/local/bin/node}"
 readonly SQLITE_HELPER="${NATAROT_SQLITE_HELPER:-/usr/local/lib/natarot/natarot-sqlite-backup.mjs}"
 readonly MIN_FREE_KIB="${NATAROT_MIN_FREE_KIB:-1048576}"
@@ -216,7 +216,7 @@ for optional_path in \
 done
 
 stage="manifest"
-NATAROT_MANIFEST_BACKUP_ID="$BACKUP_ID" NATAROT_MANIFEST_BACKUP_TIMESTAMP="$BACKUP_TIMESTAMP" NATAROT_MANIFEST_BACKUP_VERSION="$BACKUP_VERSION" NATAROT_MANIFEST_APP_ROOT="$APP_ROOT" NATAROT_MANIFEST_DB_PATH="$DB_PATH" NATAROT_MANIFEST_ENV_FILE="$ENV_FILE" NATAROT_MANIFEST_VERIFY_FILE="$STAGE_DIR/database/verification.json" NATAROT_MANIFEST_STAGE_DIR="$STAGE_DIR" "$NODE_BIN" --no-warnings --input-type=module - <<'NODE'
+NATAROT_MANIFEST_BACKUP_ID="$BACKUP_ID" NATAROT_MANIFEST_BACKUP_TIMESTAMP="$BACKUP_TIMESTAMP" NATAROT_MANIFEST_BACKUP_VERSION="$BACKUP_VERSION" NATAROT_MANIFEST_APP_ROOT="$APP_ROOT" NATAROT_MANIFEST_DB_PATH="$DB_PATH" NATAROT_MANIFEST_ENV_FILE="$ENV_FILE" NATAROT_MANIFEST_HOSTNAME="$(hostname)" NATAROT_MANIFEST_VERIFY_FILE="$STAGE_DIR/database/verification.json" NATAROT_MANIFEST_STAGE_DIR="$STAGE_DIR" "$NODE_BIN" --no-warnings --input-type=module - <<'NODE'
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
@@ -243,7 +243,7 @@ const manifest = {
   },
   runtime: {
     node: process.version,
-    hostname: process.env.HOSTNAME || "unknown",
+    hostname: process.env.NATAROT_MANIFEST_HOSTNAME || process.env.HOSTNAME || "unknown",
   },
   database: {
     type: "sqlite",

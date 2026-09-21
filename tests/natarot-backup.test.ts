@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
@@ -123,7 +123,8 @@ test("creates a verified SQLite copy from a live WAL database", () => {
     assert.ok(metadata.destination.bytes > 0);
 
     const restored = new DatabaseSync(destination, { readOnly: true });
-    assert.equal(restored.prepare("SELECT count(*) AS count FROM records").get().count, 1);
+    const recordCount = Number(restored.prepare("SELECT count(*) AS count FROM records").get()?.count ?? 0);
+    assert.equal(recordCount, 1);
     restored.close();
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -229,6 +230,36 @@ test("restores and verifies an archive in an isolated temporary directory", () =
     assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.match(`${result.stdout}\n${result.stderr}`, /restore_test_complete/);
     assert.equal(createHash("sha256").update(readFileSync(fixture.databasePath)).digest("hex"), before);
+    assert.match(readFileSync(join(fixture.backupRoot, "last-restore-test"), "utf8"), /status=success/);
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test("restores when tar reports a large listing under pipefail", () => {
+  const fixture = createBackupFixture();
+  try {
+    const backup = runBackup(fixture);
+    assert.equal(backup.status, 0, `${backup.stdout}\n${backup.stderr}`);
+    const archive = join(fixture.backupRoot, "daily", "natarot-production-20260921-020000.tar.gz");
+    const fakeBin = join(fixture.root, "fake-bin");
+    const fakeTar = join(fakeBin, "tar");
+    mkdirSync(fakeBin, { recursive: true });
+    writeFileSync(fakeTar, `#!/bin/sh
+if [ "$1" = "-tzf" ]; then
+  printf '%s\\n' 'natarot-production-20260921-020000/configuration/'
+  dd if=/dev/zero bs=1048576 count=1 2>/dev/null
+  exit $?
+fi
+exec /usr/bin/tar "$@"
+`);
+    chmodSync(fakeTar, 0o755);
+
+    const result = runRestore(fixture, archive, {
+      PATH: `${fakeBin}:${process.env.PATH ?? ""}`,
+    });
+
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.match(readFileSync(join(fixture.backupRoot, "last-restore-test"), "utf8"), /status=success/);
   } finally {
     rmSync(fixture.root, { recursive: true, force: true });
