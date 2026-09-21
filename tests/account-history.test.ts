@@ -12,7 +12,7 @@ import type { CreditOwner } from "../lib/credits/types";
 const repoRoot = join(import.meta.dirname, "..");
 const owner: CreditOwner = { kind: "member", ownerId: "member:owner" };
 
-function fixture() {
+function createFixture() {
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec("PRAGMA foreign_keys = ON");
   for (const migration of [
@@ -32,7 +32,7 @@ function fixture() {
   return { sqlite, database: createSqliteD1Database(sqlite), now };
 }
 
-function seedOwnerData(fixture: ReturnType<typeof fixture>) {
+function seedOwnerData(fixture: ReturnType<typeof createFixture>) {
   const { sqlite, now } = fixture;
   const template = sqlite.prepare("SELECT id, category_id, spread_type, card_count FROM spread_templates ORDER BY id LIMIT 1").get() as { id: string; category_id: string; spread_type: string; card_count: number };
   sqlite.prepare("INSERT INTO reading_sessions (id, user_id, guest_id, question, optional_context, category_id, spread_template_id, spread_type, card_count, locale, status, created_at, updated_at) VALUES (?, 'member:owner', NULL, ?, '', ?, ?, ?, ?, 'en', 'complete', ?, ?)").run("session-owner", "private question", template.category_id, template.id, template.spread_type, template.card_count, now, now);
@@ -50,7 +50,7 @@ function seedOwnerData(fixture: ReturnType<typeof fixture>) {
 }
 
 test("account history is owner-scoped, metadata-first, and cursor-stable", async () => {
-  const fixtureData = fixture();
+  const fixtureData = createFixture();
   seedOwnerData(fixtureData);
   const store = createCreditStore(fixtureData.database, () => fixtureData.now);
   await store.grantCredits({ owner, source: "PROMOTION", units: 4, grantKey: "account-credit", policyVersion: "credits-v1", policySnapshot: {}, reason: "test credit" });
@@ -74,7 +74,7 @@ test("account history is owner-scoped, metadata-first, and cursor-stable", async
 });
 
 test("account summary exposes own Credits/VIP/member metadata and no auth secrets", async () => {
-  const fixtureData = fixture();
+  const fixtureData = createFixture();
   seedOwnerData(fixtureData);
   const store = createCreditStore(fixtureData.database, () => fixtureData.now);
   await store.grantCredits({ owner, source: "PROMOTION", units: 4, grantKey: "summary-credit", policyVersion: "credits-v1", policySnapshot: {}, reason: "summary credit" });
@@ -91,7 +91,7 @@ test("account summary exposes own Credits/VIP/member metadata and no auth secret
 });
 
 test("admin order read model is provider-neutral and excludes Tarot-private content", async () => {
-  const fixtureData = fixture();
+  const fixtureData = createFixture();
   seedOwnerData(fixtureData);
   const models = await listAdminOrderReadModel({ database: fixtureData.database });
   assert.equal(models.length, 1);

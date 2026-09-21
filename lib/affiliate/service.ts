@@ -196,3 +196,26 @@ export async function getAffiliateSummary(database: D1Database, memberOwnerId: s
   const debitedMinor = Number(amounts?.debited ?? 0);
   return { conversions: Number(counts?.conversions ?? 0), held: Number(counts?.held ?? 0), eligible: Number(counts?.eligible ?? 0), reversed: Number(counts?.reversed ?? 0), creditedMinor, debitedMinor, netMinor: creditedMinor - debitedMinor };
 }
+
+export async function listAdminAffiliateReadModel(database: D1Database, limit = 50): Promise<{
+  profiles: Array<{ id: string; memberId: string; status: AffiliateProfileStatus; codeStatuses: string[]; createdAt: number; updatedAt: number }>;
+  conversions: Array<Pick<AffiliateConversion, "id" | "orderId" | "memberId" | "affiliateProfileId" | "amountMinor" | "currency" | "commissionMinor" | "status" | "fulfilledAt" | "eligibleAt" | "reversedAt">>;
+  ledger: Array<{ id: string; conversionId: string; entryType: string; direction: string; amountMinor: number; currency: string; reason: string; createdAt: number }>;
+  policies: Array<{ id: string; version: number; status: string; attributionWindowDays: number; holdDays: number; currency: string; tiers: Array<{ tierCode: string; minQualifiedConversions: number; rateBps: number }> }>;
+}> {
+  const boundedLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
+  const profiles = await database.prepare("SELECT p.id, p.member_id, p.status, p.created_at, p.updated_at, GROUP_CONCAT(r.status) AS code_statuses FROM affiliate_profiles p LEFT JOIN referral_codes r ON r.affiliate_profile_id=p.id GROUP BY p.id ORDER BY p.created_at DESC, p.id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const conversions = await database.prepare("SELECT id, order_id, member_id, affiliate_profile_id, amount_minor, currency, commission_minor, status, fulfilled_at, eligible_at, reversed_at FROM affiliate_conversions ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const ledger = await database.prepare("SELECT id, conversion_id, entry_type, direction, amount_minor, currency, reason, created_at FROM affiliate_commission_ledger ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const policies = await database.prepare("SELECT id, version, status, attribution_window_days, hold_days, currency FROM affiliate_policy_versions ORDER BY version DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const policyValues = await Promise.all(policies.results.map(async (policy) => {
+    const tiers = await database.prepare("SELECT tier_code, min_qualified_conversions, rate_bps FROM affiliate_policy_tiers WHERE policy_version_id=? ORDER BY min_qualified_conversions ASC").bind(policy.id).all<Record<string, unknown>>();
+    return { id: String(policy.id), version: Number(policy.version), status: String(policy.status), attributionWindowDays: Number(policy.attribution_window_days), holdDays: Number(policy.hold_days), currency: String(policy.currency), tiers: tiers.results.map((tier) => ({ tierCode: String(tier.tier_code), minQualifiedConversions: Number(tier.min_qualified_conversions), rateBps: Number(tier.rate_bps) })) };
+  }));
+  return {
+    profiles: profiles.results.map((profile) => ({ id: String(profile.id), memberId: String(profile.member_id), status: String(profile.status) as AffiliateProfileStatus, codeStatuses: profile.code_statuses ? String(profile.code_statuses).split(",") : [], createdAt: Number(profile.created_at), updatedAt: Number(profile.updated_at) })),
+    conversions: conversions.results.map((row) => ({ id: String(row.id), orderId: String(row.order_id), memberId: String(row.member_id), affiliateProfileId: String(row.affiliate_profile_id), amountMinor: Number(row.amount_minor), currency: String(row.currency), commissionMinor: Number(row.commission_minor), status: String(row.status) as AffiliateConversion["status"], fulfilledAt: Number(row.fulfilled_at), eligibleAt: row.eligible_at == null ? null : Number(row.eligible_at), reversedAt: row.reversed_at == null ? null : Number(row.reversed_at) })),
+    ledger: ledger.results.map((row) => ({ id: String(row.id), conversionId: String(row.conversion_id), entryType: String(row.entry_type), direction: String(row.direction), amountMinor: Number(row.amount_minor), currency: String(row.currency), reason: String(row.reason), createdAt: Number(row.created_at) })),
+    policies: policyValues,
+  };
+}
