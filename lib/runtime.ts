@@ -12,6 +12,8 @@ export type RuntimeEnvironment = TarotAIEnvironment & {
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_REDIRECT_URI?: string;
   NATAROT_TRUSTED_PROXY?: string;
+  NATAROT_PII_KEY_V1?: string;
+  NATAROT_PII_KEY_V2?: string;
 };
 
 type RuntimeContext = {
