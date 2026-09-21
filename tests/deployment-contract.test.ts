@@ -38,6 +38,7 @@ test("backup service is a locked root-owned oneshot with explicit recovery paths
   assert.match(backupService, /ExecStart=\/usr\/local\/sbin\/natarot-backup/);
   assert.match(backupService, /NATAROT_BACKUP_ROOT=\/var\/backups\/natarot/);
   assert.match(backupService, /NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(backupService, /NATAROT_NGINX_CONFIG=\/etc\/nginx\/sites-enabled\/natarot/);
   assert.match(backupService, /UMask=0077/);
 });
 

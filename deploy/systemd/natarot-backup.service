@@ -13,7 +13,7 @@ Environment=NATAROT_APP_ROOT=/opt/natarot
 Environment=NATAROT_DB_PATH=/var/lib/natarot/natarot.sqlite
 Environment=NATAROT_ENV_FILE=/etc/natarot.env
 Environment=NATAROT_SYSTEMD_UNIT=/etc/systemd/system/natarot.service
-Environment=NATAROT_NGINX_CONFIG=/etc/nginx/sites-enabled/natarot-http.conf
+Environment=NATAROT_NGINX_CONFIG=/etc/nginx/sites-enabled/natarot
 Environment=NATAROT_NODE_BIN=/usr/local/bin/node
 Environment=NATAROT_SQLITE_HELPER=/usr/local/lib/natarot/natarot-sqlite-backup.mjs
 ExecStart=/usr/local/sbin/natarot-backup
