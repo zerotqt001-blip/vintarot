@@ -512,3 +512,173 @@ export const commercialEvents = sqliteTable(
     index("commercial_events_aggregate_idx").on(table.aggregateType, table.aggregateId, table.createdAt),
   ],
 );
+
+export const auditEvents = sqliteTable(
+  "audit_events",
+  {
+    id: text("id").primaryKey(),
+    actorKind: text("actor_kind").notNull(),
+    actorId: text("actor_id").notNull(),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    reason: text("reason").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    outcome: text("outcome").notNull().default("SUCCESS"),
+    metadataJson: text("metadata_json").notNull().default("{}"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("audit_events_idempotency_unique").on(table.idempotencyKey),
+    index("audit_events_actor_created_idx").on(table.actorId, table.createdAt, table.id),
+    index("audit_events_target_created_idx").on(table.targetType, table.targetId, table.createdAt, table.id),
+  ],
+);
+
+export const affiliateProfiles = sqliteTable(
+  "affiliate_profiles",
+  {
+    id: text("id").primaryKey(),
+    memberId: text("member_id").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    fraudNoteCiphertext: text("fraud_note_ciphertext"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_profiles_member_unique").on(table.memberId),
+    index("affiliate_profiles_status_idx").on(table.status, table.createdAt),
+  ],
+);
+
+export const referralCodes = sqliteTable(
+  "referral_codes",
+  {
+    id: text("id").primaryKey(),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    codeHash: text("code_hash").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    source: text("source"),
+    createdAt: integer("created_at").notNull(),
+    expiresAt: integer("expires_at"),
+  },
+  (table) => [
+    uniqueIndex("referral_codes_hash_unique").on(table.codeHash),
+    index("referral_codes_profile_status_idx").on(table.affiliateProfileId, table.status, table.expiresAt),
+  ],
+);
+
+export const referralAttributions = sqliteTable(
+  "referral_attributions",
+  {
+    id: text("id").primaryKey(),
+    ownerKey: text("owner_key").notNull(),
+    memberId: text("member_id"),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    referralCodeId: text("referral_code_id").notNull().references(() => referralCodes.id),
+    source: text("source"),
+    attributedAt: integer("attributed_at").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("referral_attributions_owner_unique").on(table.ownerKey),
+    index("referral_attributions_profile_idx").on(table.affiliateProfileId, table.attributedAt),
+    index("referral_attributions_member_idx").on(table.memberId, table.attributedAt),
+  ],
+);
+
+export const affiliatePolicyVersions = sqliteTable(
+  "affiliate_policy_versions",
+  {
+    id: text("id").primaryKey(),
+    version: integer("version").notNull(),
+    status: text("status").notNull().default("DRAFT"),
+    attributionWindowDays: integer("attribution_window_days").notNull(),
+    holdDays: integer("hold_days").notNull(),
+    currency: text("currency").notNull(),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_policy_versions_version_unique").on(table.version),
+    index("affiliate_policy_versions_active_idx").on(table.status, table.startsAt, table.endsAt),
+  ],
+);
+
+export const affiliatePolicyTiers = sqliteTable(
+  "affiliate_policy_tiers",
+  {
+    id: text("id").primaryKey(),
+    policyVersionId: text("policy_version_id").notNull().references(() => affiliatePolicyVersions.id),
+    tierCode: text("tier_code").notNull(),
+    minQualifiedConversions: integer("min_qualified_conversions").notNull(),
+    rateBps: integer("rate_bps").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_policy_tiers_code_unique").on(table.policyVersionId, table.tierCode),
+    uniqueIndex("affiliate_policy_tiers_threshold_unique").on(table.policyVersionId, table.minQualifiedConversions),
+    index("affiliate_policy_tiers_threshold_idx").on(table.policyVersionId, table.minQualifiedConversions),
+  ],
+);
+
+export const affiliateConversions = sqliteTable(
+  "affiliate_conversions",
+  {
+    id: text("id").primaryKey(),
+    eventKey: text("event_key").notNull(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    fulfillmentId: text("fulfillment_id").notNull().references(() => orderFulfillments.id),
+    memberId: text("member_id").notNull(),
+    attributionId: text("attribution_id").notNull().references(() => referralAttributions.id),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    policyVersionId: text("policy_version_id").notNull().references(() => affiliatePolicyVersions.id),
+    tierId: text("tier_id").notNull().references(() => affiliatePolicyTiers.id),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    commissionMinor: integer("commission_minor").notNull(),
+    paymentReference: text("payment_reference").notNull(),
+    packageSnapshot: text("package_snapshot").notNull(),
+    status: text("status").notNull().default("HELD"),
+    fulfilledAt: integer("fulfilled_at").notNull(),
+    eligibleAt: integer("eligible_at"),
+    reversedAt: integer("reversed_at"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_conversions_event_unique").on(table.eventKey),
+    uniqueIndex("affiliate_conversions_fulfillment_unique").on(table.fulfillmentId),
+    index("affiliate_conversions_member_created_idx").on(table.memberId, table.createdAt, table.id),
+    index("affiliate_conversions_profile_status_idx").on(table.affiliateProfileId, table.status, table.createdAt),
+  ],
+);
+
+export const affiliateCommissionLedger = sqliteTable(
+  "affiliate_commission_ledger",
+  {
+    id: text("id").primaryKey(),
+    conversionId: text("conversion_id").notNull().references(() => affiliateConversions.id),
+    entryType: text("entry_type").notNull(),
+    direction: text("direction").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    reversalOfId: text("reversal_of_id"),
+    actorKind: text("actor_kind").notNull().default("system"),
+    actorId: text("actor_id").notNull().default("system"),
+    reason: text("reason").notNull(),
+    policySnapshot: text("policy_snapshot").notNull(),
+    tierSnapshot: text("tier_snapshot").notNull(),
+    packageSnapshot: text("package_snapshot").notNull(),
+    fraudNoteCiphertext: text("fraud_note_ciphertext"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_commission_ledger_key_unique").on(table.idempotencyKey),
+    index("affiliate_commission_ledger_conversion_idx").on(table.conversionId, table.createdAt, table.id),
+    index("affiliate_commission_ledger_actor_idx").on(table.actorId, table.createdAt, table.id),
+  ],
+);
