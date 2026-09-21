@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Ban, Check, RefreshCw, Shield, Sparkles, UserRound } from "lucide-react";
 
 /* FUNCTIONAL UI — NOT FINAL DESIGN */
@@ -47,8 +48,9 @@ export default function AdminConsole({ authenticated }: { authenticated: boolean
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function loadAll() {
+  const loadAll = useCallback(async () => {
     if (!authenticated) return;
+    await Promise.resolve();
     setBusy(true);
     setMessage("");
     try {
@@ -68,9 +70,12 @@ export default function AdminConsole({ authenticated }: { authenticated: boolean
     } finally {
       setBusy(false);
     }
-  }
+  }, [authenticated]);
 
-  useEffect(() => { void loadAll(); }, [authenticated]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadAll(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadAll]);
 
   async function loadSessions(memberId = selectedMemberId) {
     if (!memberId) return;
@@ -96,7 +101,7 @@ export default function AdminConsole({ authenticated }: { authenticated: boolean
   }
 
   if (!authenticated) {
-    return <section className="empty functional-empty"><Shield size={34} aria-hidden="true" /><h1>Admin console</h1><p>Sign in with an authorized NaTarot staff account to use this surface.</p><a className="button black" href="/auth?return_to=/admin">Sign in</a></section>;
+    return <section className="empty functional-empty"><Shield size={34} aria-hidden="true" /><h1>Admin console</h1><p>Sign in with an authorized NaTarot staff account to use this surface.</p><Link className="button black" href="/auth?return_to=/admin">Sign in</Link></section>;
   }
 
   return (

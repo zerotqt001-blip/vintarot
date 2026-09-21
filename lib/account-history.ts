@@ -2,7 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { createCreditStore } from "./credits/repository";
 import type { CreditOwner } from "./credits/types";
 import { getActiveEntitlements } from "./entitlements";
-import { getAffiliateSummary, listAffiliateHistory } from "./affiliate/service";
+import { getAffiliateSummary } from "./affiliate/service";
 
 export type AccountHistoryKind = "readings" | "shares" | "orders" | "credits" | "affiliate" | "all";
 type AccountHistoryItemKind = "reading" | "share" | "order" | "credit" | "affiliate";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ArrowUpRight, BookOpen, Clock3, CreditCard, Moon, Sparkles } from "lucide-react";
 
 /* FUNCTIONAL UI — NOT FINAL DESIGN */
@@ -72,22 +73,27 @@ export default function AccountHistory({ authenticated }: { authenticated: boole
   useEffect(() => {
     if (!authenticated) return;
     let active = true;
-    setLoading(true);
-    setMessage("");
-    const query = new URLSearchParams({ kind, limit: "20" });
-    Promise.all([
-      readJson<Summary>("/api/account/summary"),
-      readJson<HistoryResponse>(`/api/account/history?${query.toString()}`),
-    ]).then(([nextSummary, history]) => {
+    void (async () => {
+      await Promise.resolve();
       if (!active) return;
-      setSummary(nextSummary);
-      setItems(history.items);
-      setNextCursor(history.nextCursor);
-    }).catch((error: unknown) => {
-      if (active) setMessage(error instanceof Error ? error.message : "Could not load account history.");
-    }).finally(() => {
-      if (active) setLoading(false);
-    });
+      setLoading(true);
+      setMessage("");
+      const query = new URLSearchParams({ kind, limit: "20" });
+      try {
+        const [nextSummary, history] = await Promise.all([
+          readJson<Summary>("/api/account/summary"),
+          readJson<HistoryResponse>(`/api/account/history?${query.toString()}`),
+        ]);
+        if (!active) return;
+        setSummary(nextSummary);
+        setItems(history.items);
+        setNextCursor(history.nextCursor);
+      } catch (error: unknown) {
+        if (active) setMessage(error instanceof Error ? error.message : "Could not load account history.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
     return () => { active = false; };
   }, [authenticated, kind]);
 
@@ -113,7 +119,7 @@ export default function AccountHistory({ authenticated }: { authenticated: boole
         <Moon size={34} aria-hidden="true" />
         <h1>Your account history</h1>
         <p>Sign in to see your Tarot readings, shares, orders, Credits and affiliate activity.</p>
-        <a className="button black" href="/auth?return_to=/account">Sign in</a>
+        <Link className="button black" href="/auth?return_to=/account">Sign in</Link>
       </section>
     );
   }
@@ -145,7 +151,7 @@ export default function AccountHistory({ authenticated }: { authenticated: boole
             {items.map((item) => {
               const href = itemHref(item);
               const content = <><span className="functional-history-kind">{itemLabel(item)}</span><strong>{item.status || item.reason || item.referenceId || "Account event"}</strong><small>{dateLabel(item.createdAt)}{item.units !== null ? ` · ${item.units} units` : ""}{item.amountMinor !== null ? ` · ${moneyLabel(item.amountMinor, item.currency)}` : ""}</small></>;
-              return href ? <a className="functional-history-row" href={href} key={item.id}>{content}<ArrowUpRight size={16} aria-hidden="true" /></a> : <div className="functional-history-row" key={item.id}>{content}</div>;
+              return href ? <Link className="functional-history-row" href={href} key={item.id}>{content}<ArrowUpRight size={16} aria-hidden="true" /></Link> : <div className="functional-history-row" key={item.id}>{content}</div>;
             })}
           </div>
         )}

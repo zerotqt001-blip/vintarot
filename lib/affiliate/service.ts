@@ -1,7 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { encryptField, keyringFromEnvironment } from "../security/encryption";
 import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds } from "./policy";
-import { findReferralAttribution, findReferralCode, getAffiliateConversion, hashReferralCode, mapAffiliateConversion, memberIdFromOwner, ownerKey } from "./repository";
+import { findReferralAttribution, findReferralCode, getAffiliateConversion, hashReferralCode, memberIdFromOwner, ownerKey } from "./repository";
 import type { AffiliateConversion, AffiliateHistoryItem, AffiliateOwner, AffiliateProfileStatus, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
 
 export type { AffiliateConversion, AffiliateHistoryItem, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
