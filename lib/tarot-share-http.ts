@@ -32,8 +32,9 @@ export function checkShareRequestOrigin(request: Request): void {
   const trustForwarded = typeof process !== "undefined" && /^(1|true|yes)$/i.test(process.env.NATAROT_TRUSTED_PROXY || "");
   const forwardedProto = trustForwarded ? request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim() : undefined;
   const forwardedHost = trustForwarded ? request.headers.get("x-forwarded-host")?.split(",", 1)[0]?.trim() : undefined;
+  const host = forwardedHost || request.headers.get("host")?.trim();
   const requestUrl = new URL(request.url);
-  const expected = forwardedProto && forwardedHost ? `${forwardedProto}://${forwardedHost}` : requestUrl.origin;
+  const expected = forwardedProto && host ? `${forwardedProto}://${host}` : requestUrl.origin;
   if (origin !== expected) throw new Response("Forbidden", { status: 403 });
 }
 

@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { generateMetadata } from "../app/r/[token]/page";
 import { GET as imageGET } from "../app/r/[token]/image.svg/route";
 import { POST as eventPOST } from "../app/api/tarot/shares/[token]/events/route";
+import { checkShareRequestOrigin } from "../lib/tarot-share-http";
 
 const token = "R".repeat(43);
 
@@ -42,6 +43,22 @@ test("S5 event route rejects arbitrary fields but does not reveal whether a toke
   assert.equal(accepted.status, 202);
   assert.equal(await accepted.text(), "");
   assert.equal(accepted.headers.get("X-Robots-Tag"), "noindex, nofollow");
+});
+
+test("S5 accepts the public origin when staging forwards protocol and Host separately", (t) => {
+  const previous = process.env.NATAROT_TRUSTED_PROXY;
+  process.env.NATAROT_TRUSTED_PROXY = "true";
+  t.after(() => {
+    if (previous === undefined) delete process.env.NATAROT_TRUSTED_PROXY;
+    else process.env.NATAROT_TRUSTED_PROXY = previous;
+  });
+  assert.doesNotThrow(() => checkShareRequestOrigin(new Request("http://127.0.0.1:8788/api/tarot/shares/token/events", {
+    headers: {
+      host: "staging.natarot.com",
+      origin: "https://staging.natarot.com",
+      "x-forwarded-proto": "https",
+    },
+  })));
 });
 
 test("owner API remains behind existing identity/origin boundaries and does not echo identifiers", () => {
