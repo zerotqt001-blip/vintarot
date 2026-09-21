@@ -326,3 +326,31 @@ slice, and `git diff --check` pass. Repository-wide lint remains the known
 baseline (`89 errors, 125 warnings`) outside this slice. The state-document
 commit and normal branch push/equality verification remain the final handoff
 steps; no production deploy is authorized by this milestone.
+
+## NaTarot SePay V1 Security Closure (2026-09-21) — HUMAN_GATE
+The previously compromised Sandbox Secret remains treated as revoked-by-risk
+and was not reused, printed, copied into chat, or sent to any provider API
+during this closure attempt. The authenticated SePay portal was checked across
+the Sandbox payment-method registration, payment-gateway configuration,
+merchant overview, company settings, and API Access surfaces. The portal only
+exposes the existing masked Secret Key with a show/hide control; no supported
+Sandbox rotate, reset, or reissue action was available.
+
+No SePay support ticket or email was created. The remaining provider-supported
+path is a human-led SePay support request to reissue the Sandbox credential;
+this is the explicit HUMAN_GATE for this checkpoint. Until that action occurs,
+`/etc/natarot-staging.env` and the active Gateway IPN Secret-Key configuration
+remain on the pre-rotation credential, so no post-rotation checkout/IPN
+verification was claimed. Production remains untouched.
+
+Closure evidence collected before the gate: staging HTTPS health returned
+`{"status":"ok"}`; the branch and remote were equal at `5b4ad90`; tracked
+repository files, Git history, and repository untracked files contained no
+credential-shaped pattern. The SSH-based VPS audit timed out and therefore no
+definitive remote log/history/env audit is claimed in this checkpoint. The
+known persisted exposure category remains the one-time noVNC screen echo from
+the earlier provisioning attempt; the credential value is intentionally not
+recorded here. After reissue, the operator must provision staging and IPN via
+the secure stdin bridge, verify the new credential with Sandbox E2E and
+idempotency/reconciliation/restart checks, then complete the remaining remote
+exposure audit.
