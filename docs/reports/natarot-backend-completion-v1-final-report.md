@@ -17,11 +17,11 @@ PASS — source-only backend/product completion on an isolated branch. This mile
 
 ## Final Commit
 
-The final publication commit is the branch head containing this report and the matching `PROJECT_STATE` entry. The completion response records its exact hash after the normal push and local/remote equality check.
+Implementation and durable-report checkpoint: `c53605d0c87b07a5db871656adae05ce0d03cb86`. A final source-only metadata commit records the completed remote verification below; the completion response reports the resulting branch tip.
 
 ## Remote Verified
 
-Pending the final normal push. No force push is authorized or required.
+YES — the normal push of `c53605d0c87b07a5db871656adae05ce0d03cb86` succeeded, and local `HEAD` matched `origin/codex/natarot-backend-completion-v1`. No force push was used.
 
 ## External Research
 
