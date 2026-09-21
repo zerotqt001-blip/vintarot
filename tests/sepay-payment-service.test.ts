@@ -200,7 +200,8 @@ test("reconciliation after IPN reuses the same provider transaction without a se
     if (url.includes("/v1/order?")) {
       return new Response(JSON.stringify({ data: [{ id: "provider-detail-cross-source", order_id: "provider-order-cross-source", order_invoice_number: "NT-SEPAY-CROSS-SOURCE" }] }), { status: 200 });
     }
-    if (!url.includes("/v1/order/detail/provider-detail-cross-source")) return new Response("wrong detail id", { status: 404 });
+    if (url.includes("/v1/order/detail/provider-detail-cross-source")) return new Response("sandbox detail lookup uses invoice fallback", { status: 404 });
+    if (!url.includes("/v1/order/detail/NT-SEPAY-CROSS-SOURCE")) return new Response("wrong detail id", { status: 404 });
     return new Response(JSON.stringify({ data: {
       id: "provider-detail-cross-source",
       order_id: "provider-order-cross-source",
