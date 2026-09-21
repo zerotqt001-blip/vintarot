@@ -4,6 +4,10 @@ import test from "node:test";
 
 const service = readFileSync(new URL("../deploy/systemd/natarot.service", import.meta.url), "utf8");
 const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.meta.url), "utf8");
+const backupService = readFileSync(new URL("../deploy/systemd/natarot-backup.service", import.meta.url), "utf8");
+const backupTimer = readFileSync(new URL("../deploy/systemd/natarot-backup.timer", import.meta.url), "utf8");
+const restoreService = readFileSync(new URL("../deploy/systemd/natarot-restore-test.service", import.meta.url), "utf8");
+const restoreTimer = readFileSync(new URL("../deploy/systemd/natarot-restore-test.timer", import.meta.url), "utf8");
 
 test("systemd service runs the Node migration and Vinext on localhost", () => {
   assert.match(service, /User=natarot/);
@@ -26,4 +30,33 @@ test("Nginx proxies both public hosts with bounded requests and forwarded header
   assert.match(nginx, /add_header\s+X-Content-Type-Options\s+nosniff/);
   assert.match(nginx, /add_header\s+X-Frame-Options\s+SAMEORIGIN/);
   assert.match(nginx, /add_header\s+Referrer-Policy\s+strict-origin-when-cross-origin/);
+});
+
+test("backup service is a locked root-owned oneshot with explicit recovery paths", () => {
+  assert.match(backupService, /Type=oneshot/);
+  assert.match(backupService, /User=root/);
+  assert.match(backupService, /ExecStart=\/usr\/local\/sbin\/natarot-backup/);
+  assert.match(backupService, /NATAROT_BACKUP_ROOT=\/var\/backups\/natarot/);
+  assert.match(backupService, /NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(backupService, /UMask=0077/);
+});
+
+test("backup timer runs daily and survives a reboot", () => {
+  assert.match(backupTimer, /OnCalendar=.*02:15:00 UTC/);
+  assert.match(backupTimer, /Persistent=true/);
+  assert.match(backupTimer, /Unit=natarot-backup\.service/);
+});
+
+test("restore test service cannot replace production and runs isolated verification", () => {
+  assert.match(restoreService, /Type=oneshot/);
+  assert.match(restoreService, /ExecStart=\/usr\/local\/sbin\/natarot-restore-test/);
+  assert.match(restoreService, /NATAROT_PRODUCTION_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(restoreService, /PrivateTmp=true/);
+  assert.doesNotMatch(restoreService, /systemctl restart natarot/);
+});
+
+test("restore test timer is monthly and persistent", () => {
+  assert.match(restoreTimer, /OnCalendar=.*-\*-01.*04:30:00 UTC/);
+  assert.match(restoreTimer, /Persistent=true/);
+  assert.match(restoreTimer, /Unit=natarot-restore-test\.service/);
 });

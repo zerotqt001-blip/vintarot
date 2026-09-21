@@ -1,0 +1,11 @@
+[Unit]
+Description=Monthly NaTarot backup restore verification
+
+[Timer]
+OnCalendar=*-*-01 04:30:00 UTC
+Persistent=true
+RandomizedDelaySec=15min
+Unit=natarot-restore-test.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,25 @@
+[Unit]
+Description=NaTarot isolated backup restore verification
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Environment=NATAROT_BACKUP_ROOT=/var/backups/natarot
+Environment=NATAROT_APP_ROOT=/opt/natarot
+Environment=NATAROT_PRODUCTION_DB_PATH=/var/lib/natarot/natarot.sqlite
+Environment=NATAROT_NODE_BIN=/usr/local/bin/node
+Environment=NATAROT_RESTORE_TEST_PORT=18878
+ExecStart=/usr/local/sbin/natarot-restore-test
+KillMode=mixed
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=/var/backups/natarot
+TimeoutStartSec=10min
+TimeoutStopSec=30s
+StandardOutput=journal
+StandardError=journal
