@@ -880,6 +880,57 @@ function Practice({ user }: { user: any }) {
   );
 }
 
+function CreditsVipStatus() {
+  const { t, locale } = useLanguage();
+  const [status, setStatus] = useState<{ balance: { availableUnits: number }; entitlements: Array<{ entitlementType: string; status: string }> } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([api("billing/balance"), api("billing/entitlements")])
+      .then(([balance, entitlements]) => {
+        if (!active) return;
+        setStatus({ balance: balance.balance, entitlements: entitlements.entitlements });
+      })
+      .catch(() => {
+        if (active) setError(t("pages.creditsStatusError"));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, [t]);
+
+  const vipActive = status?.entitlements.some((entitlement) => entitlement.entitlementType === "VIP" && entitlement.status === "ACTIVE") ?? false;
+  const formattedCredits = status ? new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US").format(status.balance.availableUnits) : "—";
+  return (
+    <section className="credits-vip-status" id="credits-status" aria-labelledby="credits-vip-status-title">
+      <div className="credits-vip-status__heading">
+        <div>
+          <h2 id="credits-vip-status-title">{t("pages.creditsVipTitle")}</h2>
+          <p>{t("pages.creditsVipText")}</p>
+        </div>
+        <Sparkles aria-hidden="true" size={22} strokeWidth={1.25} />
+      </div>
+      {loading && <p className="credits-vip-status__message" role="status">{t("pages.creditsStatusLoading")}</p>}
+      {!loading && !error && status && (
+        <div className="credits-vip-status__grid">
+          <div className="credits-vip-status__metric">
+            <strong>{formattedCredits}</strong>
+            <span>{t("pages.creditsAvailable")}</span>
+          </div>
+          <div className="credits-vip-status__metric credits-vip-status__metric--vip">
+            <Moon aria-hidden="true" size={18} strokeWidth={1.25} />
+            <span>{vipActive ? t("pages.vipActive") : t("pages.vipInactive")}</span>
+          </div>
+        </div>
+      )}
+      {!loading && error && <p className="credits-vip-status__message" role="status">{error}</p>}
+    </section>
+  );
+}
+
 function Profile({ user }: { user: any }) {
   const { t, locale, setLocale } = useLanguage();
   const [name, setName] = useState(user?.name || "");
@@ -944,6 +995,7 @@ function Profile({ user }: { user: any }) {
         </div>
         <p role="status">{message}</p>
       </form>
+      <CreditsVipStatus />
       <div className="service-status">
         <h2>{t("pages.services")}</h2>
         <p><Check size={16} />{t("pages.tarotService")}</p>

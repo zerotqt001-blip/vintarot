@@ -4,6 +4,7 @@ import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import { TarotAIError } from "../lib/ai/provider";
 import { handleTarotReadingRoute } from "../lib/tarot-reading-route";
 import { TarotReadingServiceError } from "../lib/tarot-reading-service";
+import { TarotCreditAuthorizationError } from "../lib/tarot-credit-authorization";
 
 const canonicalResult = {
   readingId: "reading-runtime",
@@ -193,6 +194,30 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
         promptVersion: TAROT_PROMPT_VERSION,
         latencyMs: 0,
       }]);
+    });
+  }
+});
+
+test("maps credit authorization failures without leaking accounting details", async (t) => {
+  const cases = [
+    ["insufficient", 402, "You need more credits for this Tarot reading."],
+    ["in_progress", 409, "This Tarot reading is already being prepared."],
+    ["conflict", 409, "This Tarot reading request conflicts with an existing request."],
+    ["unavailable", 503, "Credit authorization is temporarily unavailable. Please try again."],
+  ] as const;
+  for (const [code, status, message] of cases) {
+    await t.test(code, async () => {
+      const events: unknown[] = [];
+      const response = await handleTarotReadingRoute({
+        loadBody: async () => ({ session_id: "session-runtime", locale: "en" }),
+        execute: async () => { throw new TarotCreditAuthorizationError(code, "private ledger/account detail"); },
+        log: (event) => events.push(event),
+        now: () => 80,
+      });
+      assert.equal(response.status, status);
+      assert.deepEqual(await readJson(response), { error: message });
+      assert.doesNotMatch(JSON.stringify(events), /private ledger|account detail/);
+      assert.equal((events[0] as Record<string, unknown>).failureCategory, `credits_${code}`);
     });
   }
 });

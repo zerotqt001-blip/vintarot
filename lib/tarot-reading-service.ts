@@ -1,8 +1,9 @@
 import { TAROT_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError, type TarotAIProvider } from "./ai/provider";
 import type { TarotProviderFailureStage } from "./ai/diagnostics";
-import type { TarotLocale, TarotReadingPayload } from "./ai/types";
+import type { TarotLocale, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 import type { ReadingOwner } from "./tarot-guest";
+import { parseStoredReading, type StoredReadingRow } from "./tarot-reading-compat";
 import { buildTarotReadingInput } from "./tarot-reading-context";
 import { selectContextualFollowUpSuggestions } from "./tarot-follow-up-suggestions";
 import type { TarotRepository } from "./tarot-repository";
@@ -56,13 +57,28 @@ export type GeneratedTarotReading = {
   reading: TarotReadingPayload;
 };
 
+export type HydratedTarotReading = {
+  readingId: string;
+  sessionId: string;
+  locale: TarotLocale;
+  modelName: string;
+  promptVersion: string;
+  reading: TarotReadingPayload;
+};
+
 function resolveOwner(args: GenerateTarotReadingArgs): ReadingOwner {
   if (args.owner) return args.owner;
   if (args.ownerId) return { kind: "user", userId: args.ownerId };
   throw new TarotReadingServiceError("not_found", "A reading owner is required.");
 }
 
-export async function generateTarotReading(args: GenerateTarotReadingArgs): Promise<GeneratedTarotReading> {
+type PreparedTarotReadingContext = {
+  owner: ReadingOwner;
+  stored: Awaited<ReturnType<TarotRepository["getSessionForOwner"]>>;
+  input: Awaited<ReturnType<typeof buildTarotReadingInput>>;
+};
+
+async function prepareTarotReadingContext(args: GenerateTarotReadingArgs): Promise<PreparedTarotReadingContext> {
   const owner = resolveOwner(args);
   const stored = await args.repository.getSessionForOwner(args.sessionId, owner);
   if (!stored) throw new TarotReadingServiceError("not_found", "Reading session not found.");
@@ -80,13 +96,55 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
     meanings.set(cardId, pair);
   }
 
-  let input;
   try {
-    input = buildTarotReadingInput({ session: stored.session, cards: stored.cards, template, meanings, locale: args.locale });
+    return {
+      owner,
+      stored,
+      input: buildTarotReadingInput({ session: stored.session, cards: stored.cards, template, meanings, locale: args.locale }),
+    };
   } catch (error) {
     if (error instanceof TarotReadingServiceError) throw error;
     throw new TarotReadingServiceError("incomplete", "The saved reading context is incomplete.", { cause: error });
   }
+}
+
+function readingCardIdentities(input: PreparedTarotReadingContext["input"]): TarotReadingCardIdentity[] {
+  return input.cards.map(({ readingCardId, orientation, position, card }) => ({ readingCardId, orientation, position, card }));
+}
+
+export async function hydrateStoredTarotReading(args: {
+  repository: TarotRepository;
+  owner: ReadingOwner;
+  sessionId: string;
+  locale: TarotLocale;
+  stored?: StoredReadingRow | null;
+}): Promise<HydratedTarotReading | null> {
+  const prepared = await prepareTarotReadingContext({
+    repository: args.repository,
+    owner: args.owner,
+    sessionId: args.sessionId,
+    locale: args.locale,
+    provider: { id: "openai", model: "stored", generateReading: async () => { throw new Error("stored hydration must not call provider"); } },
+  });
+  const stored = args.stored === undefined ? await args.repository.getLatestReadingForOwner(args.sessionId, args.owner) : args.stored;
+  if (!stored) return null;
+  try {
+    return {
+      readingId: stored.id,
+      sessionId: stored.sessionId,
+      locale: args.locale,
+      modelName: stored.modelName,
+      promptVersion: stored.promptVersion,
+      reading: parseStoredReading(stored, readingCardIdentities(prepared.input), args.locale),
+    };
+  } catch (error) {
+    throw new TarotReadingServiceError("persistence", "The stored Tarot reading could not be read.", { cause: error });
+  }
+}
+
+export async function generateTarotReading(args: GenerateTarotReadingArgs): Promise<GeneratedTarotReading> {
+  const prepared = await prepareTarotReadingContext(args);
+  const input = prepared.input;
 
   let reading: TarotReadingPayload | undefined;
   const modelName = `${args.provider.id}:${args.provider.model}`;

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TAROT_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError } from "./ai/provider";
 import { noStoreResponse } from "./request-identity";
+import { TarotCreditAuthorizationError } from "./tarot-credit-authorization";
 import type { GeneratedTarotReading } from "./tarot-reading-service";
 import { TarotReadingServiceError } from "./tarot-reading-service";
 
@@ -57,6 +58,13 @@ function serviceError(error: TarotReadingServiceError): Response {
   if (error.code === "not_found") return noStoreResponse(Response.json({ error: "Reading session not found." }, { status: 404 }));
   if (error.code === "incomplete") return noStoreResponse(Response.json({ error: "This reading is not ready to interpret." }, { status: 409 }));
   return noStoreResponse(Response.json({ error: "The Tarot reading could not be saved. Please try again." }, { status: 503 }));
+}
+
+function creditError(error: TarotCreditAuthorizationError): Response {
+  if (error.code === "insufficient") return noStoreResponse(Response.json({ error: "You need more credits for this Tarot reading." }, { status: 402 }));
+  if (error.code === "in_progress") return noStoreResponse(Response.json({ error: "This Tarot reading is already being prepared." }, { status: 409 }));
+  if (error.code === "conflict") return noStoreResponse(Response.json({ error: "This Tarot reading request conflicts with an existing request." }, { status: 409 }));
+  return noStoreResponse(Response.json({ error: "Credit authorization is temporarily unavailable. Please try again." }, { status: 503 }));
 }
 
 export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs): Promise<Response> {
@@ -132,6 +140,18 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
           schemaIssuePath: error.schemaIssuePath,
           schemaIssueCode: error.schemaIssueCode,
         } : {}),
+      });
+      return response;
+    }
+    if (error instanceof TarotCreditAuthorizationError) {
+      const response = creditError(error);
+      log({
+        status: "failure",
+        httpStatus: response.status,
+        failureCategory: `credits_${error.code}`,
+        sessionId,
+        provider: metadata.provider,
+        modelName: metadata.modelName,
       });
       return response;
     }
