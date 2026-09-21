@@ -38,6 +38,11 @@ Profile displays the account summary and active VIP state. The commercial API ex
 
 - P0/P1: none observed in the available desktop staging pass.
 - P2: Profile's service list still presents payment as “needs setup” while the staging-only API checkout is functional; coordinate product copy/UI work after provider/account provisioning.
-- P2: Full live AI, Share event/revoke/image/QR, Affiliate mutation matrix and role mutation flows were not claimed without dedicated safe fixtures/configuration.
-- P2: The available isolated browser did not expose a device viewport override; mobile visual capture is a human/operator gate. Existing source and prior local evidence cover responsive constraints, but this V3 run does not claim fresh device-size screenshots.
+- P2: Live AI and provider-backed SePay checkout/IPN remain external configuration gates; no real money or production provider activation is approved.
+- P2: Affiliate verified-fulfillment conversion/reversal and staff-role mutation flows still need dedicated operator fixtures. Staging attribution, first-touch replay and USER-role admin denial are verified.
+- P2: Fresh 375px/390px/1440px viewport checks found no horizontal overflow across key routes. Owner review should still exercise the completed 10-card room/reading state on a physical device before final UI sign-off.
 - P3: Repository-wide lint retains inherited legacy/generated debt; do not use UI cleanup to broaden this integration.
+
+## Closure evidence
+
+The staging Share loop is now live-verified after the proxied-origin fix in `b1bf0f6`; the prior analytics-origin finding is closed. Share semantics, public privacy, QR/image output and owner-scoped revoke remain frozen for final UI work.

@@ -34,4 +34,12 @@ SePay Sandbox configuration was present on staging and used only for the synthet
 
 ## Open gates
 
-Live AI and the full provider/browser payment journey need dedicated staging-safe provider fixtures. Full Share event/revoke/image/QR, Affiliate mutation/reversal, role matrix and adversarial concurrency certification remain human/operator gates. No secrets or customer payloads are included in this report.
+Live AI and the full provider/browser payment journey need dedicated staging-safe provider fixtures. The fresh Sandbox checkout form was created successfully, but the provider checkout host returned HTTP `404` for the controlled form submission; no IPN or real-money flow was attempted. No DeepSeek variables are configured on staging.
+
+## V3 closure retest
+
+- Staging was redeployed from `b1bf0f6`; `natarot-staging.service` is active and local/public health is `200`.
+- Share loop: create `201`; valid page `200`; image `200` with `image/svg+xml`; QR embedded; event calls `202`/`202` with one durable event row; foreign revoke `204` and link remains public; owner revoke `204`; revoked image `404`; revoked HTML shows the intended unavailable/not-found state.
+- Affiliate: a disposable staging USER fixture with a temporarily enabled/restored policy returned invalid-code rejection, first-touch attribution and idempotent repeat attribution; all fixture rows were removed and policy restored to `DRAFT`. Verified-fulfillment conversion/reversal remains covered by the local Affiliate suite, not by a live provider event.
+- RBAC: a disposable staging USER fixture received `403` on admin users/affiliate/audit/orders, while missing-session and spoofed-role requests received `401`/`401`; rows and sessions were removed after the probe. The local role matrix covers SUPPORT, FINANCE, ADMIN and SUPER_ADMIN permissions.
+- The controlled provider submission returned external 404, so full provider browser/IPN certification remains a HUMAN_GATE. No secrets, customer payloads, production resources or real-money transactions are included in this report.

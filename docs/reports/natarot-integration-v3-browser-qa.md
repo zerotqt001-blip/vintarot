@@ -21,8 +21,8 @@ Authenticated UI login succeeded with the synthetic staging member and redirecte
 
 ## Mobile gate
 
-The available isolated browser did not expose a device viewport override in this run, so no fresh 390px/375px screenshot is claimed here. Existing responsive source contracts and prior local device-sized evidence remain useful, but a human/operator must repeat the mobile visual pass before calling V3 fully browser-certified.
+Fresh isolated Chrome viewport checks were available in the closure run. At CSS viewport widths 375px and 390px, Home, Guidebook, Daily Spread, Community, Auth, Create, Profile, Admin, Room and the Share unavailable state all rendered with no document horizontal overflow. A 1440px Home check also had no overflow. The room route loaded its opening state; a physical-device pass of a completed 10-card reading remains an owner-review item.
 
 ## Findings
 
-No P0/P1 blocker observed. P2: Profile copy still describes payment as needing setup while the staging-only commercial API is available; defer UI copy/product treatment until payment provisioning is formally approved. P2: live AI and full Share/affiliate/admin journeys were not falsely marked complete without their required safe fixtures/configuration.
+No P0/P1 blocker observed. P2: Profile copy still describes payment as needing setup while the staging-only commercial API is available; defer UI copy/product treatment until payment provisioning is formally approved. P2: live AI and provider-backed SePay checkout/IPN remain external gates. Share is live-verified; Affiliate verified fulfillment/reversal and staff-role mutation flows remain operator-gated.

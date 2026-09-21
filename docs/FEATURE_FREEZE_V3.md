@@ -35,5 +35,12 @@ Staging-only validation passed for health, auth, account summary, package discov
 ## Human gates still open
 
 - Production payment/AI/email/OAuth activation remains unapproved and unperformed.
-- Live DeepSeek reading, full Share/revoke/image/QR event journey, Affiliate mutation matrix and all role mutation paths require safely provisioned test fixtures or explicit operator review.
-- A true device-size mobile browser capture was not available in the isolated browser session; mobile assertions remain a handoff gate, not a pass claim.
+- Live DeepSeek reading and full provider-backed SePay checkout/IPN remain explicit external gates.
+- Share create/public/image/QR/event/revoke is now verified end-to-end on staging. Affiliate attribution is verified with a disposable staging policy fixture; verified-fulfillment conversion/reversal and staff-role mutation paths remain operator gates.
+- Fresh 375px, 390px and 1440px browser viewport checks found no horizontal overflow across the key routes; a full human visual sweep of the room's completed 10-card reading state remains an operator handoff item.
+
+## Closure update — 2026-09-22
+
+- Fixed and deployed staging-only Share analytics origin handling in `b1bf0f6`: when Nginx forwards protocol and Host separately, the event route now falls back to the trusted `Host` header. Targeted regression coverage is included.
+- Live Share matrix: create `201`; public page/image/QR `200`; duplicate events `202/202` with one durable event row; foreign revoke `204` without disclosure; owner revoke `204`; revoked image `404`; revoked HTML renders the intended not-found state.
+- No production service, database, credential or real-money path was changed.
