@@ -155,7 +155,7 @@ test("Node migration upgrades an existing pre-share database without losing memb
   );
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0005_%'").get() as { count: number }).count, 1);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0006_%'").get() as { count: number }).count, 1);
-  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0007_%'").get() as { count: number }).count, 1);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0007_%'").get() as { count: number }).count, 2);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM reading_shares").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM credit_accounts").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM audit_events").get() as { count: number }).count, 0);
