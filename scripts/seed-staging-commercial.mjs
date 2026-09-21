@@ -1,3 +1,4 @@
+import { pbkdf2Sync, randomBytes } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 
 const databasePath = process.env.NATAROT_DB_PATH?.trim() ?? "";
@@ -12,6 +13,7 @@ const amountMinor = 10_000;
 const creditUnits = 10;
 const vipDurationSeconds = 86_400;
 const policyVersion = "staging-sepay-v1";
+const stagingMemberPassword = process.env.NATAROT_STAGING_MEMBER_PASSWORD?.trim() ?? "";
 const benefitSnapshot = JSON.stringify({
   credits: { units: creditUnits },
   vip: { durationSeconds: vipDurationSeconds, benefitVersion: "vip-v1", benefits: { stagingSandbox: true } },
@@ -31,6 +33,19 @@ try {
     throw new Error("Staging package version conflicts with the existing catalog");
   }
   console.log(`Verified staging sandbox package ${slug}`);
+  if (stagingMemberPassword) {
+    if (stagingMemberPassword.length < 10 || stagingMemberPassword.length > 128) throw new Error("NATAROT_STAGING_MEMBER_PASSWORD must be 10-128 characters");
+    const salt = randomBytes(16);
+    const derived = pbkdf2Sync(stagingMemberPassword, salt, 600_000, 32, "sha256");
+    const encode = (value) => value.toString("base64url");
+    const passwordHash = `pbkdf2-sha256$v1$600000$${encode(salt)}$${encode(derived)}`;
+    const memberId = "member-staging-sepay-sandbox-v1";
+    sqlite.prepare("INSERT OR IGNORE INTO members (id, username, email, phone, display_name, password_hash, google_subject, email_verified_at, created_at, updated_at, last_login_at, disabled) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, NULL, 0)")
+      .run(memberId, "sepay_staging", "sepay-staging-sandbox@example.test", "+849999999999", "SePay Staging", passwordHash, now, now, now);
+    const memberRow = sqlite.prepare("SELECT id, username, email, email_verified_at, disabled FROM members WHERE id = ?").get(memberId);
+    if (!memberRow || memberRow.username !== "sepay_staging" || memberRow.email !== "sepay-staging-sandbox@example.test" || memberRow.email_verified_at === null || Number(memberRow.disabled) !== 0) throw new Error("Staging member identity conflicts with the existing account");
+    console.log("Verified staging sandbox member sepay_staging");
+  }
 } finally {
   sqlite.close();
 }

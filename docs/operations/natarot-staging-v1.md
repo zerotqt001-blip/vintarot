@@ -279,6 +279,19 @@ sudo env NATAROT_STAGING_SEED=1 \
   /usr/local/bin/node /opt/natarot-staging/scripts/seed-staging-commercial.mjs
 ```
 
+For a closed-loop checkout run, add an operator-generated staging-only
+password in the process environment; the script creates the verified
+`sepay_staging` member only when this variable is present and never prints the
+password:
+
+```bash
+sudo env NATAROT_STAGING_SEED=1 \
+  NATAROT_STAGING_MEMBER_PASSWORD='<ephemeral-staging-password>' \
+  NATAROT_DB_PATH=/var/lib/natarot-staging/natarot.sqlite \
+  SEPAY_ENVIRONMENT=sandbox \
+  /usr/local/bin/node /opt/natarot-staging/scripts/seed-staging-commercial.mjs
+```
+
 Restart only `natarot-staging.service` after installing the release and
 environment. Configure the SePay Sandbox Gateway IPN setting to the callback
 above using the currently documented Gateway secret-key mode. Verify the URL
