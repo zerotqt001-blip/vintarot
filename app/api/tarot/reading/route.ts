@@ -5,6 +5,8 @@ import { runtimeEnv } from "@/lib/runtime";
 import { handleTarotReadingRoute, type TarotReadingLogEvent } from "@/lib/tarot-reading-route";
 import { generateTarotReading, type TarotProviderFailureEvent } from "@/lib/tarot-reading-service";
 import { getTarotRepository } from "@/lib/tarot-repository";
+import { createCreditStore } from "@/lib/credits/repository";
+import { generateMemberTarotReading } from "@/lib/tarot-credit-authorization";
 
 function logTarotReadingEvent(event: TarotReadingLogEvent) {
   console.info("VinTarot Tarot reading", event);
@@ -36,18 +38,31 @@ export async function POST(req: Request) {
       return json(req);
     },
     execute: async (input, metadata) => {
-      const { owner, setCookie } = await readOptionalOwner(req);
+      const database = db();
+      const { owner, member, setCookie } = await readOptionalOwner(req, database);
       const provider = createTarotAIProvider(runtimeEnv as unknown as Record<string, string | undefined>);
       metadata.provider = provider.id;
       metadata.modelName = `${provider.id}:${provider.model}`;
-      const result = await generateTarotReading({
-        repository: getTarotRepository(db()),
-        owner,
-        sessionId: input.session_id,
-        locale: input.locale,
-        provider,
-        onProviderFailure: logTarotProviderFailure,
-      });
+      const repository = getTarotRepository(database);
+      const result = member
+        ? await generateMemberTarotReading({
+          database,
+          creditStore: createCreditStore(database),
+          repository,
+          owner,
+          sessionId: input.session_id,
+          locale: input.locale,
+          provider,
+          onProviderFailure: logTarotProviderFailure,
+        })
+        : await generateTarotReading({
+          repository,
+          owner,
+          sessionId: input.session_id,
+          locale: input.locale,
+          provider,
+          onProviderFailure: logTarotProviderFailure,
+        });
       return { result, setCookie };
     },
     log: logTarotReadingEvent,
