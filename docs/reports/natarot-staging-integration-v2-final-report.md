@@ -4,6 +4,43 @@
 
 HUMAN_GATE
 
+## Resume addendum — 2026-09-21
+
+The original SSH gate was resolved through the authenticated BKNS VPS console
+and a dedicated local Ed25519 key. The local key is stored at
+`/Users/tranquangthanh/.ssh/natarot_ops` with a `600` private-key mode, and the
+local SSH alias `natarot-vps` uses port `26266`, `root`, and that identity.
+Two independent `BatchMode` connections succeeded with the new key and
+returned `root` / `Quangthanh`. No private key, password, OTP, or environment
+value was printed or committed.
+
+The resumed read-only VPS audit established:
+
+- Root filesystem: `29G` total, `12G` used, `17G` free, `42%`; inode use `14%`.
+- Production `natarot.service` is active on `127.0.0.1:8787` from `/opt/natarot`.
+- Staging `natarot-staging.service` is active on `127.0.0.1:8788` from
+  `/opt/natarot-staging`; Nginx has separate production and staging upstreams.
+- Staging DB is `/var/lib/natarot-staging/natarot.sqlite`, owned by
+  `natarot-staging:natarot-staging` with mode `600`; production DB remains at
+  `/var/lib/natarot/natarot.sqlite`.
+- Read-only HTTPS checks returned `200` for staging home/health and production
+  apex/www. No service restart or production mutation was performed.
+
+The mission remains at HUMAN_GATE before staging cleanup, backup, migration,
+or deployment. The active `/opt/natarot-staging` release contains five
+SePay-related source files, including `lib/commercial/sepay-adapter.ts`,
+`lib/commercial/payment-service.ts`, and `scripts/seed-staging-commercial.mjs`.
+The VPS also contains recent `natarot-staging.before-sepay-*` release trees and
+`natarot-sepay-*.tar.gz` archives (latest observed at `16:28:58 UTC`). This is
+positive evidence that another SePay staging workflow changed the active
+staging target; no active SePay process was observed, but ownership and the
+intended handoff are unresolved. Per the mission safety gate, this run did not
+overwrite that release, remove its archives, touch either database, restart
+either service, or deploy the Credits/VIP integration.
+
+The sections below retain the pre-resume gate snapshot where they say
+`NOT AUDITED`; this addendum is the authoritative resumed-audit evidence.
+
 The local product integration is verified, but the mission stopped before any VPS audit, cleanup, staging DB backup/migration, deployment, restart, or live browser QA because no authorized SSH access was available.
 
 Exact gate evidence:
