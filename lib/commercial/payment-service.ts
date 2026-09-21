@@ -4,6 +4,7 @@ import type { CreditStore } from "../credits/repository";
 import {
   fetchSePayJson,
   normalizeSePayOrderDetail,
+  SePayProviderError,
   type NormalizedSePayIpn,
   type SePayConfig,
 } from "./sepay-adapter";
@@ -218,7 +219,13 @@ export async function reconcileSePayPayment(input: {
   const providerDetailId = providerOrderDetailIdFromList(list, attempt.invoiceNumber) ?? providerOrderId;
   if (!providerOrderId || !providerDetailId) return { status: order.status === "FULFILLED" ? "FULFILLED" : order.status === "PAYMENT_CONFIRMED" ? "PAYMENT_CONFIRMED" : "PENDING", order, eventId: null, fulfillmentErrorCode: null };
   await updateProviderOrderHint(input.database, { attemptId: attempt.id, providerOrderId, now: input.now });
-  const detail = await fetchSePayJson(input.config, `/v1/order/detail/${encodeURIComponent(providerDetailId)}`, fetchImpl);
+  let detail: unknown;
+  try {
+    detail = await fetchSePayJson(input.config, `/v1/order/detail/${encodeURIComponent(providerDetailId)}`, fetchImpl);
+  } catch (error) {
+    if (!(error instanceof SePayProviderError) || error.status !== 404 || providerDetailId === attempt.invoiceNumber) throw error;
+    detail = await fetchSePayJson(input.config, `/v1/order/detail/${encodeURIComponent(attempt.invoiceNumber)}`, fetchImpl);
+  }
   const evidence = await normalizeSePayOrderDetail(detail, (input.now ?? Date.now)());
   if (!evidence) {
     const refreshed = await getOrderById(input.database, input.orderId);
