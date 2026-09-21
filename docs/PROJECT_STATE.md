@@ -268,3 +268,61 @@ The staging deployment contract test, systemd unit, bootstrap and final Nginx ho
 Live staging deployment is `PASS` on BKNS `Cloud VPS Lifetime 1`: the isolated systemd service is enabled/active as `natarot-staging.service` under `natarot-staging:natarot-staging`, serves only `127.0.0.1:8788`, and uses `/var/lib/natarot-staging/natarot.sqlite` with `/etc/natarot-staging.env` containing only `NODE_ENV=production`. The new database applied migrations `0000`–`0005`, contains the seeded 78-card catalog and synthetic smoke rows only, and is owned `natarot-staging:natarot-staging` with mode `600`. Nginx serves the separate staging host with `X-Robots-Tag: noindex, nofollow`; HTTP redirects to HTTPS; the staging-only Let's Encrypt certificate covers `staging.natarot.com` through 2026-12-20.
 
 Live smoke checks passed: HTTPS health/home/catalog, guest draw `201`, owner session `200`, no-provider reading `503`, F-001 spoofed OAI headers rejected at the proxy boundary, attacker Origin rejected, synthetic share create/public/image/event/duplicate/foreign-revoke/owner-revoke loop, and staging restart persistence. Production `natarot.service` remained active and public apex/www HTTPS returned `200` after the staging work. No production app tree, database, systemd unit, Nginx production host, provider configuration, or production secret was modified. SePay/Credits/VIP/Affiliate work remains intentionally not implemented.
+
+## NaTarot SePay Sandbox Implementation V1 (2026-09-21)
+SePay Sandbox closed-loop implementation is complete on isolated branch
+`codex/natarot-sepay-implementation-v1`, with implementation commits through
+`594e569` and no merge to main. The verified Credits/VIP baseline was preserved
+from `121e184a617f43df049407ff5981e17ba6613616`; staging was integrated from
+`672bac30647fcd8de7ac69592695134e16536698`. No Affiliate, admin/RBAC, or
+production payment scope was added.
+
+The release adds migration `0007_sepay_commercial.sql`, server-only SePay
+Sandbox configuration, signed VND checkout creation, durable payment attempts
+and events, Gateway Secret-Key IPN validation, provider order-detail
+reconciliation, display-only return handling, owner boundaries, and the
+existing Credits/VIP fulfillment bridge. The fulfillment boundary is
+idempotent across replay, concurrent callbacks, provider transaction reuse,
+and reconciliation from a different provider payload representation. A live
+provider check found that Sandbox order-detail lookup accepts the invoice
+number when the list response's UUID/order ID returned 404; the implementation
+now falls back to the invoice while preserving the provider `order_id` as the
+payment identity.
+
+Staging-only operational state is PASS: migrations `0006` and `0007` were
+applied to `/var/lib/natarot-staging/natarot.sqlite` after backup
+`/var/lib/natarot-staging/backups/natarot.sqlite.before-sepay-20260921T155553Z`.
+The active release is `/opt/natarot-staging`, the service is
+`natarot-staging.service` on `127.0.0.1:8788`, and its health endpoint returns
+`{"status":"ok"}`. The production `natarot.service` stayed active throughout;
+production database, release tree, Nginx host, DNS, and production env were
+not changed. Rollback trees remain on the VPS under the `before-sepay-*`
+paths.
+
+SePay account state is Sandbox/Test Mode with merchant `SP-TEST-CT2978A8`,
+bank transfer enabled, Gateway IPN content type JSON, Secret-Key auth, active
+callback `https://staging.natarot.com/api/commercial/sepay/ipn`, and no real
+money. The credential is present only in root-owned staging env
+`/etc/natarot-staging.env` (`root:natarot-staging`, mode `640`); no credential
+value is in source, docs, fixtures, application logs, or repository artifacts.
+The initial noVNC input experiment was aborted after the console keyboard
+mapping proved unsafe; the temporary shell history was cleared and the
+credential was provisioned through a local-memory bridge to SSH stdin.
+
+Live Sandbox E2E is PASS with synthetic member `sepay_staging` and package
+`staging-sepay-sandbox-v1`: server-created order `10,000 VND` reached
+`FULFILLED` through the signed hosted checkout, simulated Sandbox payment and
+real IPN; the final staging database contains exactly one verified payment
+event, one fulfillment, ten available credits and one active VIP entitlement.
+Owner-scoped display-only return and provider reconciliation both returned
+`200`; reconciliation and a staging service restart preserved those exact
+counts. Automated duplicate/concurrent/replay, forged/auth, malformed,
+amount/order/transaction mismatch, IDOR, redirect, package-tampering and
+restart/persistence cases are covered by the SePay test slice.
+
+Verification after the final fix: full tracked suite `496/496`,
+`npx tsc --noEmit`, `npm run build`, targeted ESLint for the changed SePay
+slice, and `git diff --check` pass. Repository-wide lint remains the known
+baseline (`89 errors, 125 warnings`) outside this slice. The state-document
+commit and normal branch push/equality verification remain the final handoff
+steps; no production deploy is authorized by this milestone.
