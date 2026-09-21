@@ -27,9 +27,9 @@ Integrated commits:
 
 Branch: `codex/natarot-staging-integration-v2`
 
-Final commit: documentation commit pending in this report update.
+Final commit: `a4174b8` (`docs: record staging integration human gate`).
 
-Remote verified: not yet; branch push follows after the report/state diff is checked. No force push and no main merge.
+Remote verified: branch `origin/codex/natarot-staging-integration-v2` was pushed normally; final parity check follows this evidence update. No force push and no main merge.
 
 ## VPS Disk Before
 
