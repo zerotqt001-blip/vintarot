@@ -40,3 +40,41 @@ test("SQLite adapter executes a batch in order", async () => {
   assert.deepEqual(rows.results, [{ value: 1 }, { value: 2 }, { value: 3 }]);
   sqlite.close();
 });
+
+test("SQLite adapter serializes concurrent batches on one connection", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  const database = createSqliteD1Database(sqlite);
+  sqlite.exec("CREATE TABLE items (id TEXT PRIMARY KEY, value INTEGER)");
+  const statements = (prefix: string) => [1, 2, 3].map((value) => database
+    .prepare("INSERT INTO items (id, value) VALUES (?, ?)")
+    .bind(`${prefix}-${value}`, value));
+
+  await Promise.all([
+    database.batch(statements("first")),
+    database.batch(statements("second")),
+  ]);
+  const rows = await database.prepare("SELECT id, value FROM items ORDER BY id")
+    .all<{ id: string; value: number }>();
+  assert.deepEqual(rows.results, [
+    { id: "first-1", value: 1 },
+    { id: "first-2", value: 2 },
+    { id: "first-3", value: 3 },
+    { id: "second-1", value: 1 },
+    { id: "second-2", value: 2 },
+    { id: "second-3", value: 3 },
+  ]);
+  sqlite.close();
+});
+
+test("SQLite adapter rolls back a failed batch atomically", async () => {
+  const sqlite = new DatabaseSync(":memory:");
+  const database = createSqliteD1Database(sqlite);
+  sqlite.exec("CREATE TABLE items (id TEXT PRIMARY KEY, value INTEGER)");
+  await assert.rejects(database.batch([
+    database.prepare("INSERT INTO items (id, value) VALUES (?, ?)").bind("item-1", 1),
+    database.prepare("INSERT INTO items (id, value) VALUES (?, ?)").bind("item-1", 2),
+  ]));
+  const rows = await database.prepare("SELECT * FROM items").all();
+  assert.deepEqual(rows.results, []);
+  sqlite.close();
+});

@@ -7,12 +7,17 @@ import {
   TAROT_SYSTEM_PROMPT,
 } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
+import type { TarotProviderFailureStage } from "./diagnostics";
 import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 
-function extractOutputText(value: unknown): string | null {
-  if (typeof value !== "object" || value === null || !("output" in value) || !Array.isArray(value.output)) return null;
+type ExtractedOutputText = { content: string } | { failureStage: Extract<TarotProviderFailureStage, "provider_envelope_invalid" | "provider_content_missing"> };
+
+function extractOutputText(value: unknown): ExtractedOutputText {
+  if (typeof value !== "object" || value === null || !("output" in value) || !Array.isArray(value.output) || value.output.length === 0) {
+    return { failureStage: "provider_envelope_invalid" };
+  }
   for (const output of value.output) {
     if (typeof output !== "object" || output === null || !("content" in output) || !Array.isArray(output.content)) continue;
     for (const content of output.content) {
@@ -23,10 +28,10 @@ function extractOutputText(value: unknown): string | null {
         && content.type === "output_text"
         && "text" in content
         && typeof content.text === "string"
-      ) return content.text;
+      ) return { content: content.text };
     }
   }
-  return null;
+  return { failureStage: "provider_content_missing" };
 }
 
 export function createOpenAIProvider(
@@ -61,9 +66,11 @@ export function createOpenAIProvider(
         }),
       });
 
-      const content = extractOutputText(envelope);
-      if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true });
-      return parseTarotProviderContent(content, input);
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotProviderContent(extracted.content, input);
     },
     async generateFollowUp(input) {
       const envelope = await request(OPENAI_RESPONSES_URL, {
@@ -87,9 +94,11 @@ export function createOpenAIProvider(
         }),
       });
 
-      const content = extractOutputText(envelope);
-      if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true });
-      return parseTarotFollowUpContent(content);
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotFollowUpContent(extracted.content);
     },
   };
 }

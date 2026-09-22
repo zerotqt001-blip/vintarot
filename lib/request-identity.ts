@@ -1,4 +1,5 @@
-import { getChatGPTUser, type ChatGPTUser } from "@/app/chatgpt-auth";
+import type { D1Database } from "@cloudflare/workers-types";
+import type { MemberView } from "@/lib/member-auth";
 import { readOptionalOwner, type ReadingOwner } from "@/lib/tarot-guest";
 
 export type RequestIdentity = {
@@ -12,38 +13,23 @@ export type RequestIdentity = {
   setCookie?: string;
 };
 
-function authenticatedIdentity(user: ChatGPTUser): RequestIdentity {
+function authenticatedIdentity(member: MemberView): RequestIdentity {
+  const displayName = member.displayName ?? member.username;
   return {
     kind: "user",
-    userId: user.userId,
-    displayName: user.displayName,
-    email: user.email,
-    fullName: user.fullName,
-    owner: { kind: "user", userId: user.userId },
+    userId: `member:${member.id}`,
+    displayName,
+    email: member.email,
+    fullName: member.displayName,
+    owner: { kind: "user", userId: `member:${member.id}` },
   };
 }
 
-export async function readRequestIdentity(request: Request): Promise<RequestIdentity> {
-  // The framework/platform helper is the only application authentication boundary.
-  // Never promote arbitrary headers on a Request object to a user identity.
-  try {
-    const contextUser = await getChatGPTUser();
-    if (contextUser) return authenticatedIdentity(contextUser);
-  } catch {
-    // Standalone Node requests do not have the ChatGPT request context.
-  }
+export async function readRequestIdentity(request: Request, database?: D1Database): Promise<RequestIdentity> {
+  const { owner, member, setCookie } = await readOptionalOwner(request, database);
+  if (member) return authenticatedIdentity(member);
 
-  const { owner, setCookie } = await readOptionalOwner(request);
-  if (owner.kind === "user") {
-    try {
-      const contextUser = await getChatGPTUser();
-      if (contextUser) return authenticatedIdentity(contextUser);
-    } catch {
-      // Fall through to a safe guest identity if the context cannot be read.
-    }
-  }
-
-  const guestId = owner.kind === "guest" ? owner.guestId : `user-${owner.userId}`;
+  const guestId = owner.kind === "guest" ? owner.guestId : "unknown";
   return {
     kind: "guest",
     userId: `guest:${guestId}`,

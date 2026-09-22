@@ -8,7 +8,7 @@ import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart,
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-type User = { name: string; email: string } | null;
+type User = { name: string; email: string; username: string } | null;
 
 type ArcLabelProps = {
   id: string;
@@ -49,6 +49,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isPractice = path === "/community";
   const isRoom = path === "/room";
   const isDaily = path === "/daily-spread";
+  const profileHref = user ? "/profile" : "/auth?return_to=/profile";
   const shellRef = useRef<HTMLDivElement>(null);
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
@@ -110,13 +111,13 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
           <button className="practice-v1-icon-button" type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={18} strokeWidth={1.4} /></button>
           <LanguageSelect />
           <button className="practice-v1-icon-button" type="button" aria-label={t("header.theme")} aria-pressed={practiceTheme === "soft"} onClick={() => setPracticeTheme((value) => value === "night" ? "soft" : "night")}><Moon size={18} strokeWidth={1.4} /></button>
-          <a className="practice-v1-account" href="/profile"><UserRound size={18} strokeWidth={1.4} /><span>{t("nav.account")}</span></a>
+          <a className="practice-v1-account" href={profileHref}><UserRound size={18} strokeWidth={1.4} /><span>{t("nav.account")}</span></a>
         </> : <>
           <LanguageSelect />
           <button aria-label={t("header.shopping")} onClick={() => setModal("collection")}><ShoppingBag size={17} /></button>
           <button aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
           <a className="black button" href="/create">{t("header.room")}</a>
-          <a className="avatar" href="/profile" aria-label={t("header.profile")}><Moon size={20} /></a>
+          <a className="avatar" href={profileHref} aria-label={t("header.profile")}><Moon size={20} /></a>
         </>}
       </div>
     </header>
@@ -130,7 +131,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
           <span className="mobile-nav-label">{t(key)}</span>
         </a>;
       })}</nav>
-      {!isPractice && <nav className="personal-nav"><a className="username" href="/profile">{user?.name || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
+      {!isPractice && <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
       {isPractice && <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div>}
     </SidebarContent></Sidebar>
     <main className="main">{children || <>
@@ -144,7 +145,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       <span className="practice-v1-footer-tagline">{t("header.tagline")}</span>
       <nav className="practice-v1-footer-links"><a href="/guidebook">{t("home.guidebook")}</a><a href="/privacy">{t("footer.privacy")}</a><a href="/terms">{t("footer.terms")}</a></nav>
       <div className="practice-v1-socials" aria-label="Social links"><span aria-label={t("footer.facebook")}><b className="practice-v1-social-letter" aria-hidden="true">f</b></span><span aria-label={t("footer.youtube")}><CirclePlay size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.instagram")}><Camera size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.tiktok")}><Music2 size={18} strokeWidth={1.35} /></span></div>
-    </> : <><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></>}</footer>
+    </> : <><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">{t("footer.privacy")}</a><a href="/terms">{t("footer.terms")}</a></>}</footer>
+    {!isHome && !isPractice && <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>}
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
 }

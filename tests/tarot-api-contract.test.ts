@@ -79,10 +79,12 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(readingRouteRuntime, /prompt_version/);
   assert.match(readingRouteRuntime, /z\.enum\(\["en", "vi"\]\)/);
   assert.match(readingRoute, /logTarotReadingEvent/);
+  assert.match(readingRoute, /onProviderFailure/);
   assert.match(readingRouteRuntime, /cardCount/);
   assert.match(readingRouteRuntime, /reading\.cardEvidence\.length/);
   assert.match(readingRouteRuntime, /latencyMs/);
   assert.match(readingRouteRuntime, /failureCategory/);
+  assert.match(readingRouteRuntime, /failureStage/);
   assert.doesNotMatch(readingRouteRuntime, /cloudflare:workers/);
   assert.doesNotMatch(`${readingRoute}\n${readingRouteRuntime}`, /console\.(?:info|warn|error)\([^\n]*(?:question|optionalContext|prompt|apiKey|rawBody|error\.message)/);
   assert.doesNotMatch(readingRoute, /buildLocalReading|TAROT_AI_URL|TAROT_AI_KEY/);

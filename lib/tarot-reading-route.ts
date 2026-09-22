@@ -20,6 +20,13 @@ export type TarotReadingLogEvent = {
   modelName?: string;
   promptVersion: string;
   cardCount?: number;
+  attemptNumber?: number;
+  failureStage?: string;
+  expectedCardCount?: number;
+  actualCardEvidenceCount?: number;
+  schemaIssuePath?: string;
+  schemaIssueCode?: string;
+  retryScheduled?: boolean;
   latencyMs: number;
 };
 
@@ -115,6 +122,14 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
         sessionId,
         provider: metadata.provider,
         modelName: metadata.modelName,
+        ...(error.failureStage ? {
+          failureStage: error.failureStage,
+          httpStatus: error.httpStatus ?? response.status,
+          expectedCardCount: error.expectedCardCount,
+          actualCardEvidenceCount: error.actualCardEvidenceCount,
+          schemaIssuePath: error.schemaIssuePath,
+          schemaIssueCode: error.schemaIssueCode,
+        } : {}),
       });
       return response;
     }

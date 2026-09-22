@@ -8,7 +8,8 @@ const styles = readFileSync(`${root}/app/globals.css`, "utf8");
 const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
 
 test("homepage renders the NaTarot celestial scene layers and daily ritual content", () => {
-  assert.match(shell, /className=\{isHome \? "home-shell"/);
+  assert.match(shell, /const shellClass = isHome \? "home-shell"/);
+  assert.match(shell, /className=\{shellClass\}/);
   for (const layer of ["sky", "nebula", "planets", "architecture", "floor", "foreground"]) {
     assert.match(shell, new RegExp(`cosmic-layer cosmic-${layer}`));
   }
