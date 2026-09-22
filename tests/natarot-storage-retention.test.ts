@@ -253,7 +253,7 @@ test("production health tolerates the bounded service startup window", () => {
   const fakeSystemctl = join(fixture.root, "bin/systemctl");
   const fakeCurl = join(fixture.root, "bin/curl");
   const curlState = join(fixture.root, "curl-state");
-  writeFile(fakeSystemctl, "#!/bin/sh\nexit 0\n", 0o755);
+  writeFile(fakeSystemctl, "#!/bin/sh\nfor argument in \"$@\"; do\n  [ \"$argument\" = \"--wait\" ] && exit 99\ndone\nexit 0\n", 0o755);
   writeFile(fakeCurl, "#!/bin/sh\nif [ ! -f \"$NATAROT_TEST_CURL_STATE\" ]; then\n  : > \"$NATAROT_TEST_CURL_STATE\"\n  exit 7\nfi\nexit 0\n", 0o755);
   const result = runManager(fixture, ["deploy", "--source-dir", fixture.candidateSource, "--release-id", "r-004"], {
     NATAROT_TEST_SKIP_SERVICE: "0",
