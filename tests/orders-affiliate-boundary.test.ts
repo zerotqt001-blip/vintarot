@@ -25,6 +25,7 @@ test("affiliate conversion is downstream of durable verified fulfillment and rep
     "0006_credits_vip.sql",
     "0007_backend_completion.sql",
     "0007_sepay_commercial.sql",
+    "0008_credit_fulfillment_timestamp.sql",
   ]) sqlite.exec(readFileSync(join(repoRoot, "drizzle", migration), "utf8"));
   const now = 1_700_000_000_000;
   const database = createSqliteD1Database(sqlite);

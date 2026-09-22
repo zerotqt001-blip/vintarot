@@ -160,6 +160,17 @@ export async function revokeEntitlement(input: { database: D1Database; owner: Cr
     idempotencyKey: `admin.vip.revoke:${input.idempotencyKey}`,
     metadata: { ownerKind: input.owner.kind },
   };
+  const existingAudit = await first<{ action: string; targetId: string | null; reason: string }>(input.database, "SELECT action, target_id AS targetId, reason FROM audit_events WHERE idempotency_key=? LIMIT 1", audit.idempotencyKey);
+  if (existingAudit) {
+    if (existingAudit.action !== audit.action || existingAudit.targetId !== audit.targetId || existingAudit.reason !== audit.reason) {
+      throw new CreditIdempotencyError(`VIP revoke key ${input.idempotencyKey} already belongs to a different request`);
+    }
+    const existingEntitlement = await first<{ status: Entitlement["status"] }>(input.database, "SELECT status FROM entitlements WHERE id=? AND account_id=? LIMIT 1", input.entitlementId, accountId);
+    if (!existingEntitlement || existingEntitlement.status !== "CANCELLED") {
+      throw new CreditIdempotencyError(`VIP revoke key ${input.idempotencyKey} has no matching entitlement result`);
+    }
+    return true;
+  }
   const results = await input.database.batch([
     input.database.prepare("UPDATE entitlements SET status='CANCELLED', cancelled_at=?, updated_at=? WHERE id=? AND account_id=? AND status IN ('PENDING', 'ACTIVE')").bind(timestamp, timestamp, input.entitlementId, accountId),
     prepareAuditInsert(input.database, audit, timestamp, { ignoreExisting: false, guardSql: "changes() > 0" }),
