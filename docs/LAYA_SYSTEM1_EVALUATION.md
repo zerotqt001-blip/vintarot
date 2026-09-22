@@ -60,9 +60,9 @@ gpu_hint=not_detected
 baseline_accuracy=1.0
 baseline_decision_slots=60
 baseline_mean_confidence_error=0.195
-latency_1_total_ms=0.05
-latency_5_total_ms=0.2246
-latency_10_total_ms=0.4614
+latency_1_total_ms=0.0464
+latency_5_total_ms=0.238
+latency_10_total_ms=0.5051
 laya_evaluation=NOT_WORTHWHILE
 llm_evaluation=NOT_INVOKED
 ```
