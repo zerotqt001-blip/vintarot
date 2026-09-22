@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const service = readFileSync(new URL("../deploy/systemd/natarot.service", import.meta.url), "utf8");
+const backupService = readFileSync(new URL("../deploy/systemd/natarot-backup.service", import.meta.url), "utf8");
 const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.meta.url), "utf8");
 
 test("systemd service runs the Node migration and Vinext on localhost", () => {
@@ -14,6 +15,13 @@ test("systemd service runs the Node migration and Vinext on localhost", () => {
   assert.match(service, /--port 8787/);
   assert.match(service, /--hostname 127\.0\.0\.1/);
   assert.match(service, /Restart=always/);
+});
+
+test("production backup service follows the managed current release", () => {
+  assert.match(backupService, /Environment=NATAROT_APP_ROOT=\/opt\/natarot\/current/);
+  assert.match(backupService, /Environment=NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(backupService, /ExecStart=\/usr\/local\/sbin\/natarot-backup/);
+  assert.match(backupService, /ProtectSystem=full/);
 });
 
 test("Nginx proxies both public hosts with bounded requests and forwarded headers", () => {
