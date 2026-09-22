@@ -272,12 +272,41 @@ test("flat migration keeps the external database and environment outside the rel
   const flatFile = join(fixture.appRoot, "dist/server/index.js");
   writeFile(flatFile, "flat production runtime\n");
   writeFile(join(fixture.appRoot, "node_modules/vinext/dist/cli.js"), "flat vinext runtime\n");
+  writeFile(join(fixture.appRoot, "node_modules/unenv/dist/runtime/node/internal/tls/index.js"), "dependency tls helper\n");
   const result = runManager(fixture, ["migrate-flat", "--release-id", "migration-001"]);
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.equal(existsSync(flatFile), false);
   assert.equal(existsSync(join(fixture.releaseRoot, "migration-001", "dist/server/index.js")), true);
   assert.equal(readFileSync(fixture.database, "utf8"), "production database fixture\n");
   assert.equal(existsSync(fixture.environment), true);
+});
+
+test("failed flat migration restores the original service unit before restarting", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 0 });
+  writeFile(join(fixture.appRoot, "dist/server/index.js"), "flat production runtime\n");
+  writeFile(join(fixture.appRoot, "node_modules/vinext/dist/cli.js"), "flat vinext runtime\n");
+  const serviceUnitPath = join(fixture.root, "etc/systemd/system/natarot.service");
+  const serviceUnitSource = join(fixture.root, "candidate/natarot.service");
+  const fakeSystemctl = join(fixture.root, "bin/systemctl");
+  const fakeCurl = join(fixture.root, "bin/curl");
+  writeFile(serviceUnitPath, `[Service]\nWorkingDirectory=${fixture.appRoot}\n`);
+  writeFile(serviceUnitSource, `[Service]\nWorkingDirectory=${fixture.current}\n`);
+  writeFile(fakeSystemctl, "#!/bin/sh\nexit 0\n", 0o755);
+  writeFile(fakeCurl, "#!/bin/sh\nexit 0\n", 0o755);
+  const result = runManager(fixture, ["migrate-flat", "--release-id", "migration-rollback"], {
+    NATAROT_TEST_SKIP_SERVICE: "0",
+    NATAROT_TEST_SKIP_INSTALL: "1",
+    NATAROT_SYSTEMCTL: fakeSystemctl,
+    NATAROT_CURL: fakeCurl,
+    NATAROT_SERVICE_UNIT_PATH: serviceUnitPath,
+    NATAROT_SERVICE_UNIT_SOURCE: serviceUnitSource,
+    NATAROT_PRODUCTION_SMOKE_RESULT: "fail",
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(readFileSync(serviceUnitPath, "utf8"), new RegExp(`WorkingDirectory=${fixture.appRoot.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}`));
+  assert.equal(existsSync(join(fixture.appRoot, "dist/server/index.js")), true);
+  assert.equal(existsSync(fixture.current), false);
+  assert.equal(existsSync(join(fixture.releaseRoot, "migration-rollback")), false);
 });
 
 test("flat migration refuses an unknown top-level directory before moving code", () => {
