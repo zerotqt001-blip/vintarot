@@ -140,7 +140,7 @@ function MembershipBalance({ summary, accountLoading, authenticated, t }: { summ
         <span id="membership-balance-title">{t("member.balanceEyebrow")}</span>
         <strong>{accountLoading ? t("member.balanceLoading") : summary ? <>{summary.credits.balance.availableUnits} <small>{t("member.credits")}</small></> : t(authenticated ? "member.balanceUnavailable" : "member.balanceSignIn")}</strong>
       </div>
-      <Link href={authenticated ? "/account" : "/auth?return_to=/packages"}>{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link>
+      <Link className="membership-balance-link" href={authenticated ? "/account" : "/auth?return_to=/packages"}>{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link>
     </section>
   );
 }
