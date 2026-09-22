@@ -241,6 +241,30 @@ test("failed promotion restores the former current release and performs no clean
   assert.equal(existsSync(fixture.release("r-003")), true);
 });
 
+test("successful promotion mirrors the active revision marker at the application root", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 3 });
+  const result = runManager(fixture, ["deploy", "--source-dir", fixture.candidateSource, "--release-id", "r-004"]);
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  assert.equal(readFileSync(join(fixture.appRoot, "DEPLOYMENT_REVISION"), "utf8"), readFileSync(join(fixture.release("r-004"), "DEPLOYMENT_REVISION"), "utf8"));
+});
+
+test("production health tolerates the bounded service startup window", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 3 });
+  const fakeSystemctl = join(fixture.root, "bin/systemctl");
+  const fakeCurl = join(fixture.root, "bin/curl");
+  const curlState = join(fixture.root, "curl-state");
+  writeFile(fakeSystemctl, "#!/bin/sh\nexit 0\n", 0o755);
+  writeFile(fakeCurl, "#!/bin/sh\nif [ ! -f \"$NATAROT_TEST_CURL_STATE\" ]; then\n  : > \"$NATAROT_TEST_CURL_STATE\"\n  exit 7\nfi\nexit 0\n", 0o755);
+  const result = runManager(fixture, ["deploy", "--source-dir", fixture.candidateSource, "--release-id", "r-004"], {
+    NATAROT_TEST_SKIP_SERVICE: "0",
+    NATAROT_SYSTEMCTL: fakeSystemctl,
+    NATAROT_CURL: fakeCurl,
+    NATAROT_TEST_CURL_STATE: curlState,
+  });
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  assert.equal(existsSync(curlState), true);
+});
+
 test("candidate validation rejects environment and SQLite files", () => {
   const fixture = createReleaseFixture({ candidateFiles: [".env.local", "data/natarot.sqlite"] });
   const result = runManager(fixture, ["deploy", "--source-dir", fixture.candidateSource, "--release-id", "r-004"]);
