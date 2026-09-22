@@ -40,6 +40,8 @@ export type AccountSummary = {
     id: string;
     entitlementType: string;
     benefitVersion: string;
+    sourceType: string;
+    isInternalTest: boolean;
     startsAt: number;
     endsAt: number | null;
     status: string;
@@ -208,7 +210,7 @@ export async function getAccountSummary(input: { database: D1Database; owner: Cr
     balance: await creditStore.getBalance(input.owner),
     history: await creditStore.listHistory(input.owner, 10),
   };
-  const vip = (await getActiveEntitlements(input.database, input.owner, currentTime)).map((entitlement) => ({ id: entitlement.id, entitlementType: entitlement.entitlementType, benefitVersion: entitlement.benefitVersion, startsAt: entitlement.startsAt, endsAt: entitlement.endsAt, status: entitlement.status }));
+  const vip = (await getActiveEntitlements(input.database, input.owner, currentTime)).map((entitlement) => ({ id: entitlement.id, entitlementType: entitlement.entitlementType, benefitVersion: entitlement.benefitVersion, sourceType: entitlement.sourceType, isInternalTest: entitlement.sourceType === "OWNER_TEST_GRANT", startsAt: entitlement.startsAt, endsAt: entitlement.endsAt, status: entitlement.status }));
   const readings = await input.database.prepare("SELECT COUNT(*) AS count FROM records WHERE owner=? AND kind='tarot-reading'").bind(ownerId).first<{ count: number }>();
   const shares = await input.database.prepare("SELECT COUNT(*) AS count FROM reading_shares rs JOIN readings r ON r.id=rs.reading_id JOIN reading_sessions s ON s.id=r.session_id WHERE s.user_id=?").bind(ownerId).first<{ count: number }>();
   const orders = account ? await input.database.prepare("SELECT COUNT(*) AS count FROM orders WHERE account_id=?").bind(account.id).first<{ count: number }>() : { count: 0 };

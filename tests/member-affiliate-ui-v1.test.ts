@@ -82,3 +82,28 @@ test("localized functional states are present for member and Affiliate surfaces"
   assert.match(commerce, /useLanguage/);
   assert.match(commerce, /role="status"/);
 });
+
+test("account UI exposes top-up, VIP, history and Affiliate entry points with internal-test provenance", () => {
+  const account = source("components/account/account-history.tsx");
+  const summary = source("lib/account-history.ts");
+  const messages = source("lib/i18n.ts");
+  for (const marker of ["member.topUpCredits", "member.viewVipPackages", "member.orderHistory", "member.readingHistory", "member.openAffiliate", "member.internalTestGrant", "member.internalTestEntitlement"]) {
+    assert.match(account, new RegExp(marker.replaceAll(".", "\\.")), marker);
+  }
+  assert.match(account, /initialKind/);
+  assert.match(account, /isInternalTest/);
+  assert.match(summary, /sourceType/);
+  assert.match(messages, /vipCatalogPending/);
+  assert.match(messages, /internalTestGrant/);
+});
+
+test("checkout creates the server-priced pending order before provider checkout and preserves the gate", () => {
+  const commerce = source("app/commerce/commerce-pages.tsx");
+  const orderIndex = commerce.indexOf('"/api/orders"');
+  const providerIndex = commerce.indexOf('"/api/commercial/checkout"');
+  assert.ok(orderIndex >= 0, "checkout must create the pending order first");
+  assert.ok(providerIndex > orderIndex, "provider checkout must follow order creation");
+  assert.match(commerce, /paymentUnavailable/);
+  assert.match(commerce, /vipCatalogPending/);
+  assert.match(commerce, /order.*pending|pending.*order/i);
+});

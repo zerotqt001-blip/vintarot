@@ -83,6 +83,8 @@ test("account summary exposes own Credits/VIP/member metadata and no auth secret
   assert.equal(summary.member.id, "owner");
   assert.equal(summary.credits.balance.totalUnits, 4);
   assert.equal(summary.vip[0]?.id, entitlement.id);
+  assert.equal(summary.vip[0]?.sourceType, "ADMIN");
+  assert.equal(summary.vip[0]?.isInternalTest, false);
   assert.equal(summary.counts.readings, 1);
   assert.equal(summary.counts.shares, 1);
   assert.equal(summary.counts.orders, 1);

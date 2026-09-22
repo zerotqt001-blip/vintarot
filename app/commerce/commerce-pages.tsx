@@ -31,7 +31,7 @@ type CheckoutResult = { order: { id: string; status: string; amount_minor: numbe
 type AccountSummary = {
   member: { displayName: string | null; username: string; email?: string };
   credits: { balance: { availableUnits: number; reservedUnits: number; totalUnits: number } };
-  vip: Array<{ id: string; entitlementType: string; benefitVersion: string; startsAt: number; endsAt: number | null; status: string }>;
+  vip: Array<{ id: string; entitlementType: string; benefitVersion: string; sourceType: string; isInternalTest: boolean; startsAt: number; endsAt: number | null; status: string }>;
   counts: { readings: number; shares: number; orders: number; affiliateConversions: number };
   affiliate: { conversions: number; held: number; eligible: number; reversed: number; creditedMinor: number; debitedMinor: number; netMinor: number };
 };
@@ -124,7 +124,7 @@ function MemberStatusPanel({ summary, locale, t }: { summary: AccountSummary; lo
       </div>
       <div className="commerce-stat-grid">
         <div><WalletCards size={17} aria-hidden="true" /><span>{t("member.creditsAvailable")}</span><strong>{summary.credits.balance.availableUnits}</strong><small>{t("member.creditsReserved", { value: summary.credits.balance.reservedUnits })}</small></div>
-        <div><Moon size={17} aria-hidden="true" /><span>{t("member.vipStatus")}</span><strong>{activeVip ? t("member.vipActive") : t("member.vipInactive")}</strong><small>{activeVip?.endsAt ? t("member.vipUntil", { value: dateLabel(activeVip.endsAt, locale) }) : activeVip ? activeVip.benefitVersion : t("member.noVip")}</small></div>
+        <div><Moon size={17} aria-hidden="true" /><span>{t("member.vipStatus")}</span><strong>{activeVip ? t("member.vipActive") : t("member.vipInactive")}</strong><small>{activeVip?.isInternalTest ? t("member.internalTestEntitlement") : activeVip?.endsAt ? t("member.vipUntil", { value: dateLabel(activeVip.endsAt, locale) }) : activeVip ? activeVip.benefitVersion : t("member.noVip")}</small></div>
         <div><History size={17} aria-hidden="true" /><span>{t("member.readingHistory")}</span><strong>{summary.counts.readings}</strong><small>{t("member.shareCount", { value: summary.counts.shares })}</small></div>
         <div><PackageCheck size={17} aria-hidden="true" /><span>{t("member.orderHistory")}</span><strong>{summary.counts.orders}</strong><small>{t("member.entitlementCount", { value: summary.vip.length })}</small></div>
       </div>
@@ -184,7 +184,8 @@ export function PackagesPage({ authenticated = false }: { authenticated?: boolea
       {loading && <p className="functional-status" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}
       {!loading && messageKey && <p className="functional-status functional-status--error" role="status" aria-live="polite">{t(messageKey)}</p>}
       {!loading && !messageKey && packages.length === 0 && <section className="functional-section commerce-empty" role="status"><PackageCheck size={24} aria-hidden="true" /><h2>{t("member.packageEmpty")}</h2><p>{t("member.packageEmptyText")}</p></section>}
-      {!loading && !messageKey && packages.length > 0 && <><section className="commerce-package-grid" aria-labelledby="packages-title"><div className="commerce-section-heading"><div><span className="commerce-eyebrow">{t("member.packageEyebrow")}</span><h2 id="packages-title">{t("member.packagesTitle")}</h2></div><Link className="text-button" href="/account">{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link></div><div className="commerce-package-cards">{packages.map((item) => <PackageCard key={item.id} item={item} locale={locale} t={t} />)}</div></section><section className="functional-section commerce-comparison" aria-labelledby="comparison-title"><div className="functional-section-heading"><div><span className="commerce-eyebrow">{t("member.comparisonEyebrow")}</span><h2 id="comparison-title">{t("member.comparisonTitle")}</h2><p>{t("member.comparisonText")}</p></div><CreditCard size={20} aria-hidden="true" /></div><div className="commerce-comparison-grid">{packages.map((item) => { const days = vipDays(item.vipDurationSeconds ?? item.benefitSnapshot.vip?.durationSeconds ?? null); return <article key={item.id}><strong>{packageName(item, locale)}</strong><span><CreditCard size={14} aria-hidden="true" />{item.creditUnits} {t("member.credits")}</span><span><Moon size={14} aria-hidden="true" />{days ? t("member.days", { value: days }) : t("member.notIncluded")}</span></article>; })}</div></section></>}
+      {!loading && !messageKey && packages.length > 0 && <><section id="vip" className="commerce-package-grid" aria-labelledby="packages-title"><div className="commerce-section-heading"><div><span className="commerce-eyebrow">{t("member.packageEyebrow")}</span><h2 id="packages-title">{t("member.packagesTitle")}</h2></div><Link className="text-button" href="/account">{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link></div><div className="commerce-package-cards">{packages.map((item) => <PackageCard key={item.id} item={item} locale={locale} t={t} />)}</div></section><section className="functional-section commerce-comparison" aria-labelledby="comparison-title"><div className="functional-section-heading"><div><span className="commerce-eyebrow">{t("member.comparisonEyebrow")}</span><h2 id="comparison-title">{t("member.comparisonTitle")}</h2><p>{t("member.comparisonText")}</p></div><CreditCard size={20} aria-hidden="true" /></div><div className="commerce-comparison-grid">{packages.map((item) => { const days = vipDays(item.vipDurationSeconds ?? item.benefitSnapshot.vip?.durationSeconds ?? null); return <article key={item.id}><strong>{packageName(item, locale)}</strong><span><CreditCard size={14} aria-hidden="true" />{item.creditUnits} {t("member.credits")}</span><span><Moon size={14} aria-hidden="true" />{days ? t("member.days", { value: days }) : t("member.notIncluded")}</span></article>; })}</div></section></>}
+      {!loading && !messageKey && !packages.some((item) => Boolean(item.vipDurationSeconds || item.benefitSnapshot.vip)) && <section id="vip" className="functional-section commerce-vip-pending" aria-labelledby="vip-pending-title"><div className="functional-section-heading"><div><h2 id="vip-pending-title">{t("member.vipCatalogPending")}</h2><p>{t("member.vipCatalogPendingText")}</p></div><Moon size={20} aria-hidden="true" /></div></section>}
       <div className="functional-toolbar"><Link className="button" href="/affiliate">{t("member.openAffiliate")} <ArrowRight size={15} aria-hidden="true" /></Link><Link className="button" href="/account">{t("member.openAccount")} <ArrowRight size={15} aria-hidden="true" /></Link></div>
     </div>
   );
@@ -219,8 +220,15 @@ export function CheckoutPage({ authenticated, packageId }: { authenticated: bool
     if (!selected) return;
     setBusy(true); setMessageKey(null); setOrder(null); setCheckout(null);
     try {
-      const result = await readJson<CheckoutResult>("/api/commercial/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package_version_id: selected.id, idempotency_key: idempotencyKey, payment_method: "BANK_TRANSFER" }) });
-      setOrder(result.order); setCheckout(result.checkout);
+      const pending = await readJson<{ order: CheckoutResult["order"] }>("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package_version_id: selected.id, idempotency_key: idempotencyKey }) });
+      setOrder(pending.order);
+      try {
+        const result = await readJson<CheckoutResult>("/api/commercial/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ package_version_id: selected.id, idempotency_key: idempotencyKey, payment_method: "BANK_TRANSFER" }) });
+        setOrder(result.order); setCheckout(result.checkout);
+      } catch (error: unknown) {
+        setCheckout(null);
+        setMessageKey(error instanceof ApiRequestError && error.status === 503 ? "member.paymentUnavailable" : "member.checkoutError");
+      }
     } catch (error: unknown) {
       setMessageKey(error instanceof ApiRequestError && error.status === 503 ? "member.paymentUnavailable" : "member.checkoutError");
     } finally { setBusy(false); }
