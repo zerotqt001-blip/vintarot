@@ -141,7 +141,7 @@ async function readMemberReadings(database: D1Database, memberId: string, limit 
   const ownerId = `member:${memberId}`;
   const [savedCount, sessionCount, rows] = await Promise.all([
     database.prepare("SELECT COUNT(*) AS count FROM records WHERE owner=? AND kind='tarot-reading'").bind(ownerId).first<{ count: number }>(),
-    database.prepare("SELECT COUNT(*) AS count FROM reading_sessions WHERE user_id=?").bind(memberId).first<{ count: number }>(),
+    database.prepare("SELECT COUNT(*) AS count FROM reading_sessions WHERE user_id=?").bind(ownerId).first<{ count: number }>(),
     database.prepare("SELECT id, created, updated, data FROM records WHERE owner=? AND kind='tarot-reading' ORDER BY updated DESC, id DESC LIMIT ?").bind(ownerId, boundedLimit(limit)).all<Record<string, unknown>>(),
   ]);
   const saved = Number(savedCount?.count ?? 0);
@@ -175,12 +175,15 @@ async function readOrders(database: D1Database, memberId?: string, limit = 20): 
 }
 
 async function readAffiliate(database: D1Database, memberId: string): Promise<AdminAffiliateView> {
-  const profile = await database.prepare("SELECT p.id, p.status, p.created_at, p.updated_at, GROUP_CONCAT(r.status) AS code_statuses FROM affiliate_profiles p LEFT JOIN referral_codes r ON r.affiliate_profile_id=p.id WHERE p.member_id=? GROUP BY p.id LIMIT 1").bind(memberId).first<Record<string, unknown>>();
+  const profile = await database.prepare("SELECT p.id, p.status, p.created_at, p.updated_at FROM affiliate_profiles p WHERE p.member_id=? LIMIT 1").bind(memberId).first<Record<string, unknown>>();
+  const codeStatuses = profile
+    ? await database.prepare("SELECT status FROM referral_codes WHERE affiliate_profile_id=? ORDER BY created_at DESC, id DESC LIMIT 50").bind(String(profile.id)).all<{ status: string }>()
+    : { results: [] as Array<{ status: string }> };
   return {
     profile: profile ? {
       id: String(profile.id),
       status: String(profile.status),
-      codeStatuses: profile.code_statuses ? String(profile.code_statuses).split(",") : [],
+      codeStatuses: codeStatuses.results.map((row) => String(row.status)),
       createdAt: Number(profile.created_at),
       updatedAt: Number(profile.updated_at),
     } : null,

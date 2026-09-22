@@ -79,6 +79,11 @@ async function seedTargetData(database: ReturnType<typeof createSqliteD1Database
     .bind(JSON.stringify({ question: "private question", reading_payload: "private-reading-payload", session_id: "session-alpha" })).run();
   await database.prepare("INSERT INTO records (id, owner, kind, data, created, updated) VALUES ('reading-beta', 'member:member-beta', 'tarot-reading', ?, 11, 21)")
     .bind(JSON.stringify({ question: "other private question" })).run();
+  const category = await database.prepare("SELECT id FROM spread_categories ORDER BY id LIMIT 1").first<{ id: string }>();
+  const template = await database.prepare("SELECT id, spread_type, card_count FROM spread_templates ORDER BY id LIMIT 1").first<{ id: string; spread_type: string; card_count: number }>();
+  if (!category || !template) throw new Error("Fixture spread catalog is unavailable");
+  await database.prepare("INSERT INTO reading_sessions (id, user_id, guest_id, question, optional_context, category_id, spread_template_id, spread_type, card_count, locale, status, created_at, updated_at) VALUES (?, ?, NULL, ?, '', ?, ?, ?, ?, 'en', 'complete', ?, ?)")
+    .bind("session-alpha", "member:member-alpha", "private session question", category.id, template.id, template.spread_type, template.card_count, 12, 13).run();
 }
 
 test("Admin search and detail projections are masked, metadata-first, and owner-scoped", async () => {
@@ -108,8 +113,9 @@ test("Admin search and detail projections are masked, metadata-first, and owner-
   assert.equal(affiliate.profile?.id, "affiliate-alpha");
   assert.equal(affiliate.profile?.status, "ACTIVE");
   assert.ok(detail.readingUsage);
-  assert.equal(detail.readingUsage.total, 1);
+  assert.equal(detail.readingUsage.total, 2);
   assert.equal(detail.readingUsage.saved, 1);
+  assert.equal(detail.readingUsage.sessions, 1);
   assert.doesNotMatch(JSON.stringify(detail), /private-reading-payload|private question|payment-alpha-secret|package-snapshot/);
 
   const readings = await listAdminMemberReadings(fixtureData.database, actor(), "member-alpha", 20);
@@ -144,12 +150,34 @@ test("Admin credit commands use the canonical ledger and create one replay-safe 
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE account_id='credit-account:member:member:member-alpha' AND idempotency_key LIKE 'grant:adjustment:%qa-credit-1' ").first<{ count: number }>())?.count, 1);
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='credits.adjusted' AND target_id='member-alpha'").first<{ count: number }>())?.count, 1);
 
+  await assert.rejects(() => adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: -1, reason: "owner QA credit grant", idempotencyKey: "qa-credit-1" }), (error: unknown) => error instanceof Error && error.message.includes("different request"));
+  assert.equal((await createCreditStore(fixtureData.database, () => 1_000).getBalance({ kind: "member", ownerId: "member:member-alpha" })).totalUnits, 12);
+
   await assert.rejects(() => adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: -2, reason: "", idempotencyKey: "qa-credit-2" }));
   const negative = await adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: -2, reason: "owner QA correction", idempotencyKey: "qa-credit-2" });
   assert.ok(negative.id);
   assert.equal((await createCreditStore(fixtureData.database, () => 1_000).getBalance({ kind: "member", ownerId: "member:member-alpha" })).totalUnits, 10);
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE account_id='credit-account:member:member:member-alpha' AND event_type='ADJUSTMENT'").first<{ count: number }>())?.count, 2);
   fixtureData.sqlite.close();
+});
+
+test("Admin financial mutations roll back when their required audit insert fails", async () => {
+  const creditFixture = fixture();
+  await seedTargetData(creditFixture.database);
+  creditFixture.sqlite.exec("CREATE TRIGGER fail_admin_credit_audit BEFORE INSERT ON audit_events WHEN NEW.action='credits.adjusted' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  await assert.rejects(() => adjustAdminMemberCredits(creditFixture.database, actor(), { memberId: "member-alpha", units: 4, reason: "audit rollback test", idempotencyKey: "audit-rollback-credit" }));
+  assert.equal((await createCreditStore(creditFixture.database, () => 1_000).getBalance({ kind: "member", ownerId: "member:member-alpha" })).totalUnits, 7);
+  assert.equal((await creditFixture.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE event_type='ADJUSTMENT'").first<{ count: number }>())?.count, 0);
+  assert.equal((await creditFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='credits.adjusted'").first<{ count: number }>())?.count, 0);
+  creditFixture.sqlite.close();
+
+  const vipFixture = fixture();
+  await seedTargetData(vipFixture.database);
+  vipFixture.sqlite.exec("CREATE TRIGGER fail_admin_vip_audit BEFORE INSERT ON audit_events WHEN NEW.action='vip.granted' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  await assert.rejects(() => grantAdminVip(vipFixture.database, actor(), { memberId: "member-alpha", benefitVersion: "vip-audit-rollback", startsAt: 2_000, endsAt: 3_000, benefitSnapshot: { source: "test" }, reason: "audit rollback test", idempotencyKey: "audit-rollback-vip" }));
+  assert.equal((await vipFixture.database.prepare("SELECT COUNT(*) AS count FROM entitlements WHERE benefit_version='vip-audit-rollback'").first<{ count: number }>())?.count, 0);
+  assert.equal((await vipFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.granted'").first<{ count: number }>())?.count, 0);
+  vipFixture.sqlite.close();
 });
 
 test("Admin VIP commands use entitlement invariants and audit grant/revoke", async () => {

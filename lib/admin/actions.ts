@@ -1,6 +1,6 @@
 import type { D1Database } from "@cloudflare/workers-types";
-import { createAuditService } from "../audit/service";
-import { createCreditStore } from "../credits/repository";
+import { createCreditStore, creditAccountId } from "../credits/repository";
+import type { AuditAppendInput } from "../audit/types";
 import { grantManualEntitlement, revokeEntitlement, type Entitlement } from "../entitlements";
 import { digestToken } from "../member-auth";
 import type { AdminActor } from "./context";
@@ -29,6 +29,35 @@ async function scopedKey(prefix: string, memberId: string, idempotencyKey: strin
   return `${prefix}:${digest}`;
 }
 
+async function existingCreditAdjustment(
+  database: D1Database,
+  owner: { kind: "member"; ownerId: string },
+  memberId: string,
+  units: number,
+  reason: string,
+  auditIdempotencyKey: string,
+  adjustmentKey: string,
+): Promise<{ id: string; units: number } | null> {
+  const audit = await database.prepare("SELECT action, reason, metadata_json FROM audit_events WHERE idempotency_key=? LIMIT 1").bind(auditIdempotencyKey).first<{ action: string; reason: string; metadata_json: string }>();
+  if (!audit) return null;
+  let priorUnits: number | null = null;
+  try {
+    const metadata = JSON.parse(audit.metadata_json) as { units?: unknown };
+    priorUnits = typeof metadata.units === "number" && Number.isSafeInteger(metadata.units) ? metadata.units : null;
+  } catch {
+    priorUnits = null;
+  }
+  if (audit.action !== "credits.adjusted" || priorUnits === null || priorUnits !== units || audit.reason !== reason) {
+    throw new AdminServiceError("invalid", `Credits idempotency key ${adjustmentKey} already belongs to a different request.`);
+  }
+  const accountId = creditAccountId(owner);
+  const row = units > 0
+    ? await database.prepare("SELECT id FROM credit_grants WHERE account_id=? AND grant_key=? LIMIT 1").bind(accountId, `adjustment:${adjustmentKey}`).first<{ id: string }>()
+    : await database.prepare("SELECT id FROM credit_reservations WHERE account_id=? AND idempotency_key=? LIMIT 1").bind(accountId, `adjustment:${adjustmentKey}`).first<{ id: string }>();
+  if (!row) throw new AdminServiceError("invalid", "The existing Credits audit record has no matching ledger result.");
+  return { id: row.id, units };
+}
+
 export async function adjustAdminMemberCredits(database: D1Database, actor: AdminActor, input: { memberId: string; units: number; reason: string; idempotencyKey: string }): Promise<{ id: string; units: number }> {
   requirePermission(actor, "admin.credits.adjust");
   const memberId = required(input.memberId, 160, "Invalid member.");
@@ -36,26 +65,37 @@ export async function adjustAdminMemberCredits(database: D1Database, actor: Admi
   const idempotencyKey = required(input.idempotencyKey, 200, "An idempotency key is required.");
   if (!Number.isSafeInteger(input.units) || input.units === 0 || Math.abs(input.units) > 1_000_000) throw new AdminServiceError("invalid", "Invalid Credits adjustment.");
   const owner = await targetOwner(database, memberId);
-  const result = await createCreditStore(database).adjustCredits({
-    owner,
-    units: input.units,
-    adjustmentKey: idempotencyKey,
-    eligibleFrom: 0,
-    reason,
-    policyVersion: "credits-admin-v1",
-    policySnapshot: { actor: actor.memberId, source: "admin-control-center-v1" },
-  });
-  await createAuditService(database).append({
+  const auditIdempotencyKey = await scopedKey("admin.credits.adjust", memberId, idempotencyKey);
+  const replay = await existingCreditAdjustment(database, owner, memberId, input.units, reason, auditIdempotencyKey, idempotencyKey);
+  if (replay) return replay;
+  const audit: AuditAppendInput = {
     actorKind: "member",
     actorId: actor.memberId,
     action: "credits.adjusted",
     targetType: "member",
     targetId: memberId,
     reason,
-    idempotencyKey: await scopedKey("admin.credits.adjust", memberId, idempotencyKey),
+    idempotencyKey: auditIdempotencyKey,
     metadata: { units: input.units },
-  });
-  return { id: result.id, units: input.units };
+  };
+  try {
+    const result = await createCreditStore(database).adjustCredits({
+      owner,
+      units: input.units,
+      adjustmentKey: idempotencyKey,
+      eligibleFrom: 0,
+      reason,
+      policyVersion: "credits-admin-v1",
+      policySnapshot: { actor: actor.memberId, source: "admin-control-center-v1" },
+      audit,
+      auditStrict: true,
+    });
+    return { id: result.id, units: input.units };
+  } catch (error) {
+    const replayAfterFailure = await existingCreditAdjustment(database, owner, memberId, input.units, reason, auditIdempotencyKey, idempotencyKey);
+    if (replayAfterFailure) return replayAfterFailure;
+    throw error;
+  }
 }
 
 export async function grantAdminVip(database: D1Database, actor: AdminActor, input: { memberId: string; benefitVersion: string; startsAt: number; endsAt: number | null; benefitSnapshot: unknown; reason: string; idempotencyKey: string }): Promise<Entitlement> {
