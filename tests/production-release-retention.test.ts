@@ -109,6 +109,8 @@ test("understands the managed current/previous release topology", async () => {
 
   const result = await pruneApplicationReleases({ root: releaseRoot, activePath: active, backupRoot: path.join(root, "backups"), execute: true });
   assert.equal(result.status, "pass");
+  assert.equal(result.before.releaseCount, 4);
+  assert.equal(result.after.releaseCount, 3);
   assert.deepEqual(result.selection.protectedReleases.map((release: { name: string }) => release.name), ["legacy-first", "legacy-second"]);
   assert.deepEqual(result.deleted, ["obsolete-older"]);
   assert.ok((result.before.activeSizeKb ?? 0) > 0);

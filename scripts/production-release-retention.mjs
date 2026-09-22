@@ -146,10 +146,15 @@ export async function inspectStorage({
     ? runDuKilobytes(inventory.activeRealPath)
     : null;
   const backupSizeKb = includeSize ? runDuKilobytes(backupRoot) : null;
+  const activeIsInventoryRelease = inventory.releases.some(
+    (release) => release.realPath === inventory.activeRealPath,
+  );
+  const releaseSizes = inventory.releases.map((release) => release.sizeKb);
+  if (!activeIsInventoryRelease) releaseSizes.unshift(activeSizeKb);
   return {
     disk: readDiskSnapshot(root),
-    releaseCount: 1 + inventory.releases.length,
-    applicationReleaseSizeKb: [activeSizeKb, ...inventory.releases.map((release) => release.sizeKb)]
+    releaseCount: inventory.releases.length + (activeIsInventoryRelease ? 0 : 1),
+    applicationReleaseSizeKb: releaseSizes
       .filter((value) => Number.isFinite(value))
       .reduce((sum, value) => sum + value, 0),
     backupSizeKb,
