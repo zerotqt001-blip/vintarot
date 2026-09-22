@@ -9,7 +9,7 @@ const execFile = promisify(execFileCallback);
 
 export const DEFAULT_APPLICATION_ROOT = "/opt/natarot";
 export const DEFAULT_BACKUP_ROOT = "/var/backups/natarot";
-export const DEFAULT_LOCK_PATH = "/run/lock/natarot-production-deploy.lock";
+export const DEFAULT_LOCK_PATH = "/run/lock/natarot-deploy.lock";
 export const DEFAULT_TEMP_MIN_AGE_MS = 6 * 60 * 60 * 1000;
 
 const RELEASE_NAME = /^natarot\.(?:rollback|previous|release)-/;
@@ -192,6 +192,18 @@ async function realPathOrAbsolute(target) {
   }
 }
 
+async function managedRollbackState(root) {
+  const managedRoot = absolute(root);
+  const links = ["current", "previous-1", "previous-2"];
+  const resolved = [];
+  for (const name of links) {
+    const link = path.join(managedRoot, name);
+    if (!(await exists(link))) return { ready: false, current: null, rollbackPaths: [] };
+    resolved.push(await realPathOrAbsolute(link));
+  }
+  return { ready: true, current: resolved[0], rollbackPaths: resolved.slice(1) };
+}
+
 export async function acquireDeploymentLock(lockPath = DEFAULT_LOCK_PATH) {
   const target = absolute(lockPath);
   await fs.mkdir(path.dirname(target), { recursive: true });
@@ -316,15 +328,18 @@ export async function cleanupProductionStorage({
   lockPath = DEFAULT_LOCK_PATH,
   dryRun = false,
   minTempAgeMs = DEFAULT_TEMP_MIN_AGE_MS,
+  lockHeld = false,
 } = {}) {
-  const releaseLock = await acquireDeploymentLock(lockPath);
+  const releaseLock = lockHeld ? async () => undefined : await acquireDeploymentLock(lockPath);
   try {
     const applicationRoot = absolute(root);
     const before = await collectStorageSnapshot({ root: applicationRoot, backupRoot });
     const currentRealPath = await realPathOrAbsolute(applicationRoot);
     const currentMarker = await readMarker(applicationRoot);
     const previousRelease = currentMarker?.previous_release;
-    const protectedPaths = [applicationRoot, currentRealPath].filter(Boolean);
+    const managedState = await managedRollbackState(applicationRoot);
+    const protectedPaths = [applicationRoot, currentRealPath, managedState.current, ...managedState.rollbackPaths].filter(Boolean);
+    if (!managedState.ready) protectedPaths.push(...before.releases.map((entry) => entry.path));
     const plan = planReleaseCleanup({
       root: applicationRoot,
       successfulReleases: before.releases,
@@ -361,6 +376,7 @@ function parseArgs(argv) {
     else if (argument === "--backup-root") options.backupRoot = argv[++index];
     else if (argument === "--lock") options.lockPath = argv[++index];
     else if (argument === "--min-temp-age-hours") options.minTempAgeMs = Number(argv[++index]) * 60 * 60 * 1000;
+    else if (argument === "--lock-held") options.lockHeld = true;
     else throw new Error(`Unknown argument: ${argument}`);
   }
   return options;
