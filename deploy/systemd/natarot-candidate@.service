@@ -1,0 +1,21 @@
+[Unit]
+Description=NaTarot candidate Vinext server (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=natarot
+WorkingDirectory=/opt/natarot/releases/%i
+EnvironmentFile=-/etc/natarot.env
+UMask=0077
+ExecStart=/usr/local/bin/node /opt/natarot/releases/%i/node_modules/vinext/dist/cli.js start --port 8878 --hostname 127.0.0.1
+Restart=no
+SyslogIdentifier=natarot-candidate
+PrivateTmp=true
+ProtectHome=true
+NoNewPrivileges=true
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

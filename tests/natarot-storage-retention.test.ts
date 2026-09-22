@@ -50,14 +50,15 @@ function createVerifiedBackup(fixtureRoot: string) {
   writeFile(`${archive}.sha256`, checksum);
   writeFile(join(backupRoot, "weekly", "natarot-production-2026-W39.tar.gz"), "weekly\n");
   writeFile(join(backupRoot, "monthly", "natarot-production-2026-09.tar.gz"), "monthly\n");
+  const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
   writeFile(
     join(backupRoot, "last-status"),
-    `status=success\nbackup_id=${id}\ntimestamp=2026-09-23T01:00:00Z\narchive_sha256=${checksum.split(" ")[0]}\n`,
+    `status=success\nbackup_id=${id}\ntimestamp=${timestamp}\narchive_sha256=${checksum.split(" ")[0]}\n`,
   );
   writeFile(join(backupRoot, "latest-success"), `${id}\n`);
   writeFile(
     join(backupRoot, "last-restore-test"),
-    "status=success\ndatabase_integrity=ok\nmigration=pass\napplication=pass\n",
+    `status=success\ntimestamp=${timestamp}\ndatabase_integrity=ok\nmigration=pass\napplication=pass\n`,
   );
   return { backupRoot, names: [archive, `${archive}.sha256`] };
 }
@@ -116,7 +117,7 @@ function createReleaseFixture(options: {
 
   const backup = createVerifiedBackup(root);
   if (!options.backupRootHasVerifiedPolicy) {
-    writeFile(join(backup.backupRoot, "last-restore-test"), "status=success\n");
+    writeFile(join(backup.backupRoot, "last-restore-test"), `status=success\ntimestamp=${new Date().toISOString().replace(/\.\d{3}Z$/, "Z")}\ndatabase_integrity=ok\nmigration=pass\napplication=pass\n`);
   }
 
   return {
@@ -158,8 +159,12 @@ function envFor(fixture: Fixture, overrides: Record<string, string> = {}) {
     NATAROT_CURL: join(fixture.root, "bin/curl"),
     NATAROT_BACKUP_COMMAND: join(fixture.root, "bin/backup-command"),
     NATAROT_MIN_FREE_KIB: "1",
+    NATAROT_MIN_FREE_PERCENT: "0",
     NATAROT_BACKUP_MAX_AGE_SECONDS: "999999999",
     NATAROT_PRODUCTION_SMOKE_RESULT: "pass",
+    NATAROT_TEST_SKIP_BACKUP: "1",
+    NATAROT_TEST_SKIP_SERVICE: "1",
+    NATAROT_SKIP_OWNERSHIP: "1",
     ...overrides,
   };
 }
@@ -266,12 +271,34 @@ test("flat migration keeps the external database and environment outside the rel
   const fixture = createReleaseFixture({ successfulReleaseCount: 0 });
   const flatFile = join(fixture.appRoot, "dist/server/index.js");
   writeFile(flatFile, "flat production runtime\n");
+  writeFile(join(fixture.appRoot, "node_modules/vinext/dist/cli.js"), "flat vinext runtime\n");
   const result = runManager(fixture, ["migrate-flat", "--release-id", "migration-001"]);
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.equal(existsSync(flatFile), false);
   assert.equal(existsSync(join(fixture.releaseRoot, "migration-001", "dist/server/index.js")), true);
   assert.equal(readFileSync(fixture.database, "utf8"), "production database fixture\n");
   assert.equal(existsSync(fixture.environment), true);
+});
+
+test("flat migration refuses an unknown top-level directory before moving code", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 0 });
+  writeFile(join(fixture.appRoot, "dist/server/index.js"), "flat production runtime\n");
+  const unknownDirectory = join(fixture.appRoot, "runtime-data");
+  writeFile(join(unknownDirectory, "do-not-move.txt"), "unknown persistent state\n");
+  const result = runManager(fixture, ["migrate-flat", "--release-id", "migration-unknown"]);
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}\n${result.stderr}`, /unknown|flat_root/i);
+  assert.equal(existsSync(join(fixture.appRoot, "dist/server/index.js")), true);
+  assert.equal(existsSync(unknownDirectory), true);
+  assert.equal(existsSync(fixture.current), false);
+});
+
+test("rollback test switches to a protected release and restores the original current target", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 3 });
+  const before = snapshotProtectedReferences(fixture);
+  const result = runManager(fixture, ["rollback-test", "--to", "previous-1"]);
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  assert.deepEqual(snapshotProtectedReferences(fixture), before);
 });
 
 test("disk preflight refuses a configured insufficient-space threshold before mutation", () => {
