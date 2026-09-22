@@ -45,16 +45,19 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isPractice = path === "/community";
   const isRoom = path === "/room";
   const isDaily = path === "/daily-spread";
+  const isAffiliate = path === "/affiliate";
   const profileHref = user ? "/profile" : "/auth?return_to=/profile";
   const accountHref = user ? "/account" : "/auth?return_to=/account";
   const shellRef = useRef<HTMLDivElement>(null);
   const siteNav = [["nav.home", Home, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const homeNav = [["nav.home", Home, "/"], ["nav.drawNow", Layers, "/create"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", CircleUserRound, accountHref]] as const;
+  const affiliateNav = [["nav.home", Home, "/"], ["nav.drawNow", Layers, "/room"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Share2, "/affiliate"], ["nav.account", UserRound, "/account"]] as const;
   const homeTopNav = [["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
   const practiceNav = [["nav.home", Moon, "/"], ["nav.drawNow", Layers, "/room"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Share2, "/affiliate"], ["nav.account", UserRound, accountHref]] as const;
   const practiceTopNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
   const personal = [["nav.journal", AlignLeft, "/journal"], ["nav.game", Layers, "/game"], ["nav.spread", Sparkles, "/daily-spread"], ["nav.bookings", CalendarDays, "/bookings"], ["nav.invites", Gift, "/invites"]] as const;
+  const affiliateTopNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
   const commerceNav = [["nav.membership", ShoppingBag, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", UserRound, "/account"]] as const;
   const renderCommerceAccessLinks = () => commerceNav.map(([key, Icon, href]) => <a className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></a>);
   const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
@@ -113,7 +116,17 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   });
 
   const shellClass = isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? `site-shell practice-shell${practiceTheme === "soft" ? " practice-shell-soft" : ""}` : isDaily ? "site-shell daily-shell" : "site-shell";
-  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} className={shellClass}>
+  const renderAffiliatePrimaryNav = () => affiliateNav.map(([key, Icon, href]) => {
+    const active = href === path;
+    return <a className={active ? "active" : ""} href={href} key={href} aria-current={active ? "page" : undefined} aria-label={t(key)}>
+      <span className="nav-orb"><Icon size={29} strokeWidth={1.3} /></span>
+      <ArcLabel id={`affiliate-nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
+      <span className="mobile-nav-label">{t(key)}</span>
+    </a>;
+  });
+
+  const resolvedShellClass = isAffiliate ? "site-shell affiliate-shell" : shellClass;
+  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} className={resolvedShellClass}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <div className="brand-lockup">
@@ -125,7 +138,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       </nav> : isHome ? <nav className="home-header-nav" aria-label={t("nav.decks")}>
         {homeTopNav.map(([key, href]) => <a className={(href === String(path) || (href === "/guidebook" && String(path) === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav> : <nav className="topbar-nav" aria-label={t("nav.decks")}>
-        {topNav.map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
+        {(isAffiliate ? affiliateTopNav : topNav).map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav>}
       {isPractice ? <div className="top-actions">
         <a className="practice-v1-icon-button" href="/guidebook" aria-label={t("header.search")}><Search size={18} strokeWidth={1.4} /></a>
@@ -139,6 +152,12 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
         <LanguageSelect />
         <button className="home-icon-link home-theme-toggle" type="button" aria-label={t("header.theme")} onClick={() => setHomeAtmosphere((value) => value === "night" ? "soft" : "night")}><Moon size={20} strokeWidth={1.35} /></button>
         <a className="home-account-link" href={accountHref}><UserRound size={18} strokeWidth={1.45} /><span>{t("nav.account")}</span></a>
+      </div> : isAffiliate ? <div className="top-actions">
+        <a className="affiliate-top-icon" href="/guidebook" aria-label={t("header.search")}><Search size={18} /></a>
+        <button type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
+        <LanguageSelect />
+        <span className="affiliate-theme-mark" aria-hidden="true"><Moon size={19} /></span>
+        <a className="avatar" href={profileHref} aria-label={t("header.profile")}><UserRound size={18} /></a>
       </div> : <div className="top-actions">
         <LanguageSelect />
         <button aria-label={t("header.shopping")} onClick={() => setModal("collection")}><ShoppingBag size={17} /></button>
@@ -147,10 +166,10 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
         <a className="avatar" href={profileHref} aria-label={t("header.profile")}><Moon size={20} /></a>
       </div>}
     </header>
-    {!isHome && !isRoom && !isPractice && <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+    {!isHome && !isRoom && !isPractice && !isAffiliate && <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
       {renderCommerceAccessLinks()}
     </nav>}
-    {!isHome && !isRoom && !isPractice && <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+    {!isHome && !isRoom && !isPractice && !isAffiliate && <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
       {renderCommerceAccessLinks()}
     </nav>}
     <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
@@ -162,8 +181,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
           <ArcLabel id={`nav-arc-practice-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
           <span className="mobile-nav-label">{t(key)}</span>
         </a>;
-      })}</nav> : <nav className="main-nav">{renderSitePrimaryNav()}</nav>}
-      {isPractice ? <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div> : !isHome && <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
+      })}</nav> : isAffiliate ? <nav className="main-nav">{renderAffiliatePrimaryNav()}</nav> : <nav className="main-nav">{renderSitePrimaryNav()}</nav>}
+      {isPractice ? <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div> : !isHome && !isAffiliate && <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
     </SidebarContent></Sidebar>
     <main className="main">{children || <section className="home-hero" aria-labelledby="home-heading">
       <div className="home-hero-phase" aria-hidden="true"><span>☾</span><i>◐</i><strong>✦</strong><i>◑</i><span>☽</span></div>
@@ -188,7 +207,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       <span className="practice-v1-footer-tagline">{t("header.tagline")}</span>
       <nav className="practice-v1-footer-links"><a href="/guidebook">{t("home.guidebook")}</a><a href="/privacy">{t("footer.privacy")}</a><a href="/terms">{t("footer.terms")}</a></nav>
       <div className="practice-v1-socials" aria-label="Social links"><span aria-label={t("footer.facebook")}><b className="practice-v1-social-letter" aria-hidden="true">f</b></span><span aria-label={t("footer.youtube")}><CirclePlay size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.instagram")}><Camera size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.tiktok")}><Music2 size={18} strokeWidth={1.35} /></span></div>
-    </footer> : <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>}
+    </footer> : isAffiliate ? <footer className="affiliate-footer"><Logo variant="dark" href="/" compact /><span className="affiliate-footer-tagline">{t("header.tagline")}</span><div className="affiliate-footer-links"><a href="/guidebook">{t("home.guidebook")}</a><a href="/privacy">{t("footer.privacy")}</a><a href="/terms">{t("footer.terms")}</a></div></footer> : <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>}
     {!isHome && !isPractice && <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>}
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
