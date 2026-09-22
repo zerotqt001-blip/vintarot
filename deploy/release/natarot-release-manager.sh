@@ -55,6 +55,9 @@ migration_service_backup=""
 migration_service_unit_updated=0
 migration_revision_backup=""
 migration_success_backup=""
+root_revision_backup=""
+root_revision_was_present=0
+root_revision_touched=0
 
 log() {
   printf '%s phase=%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${phase:-startup}" "$1" >&2
@@ -69,7 +72,7 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || die "missing_command=$1"
 }
 
-for required in awk basename cat chmod cp date df dirname du find grep install ln mkdir mv readlink rm rmdir sort tr wc; do
+for required in awk basename cat chmod cp date df dirname du find grep install ln mkdir mv readlink rm rmdir sleep sort tr wc; do
   require_command "$required"
 done
 if ! command -v sha256sum >/dev/null 2>&1 && ! command -v shasum >/dev/null 2>&1; then
@@ -189,6 +192,15 @@ atomic_symlink() {
   fi
   rm -f "$temporary"
   ln -s "$target" "$temporary"
+  if mv -hf "$temporary" "$link" 2>/dev/null; then
+    return 0
+  fi
+  if mv -Tf "$temporary" "$link" 2>/dev/null; then
+    return 0
+  fi
+  if [[ -L "$link" ]]; then
+    rm -f "$link"
+  fi
   mv -f "$temporary" "$link"
 }
 
@@ -388,7 +400,14 @@ http_smoke() {
   else
     require_command "$CURL"
   fi
-  "$CURL" -fsS --max-time "$CURL_TIMEOUT_SECONDS" "$url" >/dev/null
+  local attempt
+  for attempt in {1..20}; do
+    if "$CURL" -fsS --max-time "$CURL_TIMEOUT_SECONDS" "$url" >/dev/null; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
 }
 
 production_health() {
@@ -457,6 +476,53 @@ write_revision_marker() {
   } > "$temporary"
   chmod 0600 "$temporary"
   mv -f "$temporary" "$marker"
+}
+
+prepare_root_revision_backup() {
+  root_revision_backup=""
+  root_revision_was_present=0
+  if [[ -e "$APP_ROOT/DEPLOYMENT_REVISION" || -L "$APP_ROOT/DEPLOYMENT_REVISION" ]]; then
+    [[ -f "$APP_ROOT/DEPLOYMENT_REVISION" && ! -L "$APP_ROOT/DEPLOYMENT_REVISION" ]] || die "root_revision_marker_invalid"
+    root_revision_backup="$STAGING_ROOT/.natarot-root-revision-backup.$$"
+    assert_inside "$STAGING_ROOT" "$root_revision_backup"
+    cp -p "$APP_ROOT/DEPLOYMENT_REVISION" "$root_revision_backup"
+    chmod 0600 "$root_revision_backup"
+    root_revision_was_present=1
+  fi
+}
+
+cleanup_root_revision_backup() {
+  if [[ -n "$root_revision_backup" && -f "$root_revision_backup" ]]; then
+    rm -f "$root_revision_backup" || true
+  fi
+  root_revision_backup=""
+  root_revision_was_present=0
+}
+
+restore_root_revision_marker() {
+  (( root_revision_touched == 1 )) || return 0
+  if (( root_revision_was_present == 1 )); then
+    [[ -n "$root_revision_backup" && -f "$root_revision_backup" ]] || return 1
+    cp -p "$root_revision_backup" "$APP_ROOT/DEPLOYMENT_REVISION"
+    chmod 0600 "$APP_ROOT/DEPLOYMENT_REVISION"
+  elif [[ -f "$APP_ROOT/DEPLOYMENT_REVISION" && ! -L "$APP_ROOT/DEPLOYMENT_REVISION" ]]; then
+    rm -f "$APP_ROOT/DEPLOYMENT_REVISION"
+  fi
+  root_revision_touched=0
+}
+
+sync_root_revision_marker() {
+  local current_target source temporary
+  current_target=$(reference_target "$CURRENT_LINK")
+  source="$current_target/DEPLOYMENT_REVISION"
+  [[ -f "$source" && ! -L "$source" ]] || die "active_release_revision_marker_missing"
+  temporary="$APP_ROOT/.DEPLOYMENT_REVISION.tmp.$$"
+  assert_inside "$APP_ROOT" "$temporary"
+  rm -f "$temporary"
+  cp -p "$source" "$temporary"
+  chmod 0600 "$temporary"
+  mv -f "$temporary" "$APP_ROOT/DEPLOYMENT_REVISION"
+  root_revision_touched=1
 }
 
 cleanup_release_dirs() {
@@ -550,6 +616,7 @@ rollback_promotion() {
   local old_current_id
   old_current_id=$(release_id_from_path "$old_current_target")
   atomic_symlink "releases/$old_current_id" "$CURRENT_LINK" || return 0
+  restore_root_revision_marker || true
   systemctl_run restart "$SERVICE" || true
   http_smoke "http://127.0.0.1:$PRODUCTION_PORT/api/tarot/catalog?locale=en" || true
   log "promotion_rolled_back release_id=$old_current_id"
@@ -656,6 +723,7 @@ on_exit() {
     quarantine_failed_candidates || true
     rollback_flat_migration || true
   fi
+  cleanup_root_revision_backup || true
   release_lock || true
   exit "$exit_code"
 }
@@ -675,6 +743,7 @@ deploy_release() {
   run_backup
   verify_backups
   ensure_managed_dirs
+  prepare_root_revision_backup
   local release_dir="$RELEASE_ROOT/$release_id"
   staging_release_dir="$STAGING_ROOT/$release_id"
   [[ ! -e "$release_dir" && ! -e "$staging_release_dir" ]] || die "release_id_already_exists"
@@ -700,6 +769,7 @@ deploy_release() {
   production_health
   phase="success_mark"
   write_release_marker "$release_dir"
+  sync_root_revision_marker
   rotate_references
   promotion_committed=1
   phase="post_success_cleanup"
@@ -869,6 +939,7 @@ migrate_flat() {
   install_migration_service_unit
   systemctl_run restart "$SERVICE"
   production_health
+  sync_root_revision_marker
   migration_committed=1
   cleanup_migration_backups
   printf 'flat_migration_success=true release_id=%s\n' "$release_id"
