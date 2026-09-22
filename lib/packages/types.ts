@@ -2,6 +2,10 @@ export type PackageBenefitSnapshot = {
   credits?: {
     units: number;
     expiresInSeconds?: number | null;
+    validityDays?: number | null;
+  };
+  catalog?: {
+    popular?: boolean;
   };
   vip?: {
     durationSeconds: number;
