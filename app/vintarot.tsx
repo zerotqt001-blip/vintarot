@@ -4,7 +4,7 @@ import CardMark from "@/components/card-mark";
 import Logo from "@/components/brand/logo";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import { useEffect, useRef, useState } from "react";
-import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight, Search, UserRound, Crown, Share2, Camera, CirclePlay, Music2 } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -42,6 +42,7 @@ export default function VinTarot({ user, children, path = "/" }: { user: User; c
 function VinTarotShell({ user, children, path }: { user: User; children?: React.ReactNode; path: string }) {
   const { t } = useLanguage();
   const [modal, setModal] = useState<"" | "collection" | "notifications" | "help">("");
+  const [practiceTheme, setPracticeTheme] = useState<"night" | "soft">("night");
   const isHome = path === "/" && !children;
   const isGuidebook = path === "/guidebook" || path === "/decks";
   const isCreate = path === "/create";
@@ -51,7 +52,11 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const shellRef = useRef<HTMLDivElement>(null);
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
+  const practiceNav = [["nav.home", Moon, "/"], ["nav.drawNow", Layers, "/room"], ["nav.membership", Crown, "/membership"], ["nav.affiliate", Share2, "/affiliate"], ["nav.account", UserRound, "/profile"]] as const;
+  const practiceTopNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
   const personal = [["nav.journal", AlignLeft, "/journal"], ["nav.game", Layers, "/game"], ["nav.spread", Sparkles, "/daily-spread"], ["nav.bookings", CalendarDays, "/bookings"], ["nav.invites", Gift, "/invites"]] as const;
+  const activeNav = isPractice ? practiceNav : nav;
+  const activeTopNav = isPractice ? practiceTopNav : topNav;
   const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
   const modalDescription = modal === "notifications" ? t("header.caughtUp") : modal === "collection" ? t("header.collectionText") : t("header.helpText");
   useEffect(() => {
@@ -88,7 +93,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
-  return <SidebarProvider><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
+  const shellClass = isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? `site-shell practice-shell${practiceTheme === "soft" ? " practice-shell-soft" : ""}` : isDaily ? "site-shell daily-shell" : "site-shell";
+  return <SidebarProvider><div ref={shellRef} className={shellClass}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <div className="brand-lockup">
@@ -96,19 +102,36 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
         <span className="brand-tagline">{t("header.tagline")}</span>
       </div>
       <nav className="topbar-nav" aria-label={t("nav.decks")}>
-        {topNav.map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
+        {activeTopNav.map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav>
       <div className="top-actions">
-        <LanguageSelect />
-        <button aria-label={t("header.shopping")} onClick={() => setModal("collection")}><ShoppingBag size={17} /></button>
-        <button aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
-        <a className="black button" href="/create">{t("header.room")}</a>
-        <a className="avatar" href="/profile" aria-label={t("header.profile")}><Moon size={20} /></a>
+        {isPractice ? <>
+          <a className="practice-v1-icon-button" href="/guidebook" aria-label={t("header.search")}><Search size={18} strokeWidth={1.4} /></a>
+          <button className="practice-v1-icon-button" type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={18} strokeWidth={1.4} /></button>
+          <LanguageSelect />
+          <button className="practice-v1-icon-button" type="button" aria-label={t("header.theme")} aria-pressed={practiceTheme === "soft"} onClick={() => setPracticeTheme((value) => value === "night" ? "soft" : "night")}><Moon size={18} strokeWidth={1.4} /></button>
+          <a className="practice-v1-account" href="/profile"><UserRound size={18} strokeWidth={1.4} /><span>{t("nav.account")}</span></a>
+        </> : <>
+          <LanguageSelect />
+          <button aria-label={t("header.shopping")} onClick={() => setModal("collection")}><ShoppingBag size={17} /></button>
+          <button aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
+          <a className="black button" href="/create">{t("header.room")}</a>
+          <a className="avatar" href="/profile" aria-label={t("header.profile")}><Moon size={20} /></a>
+        </>}
       </div>
     </header>
     <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-      <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav>
-      <nav className="personal-nav"><a className="username" href="/profile">{user?.name || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
+      <nav className="main-nav">{activeNav.map(([key, Icon, href]) => {
+        const isActive = href === path || (href === "/guidebook" && path === "/decks");
+        const variant = href === "/" ? "home" : href === "/guidebook" ? "cards" : href === "/community" ? "practice" : "book";
+        return <a className={isActive ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={isActive ? "page" : undefined}>
+          <div className={`nav-orb nav-orb-${variant}`} data-nav-icon={variant}><Icon size={29} strokeWidth={1.3} aria-hidden="true" /></div>
+          <ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
+          <span className="mobile-nav-label">{t(key)}</span>
+        </a>;
+      })}</nav>
+      {!isPractice && <nav className="personal-nav"><a className="username" href="/profile">{user?.name || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
+      {isPractice && <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div>}
     </SidebarContent></Sidebar>
     <main className="main">{children || <>
       <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><Plus size={28} /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} />{t("home.video")}</p></section>
@@ -116,8 +139,12 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       <section className="feature-row"><div><h2>{t("home.rhythm")}</h2><p>{t("home.rhythmText")}</p><a href="/community" className="button peach">{t("home.practice")} <ArrowUpRight size={16} /></a></div><div className="feature-cards"><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div></div></section>
       <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/guidebook">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
     </>}</main>
-    <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></footer>
-    <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
+    <footer className={isPractice ? "practice-v1-footer" : undefined}>{isPractice ? <>
+      <Logo variant="dark" href="/" compact />
+      <span className="practice-v1-footer-tagline">{t("header.tagline")}</span>
+      <nav className="practice-v1-footer-links"><a href="/guidebook">{t("home.guidebook")}</a><a href="/privacy">{t("footer.privacy")}</a><a href="/terms">{t("footer.terms")}</a></nav>
+      <div className="practice-v1-socials" aria-label="Social links"><span aria-label={t("footer.facebook")}><b className="practice-v1-social-letter" aria-hidden="true">f</b></span><span aria-label={t("footer.youtube")}><CirclePlay size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.instagram")}><Camera size={18} strokeWidth={1.35} /></span><span aria-label={t("footer.tiktok")}><Music2 size={18} strokeWidth={1.35} /></span></div>
+    </> : <><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href="/profile">{t("nav.yourSpace")}</a></>}</footer>
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
 }
