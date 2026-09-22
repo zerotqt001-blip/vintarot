@@ -39,6 +39,8 @@ test("release retention templates expose the candidate, lock, and bounded-journa
   assert.match(candidate, /--port 8878/);
   assert.match(candidate, /--hostname 127\.0\.0\.1/);
   assert.match(candidate, /EnvironmentFile=-\/etc\/natarot\.env/);
+  assert.doesNotMatch(candidate, /sqlite|natarot\.sqlite/i);
+  assert.match(candidate, /SyslogIdentifier=natarot-candidate/);
   assert.match(candidate, /ProtectHome=true/);
   assert.match(journald, /SystemMaxUse=/);
   assert.match(journald, /SystemKeepFree=/);
