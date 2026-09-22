@@ -65,7 +65,7 @@ export type AdminMemberDetail = {
     items: AdminReadingView[];
     nextCursor: null;
   };
-  orders: AdminOrderView[];
+  orders: AdminOrderView[] | null;
   affiliate: AdminAffiliateView | null;
 };
 
@@ -201,12 +201,13 @@ export async function getAdminMemberDetail(database: D1Database, actor: AdminAct
   const canCredits = hasPermission(actor.role, "admin.credits.adjust");
   const canVip = hasPermission(actor.role, "admin.vip.adjust");
   const canReadings = hasPermission(actor.role, "admin.readings.read");
+  const canOrders = actor.permissions.has("admin.orders.read");
   const canAffiliate = hasPermission(actor.role, "admin.affiliate.read");
   const [credits, vip, readings, orders, affiliate] = await Promise.all([
     canCredits ? readCreditSnapshot(database, owner) : Promise.resolve(null),
     canVip ? readVip(database, owner) : Promise.resolve(null),
     canReadings ? readMemberReadings(database, member.id) : Promise.resolve({ items: [], nextCursor: null as null, usage: null }),
-    readOrders(database, member.id),
+    canOrders ? readOrders(database, member.id) : Promise.resolve(null),
     canAffiliate ? readAffiliate(database, member.id) : Promise.resolve(null),
   ]);
   return { member, credits, vip, readingUsage: canReadings ? readings.usage : null, readings: { items: readings.items, nextCursor: readings.nextCursor }, orders, affiliate };

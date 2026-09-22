@@ -5,7 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { adjustAdminMemberCredits, grantAdminVip, revokeAdminVip } from "../lib/admin/actions";
 import { getAdminDashboard, getAdminMemberDetail, listAdminMemberReadings, listAdminMembers } from "../lib/admin/read-model";
-import { permissionsForRole, type AdminRole } from "../lib/admin/permissions";
+import { permissionsForRole, type AdminRole, type Permission } from "../lib/admin/permissions";
 import { activateEntitlement } from "../lib/entitlements";
 import { createCreditStore } from "../lib/credits/repository";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
@@ -100,6 +100,7 @@ test("Admin search and detail projections are masked, metadata-first, and owner-
   const vip = detail.vip;
   assert.ok(vip);
   assert.equal(vip.length, 1);
+  assert.ok(detail.orders);
   assert.equal(detail.orders.length, 1);
   assert.ok(detail.orders.every((order) => order.memberId === "member-alpha"));
   assert.equal(detail.orders[0]?.paymentReferenceMasked, "•••••••••••••••cret");
@@ -165,6 +166,8 @@ test("Admin VIP commands use entitlement invariants and audit grant/revoke", asy
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.granted'").first<{ count: number }>())?.count, 1);
   const revoked = await revokeAdminVip(fixtureData.database, staff, { memberId: "member-alpha", entitlementId: granted.id, reason: "owner QA VIP revoke", idempotencyKey: "qa-vip-revoke-1" });
   assert.equal(revoked, true);
+  const revokedReplay = await revokeAdminVip(fixtureData.database, staff, { memberId: "member-alpha", entitlementId: granted.id, reason: "owner QA VIP revoke", idempotencyKey: "qa-vip-revoke-1" });
+  assert.equal(revokedReplay, true);
   assert.equal((await fixtureData.database.prepare("SELECT status FROM entitlements WHERE id=?").bind(granted.id).first<{ status: string }>())?.status, "CANCELLED");
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.revoked'").first<{ count: number }>())?.count, 1);
   fixtureData.sqlite.close();
@@ -208,5 +211,8 @@ test("Admin read models honor the server permission matrix", async () => {
   assert.equal(financeDetail.vip?.length, 1);
   assert.equal(financeDetail.affiliate?.profile?.id, "affiliate-alpha");
   assert.equal(financeDetail.readingUsage, null);
+  const usersOnlyActor: AdminActor = { ...actor("ADMIN"), permissions: new Set<Permission>(["admin.users.read"]) };
+  const restrictedDetail = await getAdminMemberDetail(fixtureData.database, usersOnlyActor, "member-alpha");
+  assert.equal(restrictedDetail.orders, null);
   fixtureData.sqlite.close();
 });
