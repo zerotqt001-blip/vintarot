@@ -392,7 +392,7 @@ validate_candidate() {
   local candidate="$1"
   [[ -d "$candidate" && ! -L "$candidate" ]] || die "candidate_directory_invalid"
   local unsafe
-  unsafe=$(find "$candidate" \( -type f -o -type l \) \( -name '.env' -o -name '.env.*' -o -name '*.sqlite' -o -name '*.sqlite-*' -o -iname '*private*key*' -o -iname '*secret*key*' \) -print -quit)
+  unsafe=$(find "$candidate" \( -type f -o -type l \) \( -name '.env' -o -name '.env.*' -o -name '*.sqlite' -o -name '*.sqlite-*' -o -iname '*private-key*' -o -iname '*private_key*' -o -iname '*secret-key*' -o -iname '*secret_key*' -o -iname 'id_rsa*' -o -iname 'id_ed25519*' -o -iname '*.pem' -o -iname '*.key' \) -print -quit)
   [[ -z "$unsafe" ]] || die "candidate_contains_persistent_or_secret_file"
   unsafe=$(find "$candidate" -type d \( -name 'uploads' -o -name 'user-data' -o -name 'userdata' -o -name 'secrets' -o -name 'tls' \) -print -quit)
   [[ -z "$unsafe" ]] || die "candidate_contains_persistent_state_directory"
