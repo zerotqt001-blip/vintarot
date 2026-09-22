@@ -8,6 +8,9 @@ const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.m
 test("systemd service runs the Node migration and Vinext on localhost", () => {
   assert.match(service, /User=natarot/);
   assert.match(service, /EnvironmentFile=-\/etc\/natarot\.env/);
+  assert.match(service, /WorkingDirectory=\/opt\/natarot\/current/);
+  assert.match(service, /ExecStartPre=.*\/opt\/natarot\/current\/scripts\/node-migrate\.mjs/);
+  assert.match(service, /ExecStart=.*\/opt\/natarot\/current\/node_modules\/vinext\/dist\/cli\.js start/);
   assert.match(service, /ExecStartPre=.*scripts\/node-migrate\.mjs/);
   assert.match(service, /ExecStart=.*vinext\/dist\/cli\.js start/);
   assert.match(service, /--port 8787/);

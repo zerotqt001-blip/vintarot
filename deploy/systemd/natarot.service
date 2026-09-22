@@ -6,11 +6,11 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=natarot
-WorkingDirectory=/opt/natarot
+WorkingDirectory=/opt/natarot/current
 EnvironmentFile=-/etc/natarot.env
 UMask=0077
-ExecStartPre=/usr/local/bin/node /opt/natarot/scripts/node-migrate.mjs
-ExecStart=/usr/local/bin/node /opt/natarot/node_modules/vinext/dist/cli.js start --port 8787 --hostname 127.0.0.1
+ExecStartPre=/usr/local/bin/node /opt/natarot/current/scripts/node-migrate.mjs
+ExecStart=/usr/local/bin/node /opt/natarot/current/node_modules/vinext/dist/cli.js start --port 8787 --hostname 127.0.0.1
 Restart=always
 RestartSec=5
 LimitNOFILE=65535
