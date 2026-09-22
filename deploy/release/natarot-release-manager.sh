@@ -745,7 +745,7 @@ deploy_release() {
   write_revision_marker "$release_dir" "$release_id"
   candidate_release_dir="$release_dir"
   phase="candidate_health"
-  systemctl_run start --wait "${CANDIDATE_SERVICE_PREFIX}${release_id}.service"
+  systemctl_run start "${CANDIDATE_SERVICE_PREFIX}${release_id}.service"
   http_smoke "http://127.0.0.1:$CANDIDATE_PORT/api/tarot/catalog?locale=en"
   systemctl_run stop "${CANDIDATE_SERVICE_PREFIX}${release_id}.service" || true
   old_current_target=$(reference_target "$CURRENT_LINK")
