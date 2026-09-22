@@ -23,6 +23,8 @@ readonly BACKUP_SERVICE="${NATAROT_BACKUP_SERVICE:-natarot-backup.service}"
 readonly BACKUP_MAX_AGE_SECONDS="${NATAROT_BACKUP_MAX_AGE_SECONDS:-172800}"
 readonly RESTORE_MAX_AGE_SECONDS="${NATAROT_RESTORE_MAX_AGE_SECONDS:-3888000}"
 readonly SERVICE="${NATAROT_SERVICE:-natarot.service}"
+readonly SERVICE_UNIT_PATH="${NATAROT_SERVICE_UNIT_PATH:-/etc/systemd/system/$SERVICE}"
+readonly SERVICE_UNIT_SOURCE="${NATAROT_SERVICE_UNIT_SOURCE:-}"
 readonly CANDIDATE_SERVICE_PREFIX="${NATAROT_CANDIDATE_SERVICE_PREFIX:-natarot-candidate@}"
 readonly CANDIDATE_PORT="${NATAROT_CANDIDATE_PORT:-8878}"
 readonly PRODUCTION_PORT="${NATAROT_PRODUCTION_PORT:-8787}"
@@ -49,6 +51,8 @@ migration_committed=0
 migration_destination=""
 migration_service_stopped=0
 migration_moved_entries=()
+migration_service_backup=""
+migration_service_unit_updated=0
 
 log() {
   printf '%s phase=%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${phase:-startup}" "$1" >&2
@@ -63,7 +67,7 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || die "missing_command=$1"
 }
 
-for required in awk basename cat cp date df dirname du find grep ln mkdir mv readlink rm rmdir sort tr wc; do
+for required in awk basename cat cp date df dirname du find grep install ln mkdir mv readlink rm rmdir sort tr wc; do
   require_command "$required"
 done
 if ! command -v sha256sum >/dev/null 2>&1 && ! command -v shasum >/dev/null 2>&1; then
@@ -394,7 +398,7 @@ validate_candidate() {
   local unsafe
   unsafe=$(find "$candidate" \( -type f -o -type l \) \( -name '.env' -o -name '.env.*' -o -name '*.sqlite' -o -name '*.sqlite-*' -o -iname '*private-key*' -o -iname '*private_key*' -o -iname '*secret-key*' -o -iname '*secret_key*' -o -iname 'id_rsa*' -o -iname 'id_ed25519*' -o -iname '*.pem' -o -iname '*.key' \) -print -quit)
   [[ -z "$unsafe" ]] || die "candidate_contains_persistent_or_secret_file"
-  unsafe=$(find "$candidate" -type d \( -name 'uploads' -o -name 'user-data' -o -name 'userdata' -o -name 'secrets' -o -name 'tls' \) -print -quit)
+  unsafe=$(find "$candidate" -path "$candidate/node_modules" -prune -o -type d \( -name 'uploads' -o -name 'user-data' -o -name 'userdata' -o -name 'secrets' -o -name 'tls' \) -print -quit)
   [[ -z "$unsafe" ]] || die "candidate_contains_persistent_state_directory"
   local link target
   while IFS= read -r -d '' link; do
@@ -579,6 +583,12 @@ quarantine_failed_candidates() {
 
 rollback_flat_migration() {
   [[ "$migration_attempted" == 1 && "$migration_committed" == 0 ]] || return 0
+  if (( migration_service_stopped == 0 )); then
+    if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
+      rm -f "$migration_service_backup" || true
+    fi
+    return 0
+  fi
   phase="migration_rollback"
   systemctl_run stop "$SERVICE" || true
   if [[ -L "$CURRENT_LINK" ]]; then
@@ -604,7 +614,14 @@ rollback_flat_migration() {
     rmdir "$migration_destination" 2>/dev/null || true
   fi
   if (( migration_service_stopped == 1 )); then
+    if (( migration_service_unit_updated == 1 )) && [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
+      copy_service_unit "$migration_service_backup" "$SERVICE_UNIT_PATH" || true
+      systemctl_run daemon-reload || true
+    fi
     systemctl_run start "$SERVICE" || true
+  fi
+  if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
+    rm -f "$migration_service_backup" || true
   fi
   log "flat_migration_rolled_back"
 }
@@ -726,6 +743,39 @@ flat_entry_allowed() {
   return 1
 }
 
+prepare_migration_service_unit() {
+  if [[ "${NATAROT_TEST_SKIP_SERVICE:-}" == 1 ]]; then
+    return 0
+  fi
+  [[ -f "$SERVICE_UNIT_PATH" && ! -L "$SERVICE_UNIT_PATH" ]] || die "migration_service_unit_missing"
+  [[ -n "$SERVICE_UNIT_SOURCE" && -f "$SERVICE_UNIT_SOURCE" && ! -L "$SERVICE_UNIT_SOURCE" ]] || die "migration_service_unit_source_required"
+  grep -Fq "WorkingDirectory=$APP_ROOT" "$SERVICE_UNIT_PATH" || die "migration_requires_flat_service_unit"
+  grep -Fq "WorkingDirectory=$CURRENT_LINK" "$SERVICE_UNIT_SOURCE" || die "migration_service_unit_source_not_current_topology"
+  migration_service_backup="$STAGING_ROOT/.natarot-service-unit-backup.$$"
+  assert_inside "$STAGING_ROOT" "$migration_service_backup"
+  cp -p "$SERVICE_UNIT_PATH" "$migration_service_backup"
+  chmod 0600 "$migration_service_backup"
+}
+
+copy_service_unit() {
+  local source="$1"
+  local destination="$2"
+  if [[ "${NATAROT_TEST_SKIP_INSTALL:-}" == 1 ]]; then
+    cp -p "$source" "$destination"
+  else
+    install -o root -g root -m 0644 "$source" "$destination"
+  fi
+}
+
+install_migration_service_unit() {
+  if [[ "${NATAROT_TEST_SKIP_SERVICE:-}" == 1 ]]; then
+    return 0
+  fi
+  copy_service_unit "$SERVICE_UNIT_SOURCE" "$SERVICE_UNIT_PATH"
+  migration_service_unit_updated=1
+  systemctl_run daemon-reload
+}
+
 validate_flat_root() {
   local persistent
   persistent=$(find "$APP_ROOT" -xdev -type f \( -name '.env' -o -name '.env.*' -o -name '*.sqlite' -o -name '*.sqlite-*' \) -print -quit)
@@ -757,6 +807,7 @@ migrate_flat() {
   validate_flat_root
   migration_attempted=1
   migration_destination="$destination"
+  prepare_migration_service_unit
   systemctl_run stop "$SERVICE"
   migration_service_stopped=1
   mkdir -p "$destination"
@@ -776,10 +827,14 @@ migrate_flat() {
   write_revision_marker "$destination" "$release_id"
   write_release_marker "$destination"
   atomic_symlink "releases/$release_id" "$CURRENT_LINK"
-  systemctl_run daemon-reload
+  install_migration_service_unit
   systemctl_run restart "$SERVICE"
   production_health
   migration_committed=1
+  if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
+    rm -f "$migration_service_backup"
+    migration_service_backup=""
+  fi
   printf 'flat_migration_success=true release_id=%s\n' "$release_id"
 }
 

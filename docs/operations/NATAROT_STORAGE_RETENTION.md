@@ -48,12 +48,12 @@ ssh -o BatchMode=yes natarot-vps 'systemctl show natarot-backup.timer -p ActiveS
 The verifier requires a successful status, matching archive/checksum sidecar, recent backup timestamp, successful restore-test status, and archive counts within the existing 7 daily / 4 weekly / 3 monthly policy. Release cleanup never traverses `/var/backups/natarot`.
 ## Install the reviewed release tooling
 
-Run these commands only after the read-only audit and backup gate pass. The source files contain no secrets.
+Run these commands only after the read-only audit and backup gate pass. The source files contain no secrets. During the flat migration, keep the existing flat production unit in place; the migration command installs the reviewed `current`-based unit only after the files and `current` reference are ready, and restores the recorded flat unit automatically on failure.
 
 ~~~bash
 scp deploy/release/natarot-storage-audit.sh deploy/release/natarot-release-manager.sh natarot-vps:/usr/local/sbin/
 scp deploy/systemd/natarot.service deploy/systemd/natarot-candidate@.service deploy/systemd/journald-natarot-retention.conf natarot-vps:/tmp/
-ssh -o BatchMode=yes natarot-vps 'install -o root -g root -m 0750 /usr/local/sbin/natarot-storage-audit.sh /usr/local/sbin/natarot-storage-audit && install -o root -g root -m 0750 /usr/local/sbin/natarot-release-manager.sh /usr/local/sbin/natarot-release-manager && install -o root -g root -m 0644 /tmp/natarot.service /etc/systemd/system/natarot.service && install -o root -g root -m 0644 /tmp/natarot-candidate@.service /etc/systemd/system/natarot-candidate@.service && install -d -o root -g root -m 0755 /etc/systemd/journald.conf.d && install -o root -g root -m 0644 /tmp/journald-natarot-retention.conf /etc/systemd/journald.conf.d/natarot-retention.conf && systemctl daemon-reload'
+ssh -o BatchMode=yes natarot-vps 'install -o root -g root -m 0750 /usr/local/sbin/natarot-storage-audit.sh /usr/local/sbin/natarot-storage-audit && install -o root -g root -m 0750 /usr/local/sbin/natarot-release-manager.sh /usr/local/sbin/natarot-release-manager && install -o root -g root -m 0644 /tmp/natarot-candidate@.service /etc/systemd/system/natarot-candidate@.service && install -d -o root -g root -m 0755 /etc/systemd/journald.conf.d && install -o root -g root -m 0644 /tmp/journald-natarot-retention.conf /etc/systemd/journald.conf.d/natarot-retention.conf && systemctl daemon-reload'
 ~~~
 
 Inspect the installed files before restarting production:
@@ -69,7 +69,7 @@ The candidate binds only to 127.0.0.1:8878; production remains on 127.0.0.1:8787
 The migration moves the existing application entries on the same filesystem. It does not copy the database or environment. The manager stops production only after the backup gate, validates the flat-root allowlist, creates a successful release marker, creates current, reloads systemd, restarts production, and checks the catalog and home endpoints.
 
 ~~~bash
-ssh -o BatchMode=yes natarot-vps 'NATAROT_MIN_FREE_PERCENT=0 /usr/local/sbin/natarot-release-manager migrate-flat --release-id flat-YYYYMMDDTHHMMSSZ'
+ssh -o BatchMode=yes natarot-vps 'NATAROT_SERVICE_UNIT_SOURCE=/tmp/natarot.service /usr/local/sbin/natarot-release-manager migrate-flat --release-id flat-YYYYMMDDTHHMMSSZ'
 ~~~
 
 NATAROT_MIN_FREE_PERCENT=0 is an emergency migration override for the audited VPS baseline when the filesystem is below 10% free. It is valid only for the no-copy, same-filesystem migration after the absolute 1 GiB floor and backup gate pass. Normal deployments retain the default 10% free-space requirement and add candidate-size headroom.
