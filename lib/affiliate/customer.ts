@@ -3,6 +3,7 @@ import type { CreditOwner } from "../credits/types";
 import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds, type AffiliatePolicy, type AffiliatePolicyTier } from "./policy";
 import { getAffiliateSummary, listAffiliateHistory } from "./service";
 import { memberIdFromOwner } from "./repository";
+import type { AffiliateProfileStatus } from "./types";
 
 export type PublicAffiliateTier = {
   tierCode: string;
@@ -90,12 +91,12 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
     return { profile: null, policy: null, progress: null, referralLink: { available: false, reason: "not_supported_by_current_backend" }, summary, history };
   }
 
-  const profile = await database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ status: string }>();
+  const profile = await database.prepare("SELECT id, status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
   const policy = await getActiveAffiliatePolicy(database, now);
   const publicPolicy = projectAffiliatePolicy(policy);
   if (!profile || profile.status !== "ACTIVE" || !policy || !publicPolicy) {
     return {
-      profile: profile && ["ACTIVE", "INACTIVE", "SUSPENDED"].includes(profile.status) ? { status: profile.status as AffiliateCustomerDashboard["profile"]["status"] } : null,
+      profile: profile && ["ACTIVE", "INACTIVE", "SUSPENDED"].includes(profile.status) ? { status: profile.status as AffiliateProfileStatus } : null,
       policy: publicPolicy,
       progress: null,
       referralLink: { available: false, reason: "not_supported_by_current_backend" },
@@ -105,7 +106,7 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
   }
 
   const bounds = utcMonthBounds(now);
-  const row = await database.prepare("SELECT COUNT(*) AS count FROM affiliate_conversions WHERE affiliate_profile_id=? AND fulfilled_at >= ? AND fulfilled_at < ? AND status <> 'REVERSED'").bind((await database.prepare("SELECT id FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string }>())?.id ?? "", bounds.start, bounds.end).first<{ count: number }>();
+  const row = await database.prepare("SELECT COUNT(*) AS count FROM affiliate_conversions WHERE affiliate_profile_id=? AND fulfilled_at >= ? AND fulfilled_at < ? AND status <> 'REVERSED'").bind(profile.id, bounds.start, bounds.end).first<{ count: number }>();
   const qualifiedConversions = Number(row?.count ?? 0);
   const current = selectAffiliateTier(policy, qualifiedConversions);
   const next = nextTier(policy, qualifiedConversions);
@@ -118,4 +119,3 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
     history,
   };
 }
-

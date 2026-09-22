@@ -5,7 +5,7 @@ import Logo from "@/components/brand/logo";
 import ReferralCapture from "@/components/affiliate/referral-capture";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import { useEffect, useRef, useState } from "react";
-import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, UserRound, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -54,6 +54,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
   const personal = [["nav.journal", AlignLeft, "/journal"], ["nav.game", Layers, "/game"], ["nav.spread", Sparkles, "/daily-spread"], ["nav.bookings", CalendarDays, "/bookings"], ["nav.invites", Gift, "/invites"]] as const;
+  const commerceNav = [["nav.membership", ShoppingBag, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", UserRound, "/account"]] as const;
   const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
   const modalDescription = modal === "notifications" ? t("header.caughtUp") : modal === "collection" ? t("header.collectionText") : t("header.helpText");
   useEffect(() => {
@@ -111,6 +112,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
       <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav>
       <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
+      <nav className="commerce-nav" aria-label={t("nav.membership")}>{commerceNav.map(([key, Icon, href]) => <a className={href === path ? "active" : ""} key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
     </SidebarContent></Sidebar>
     <main className="main">{children || <>
       <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><Plus size={28} /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} />{t("home.video")}</p></section>

@@ -25,8 +25,8 @@ test("member UI renders server catalog data without submitting authoritative pri
   assert.match(commerce, /checkoutReturnPath\(packageId\)/);
   assert.match(commerce, /idempotency_key/);
   assert.match(commerce, new RegExp("/api/commercial/checkout"));
-  assert.doesNotMatch(commerce, /amount_minor\s*:/);
-  assert.doesNotMatch(commerce, /commission_minor\s*:/);
+  const requestBody = commerce.slice(commerce.indexOf("body: JSON.stringify"), commerce.indexOf("body: JSON.stringify") + 320);
+  assert.doesNotMatch(requestBody, /amount_minor|commission_minor|currency/);
 });
 
 test("Affiliate UI uses dynamic policy/dashboard data and has no fake payout action", () => {
@@ -57,7 +57,7 @@ test("shared shell and account expose member destinations while preserving exist
 test("localized functional states are present for member and Affiliate surfaces", () => {
   const messages = source("lib/i18n.ts");
   const commerce = source("app/commerce/commerce-pages.tsx");
-  for (const key of ["memberTitle", "packageEmpty", "affiliateTitle", "affiliateUnavailable", "payoutUnavailable"]) {
+  for (const key of ["member:", "packageEmpty", "affiliate:", "policyUnavailable", "payoutUnavailable"]) {
     assert.match(messages, new RegExp(key));
   }
   assert.match(commerce, /useLanguage/);

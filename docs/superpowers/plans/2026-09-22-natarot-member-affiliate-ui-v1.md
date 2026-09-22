@@ -154,3 +154,23 @@
   deployment, browser results, external gates, and unfinished work.
 - [ ] Commit the project-state/report checkpoint, push, verify remote equality, and
   report exact owner routes and the requested PASS/FAIL/EXTERNAL_GATE matrix.
+
+## Execution checkpoint (2026-09-22)
+
+Tasks 1–7 are complete for the source implementation and local verification. The
+feature branch has the read-only Affiliate customer read model, bilingual member
+and Affiliate UI, account status/history integration, shared-shell discovery, and
+responsive commerce navigation. Focused tests pass `11/11`; the complete tracked
+suite, TypeScript, production build, dependency audit, diff check, and targeted
+feature-file ESLint pass. The repository-wide lint command remains red only on
+the inherited legacy/generated baseline, including the pre-existing shared-shell
+internal-anchor rules.
+
+Task 8 is blocked before any production mutation: the read-only SSH probe to
+`42.96.5.114:26266` returned `Permission denied (publickey,password)`. Public
+read-only probes show the active production release has `/api/packages` but not
+the new `/api/affiliate/policy` or `/api/affiliate/dashboard` routes. No backup,
+migration, release switch, restart, credential change, Nginx change, or real-money
+action was performed. Resume with locally configured authorized VPS access or an
+approved console path, then perform the existing reversible backup/deploy/E2E
+procedure and update the project state with the resulting evidence.
