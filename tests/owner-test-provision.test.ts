@@ -111,6 +111,23 @@ test("provisionOwnerTestAccount is idempotent and does not duplicate internal be
   assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM audit_events"), 1);
 });
 
+test("provisionOwnerTestAccount rolls back the entire owner fixture on a late failure", async () => {
+  const fixture = createFixture();
+  fixture.sqlite.exec(`CREATE TRIGGER fail_owner_audit BEFORE INSERT ON audit_events
+    BEGIN SELECT RAISE(ABORT, 'forced owner audit failure'); END;`);
+
+  await assert.rejects(
+    provisionOwnerTestAccount({ ...identity, database: fixture.database, now }),
+    /forced owner audit failure/,
+  );
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE username=?", identity.username), 0);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM credit_accounts"), 0);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM credit_grants"), 0);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM entitlements"), 0);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM affiliate_profiles"), 0);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM audit_events"), 0);
+});
+
 test("provisionOwnerTestAccount fails closed when an unrelated member owns the requested email", async () => {
   const fixture = createFixture();
   await createMemberAuthStore(fixture.database, () => now).createMember({

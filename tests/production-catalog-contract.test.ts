@@ -17,5 +17,9 @@ test("production catalog seed has a closed production-only contract", () => {
   assert.match(source, /var\/lib\/natarot\/natarot\.sqlite/);
   assert.match(source, /staging/i);
   assert.match(source, /SEPAY_ENVIRONMENT/);
+  assert.match(source, /activePackageCount/);
+  assert.match(source, /activePackageCount[^\n]*!==\s*1/);
+  assert.match(source, /activeVersionCount/);
+  assert.match(source, /activeVersionCount[^\n]*!==\s*1/);
   assert.doesNotMatch(source, /SEPAY_ENVIRONMENT\s*=\s*["'`]Sandbox/i);
 });

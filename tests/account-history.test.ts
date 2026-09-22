@@ -53,7 +53,7 @@ test("account history is owner-scoped, metadata-first, and cursor-stable", async
   const fixtureData = createFixture();
   seedOwnerData(fixtureData);
   const store = createCreditStore(fixtureData.database, () => fixtureData.now);
-  await store.grantCredits({ owner, source: "PROMOTION", units: 4, grantKey: "account-credit", policyVersion: "credits-v1", policySnapshot: {}, reason: "test credit" });
+  await store.grantCredits({ owner, source: "PROMOTION", units: 4, grantKey: "account-credit", policyVersion: "credits-v1", policySnapshot: {}, sourceType: "PROMOTION", reason: "test credit" });
   const first = await listAccountHistory({ database: fixtureData.database, owner, kind: "all", limit: 1 });
   assert.equal(first.items.length, 1);
   assert.ok(first.nextCursor);
@@ -66,7 +66,7 @@ test("account history is owner-scoped, metadata-first, and cursor-stable", async
   assert.ok(allItems.some((item) => item.kind === "reading" && item.savedReadingId === "saved-reading:reading-owner"));
   assert.ok(allItems.some((item) => item.kind === "share" && item.readingId === "reading-owner"));
   assert.ok(allItems.some((item) => item.kind === "order" && item.paymentReference === "payment-ref"));
-  assert.ok(allItems.some((item) => item.kind === "credit" && item.units === 4));
+  assert.ok(allItems.some((item) => item.kind === "credit" && item.units === 4 && item.sourceType === "PROMOTION"));
   assert.equal((await listAccountHistory({ database: fixtureData.database, owner: { kind: "member", ownerId: "member:other" }, kind: "all" })).items.length, 0);
   await assert.rejects(() => listAccountHistory({ database: fixtureData.database, owner, cursor: "not-a-cursor" }), (error: unknown) => error instanceof Error && error.message === "Invalid history cursor");
   await assert.rejects(() => listAccountHistory({ database: fixtureData.database, owner, limit: 51 }), (error: unknown) => error instanceof Error && error.message === "Invalid history limit");

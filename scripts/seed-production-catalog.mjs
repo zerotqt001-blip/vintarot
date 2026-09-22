@@ -59,14 +59,25 @@ try {
       throw new Error("Production package version conflicts with the existing catalog");
     }
 
+    const activePackageCountRow = sqlite.prepare("SELECT COUNT(*) AS count FROM packages WHERE active = 1").get();
+    const activeVersionCountRow = sqlite.prepare("SELECT COUNT(*) AS count FROM package_versions pv JOIN packages p ON p.id = pv.package_id WHERE p.active = 1 AND pv.status = 'active' AND pv.starts_at <= ? AND (pv.ends_at IS NULL OR pv.ends_at > ?)").get(now, now);
+    const activePackageCount = Number(activePackageCountRow.count);
+    const activeVersionCount = Number(activeVersionCountRow.count);
+    if (activePackageCount !== 1 || activeVersionCount !== 1) {
+      throw new Error(`Production catalog must contain exactly one active package and version; active_packages=${activePackageCount}, active_versions=${activeVersionCount}`);
+    }
+    const activeVersion = sqlite.prepare("SELECT pv.id FROM package_versions pv JOIN packages p ON p.id = pv.package_id WHERE p.active = 1 AND pv.status = 'active' AND pv.starts_at <= ? AND (pv.ends_at IS NULL OR pv.ends_at > ?)").get(now, now);
+    if (!activeVersion || activeVersion.id !== versionId) {
+      throw new Error("Production catalog active version is not the approved Tarot Credit package");
+    }
+
     sqlite.exec("COMMIT");
   } catch (error) {
     sqlite.exec("ROLLBACK");
     throw error;
   }
 
-  const activeCount = sqlite.prepare("SELECT COUNT(*) AS count FROM package_versions pv JOIN packages p ON p.id = pv.package_id WHERE p.active = 1 AND pv.status = 'active' AND pv.starts_at <= ? AND (pv.ends_at IS NULL OR pv.ends_at > ?)").get(now, now);
-  console.log(`Verified production package ${slug}: ${productName}, ${amountMinor} ${currency}, ${creditUnits} Credit; active_versions=${Number(activeCount.count)}`);
+  console.log(`Verified production package ${slug}: ${productName}, ${amountMinor} ${currency}, ${creditUnits} Credit; active_packages=1 active_versions=1`);
 } finally {
   sqlite.close();
 }

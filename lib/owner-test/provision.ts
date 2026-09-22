@@ -45,6 +45,10 @@ type IdentityRow = {
   disabled: number;
 };
 
+type TransactionalDatabase = D1Database & {
+  transaction?: <T>(work: () => Promise<T>) => Promise<T>;
+};
+
 async function findIdentityRows(database: D1Database, username: string, email: string, phone: string): Promise<IdentityRow[]> {
   const rows = await Promise.all([
     database.prepare("SELECT id, username, email, phone, password_hash, email_verified_at, role, disabled FROM members WHERE username=?").bind(username).first<IdentityRow>(),
@@ -107,7 +111,7 @@ async function ensureAffiliateProfile(database: D1Database, memberId: string, ti
   }
 }
 
-export async function provisionOwnerTestAccount(input: OwnerTestProvisionInput): Promise<OwnerTestProvisionResult> {
+async function provisionOwnerTestAccountMutation(input: OwnerTestProvisionInput): Promise<OwnerTestProvisionResult> {
   const timestamp = input.now ?? Date.now();
   const memberId = await resolveMember(input, timestamp);
   const owner: CreditOwner = { kind: "member", ownerId: `member:${memberId}` };
@@ -156,4 +160,12 @@ export async function provisionOwnerTestAccount(input: OwnerTestProvisionInput):
     },
   });
   return { memberId, role: "ADMIN", creditGrant, entitlement, affiliateProfileId, auditEvent };
+}
+
+export async function provisionOwnerTestAccount(input: OwnerTestProvisionInput): Promise<OwnerTestProvisionResult> {
+  const database = input.database as TransactionalDatabase;
+  if (typeof database.transaction !== "function") {
+    throw new Error("Owner test provisioning requires a transaction-capable database adapter");
+  }
+  return database.transaction(() => provisionOwnerTestAccountMutation(input));
 }
