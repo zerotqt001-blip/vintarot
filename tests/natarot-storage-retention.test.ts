@@ -285,6 +285,8 @@ test("failed flat migration restores the original service unit before restarting
   const fixture = createReleaseFixture({ successfulReleaseCount: 0 });
   writeFile(join(fixture.appRoot, "dist/server/index.js"), "flat production runtime\n");
   writeFile(join(fixture.appRoot, "node_modules/vinext/dist/cli.js"), "flat vinext runtime\n");
+  const preexistingRevision = "source_commit=fixture-commit\ndeployed_at=fixture-time\n";
+  writeFile(join(fixture.appRoot, "DEPLOYMENT_REVISION"), preexistingRevision);
   const serviceUnitPath = join(fixture.root, "etc/systemd/system/natarot.service");
   const serviceUnitSource = join(fixture.root, "candidate/natarot.service");
   const fakeSystemctl = join(fixture.root, "bin/systemctl");
@@ -305,6 +307,7 @@ test("failed flat migration restores the original service unit before restarting
   assert.notEqual(result.status, 0);
   assert.match(readFileSync(serviceUnitPath, "utf8"), new RegExp(`WorkingDirectory=${fixture.appRoot.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}`));
   assert.equal(existsSync(join(fixture.appRoot, "dist/server/index.js")), true);
+  assert.equal(readFileSync(join(fixture.appRoot, "DEPLOYMENT_REVISION"), "utf8"), preexistingRevision);
   assert.equal(existsSync(fixture.current), false);
   assert.equal(existsSync(join(fixture.releaseRoot, "migration-rollback")), false);
 });

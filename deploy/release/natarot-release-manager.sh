@@ -53,6 +53,8 @@ migration_service_stopped=0
 migration_moved_entries=()
 migration_service_backup=""
 migration_service_unit_updated=0
+migration_revision_backup=""
+migration_success_backup=""
 
 log() {
   printf '%s phase=%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${phase:-startup}" "$1" >&2
@@ -581,12 +583,21 @@ quarantine_failed_candidates() {
   fi
 }
 
+cleanup_migration_backups() {
+  local backup
+  for backup in "$migration_service_backup" "$migration_revision_backup" "$migration_success_backup"; do
+    [[ -n "$backup" && -f "$backup" ]] || continue
+    rm -f "$backup" || true
+  done
+  migration_service_backup=""
+  migration_revision_backup=""
+  migration_success_backup=""
+}
+
 rollback_flat_migration() {
   [[ "$migration_attempted" == 1 && "$migration_committed" == 0 ]] || return 0
   if (( migration_service_stopped == 0 )); then
-    if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
-      rm -f "$migration_service_backup" || true
-    fi
+    cleanup_migration_backups
     return 0
   fi
   phase="migration_rollback"
@@ -613,6 +624,12 @@ rollback_flat_migration() {
     done < <(find "$migration_destination" -mindepth 1 -maxdepth 1 -print0 | LC_ALL=C sort -z)
     rmdir "$migration_destination" 2>/dev/null || true
   fi
+  if [[ -n "$migration_revision_backup" && -f "$migration_revision_backup" ]]; then
+    cp -p "$migration_revision_backup" "$APP_ROOT/DEPLOYMENT_REVISION" || true
+  fi
+  if [[ -n "$migration_success_backup" && -f "$migration_success_backup" ]]; then
+    cp -p "$migration_success_backup" "$APP_ROOT/DEPLOYMENT_SUCCESS" || true
+  fi
   if (( migration_service_stopped == 1 )); then
     if (( migration_service_unit_updated == 1 )) && [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
       copy_service_unit "$migration_service_backup" "$SERVICE_UNIT_PATH" || true
@@ -620,9 +637,7 @@ rollback_flat_migration() {
     fi
     systemctl_run start "$SERVICE" || true
   fi
-  if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
-    rm -f "$migration_service_backup" || true
-  fi
+  cleanup_migration_backups
   log "flat_migration_rolled_back"
 }
 
@@ -757,6 +772,23 @@ prepare_migration_service_unit() {
   chmod 0600 "$migration_service_backup"
 }
 
+prepare_migration_markers() {
+  local marker source backup
+  for marker in DEPLOYMENT_REVISION DEPLOYMENT_SUCCESS; do
+    source="$APP_ROOT/$marker"
+    [[ -f "$source" ]] || continue
+    backup="$STAGING_ROOT/.natarot-$marker-backup.$$"
+    assert_inside "$STAGING_ROOT" "$backup"
+    cp -p "$source" "$backup"
+    chmod 0600 "$backup"
+    if [[ "$marker" == DEPLOYMENT_REVISION ]]; then
+      migration_revision_backup="$backup"
+    else
+      migration_success_backup="$backup"
+    fi
+  done
+}
+
 copy_service_unit() {
   local source="$1"
   local destination="$2"
@@ -807,6 +839,7 @@ migrate_flat() {
   validate_flat_root
   migration_attempted=1
   migration_destination="$destination"
+  prepare_migration_markers
   prepare_migration_service_unit
   systemctl_run stop "$SERVICE"
   migration_service_stopped=1
@@ -831,10 +864,7 @@ migrate_flat() {
   systemctl_run restart "$SERVICE"
   production_health
   migration_committed=1
-  if [[ -n "$migration_service_backup" && -f "$migration_service_backup" ]]; then
-    rm -f "$migration_service_backup"
-    migration_service_backup=""
-  fi
+  cleanup_migration_backups
   printf 'flat_migration_success=true release_id=%s\n' "$release_id"
 }
 
