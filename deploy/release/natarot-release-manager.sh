@@ -67,7 +67,7 @@ require_command() {
   command -v "$1" >/dev/null 2>&1 || die "missing_command=$1"
 }
 
-for required in awk basename cat cp date df dirname du find grep install ln mkdir mv readlink rm rmdir sort tr wc; do
+for required in awk basename cat chmod cp date df dirname du find grep install ln mkdir mv readlink rm rmdir sort tr wc; do
   require_command "$required"
 done
 if ! command -v sha256sum >/dev/null 2>&1 && ! command -v shasum >/dev/null 2>&1; then
@@ -157,6 +157,12 @@ acquire_lock() {
     fi
     lock_directory_owned=1
   fi
+}
+
+ensure_managed_dirs() {
+  mkdir -p "$RELEASE_ROOT" "$STAGING_ROOT" "$FAILED_ROOT"
+  chmod 0755 "$RELEASE_ROOT"
+  chmod 0700 "$STAGING_ROOT" "$FAILED_ROOT"
 }
 
 release_lock() {
@@ -653,7 +659,7 @@ deploy_release() {
   disk_preflight "$APP_ROOT" "$((source_kib * 2))"
   run_backup
   verify_backups
-  mkdir -p "$RELEASE_ROOT" "$STAGING_ROOT" "$FAILED_ROOT"
+  ensure_managed_dirs
   local release_dir="$RELEASE_ROOT/$release_id"
   staging_release_dir="$STAGING_ROOT/$release_id"
   [[ ! -e "$release_dir" && ! -e "$staging_release_dir" ]] || die "release_id_already_exists"
@@ -800,7 +806,7 @@ migrate_flat() {
   disk_preflight "$APP_ROOT"
   run_backup
   verify_backups
-  mkdir -p "$RELEASE_ROOT" "$STAGING_ROOT" "$FAILED_ROOT"
+  ensure_managed_dirs
   [[ ! -L "$CURRENT_LINK" && ! -e "$CURRENT_LINK" ]] || die "flat_migration_current_reference_exists"
   local destination="$RELEASE_ROOT/$release_id"
   [[ ! -e "$destination" ]] || die "migration_release_exists"
