@@ -96,12 +96,12 @@
 - Consumes: the integrated branch and its test/build artifacts.
 - Produces: a verified integration commit with an evidence-backed state checkpoint and no secret/path leakage.
 
-- [ ] Run Admin focused, RBAC, Credits, replay, VIP, orders, affiliate, readings, audit, owner-QA and Product Activation regression tests.
-- [ ] Run the full `npx tsx --test tests/*.test.ts` suite and record exact pass/total/fail counts.
-- [ ] Run `npx tsc --noEmit`, `npm run build`, targeted ESLint for every changed TS/TSX file, dependency audit and `git diff --check`.
-- [ ] Scan the staged diff and release inputs for secrets, raw PII, payment shortcuts, untracked files and unintended commercial/deployment changes.
-- [ ] Update `docs/PROJECT_STATE.md` with the exact branch/base/Admin commit, conflict resolution, validation evidence and remaining external gates.
-- [ ] Commit only related integration source/tests/state/docs with a clear message; inspect the staged diff before committing.
+- [x] Run Admin focused, RBAC, Credits, replay, VIP, orders, affiliate, readings, audit, owner-QA and Product Activation regression tests.
+- [x] Run the full `npx tsx --test tests/*.test.ts` suite and record exact pass/total/fail counts.
+- [x] Run `npx tsc --noEmit`, `npm run build`, targeted ESLint for every changed TS/TSX file, dependency audit and `git diff --check`.
+- [x] Scan the staged diff and release inputs for secrets, raw PII, payment shortcuts, untracked files and unintended commercial/deployment changes.
+- [x] Update `docs/PROJECT_STATE.md` with the exact branch/base/Admin commit, conflict resolution, validation evidence and remaining external gates.
+- [x] Commit only related integration source/tests/state/docs with a clear message; inspect the staged diff before committing.
 
 ### Task 5: Push, back up, deploy and verify fresh production
 
