@@ -48,7 +48,7 @@ export function createTarotHTTPClient(dependencies: TarotHTTPDependencies = {}) 
           throw new TarotAIError(
             "upstream",
             `Tarot AI provider request failed with status ${response.status}.`,
-            { retryable },
+            { retryable, httpStatus: response.status },
           );
         }
 

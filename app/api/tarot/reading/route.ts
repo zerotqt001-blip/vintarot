@@ -12,11 +12,13 @@ function logTarotReadingEvent(event: TarotReadingLogEvent) {
   console.info("VinTarot Tarot reading", event);
 }
 
-function logTarotProviderFailure(event: TarotProviderFailureEvent) {
+function logTarotProviderFailure(event: TarotProviderFailureEvent, requestId: string) {
   logTarotReadingEvent({
+    requestId,
     status: "failure",
     httpStatus: event.httpStatus ?? 503,
-    failureCategory: "provider_invalid_response",
+    failureCategory: "TAROT_AI_RESPONSE_INVALID",
+    providerHttpStatus: event.httpStatus,
     provider: event.provider,
     modelName: event.modelName,
     promptVersion: event.promptVersion,
@@ -32,7 +34,9 @@ function logTarotProviderFailure(event: TarotProviderFailureEvent) {
 }
 
 export async function POST(req: Request) {
+  const requestId = globalThis.crypto.randomUUID();
   return boundary(() => handleTarotReadingRoute({
+    requestId,
     loadBody: async () => {
       originCheck(req);
       return json(req);
@@ -53,7 +57,7 @@ export async function POST(req: Request) {
           sessionId: input.session_id,
           locale: input.locale,
           provider,
-          onProviderFailure: logTarotProviderFailure,
+          onProviderFailure: (event) => logTarotProviderFailure(event, requestId),
         })
         : await generateTarotReading({
           repository,
@@ -61,7 +65,7 @@ export async function POST(req: Request) {
           sessionId: input.session_id,
           locale: input.locale,
           provider,
-          onProviderFailure: logTarotProviderFailure,
+          onProviderFailure: (event) => logTarotProviderFailure(event, requestId),
         });
       return { result, setCookie };
     },

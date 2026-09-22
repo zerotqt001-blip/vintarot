@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TAROT_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError } from "./ai/provider";
+import { classifyTarotAIError, classifyTarotCreditFailure, classifyTarotServiceFailure, type TarotAIFailureCategory } from "./ai/readiness";
 import { noStoreResponse } from "./request-identity";
 import { TarotCreditAuthorizationError } from "./tarot-credit-authorization";
 import type { GeneratedTarotReading } from "./tarot-reading-service";
@@ -16,8 +17,9 @@ export type TarotReadingRequest = z.infer<typeof requestSchema>;
 export type TarotReadingLogEvent = {
   status: "success" | "failure";
   httpStatus: number;
-  failureCategory?: string;
-  sessionId?: string;
+  requestId: string;
+  failureCategory?: TarotAIFailureCategory | "invalid_request";
+  providerHttpStatus?: number;
   provider?: string;
   modelName?: string;
   promptVersion: string;
@@ -44,8 +46,14 @@ type HandleTarotReadingRouteArgs = {
     metadata: TarotReadingExecutionMetadata,
   ) => Promise<{ result: GeneratedTarotReading; setCookie?: string }>;
   log: (event: TarotReadingLogEvent) => void;
+  requestId?: string;
   now?: () => number;
 };
+
+function withRequestId(response: Response, requestId: string): Response {
+  response.headers.set("X-Request-Id", requestId);
+  return response;
+}
 
 function providerError(error: TarotAIError): Response {
   if (error.code === "configuration") {
@@ -70,12 +78,13 @@ function creditError(error: TarotCreditAuthorizationError): Response {
 export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs): Promise<Response> {
   const now = args.now ?? Date.now;
   const startedAt = now();
-  let sessionId: string | undefined;
+  const requestId = args.requestId ?? globalThis.crypto.randomUUID();
   const metadata: TarotReadingExecutionMetadata = {};
 
-  const log = (event: Omit<TarotReadingLogEvent, "promptVersion" | "latencyMs">) => {
+  const log = (event: Omit<TarotReadingLogEvent, "requestId" | "promptVersion" | "latencyMs">) => {
     args.log({
       ...event,
+      requestId,
       promptVersion: TAROT_PROMPT_VERSION,
       latencyMs: now() - startedAt,
     });
@@ -85,9 +94,8 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
     const parsed = requestSchema.safeParse(await args.loadBody());
     if (!parsed.success) {
       log({ status: "failure", httpStatus: 400, failureCategory: "invalid_request" });
-      return noStoreResponse(Response.json({ error: "Invalid Tarot reading request." }, { status: 400 }));
+      return withRequestId(noStoreResponse(Response.json({ error: "Invalid Tarot reading request." }, { status: 400 })), requestId);
     }
-    sessionId = parsed.data.session_id;
 
     const { result, setCookie } = await args.execute(parsed.data, metadata);
     const headers = new Headers({ "Content-Type": "application/json" });
@@ -95,12 +103,11 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
     log({
       status: "success",
       httpStatus: 200,
-      sessionId: result.sessionId,
       provider: result.provider,
       modelName: result.modelName,
       cardCount: result.reading.cardEvidence.length,
     });
-    return noStoreResponse(new Response(JSON.stringify({
+    return withRequestId(noStoreResponse(new Response(JSON.stringify({
       session_id: result.sessionId,
       reading_id: result.readingId,
       locale: result.locale,
@@ -109,32 +116,30 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
       model_name: result.modelName,
       prompt_version: result.promptVersion,
       reading: result.reading,
-    }), { status: 200, headers }));
+    }), { status: 200, headers })), requestId);
   } catch (error) {
     if (error instanceof Response) {
-      noStoreResponse(error);
+      withRequestId(noStoreResponse(error), requestId);
       log({
         status: "failure",
         httpStatus: error.status,
-        failureCategory: "request_rejected",
-        sessionId,
+        failureCategory: "TAROT_AI_REQUEST_REJECTED",
         provider: metadata.provider,
         modelName: metadata.modelName,
       });
       throw error;
     }
     if (error instanceof TarotAIError) {
-      const response = providerError(error);
+      const response = withRequestId(providerError(error), requestId);
       log({
         status: "failure",
         httpStatus: response.status,
-        failureCategory: `provider_${error.code}`,
-        sessionId,
+        failureCategory: classifyTarotAIError(error),
+        ...(error.httpStatus === undefined ? {} : { providerHttpStatus: error.httpStatus }),
         provider: metadata.provider,
         modelName: metadata.modelName,
         ...(error.failureStage ? {
           failureStage: error.failureStage,
-          httpStatus: error.httpStatus ?? response.status,
           expectedCardCount: error.expectedCardCount,
           actualCardEvidenceCount: error.actualCardEvidenceCount,
           schemaIssuePath: error.schemaIssuePath,
@@ -144,24 +149,22 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
       return response;
     }
     if (error instanceof TarotCreditAuthorizationError) {
-      const response = creditError(error);
+      const response = withRequestId(creditError(error), requestId);
       log({
         status: "failure",
         httpStatus: response.status,
-        failureCategory: `credits_${error.code}`,
-        sessionId,
+        failureCategory: classifyTarotCreditFailure(error.code),
         provider: metadata.provider,
         modelName: metadata.modelName,
       });
       return response;
     }
     if (error instanceof TarotReadingServiceError) {
-      const response = serviceError(error);
+      const response = withRequestId(serviceError(error), requestId);
       log({
         status: "failure",
         httpStatus: response.status,
-        failureCategory: `service_${error.code}`,
-        sessionId,
+        failureCategory: classifyTarotServiceFailure(error.code),
         provider: metadata.provider,
         modelName: metadata.modelName,
       });
@@ -170,11 +173,10 @@ export async function handleTarotReadingRoute(args: HandleTarotReadingRouteArgs)
     log({
       status: "failure",
       httpStatus: 503,
-      failureCategory: "unexpected",
-      sessionId,
+      failureCategory: "TAROT_AI_UNEXPECTED",
       provider: metadata.provider,
       modelName: metadata.modelName,
     });
-    return noStoreResponse(Response.json({ error: "Could not complete this request. Your input has been kept; please try again." }, { status: 503 }));
+    return withRequestId(noStoreResponse(Response.json({ error: "Could not complete this request. Your input has been kept; please try again." }, { status: 503 })), requestId);
   }
 }
