@@ -1,0 +1,27 @@
+[Unit]
+Description=NaTarot verified production backup
+After=local-fs.target
+ConditionPathExists=/var/lib/natarot/natarot.sqlite
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Environment=NATAROT_BACKUP_ROOT=/var/backups/natarot
+Environment=NATAROT_APP_ROOT=/opt/natarot/current
+Environment=NATAROT_DB_PATH=/var/lib/natarot/natarot.sqlite
+Environment=NATAROT_ENV_FILE=/etc/natarot.env
+Environment=NATAROT_SYSTEMD_UNIT=/etc/systemd/system/natarot.service
+Environment=NATAROT_NGINX_CONFIG=/etc/nginx/sites-enabled/natarot
+Environment=NATAROT_NODE_BIN=/usr/local/bin/node
+Environment=NATAROT_SQLITE_HELPER=/usr/local/lib/natarot/natarot-sqlite-backup.mjs
+ExecStart=/usr/local/sbin/natarot-backup
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=-/var/backups/natarot
+TimeoutStartSec=15min
+StandardOutput=journal
+StandardError=journal
