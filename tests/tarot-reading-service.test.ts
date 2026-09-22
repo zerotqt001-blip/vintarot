@@ -109,6 +109,7 @@ function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
     getMeaning: async () => null,
     getMeaningPair: async (cardId) => ({ upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") }),
     saveReading: async () => "saved-reading",
+    updateReadingPayload: async () => false,
     ...overrides,
   };
 }
@@ -168,6 +169,9 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.reading.cardEvidence.length, 3);
   assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
   assert.equal(result.reading.cardEvidence[1].position.key, template.positions[1].key);
+  assert.equal(result.reading.followUpSuggestions.length, 3);
+  assert.doesNotMatch(result.reading.followUpSuggestions.join(" "), /Explore the pattern/);
+  assert.equal(saved?.reading.followUpSuggestions.join(" | "), result.reading.followUpSuggestions.join(" | "));
   assert.equal(result.reading.cardEvidence[1].orientation, "reversed");
   assert.equal(saved?.reading.directAnswer, result.reading.directAnswer);
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
@@ -390,6 +394,23 @@ test("does not retry non-invalid-response provider errors", async () => {
     );
     assert.equal(providerCalls, 1);
   }
+});
+
+test("does not retry a non-retryable invalid provider response", async () => {
+  let providerCalls = 0;
+  const expected = new TarotAIError("invalid_response", "safe non-retryable invalid response", { retryable: false });
+
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository(),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({ generateReading: async () => { providerCalls += 1; throw expected; } }),
+    }),
+    (error) => error === expected,
+  );
+  assert.equal(providerCalls, 1);
 });
 
 test("fails before provider work when a historical template or meaning pair is missing", async () => {

@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { integer, index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const records = sqliteTable(
@@ -12,7 +13,6 @@ export const records = sqliteTable(
   },
   (table) => [index("idx_records_owner_kind").on(table.owner, table.kind)],
 );
-
 export const rooms = sqliteTable(
   "rooms",
   {
@@ -229,4 +229,511 @@ export const readings = sqliteTable(
     updatedAt: integer("updated_at").notNull(),
   },
   (table) => [index("idx_readings_session").on(table.sessionId)],
+);
+
+export const readingShares = sqliteTable(
+  "reading_shares",
+  {
+    id: text("id").primaryKey(),
+    readingId: text("reading_id").notNull().references(() => readings.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    status: text("status").notNull().default("active"),
+    locale: text("locale").notNull(),
+    publicContractVersion: text("public_contract_version").notNull(),
+    geometryVersion: text("geometry_version").notNull(),
+    rendererVersion: text("renderer_version").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    revokedAt: integer("revoked_at"),
+    expiresAt: integer("expires_at"),
+  },
+  (table) => [
+    uniqueIndex("reading_shares_token_hash_unique").on(table.tokenHash),
+    uniqueIndex("reading_shares_active_reading_unique").on(table.readingId).where(sql`${table.status} = 'active'`),
+    index("reading_shares_reading_status_idx").on(table.readingId, table.status),
+    index("reading_shares_expires_idx").on(table.status, table.expiresAt),
+  ],
+);
+
+export const shareEvents = sqliteTable(
+  "share_events",
+  {
+    id: text("id").primaryKey(),
+    shareId: text("share_id").notNull().references(() => readingShares.id, { onDelete: "cascade" }),
+    eventName: text("event_name").notNull(),
+    locale: text("locale").notNull(),
+    source: text("source"),
+    rendererVersion: text("renderer_version"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [index("share_events_share_created_idx").on(table.shareId, table.createdAt)],
+);
+
+export const creditAccounts = sqliteTable(
+  "credit_accounts",
+  {
+    id: text("id").primaryKey(),
+    ownerKind: text("owner_kind").notNull(),
+    ownerId: text("owner_id").notNull(),
+    mutationVersion: integer("mutation_version").notNull().default(0),
+    mutationToken: text("mutation_token"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_accounts_owner_unique").on(table.ownerKind, table.ownerId),
+    index("credit_accounts_mutation_idx").on(table.mutationVersion, table.updatedAt),
+  ],
+);
+
+export const packages = sqliteTable(
+  "packages",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    nameEn: text("name_en").notNull(),
+    nameVi: text("name_vi").notNull(),
+    active: integer("active", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("packages_slug_unique").on(table.slug),
+    index("packages_active_idx").on(table.active, table.slug),
+  ],
+);
+
+export const packageVersions = sqliteTable(
+  "package_versions",
+  {
+    id: text("id").primaryKey(),
+    packageId: text("package_id").notNull().references(() => packages.id),
+    version: integer("version").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    creditUnits: integer("credit_units").notNull(),
+    vipDurationSeconds: integer("vip_duration_seconds"),
+    benefitSnapshot: text("benefit_snapshot").notNull(),
+    policyVersion: text("policy_version").notNull(),
+    status: text("status").notNull().default("active"),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("package_versions_package_version_unique").on(table.packageId, table.version),
+    index("package_versions_catalog_idx").on(table.status, table.startsAt, table.endsAt),
+  ],
+);
+
+export const creditGrants = sqliteTable(
+  "credit_grants",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    source: text("source").notNull(),
+    sourceType: text("source_type"),
+    sourceId: text("source_id"),
+    grantKey: text("grant_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    units: integer("units").notNull(),
+    availableUnits: integer("available_units").notNull(),
+    eligibleFrom: integer("eligible_from").notNull(),
+    expiresAt: integer("expires_at"),
+    policyVersion: text("policy_version").notNull(),
+    policySnapshot: text("policy_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_grants_account_key_unique").on(table.accountId, table.grantKey),
+    index("credit_grants_eligible_idx").on(table.accountId, table.eligibleFrom, table.expiresAt, table.createdAt),
+    index("credit_grants_source_idx").on(table.source, table.sourceType, table.sourceId),
+  ],
+);
+
+export const creditLedger = sqliteTable(
+  "credit_ledger",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    grantId: text("grant_id").references(() => creditGrants.id),
+    reservationId: text("reservation_id"),
+    eventType: text("event_type").notNull(),
+    units: integer("units").notNull(),
+    referenceType: text("reference_type"),
+    referenceId: text("reference_id"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    actorKind: text("actor_kind"),
+    actorId: text("actor_id"),
+    reason: text("reason").notNull(),
+    effectiveAt: integer("effective_at").notNull(),
+    createdAt: integer("created_at").notNull(),
+    reversedEntryId: text("reversed_entry_id"),
+  },
+  (table) => [
+    uniqueIndex("credit_ledger_account_key_unique").on(table.accountId, table.idempotencyKey),
+    index("credit_ledger_account_created_idx").on(table.accountId, table.createdAt, table.id),
+    index("credit_ledger_grant_idx").on(table.grantId, table.createdAt),
+    index("credit_ledger_reference_idx").on(table.referenceType, table.referenceId),
+  ],
+);
+
+export const creditReservations = sqliteTable(
+  "credit_reservations",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    usageType: text("usage_type").notNull(),
+    units: integer("units").notNull(),
+    resourceType: text("resource_type").notNull(),
+    resourceId: text("resource_id").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    leaseExpiresAt: integer("lease_expires_at"),
+    retryCount: integer("retry_count").notNull().default(0),
+    resultType: text("result_type"),
+    resultId: text("result_id"),
+    reason: text("reason"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    consumedAt: integer("consumed_at"),
+    releasedAt: integer("released_at"),
+  },
+  (table) => [
+    uniqueIndex("credit_reservations_owner_key_unique").on(table.accountId, table.idempotencyKey),
+    index("credit_reservations_owner_status_idx").on(table.accountId, table.status, table.updatedAt),
+    index("credit_reservations_lease_idx").on(table.status, table.leaseExpiresAt),
+  ],
+);
+
+export const creditReservationAllocations = sqliteTable(
+  "credit_reservation_allocations",
+  {
+    id: text("id").primaryKey(),
+    reservationId: text("reservation_id").notNull().references(() => creditReservations.id, { onDelete: "cascade" }),
+    grantId: text("grant_id").notNull().references(() => creditGrants.id),
+    heldUnits: integer("held_units").notNull(),
+    consumedUnits: integer("consumed_units").notNull().default(0),
+    releasedUnits: integer("released_units").notNull().default(0),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("credit_reservation_allocations_reservation_grant_unique").on(table.reservationId, table.grantId),
+    index("credit_reservation_allocations_grant_idx").on(table.grantId, table.reservationId),
+  ],
+);
+
+export const orders = sqliteTable(
+  "orders",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    packageId: text("package_id").notNull().references(() => packages.id),
+    packageVersionId: text("package_version_id").notNull().references(() => packageVersions.id),
+    packageSnapshot: text("package_snapshot").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    paymentReference: text("payment_reference"),
+    createdAt: integer("created_at").notNull(),
+    paymentConfirmedAt: integer("payment_confirmed_at"),
+    fulfilledAt: integer("fulfilled_at"),
+    cancelledAt: integer("cancelled_at"),
+    refundedAt: integer("refunded_at"),
+  },
+  (table) => [
+    uniqueIndex("orders_account_key_unique").on(table.accountId, table.idempotencyKey),
+    uniqueIndex("orders_payment_reference_unique").on(table.paymentReference),
+    index("orders_account_status_idx").on(table.accountId, table.status, table.createdAt),
+    index("orders_package_idx").on(table.packageId, table.packageVersionId),
+  ],
+);
+
+export const entitlements = sqliteTable(
+  "entitlements",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull().references(() => creditAccounts.id),
+    entitlementType: text("entitlement_type").notNull(),
+    benefitVersion: text("benefit_version").notNull(),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    status: text("status").notNull().default("ACTIVE"),
+    sourceType: text("source_type").notNull(),
+    sourceId: text("source_id").notNull(),
+    grantKey: text("grant_key").notNull(),
+    benefitSnapshot: text("benefit_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    cancelledAt: integer("cancelled_at"),
+  },
+  (table) => [
+    uniqueIndex("entitlements_account_key_unique").on(table.accountId, table.grantKey),
+    index("entitlements_account_status_idx").on(table.accountId, table.entitlementType, table.status, table.endsAt),
+    index("entitlements_source_idx").on(table.sourceType, table.sourceId),
+  ],
+);
+
+export const orderFulfillments = sqliteTable(
+  "order_fulfillments",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    fulfillmentKey: text("fulfillment_key").notNull(),
+    resultSnapshot: text("result_snapshot").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("order_fulfillments_order_unique").on(table.orderId),
+    uniqueIndex("order_fulfillments_key_unique").on(table.fulfillmentKey),
+  ],
+);
+
+export const commercialEvents = sqliteTable(
+  "commercial_events",
+  {
+    id: text("id").primaryKey(),
+    eventType: text("event_type").notNull(),
+    aggregateType: text("aggregate_type").notNull(),
+    aggregateId: text("aggregate_id").notNull(),
+    payload: text("payload").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_events_key_unique").on(table.idempotencyKey),
+    index("commercial_events_aggregate_idx").on(table.aggregateType, table.aggregateId, table.createdAt),
+  ],
+);
+
+export const commercialPaymentAttempts = sqliteTable(
+  "commercial_payment_attempts",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    provider: text("provider").notNull(),
+    environment: text("environment").notNull(),
+    invoiceNumber: text("invoice_number").notNull(),
+    requestFingerprint: text("request_fingerprint").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    providerOrderId: text("provider_order_id"),
+    expiresAt: integer("expires_at"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_payment_attempts_order_unique").on(table.orderId),
+    uniqueIndex("commercial_payment_attempts_invoice_unique").on(table.provider, table.environment, table.invoiceNumber),
+    index("commercial_payment_attempts_provider_order_idx").on(table.provider, table.environment, table.providerOrderId),
+    index("commercial_payment_attempts_status_idx").on(table.status, table.updatedAt),
+  ],
+);
+
+export const commercialPaymentEvents = sqliteTable(
+  "commercial_payment_events",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").references(() => orders.id, { onDelete: "set null" }),
+    provider: text("provider").notNull(),
+    environment: text("environment").notNull(),
+    providerEventKey: text("provider_event_key").notNull(),
+    providerOrderId: text("provider_order_id").notNull(),
+    providerInvoiceNumber: text("provider_invoice_number").notNull(),
+    providerTransactionId: text("provider_transaction_id").notNull(),
+    notificationType: text("notification_type").notNull(),
+    providerOrderStatus: text("provider_order_status").notNull(),
+    providerTransactionStatus: text("provider_transaction_status").notNull(),
+    providerTransactionType: text("provider_transaction_type").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    source: text("source").notNull(),
+    payloadHash: text("payload_hash").notNull(),
+    verificationStatus: text("verification_status").notNull(),
+    rejectionCode: text("rejection_code"),
+    receivedAt: integer("received_at").notNull(),
+    verifiedAt: integer("verified_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("commercial_payment_events_provider_key_unique").on(table.provider, table.environment, table.providerEventKey),
+    uniqueIndex("commercial_payment_events_transaction_unique").on(table.provider, table.environment, table.providerTransactionId).where(sql`${table.providerTransactionId} IS NOT NULL`),
+    index("commercial_payment_events_order_idx").on(table.orderId, table.createdAt),
+    index("commercial_payment_events_status_idx").on(table.verificationStatus, table.createdAt),
+  ],
+);
+
+export const auditEvents = sqliteTable(
+  "audit_events",
+  {
+    id: text("id").primaryKey(),
+    actorKind: text("actor_kind").notNull(),
+    actorId: text("actor_id").notNull(),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    reason: text("reason").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    outcome: text("outcome").notNull().default("SUCCESS"),
+    metadataJson: text("metadata_json").notNull().default("{}"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("audit_events_idempotency_unique").on(table.idempotencyKey),
+    index("audit_events_actor_created_idx").on(table.actorId, table.createdAt, table.id),
+    index("audit_events_target_created_idx").on(table.targetType, table.targetId, table.createdAt, table.id),
+  ],
+);
+
+export const affiliateProfiles = sqliteTable(
+  "affiliate_profiles",
+  {
+    id: text("id").primaryKey(),
+    memberId: text("member_id").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    fraudNoteCiphertext: text("fraud_note_ciphertext"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_profiles_member_unique").on(table.memberId),
+    index("affiliate_profiles_status_idx").on(table.status, table.createdAt),
+  ],
+);
+
+export const referralCodes = sqliteTable(
+  "referral_codes",
+  {
+    id: text("id").primaryKey(),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    codeHash: text("code_hash").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    source: text("source"),
+    createdAt: integer("created_at").notNull(),
+    expiresAt: integer("expires_at"),
+  },
+  (table) => [
+    uniqueIndex("referral_codes_hash_unique").on(table.codeHash),
+    index("referral_codes_profile_status_idx").on(table.affiliateProfileId, table.status, table.expiresAt),
+  ],
+);
+
+export const referralAttributions = sqliteTable(
+  "referral_attributions",
+  {
+    id: text("id").primaryKey(),
+    ownerKey: text("owner_key").notNull(),
+    memberId: text("member_id"),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    referralCodeId: text("referral_code_id").notNull().references(() => referralCodes.id),
+    source: text("source"),
+    attributedAt: integer("attributed_at").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("referral_attributions_owner_unique").on(table.ownerKey),
+    index("referral_attributions_profile_idx").on(table.affiliateProfileId, table.attributedAt),
+    index("referral_attributions_member_idx").on(table.memberId, table.attributedAt),
+  ],
+);
+
+export const affiliatePolicyVersions = sqliteTable(
+  "affiliate_policy_versions",
+  {
+    id: text("id").primaryKey(),
+    version: integer("version").notNull(),
+    status: text("status").notNull().default("DRAFT"),
+    attributionWindowDays: integer("attribution_window_days").notNull(),
+    holdDays: integer("hold_days").notNull(),
+    currency: text("currency").notNull(),
+    startsAt: integer("starts_at").notNull(),
+    endsAt: integer("ends_at"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_policy_versions_version_unique").on(table.version),
+    index("affiliate_policy_versions_active_idx").on(table.status, table.startsAt, table.endsAt),
+  ],
+);
+
+export const affiliatePolicyTiers = sqliteTable(
+  "affiliate_policy_tiers",
+  {
+    id: text("id").primaryKey(),
+    policyVersionId: text("policy_version_id").notNull().references(() => affiliatePolicyVersions.id),
+    tierCode: text("tier_code").notNull(),
+    minQualifiedConversions: integer("min_qualified_conversions").notNull(),
+    rateBps: integer("rate_bps").notNull(),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_policy_tiers_code_unique").on(table.policyVersionId, table.tierCode),
+    uniqueIndex("affiliate_policy_tiers_threshold_unique").on(table.policyVersionId, table.minQualifiedConversions),
+    index("affiliate_policy_tiers_threshold_idx").on(table.policyVersionId, table.minQualifiedConversions),
+  ],
+);
+
+export const affiliateConversions = sqliteTable(
+  "affiliate_conversions",
+  {
+    id: text("id").primaryKey(),
+    eventKey: text("event_key").notNull(),
+    orderId: text("order_id").notNull().references(() => orders.id),
+    fulfillmentId: text("fulfillment_id").notNull().references(() => orderFulfillments.id),
+    memberId: text("member_id").notNull(),
+    attributionId: text("attribution_id").notNull().references(() => referralAttributions.id),
+    affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
+    policyVersionId: text("policy_version_id").notNull().references(() => affiliatePolicyVersions.id),
+    tierId: text("tier_id").notNull().references(() => affiliatePolicyTiers.id),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    commissionMinor: integer("commission_minor").notNull(),
+    paymentReference: text("payment_reference").notNull(),
+    packageSnapshot: text("package_snapshot").notNull(),
+    status: text("status").notNull().default("HELD"),
+    fulfilledAt: integer("fulfilled_at").notNull(),
+    eligibleAt: integer("eligible_at"),
+    reversedAt: integer("reversed_at"),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_conversions_event_unique").on(table.eventKey),
+    uniqueIndex("affiliate_conversions_fulfillment_unique").on(table.fulfillmentId),
+    index("affiliate_conversions_member_created_idx").on(table.memberId, table.createdAt, table.id),
+    index("affiliate_conversions_profile_status_idx").on(table.affiliateProfileId, table.status, table.createdAt),
+  ],
+);
+
+export const affiliateCommissionLedger = sqliteTable(
+  "affiliate_commission_ledger",
+  {
+    id: text("id").primaryKey(),
+    conversionId: text("conversion_id").notNull().references(() => affiliateConversions.id),
+    entryType: text("entry_type").notNull(),
+    direction: text("direction").notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: text("currency").notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    reversalOfId: text("reversal_of_id"),
+    actorKind: text("actor_kind").notNull().default("system"),
+    actorId: text("actor_id").notNull().default("system"),
+    reason: text("reason").notNull(),
+    policySnapshot: text("policy_snapshot").notNull(),
+    tierSnapshot: text("tier_snapshot").notNull(),
+    packageSnapshot: text("package_snapshot").notNull(),
+    fraudNoteCiphertext: text("fraud_note_ciphertext"),
+    createdAt: integer("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("affiliate_commission_ledger_key_unique").on(table.idempotencyKey),
+    index("affiliate_commission_ledger_conversion_idx").on(table.conversionId, table.createdAt, table.id),
+    index("affiliate_commission_ledger_actor_idx").on(table.actorId, table.createdAt, table.id),
+  ],
 );

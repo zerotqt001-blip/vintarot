@@ -1,6 +1,6 @@
 # NaTarot Project Constitution
 
-Status: Level 4 governance baseline, derived from the checked-out repository on 2026-09-20.
+Status: Level 4 governance baseline, re-audited against product source `4db459a016f6335fc94a044a76318663c1b40af5` on 2026-09-20.
 
 This constitution governs future NaTarot missions. It is a development control document, not a product specification. The current source, tests, schema, deployment files, and Git state remain the authority for what NaTarot actually does.
 
@@ -45,6 +45,8 @@ Every mission must state:
 - stop conditions.
 
 The phrase “while I am here” is not authorization to refactor, rename, restyle, migrate, or clean up an unrelated area. If a shared dependency must change, record the dependency, choose the minimal compatible change, and expand the regression set before implementation.
+
+Every mission must identify **CANONICAL BASELINE**, **CURRENT HEAD**, and **RELATIONSHIP TO CANONICAL BASELINE** before implementation. If the current `HEAD` is neither the canonical baseline nor an explicitly approved descendant, implementation must stop and the divergence must be reported before any product or governance change begins.
 
 ## 4. Security requirements
 

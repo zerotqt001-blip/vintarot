@@ -3,17 +3,20 @@ import test from "node:test";
 import { tarotReadingProviderOutputFixture, tarotReadingQualityAssertions, tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import {
   buildTarotFollowUpPromptContext,
+  buildTarotClarificationPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+  TAROT_CLARIFICATION_RESPONSE_SCHEMA,
   TAROT_JSON_OUTPUT_CONTRACT,
   TAROT_PROMPT_VERSION,
   TAROT_RESPONSE_SCHEMA,
   TAROT_SYSTEM_PROMPT,
 } from "../lib/ai/prompts/tarot-reading";
 import { createTarotAIProvider } from "../lib/ai/factory";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
-import type { TarotFollowUpInput } from "../lib/ai/types";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
+import type { TarotClarificationInput, TarotFollowUpInput } from "../lib/ai/types";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
 
 function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
@@ -35,6 +38,15 @@ const followUpInput: TarotFollowUpInput = {
   spread: tarotReadingQualityFixture.spread,
   cards: tarotReadingQualityFixture.cards.map(({ readingCardId, position, card, orientation }) => ({ readingCardId, position, card, orientation })),
   reading: parseReadingPayload(providerOutput(), tarotReadingQualityFixture.cards, "vi"),
+};
+
+const clarificationInput: TarotClarificationInput = {
+  ...followUpInput,
+  supplementaryCard: {
+    card: followUpInput.cards[0].card,
+    orientation: "upright",
+    knowledge: tarotReadingQualityFixture.cards[0].knowledge.upright,
+  },
 };
 
 test("normalizes the provider-neutral output with trusted card metadata", () => {
@@ -232,6 +244,27 @@ test("parses only the bounded follow-up answer and safely rejects malformed outp
   );
 });
 
+test("serializes a bounded clarification context with one trusted supplementary card", () => {
+  const context = JSON.parse(buildTarotClarificationPromptContext(clarificationInput)) as Record<string, unknown>;
+  assert.equal(context.target_language, "vi");
+  assert.equal(context.question, clarificationInput.question);
+  assert.equal(context.follow_up_question, clarificationInput.followUpQuestion);
+  assert.deepEqual(context.current_reading, clarificationInput.reading);
+  assert.equal((context.clarification_card as Record<string, unknown>).orientation, "upright");
+  assert.equal(((context.clarification_card as Record<string, unknown>).card as Record<string, unknown>).id, clarificationInput.supplementaryCard.card.id);
+  assert.equal("request_id" in context, false);
+});
+
+test("parses only the bounded clarification answer and exposes a strict schema", () => {
+  assert.deepEqual(parseTarotClarificationContent(JSON.stringify({ answer: "Notice the next observable choice." })), { answer: "Notice the next observable choice." });
+  assert.throws(
+    () => parseTarotClarificationContent(JSON.stringify({ answer: "" })),
+    (error) => error instanceof TarotAIError && error.code === "invalid_response" && error.retryable,
+  );
+  assert.equal(TAROT_CLARIFICATION_RESPONSE_SCHEMA.additionalProperties, false);
+  assert.deepEqual(TAROT_CLARIFICATION_RESPONSE_SCHEMA.required, ["answer"]);
+});
+
 type FetchCall = { input: string | URL | Request; init?: RequestInit };
 
 function jsonResponse(value: unknown, status = 200): Response {
@@ -361,6 +394,52 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
       }
       assert.match(messages[1].content, new RegExp(buildTarotPromptContext(tarotReadingQualityFixture).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     }
+    assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
+  });
+}
+
+for (const providerId of ["openai", "gemini", "deepseek"] as const) {
+  test(`${providerId} sends a dedicated clarification request with the trusted selected card`, async () => {
+    const calls: FetchCall[] = [];
+    const provider = createTarotAIProvider(providerEnv(providerId), {
+      fetch: async (input, init) => {
+        calls.push({ input, init });
+        return jsonResponse(providerEnvelope(providerId, { answer: "Notice the smallest observable choice." }));
+      },
+      timeoutMs: 1_000,
+    });
+
+    assert.ok(provider.generateClarification);
+    const result = await provider.generateClarification(clarificationInput);
+    assert.equal(result.answer, "Notice the smallest observable choice.");
+    const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
+    const promptContext = buildTarotClarificationPromptContext(clarificationInput);
+    if (providerId === "openai") {
+      assert.deepEqual(body, {
+        model: "openai-tarot-model",
+        instructions: TAROT_CLARIFICATION_SYSTEM_PROMPT,
+        input: promptContext,
+        store: false,
+        temperature: 0.35,
+        max_output_tokens: 2200,
+        text: { format: { type: "json_schema", name: "tarot_clarification", strict: true, schema: TAROT_CLARIFICATION_RESPONSE_SCHEMA } },
+      });
+    } else if (providerId === "gemini") {
+      assert.deepEqual(body, {
+        systemInstruction: { parts: [{ text: TAROT_CLARIFICATION_SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: [{ text: promptContext }] }],
+        generationConfig: { temperature: 0.35, responseMimeType: "application/json", responseJsonSchema: TAROT_CLARIFICATION_RESPONSE_SCHEMA },
+      });
+    } else {
+      assert.deepEqual(body.model, "deepseek-tarot-model");
+      assert.deepEqual(body.response_format, { type: "json_object" });
+      assert.deepEqual(body.thinking, { type: "disabled" });
+      const messages = body.messages as Array<{ role: string; content: string }>;
+      assert.equal(messages[0].content, TAROT_CLARIFICATION_SYSTEM_PROMPT);
+      assert.match(messages[1].content, /\{"answer":"string"\}/);
+      assert.match(messages[1].content, new RegExp(promptContext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    assert.match(JSON.stringify(body), /clarification_card/);
     assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
   });
 }

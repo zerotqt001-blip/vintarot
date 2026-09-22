@@ -11,7 +11,7 @@ function captureFetch(calls: CapturedCall[], response = new Response("{}", { sta
   };
 }
 
-test("verification mail uses the configured sender and one-time link", async () => {
+test("verification mail presents a bilingual 24-hour verification-link CTA", async () => {
   const calls: CapturedCall[] = [];
   const sender = createAuthEmailSender({
     apiKey: "test-only-key",
@@ -34,8 +34,47 @@ test("verification mail uses the configured sender and one-time link", async () 
   assert.deepEqual(body.to, ["reader@example.test"]);
   assert.match(body.subject, /verify|xác minh/i);
   assert.match(body.html, /\/api\/auth\/verify\?token=opaque%20test%2Ftoken/);
-  assert.match(body.text, /Xác minh|verify/i);
-  assert.match(body.html, /NaTarot|xác minh|verify/i);
+  assert.match(body.html, /Xác nhận tài khoản/);
+  assert.match(body.html, /Verify account/);
+  assert.match(body.html, /24 giờ/);
+  assert.match(body.html, /24 hours/);
+  assert.match(body.html, /role="presentation"/);
+  assert.match(body.html, /style="/);
+  assert.match(body.html, /max-width:600px/);
+  assert.equal((body.html.match(/<table\b/g) ?? []).length, (body.html.match(/<\/table>/g) ?? []).length);
+  assert.equal((body.html.match(/<a\b/g) ?? []).length, (body.html.match(/<\/a>/g) ?? []).length);
+  assert.doesNotMatch(body.html, /<script\b|https?:\/\/[^" ]+\.(png|jpg|gif|svg)\b/i);
+  assert.match(body.text, /Xác nhận tài khoản/);
+  assert.match(body.text, /Verify your NaTarot account/);
+  assert.match(body.text, /24 giờ/);
+  assert.match(body.text, /24 hours/);
+  assert.match(body.text, /https:\/\/natarot\.com\/api\/auth\/verify\?token=opaque%20test%2Ftoken/);
+  assert.doesNotMatch(body.html, /OTP|one-time code|verification code|mã xác nhận/i);
+  assert.doesNotMatch(body.text, /OTP|one-time code|verification code|mã xác nhận/i);
+  assert.equal(body.reply_to, undefined);
+});
+
+test("verification mail escapes the username without changing the verification URL", async () => {
+  const calls: CapturedCall[] = [];
+  const sender = createAuthEmailSender({
+    apiKey: "test-only-key",
+    from: "NaTarot <noreply@natarot.com>",
+    origin: "https://natarot.com",
+    fetchImpl: captureFetch(calls),
+  });
+
+  await sender.sendVerification({
+    to: "reader@example.test",
+    username: "moon<&>rider",
+    token: "opaque-token",
+  });
+
+  const body = JSON.parse(String(calls[0].init.body));
+  assert.match(body.html, /moon&lt;&amp;&gt;rider/);
+  assert.doesNotMatch(body.html, /moon<&>rider/);
+  assert.match(body.text, /moon<&>rider/);
+  assert.match(body.html, /\/api\/auth\/verify\?token=opaque-token/);
+  assert.match(body.text, /https:\/\/natarot\.com\/api\/auth\/verify\?token=opaque-token/);
 });
 
 test("password reset mail uses the auth reset screen and bilingual copy", async () => {

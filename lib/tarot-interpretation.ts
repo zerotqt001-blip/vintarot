@@ -68,6 +68,23 @@ const readingCardEvidenceSchema = z.object({
   interpretation: boundedProviderString(4000),
 }).strict();
 
+const supplementaryDrawSchema = z.object({
+  id: z.string().min(1).max(100),
+  requestId: z.string().min(1).max(100),
+  sequence: z.number().int().min(1).max(3),
+  question: z.string().min(1).max(1000),
+  relationship: z.literal("clarification"),
+  card: z.object({
+    id: z.string().min(1).max(100),
+    nameEn: z.string().min(1).max(200),
+    nameVi: z.string().min(1).max(200),
+    arcana: z.string().min(1).max(50),
+    suit: z.string().max(100).nullable(),
+  }).strict(),
+  orientation: z.enum(["upright", "reversed"]),
+  answer: boundedProviderString(3000),
+}).strict();
+
 export const tarotReadingPayloadSchema = z.object({
   directAnswer: directAnswerSchema,
   // Stored payloads intentionally retain the wider v2/v3 bounds so historical readings remain readable.
@@ -78,6 +95,7 @@ export const tarotReadingPayloadSchema = z.object({
   deeperReading: deeperReadingSchema,
   followUpSuggestions: z.array(followUpSuggestionSchema).max(4),
   disclaimer: boundedProviderString(500),
+  supplementaryDraws: z.array(supplementaryDrawSchema).max(3).optional(),
 }).strict();
 
 export type ReadingPayload = TarotReadingPayload;

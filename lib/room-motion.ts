@@ -1,3 +1,12 @@
+import {
+  LEGACY_ROOM_BOARD_BOUNDS,
+  projectNormalizedSpreadGeometry,
+  resolveNormalizedSpreadGeometry,
+  resolveTarotSpreadGeometry,
+  type SpreadGeometryInput,
+} from "./tarot-spread-geometry";
+import type { ResolvedTarotSpread } from "./tarot-spread";
+
 export type PanOffset = { x: number; y: number };
 
 export type CardPosition = { x: number; y: number };
@@ -5,9 +14,10 @@ export type CardPosition = { x: number; y: number };
 export type SpreadLayoutPosition = CardPosition & {
   scale: number;
   rotation: number;
+  zIndex?: number;
 };
 
-type SpreadPositionLike = { key: string };
+export type SpreadPositionLike = SpreadGeometryInput;
 
 export type PointerPoint = { x: number; y: number };
 
@@ -33,96 +43,26 @@ const CARD_Y_STEP = 355;
 const MAX_CARD_COLUMNS = 5;
 const MANY_CARD_COLUMNS = 3;
 
-const centeredRow = (count: number, step: number, scale = 1, y = 0): SpreadLayoutPosition[] => {
-  const safeCount = Math.max(1, Math.floor(count));
-  return Array.from({ length: safeCount }, (_, index) => ({
-    x: (index - (safeCount - 1) / 2) * step,
+/**
+ * Resolve the semantic Moonlight arrangement through normalized geometry, then
+ * project it into the existing Room coordinate system for compatibility.
+ */
+export function resolveSpreadLayout(spread: ResolvedTarotSpread): SpreadLayoutPosition[];
+export function resolveSpreadLayout(layoutKey: string | undefined, positions: readonly SpreadPositionLike[]): SpreadLayoutPosition[];
+export function resolveSpreadLayout(
+  layoutKeyOrSpread: string | undefined | ResolvedTarotSpread,
+  positions: readonly SpreadPositionLike[] = [],
+): SpreadLayoutPosition[] {
+  const normalized = typeof layoutKeyOrSpread === "object" && layoutKeyOrSpread !== null
+    ? resolveTarotSpreadGeometry(layoutKeyOrSpread)
+    : resolveNormalizedSpreadGeometry(layoutKeyOrSpread, positions);
+  return projectNormalizedSpreadGeometry(normalized, LEGACY_ROOM_BOARD_BOUNDS).map(({ x, y, scale, rotation, zIndex }) => ({
+    x,
     y,
     scale,
-    rotation: 0,
+    rotation,
+    zIndex,
   }));
-};
-
-/**
- * Resolve the inspected Moonlight arrangement from semantic position keys.
- * The returned coordinates are in the existing 900px Room table coordinate
- * system, so slots and face-up cards can share exactly the same geometry.
- */
-export function resolveSpreadLayout(layoutKey: string | undefined, positions: readonly SpreadPositionLike[]): SpreadLayoutPosition[] {
-  const keys = positions.map((position) => position.key);
-  const row = (count: number, step: number, scale = 1, y = 0) => centeredRow(count, step, scale, y);
-  let resolved: SpreadLayoutPosition[];
-
-  switch (layoutKey) {
-    case "single":
-      resolved = [{ x: 0, y: -28, scale: 1.06, rotation: 0 }];
-      break;
-    case "row-2":
-      resolved = row(keys.length, 340);
-      break;
-    case "row-3":
-      resolved = row(keys.length, 250);
-      break;
-    case "row-4":
-      resolved = row(keys.length, 215, 0.9, 34);
-      break;
-    case "row-5":
-      resolved = row(keys.length, 178, 0.68, 38);
-      break;
-    case "triangle":
-      resolved = keys.map((key, index) => {
-        if (key === "creation" || index === 2) return { x: 0, y: 150, scale: 0.82, rotation: 0 };
-        return { x: key === "receiving" || index === 1 ? 165 : -165, y: -72, scale: 0.82, rotation: 0 };
-      });
-      break;
-    case "top-1-bottom-3":
-      resolved = keys.map((key, index) => {
-        if (key === "persona" || index === 0) return { x: 0, y: -110, scale: 0.68, rotation: 0 };
-        const bottomIndex = Math.max(0, index - 1);
-        return { x: (bottomIndex - 1) * 170, y: 145, scale: 0.72, rotation: 0 };
-      });
-      break;
-    case "yes-no":
-      resolved = keys.map((key, index) => {
-        if (key === "if_yes" || index === 0) return { x: -125, y: -82, scale: 0.78, rotation: 0 };
-        if (key === "if_no" || index === 1) return { x: 125, y: -82, scale: 0.78, rotation: 0 };
-        if (key === "yes_leads_to" || index === 2) return { x: -205, y: 145, scale: 0.82, rotation: 0 };
-        return { x: 205, y: 145, scale: 0.82, rotation: 0 };
-      });
-      break;
-    case "cross-4":
-      resolved = keys.map((key, index) => {
-        if (key === "bridge" || index === 2) return { x: 0, y: -112, scale: 0.68, rotation: 0 };
-        if (key === "path" || index === 3) return { x: 0, y: 165, scale: 0.72, rotation: 0 };
-        return { x: key === "conflicting_energy" || index === 1 ? 160 : -160, y: 28, scale: 0.72, rotation: 0 };
-      });
-      break;
-    case "celtic-cross":
-      resolved = keys.map((key, index) => {
-        const fallback = [
-          { x: -160, y: 0, scale: 0.62, rotation: 0 },
-          { x: -160, y: 0, scale: 0.62, rotation: 90 },
-          { x: -160, y: 180, scale: 0.62, rotation: 0 },
-          { x: -390, y: 0, scale: 0.62, rotation: 0 },
-          { x: -160, y: -180, scale: 0.62, rotation: 0 },
-          { x: 70, y: 0, scale: 0.62, rotation: 0 },
-          { x: 335, y: 180, scale: 0.56, rotation: 0 },
-          { x: 335, y: 60, scale: 0.56, rotation: 0 },
-          { x: 335, y: -60, scale: 0.56, rotation: 0 },
-          { x: 335, y: -180, scale: 0.56, rotation: 0 },
-        ];
-        return fallback[index] || { x: 0, y: index * 80, scale: 0.56, rotation: 0 };
-      });
-      break;
-    default:
-      resolved = row(keys.length, keys.length > 5 ? 250 : 250);
-      break;
-  }
-
-  return keys.map((key, index) => {
-    const position = resolved[index] || { x: 0, y: index * CARD_Y_STEP, scale: 1, rotation: 0 };
-    return { ...position, x: Number(position.x.toFixed(2)), y: Number(position.y.toFixed(2)) };
-  });
 }
 
 /** Keep the camera movement inside the usable tabletop area. */
@@ -150,6 +90,16 @@ export function spreadCardPosition(index: number, spreadCount: number): CardPosi
     x: (column - (columns - 1) / 2) * CARD_X_STEP,
     y: row * CARD_Y_STEP,
   };
+}
+
+/** Prefer the resolved semantic layout while retaining the legacy grid fallback. */
+export function resolveCardPosition(
+  index: number,
+  spreadCount: number,
+  layout?: readonly Pick<SpreadLayoutPosition, "x" | "y">[],
+): CardPosition {
+  const resolved = layout?.[Math.max(0, Math.floor(index))];
+  return resolved ? { x: resolved.x, y: resolved.y } : spreadCardPosition(index, spreadCount);
 }
 
 export function pointerDistance(a: PointerPoint, b: PointerPoint): number {

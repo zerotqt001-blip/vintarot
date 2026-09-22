@@ -261,6 +261,10 @@ function isUniqueConstraint(error: unknown): boolean {
   return error instanceof Error && /unique constraint failed/i.test(error.message);
 }
 
+function isMissingSessionIdColumn(error: unknown): boolean {
+  return error instanceof Error && /(?:no such column|has no column named)\s+session_id/i.test(error.message);
+}
+
 function jsonPayload(value: unknown): string | null {
   return value === undefined ? null : JSON.stringify(value);
 }
@@ -343,11 +347,21 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       const token = await createOpaqueToken();
       const timestamp = now();
       const expiresAt = timestamp + ttlMs;
-      await database.prepare(`INSERT INTO auth_sessions
-        (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
-        VALUES (?, ?, ?, ?, ?, NULL)`)
-        .bind(token.hash, memberId, timestamp, expiresAt, timestamp)
-        .run();
+      const sessionId = crypto.randomUUID();
+      try {
+        await database.prepare(`INSERT INTO auth_sessions
+          (token_hash, session_id, member_id, created_at, expires_at, last_seen_at, revoked_at)
+          VALUES (?, ?, ?, ?, ?, ?, NULL)`)
+          .bind(token.hash, sessionId, memberId, timestamp, expiresAt, timestamp)
+          .run();
+      } catch (error) {
+        if (!isMissingSessionIdColumn(error)) throw error;
+        await database.prepare(`INSERT INTO auth_sessions
+          (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
+          VALUES (?, ?, ?, ?, ?, NULL)`)
+          .bind(token.hash, memberId, timestamp, expiresAt, timestamp)
+          .run();
+      }
       return { raw: token.raw, expiresAt };
     },
 
@@ -355,13 +369,27 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       const token = await createOpaqueToken();
       const timestamp = now();
       const expiresAt = timestamp + ttlMs;
-      const result = await database.prepare(`INSERT INTO auth_sessions
-        (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
-        SELECT ?, ?, ?, ?, ?, NULL FROM members
-        WHERE id=? AND password_hash=? AND disabled=0 AND email_verified_at IS NOT NULL`)
-        .bind(token.hash, memberId, timestamp, expiresAt, timestamp, memberId, passwordHash)
-        .run();
-      return Number(result.meta.changes) === 1 ? { raw: token.raw, expiresAt } : null;
+      const sessionId = crypto.randomUUID();
+      let changes = 0;
+      try {
+        const result = await database.prepare(`INSERT INTO auth_sessions
+          (token_hash, session_id, member_id, created_at, expires_at, last_seen_at, revoked_at)
+          SELECT ?, ?, ?, ?, ?, ?, NULL FROM members
+          WHERE id=? AND password_hash=? AND disabled=0 AND email_verified_at IS NOT NULL`)
+          .bind(token.hash, sessionId, memberId, timestamp, expiresAt, timestamp, memberId, passwordHash)
+          .run();
+        changes = Number(result.meta.changes);
+      } catch (error) {
+        if (!isMissingSessionIdColumn(error)) throw error;
+        const result = await database.prepare(`INSERT INTO auth_sessions
+          (token_hash, member_id, created_at, expires_at, last_seen_at, revoked_at)
+          SELECT ?, ?, ?, ?, ?, NULL FROM members
+          WHERE id=? AND password_hash=? AND disabled=0 AND email_verified_at IS NOT NULL`)
+          .bind(token.hash, memberId, timestamp, expiresAt, timestamp, memberId, passwordHash)
+          .run();
+        changes = Number(result.meta.changes);
+      }
+      return changes === 1 ? { raw: token.raw, expiresAt } : null;
     },
 
     async readSession(raw: string): Promise<MemberView | null> {
@@ -389,6 +417,38 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       await database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND revoked_at IS NULL")
         .bind(now(), memberId)
         .run();
+    },
+
+    async listSessions(memberId: string): Promise<Array<{ sessionId: string; memberId: string; createdAt: number; expiresAt: number; lastSeenAt: number; revokedAt: number | null }>> {
+      try {
+        const result = await database.prepare(`SELECT session_id, member_id, created_at, expires_at, last_seen_at, revoked_at
+          FROM auth_sessions WHERE member_id=? AND session_id IS NOT NULL ORDER BY created_at DESC, session_id DESC LIMIT 50`)
+          .bind(memberId)
+          .all<{ session_id: string; member_id: string; created_at: number; expires_at: number; last_seen_at: number; revoked_at: number | null }>();
+        return result.results.map((row) => ({
+          sessionId: row.session_id,
+          memberId: row.member_id,
+          createdAt: Number(row.created_at),
+          expiresAt: Number(row.expires_at),
+          lastSeenAt: Number(row.last_seen_at),
+          revokedAt: row.revoked_at === null ? null : Number(row.revoked_at),
+        }));
+      } catch (error) {
+        if (!isMissingSessionIdColumn(error)) throw error;
+        return [];
+      }
+    },
+
+    async revokeSessionById(memberId: string, sessionId: string): Promise<boolean> {
+      try {
+        const result = await database.prepare("UPDATE auth_sessions SET revoked_at=? WHERE member_id=? AND session_id=? AND revoked_at IS NULL")
+          .bind(now(), memberId, sessionId)
+          .run();
+        return Number(result.meta.changes) === 1;
+      } catch (error) {
+        if (!isMissingSessionIdColumn(error)) throw error;
+        return false;
+      }
     },
 
     async createToken(input: { kind: AuthTokenKind; memberId?: string | null; payload?: unknown; ttlMs: number }): Promise<AuthToken> {

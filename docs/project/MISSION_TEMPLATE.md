@@ -34,6 +34,9 @@ Use this template for substantial missions. Replace bracketed values; do not lea
 - Repository: `[...]`
 - Branch: `[...]`
 - Starting `HEAD`: `[...]`
+- **CANONICAL BASELINE:** `[...]`
+- **CURRENT HEAD:** `[...]`
+- **RELATIONSHIP TO CANONICAL BASELINE:** `[equal / approved descendant / divergent-stale — stop if not explicitly approved]`
 - Working-tree state: `[...]`
 - User-owned changes to preserve: `[...]`
 

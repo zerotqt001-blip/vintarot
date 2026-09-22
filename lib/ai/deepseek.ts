@@ -1,6 +1,9 @@
 import {
+  buildTarotClarificationPromptContext,
   buildTarotFollowUpPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_JSON_OUTPUT_CONTRACT,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_JSON_OUTPUT_CONTRACT,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
   TAROT_JSON_OUTPUT_CONTRACT,
@@ -8,7 +11,7 @@ import {
 } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
 import type { TarotProviderFailureStage } from "./diagnostics";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 const DEEPSEEK_CHAT_URL = "https://api.deepseek.com/chat/completions";
 
@@ -89,6 +92,31 @@ export function createDeepSeekProvider(
         });
       }
       return parseTarotFollowUpContent(extracted.content);
+    },
+    async generateClarification(input) {
+      const envelope = await request(DEEPSEEK_CHAT_URL, {
+        method: "POST",
+        headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          temperature: 0.35,
+          thinking: { type: "disabled" },
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: TAROT_CLARIFICATION_SYSTEM_PROMPT },
+            { role: "user", content: `${TAROT_CLARIFICATION_JSON_OUTPUT_CONTRACT}\n\n${buildTarotClarificationPromptContext(input)}` },
+          ],
+        }),
+      });
+
+      const extracted = extractMessageContent(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "DeepSeek returned an invalid clarification response.", {
+          retryable: true,
+          failureStage: extracted.failureStage,
+        });
+      }
+      return parseTarotClarificationContent(extracted.content);
     },
   };
 }

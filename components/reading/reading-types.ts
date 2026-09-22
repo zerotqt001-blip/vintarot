@@ -1,4 +1,4 @@
-import type { TarotLocale, TarotReadingPayload } from "@/lib/ai/types";
+import type { TarotLocale, TarotReadingPayload, TarotSupplementaryDraw } from "@/lib/ai/types";
 
 export type ReadingArtwork = {
   src: string;
@@ -10,6 +10,8 @@ export type ReadingFollowUp = {
   question: string;
   answer: string;
 };
+
+export type ReadingClarification = TarotSupplementaryDraw;
 
 export type ReadingTranslator = (key: string) => string;
 
@@ -35,6 +37,11 @@ export type ReadingPanelProps = {
   error?: string | null;
   onClose?: () => void;
   onSave?: () => void;
+  onShare?: () => void | Promise<void>;
+  isSharing?: boolean;
+  shareUrl?: string | null;
+  shareError?: string | null;
   onFollowUpSubmit?: (question: string) => Promise<string>;
+  onClarificationSubmit?: (question: string) => Promise<ReadingClarification>;
   followUpResetKey?: number;
 };

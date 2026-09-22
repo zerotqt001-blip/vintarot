@@ -1,6 +1,9 @@
 import {
+  buildTarotClarificationPromptContext,
   buildTarotFollowUpPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
   TAROT_RESPONSE_SCHEMA,
@@ -8,7 +11,7 @@ import {
 } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
 import type { TarotProviderFailureStage } from "./diagnostics";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 
@@ -99,6 +102,34 @@ export function createOpenAIProvider(
         throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true, failureStage: extracted.failureStage });
       }
       return parseTarotFollowUpContent(extracted.content);
+    },
+    async generateClarification(input) {
+      const envelope = await request(OPENAI_RESPONSES_URL, {
+        method: "POST",
+        headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          instructions: TAROT_CLARIFICATION_SYSTEM_PROMPT,
+          input: buildTarotClarificationPromptContext(input),
+          store: false,
+          temperature: 0.35,
+          max_output_tokens: 2200,
+          text: {
+            format: {
+              type: "json_schema",
+              name: "tarot_clarification",
+              strict: true,
+              schema: TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+            },
+          },
+        }),
+      });
+
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid clarification response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotClarificationContent(extracted.content);
     },
   };
 }

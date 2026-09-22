@@ -22,7 +22,7 @@ test("the legacy decks route resolves to the card guidebook without a deck switc
 
 test("the navigation label is cards only in both locales", () => {
   assert.match(i18nSource, /decks: "Cards"/);
-  assert.match(i18nSource, /decks: "Lá bài"/);
+  assert.match(i18nSource, /decks: "Lá Bài"/);
   assert.doesNotMatch(i18nSource, /decks: "Cards & decks"/);
   assert.doesNotMatch(i18nSource, /decks: "Lá bài & bộ bài"/);
 });

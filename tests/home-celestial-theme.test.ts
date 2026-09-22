@@ -7,14 +7,15 @@ const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
 const styles = readFileSync(`${root}/app/globals.css`, "utf8");
 const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
 
-test("homepage renders the NaTarot celestial scene layers and daily ritual content", () => {
+test("homepage renders the NaTarot celestial scene and approved hero hierarchy", () => {
   assert.match(shell, /const shellClass = isHome \? "home-shell"/);
   assert.match(shell, /className=\{shellClass\}/);
   for (const layer of ["sky", "nebula", "planets", "architecture", "floor", "foreground"]) {
     assert.match(shell, new RegExp(`cosmic-layer cosmic-${layer}`));
   }
   assert.match(shell, /NaTarot/);
-  assert.match(shell, /home\.dailyQuote/);
+  assert.match(shell, /className="home-hero"/);
+  assert.match(shell, /className="home-value-props"/);
   assert.match(shell, /hero-phase/);
 });
 
@@ -36,9 +37,9 @@ test("homepage defines the midnight blue, antique gold glass palette and respons
   assert.match(styles, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });
 
-test("homepage copy includes the bilingual NaTarot tagline and daily quote", () => {
+test("homepage copy includes the bilingual NaTarot tagline and value language", () => {
   assert.match(i18n, /A SPACE BETWEEN YOU AND THE CARDS/);
   assert.match(i18n, /Một không gian để gặp lại trực giác của bạn/);
-  assert.match(i18n, /Every card is a doorway, and you hold the key/);
-  assert.match(i18n, /Mỗi lá bài là một cánh cửa, và bạn là chìa khóa/);
+  assert.match(i18n, /Explore yourself/);
+  assert.match(i18n, /Khám phá bản thân/);
 });

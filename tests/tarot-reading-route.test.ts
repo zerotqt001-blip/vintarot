@@ -4,6 +4,7 @@ import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import { TarotAIError } from "../lib/ai/provider";
 import { handleTarotReadingRoute } from "../lib/tarot-reading-route";
 import { TarotReadingServiceError } from "../lib/tarot-reading-service";
+import { TarotCreditAuthorizationError } from "../lib/tarot-credit-authorization";
 
 const canonicalResult = {
   readingId: "reading-runtime",
@@ -47,6 +48,8 @@ const canonicalResult = {
   },
 };
 
+const requestId = "request-runtime";
+
 async function readJson(response: Response) {
   return JSON.parse(await response.text()) as Record<string, unknown>;
 }
@@ -57,6 +60,7 @@ test("returns a real 400 JSON response and metadata-only log for an invalid requ
   const secret = "PRIVATE_INVALID_BODY_MARKER";
 
   const response = await handleTarotReadingRoute({
+    requestId,
     loadBody: async () => ({
       session_id: "",
       locale: "fr",
@@ -81,6 +85,7 @@ test("returns a real 400 JSON response and metadata-only log for an invalid requ
   assert.deepEqual(events, [{
     status: "failure",
     httpStatus: 400,
+    requestId,
     failureCategory: "invalid_request",
     promptVersion: TAROT_PROMPT_VERSION,
     latencyMs: 0,
@@ -100,6 +105,7 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
       const events: unknown[] = [];
       const secret = `provider exception ${code}: PRIVATE_EXCEPTION_MARKER raw-body`;
       const response = await handleTarotReadingRoute({
+        requestId,
         loadBody: async () => ({ session_id: "session-runtime", locale: "en" }),
         execute: async (_input, metadata) => {
           metadata.provider = "openai";
@@ -115,8 +121,8 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
       assert.deepEqual(events, [{
         status: "failure",
         httpStatus: 503,
-        failureCategory: `provider_${code}`,
-        sessionId: "session-runtime",
+        requestId,
+        failureCategory: code === "invalid_response" ? "TAROT_AI_RESPONSE_INVALID" : "TAROT_AI_PROVIDER_UNAVAILABLE",
         provider: "openai",
         modelName: "openai:gpt-test",
         promptVersion: TAROT_PROMPT_VERSION,
@@ -125,6 +131,26 @@ test("maps configuration, upstream, and invalid-response provider failures to sa
       assert.equal(JSON.stringify(events).includes(secret), false);
     });
   }
+});
+
+test("keeps an upstream provider status separate from the customer-safe response status", async () => {
+  const events: unknown[] = [];
+  const response = await handleTarotReadingRoute({
+    requestId,
+    loadBody: async () => ({ session_id: "session-runtime", locale: "en" }),
+    execute: async (_input, metadata) => {
+      metadata.provider = "deepseek";
+      metadata.modelName = "deepseek:deepseek-flash";
+      throw new TarotAIError("upstream", "private provider response", { httpStatus: 401 });
+    },
+    log: (event) => events.push(event),
+    now: () => 55,
+  });
+
+  assert.equal(response.status, 503);
+  assert.equal((events[0] as Record<string, unknown>).httpStatus, 503);
+  assert.equal((events[0] as Record<string, unknown>).providerHttpStatus, 401);
+  assert.equal((events[0] as Record<string, unknown>).failureCategory, "TAROT_AI_PROVIDER_AUTH_FAILED");
 });
 
 test("logs only safe invalid-response diagnostics", async () => {
@@ -140,6 +166,7 @@ test("logs only safe invalid-response diagnostics", async () => {
   });
 
   const response = await handleTarotReadingRoute({
+    requestId,
     loadBody: async () => ({ session_id: "session-runtime", locale: "vi" }),
     execute: async (_input, metadata) => {
       metadata.provider = "deepseek";
@@ -151,6 +178,7 @@ test("logs only safe invalid-response diagnostics", async () => {
   });
 
   assert.equal(response.status, 503);
+  assert.equal(response.headers.get("X-Request-Id"), requestId);
   const event = events[0] as Record<string, unknown>;
   assert.equal(event.failureStage, "position_key_invalid");
   assert.equal(event.expectedCardCount, 3);
@@ -171,6 +199,7 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
     await t.test(code, async () => {
       const events: unknown[] = [];
       const response = await handleTarotReadingRoute({
+        requestId,
         loadBody: async () => ({ session_id: "session-runtime", locale: "vi" }),
         execute: async (_input, metadata) => {
           metadata.provider = "gemini";
@@ -186,8 +215,12 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
       assert.deepEqual(events, [{
         status: "failure",
         httpStatus: status,
-        failureCategory: `service_${code}`,
-        sessionId: "session-runtime",
+        requestId,
+        failureCategory: code === "not_found"
+          ? "TAROT_AI_SESSION_NOT_FOUND"
+          : code === "incomplete"
+            ? "TAROT_AI_SESSION_INCOMPLETE"
+            : "TAROT_AI_PERSISTENCE_FAILED",
         provider: "gemini",
         modelName: "gemini:model-test",
         promptVersion: TAROT_PROMPT_VERSION,
@@ -197,9 +230,41 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
   }
 });
 
+test("maps credit authorization failures without leaking accounting details", async (t) => {
+  const cases = [
+    ["insufficient", 402, "You need more credits for this Tarot reading."],
+    ["in_progress", 409, "This Tarot reading is already being prepared."],
+    ["conflict", 409, "This Tarot reading request conflicts with an existing request."],
+    ["unavailable", 503, "Credit authorization is temporarily unavailable. Please try again."],
+  ] as const;
+  for (const [code, status, message] of cases) {
+    await t.test(code, async () => {
+      const events: unknown[] = [];
+      const response = await handleTarotReadingRoute({
+        requestId,
+        loadBody: async () => ({ session_id: "session-runtime", locale: "en" }),
+        execute: async () => { throw new TarotCreditAuthorizationError(code, "private ledger/account detail"); },
+        log: (event) => events.push(event),
+        now: () => 80,
+      });
+      assert.equal(response.status, status);
+      assert.deepEqual(await readJson(response), { error: message });
+      assert.doesNotMatch(JSON.stringify(events), /private ledger|account detail/);
+      assert.equal((events[0] as Record<string, unknown>).requestId, requestId);
+      assert.equal((events[0] as Record<string, unknown>).failureCategory,
+        code === "insufficient"
+          ? "TAROT_AI_CREDITS_INSUFFICIENT"
+          : code === "unavailable"
+            ? "TAROT_AI_CREDITS_UNAVAILABLE"
+            : "TAROT_AI_CREDITS_CONFLICT");
+    });
+  }
+});
+
 test("returns canonical success metadata and passes Set-Cookie through", async () => {
   const events: unknown[] = [];
   const response = await handleTarotReadingRoute({
+    requestId,
     loadBody: async () => ({ session_id: canonicalResult.sessionId, locale: canonicalResult.locale }),
     execute: async (_input, metadata) => {
       metadata.provider = canonicalResult.provider;
@@ -211,6 +276,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
   });
 
   assert.equal(response.status, 200);
+  assert.equal(response.headers.get("X-Request-Id"), requestId);
   assert.equal(response.headers.get("set-cookie"), "vintarot_guest=guest-1; HttpOnly; Path=/; SameSite=Lax");
   assert.match(response.headers.get("content-type") || "", /^application\/json/);
   const responseBody = await readJson(response);
@@ -230,7 +296,7 @@ test("returns canonical success metadata and passes Set-Cookie through", async (
   assert.deepEqual(events, [{
     status: "success",
     httpStatus: 200,
-    sessionId: "session-runtime",
+    requestId,
     provider: "openai",
     modelName: "openai:gpt-test",
     promptVersion: TAROT_PROMPT_VERSION,
@@ -246,6 +312,7 @@ test("rethrows request rejection responses after logging only allowlisted metada
 
   await assert.rejects(
     handleTarotReadingRoute({
+      requestId,
       loadBody: async () => { throw rejection; },
       execute: async () => ({ result: canonicalResult }),
       log: (event) => events.push(event),
@@ -256,8 +323,8 @@ test("rethrows request rejection responses after logging only allowlisted metada
   assert.deepEqual(events, [{
     status: "failure",
     httpStatus: 403,
-    failureCategory: "request_rejected",
-    sessionId: undefined,
+    requestId,
+    failureCategory: "TAROT_AI_REQUEST_REJECTED",
     provider: undefined,
     modelName: undefined,
     promptVersion: TAROT_PROMPT_VERSION,

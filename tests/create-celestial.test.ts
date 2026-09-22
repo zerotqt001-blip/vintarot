@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
+const root = process.cwd();
 const create = readFileSync(`${root}/app/create/ritual.tsx`, "utf8");
 const styles = readFileSync(`${root}/app/globals.css`, "utf8");
 

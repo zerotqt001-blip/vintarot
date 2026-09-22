@@ -108,6 +108,23 @@ test("FollowUpReading owns an input, answer list, and injected submit callback",
   assert.match(followUp, /aria-hidden=["']true["']/);
 });
 
+test("FollowUpReading exposes a clarification-card action without replacing manual follow-up", () => {
+  assert.match(followUp, /onClarificationSubmit/);
+  assert.match(followUp, /initialClarifications/);
+  assert.match(followUp, /clarifications\.length >= 3/);
+  assert.match(followUp, /clarificationLoading/);
+  assert.match(followUp, /reading\.clarification/);
+  assert.match(followUp, /reading-clarification/);
+  assert.match(followUp, /locale/);
+  assert.match(followUp, /entry\.card\.nameEn/);
+  assert.match(panel, /onClarificationSubmit/);
+  assert.match(panel, /supplementaryDraws/);
+  assert.match(panel, /locale=\{locale\}/);
+  assert.match(room, /api\(['"]tarot\/clarification/);
+  assert.match(room, /request_id/);
+  assert.match(room, /setInterpretation/);
+});
+
 test("follow-up history resets by reading epoch without persisting a transcript", () => {
   assert.match(followUp, /resetEpoch\?: number/);
   assert.match(panel, /key=\{followUpResetKey\}/);
@@ -115,6 +132,11 @@ test("follow-up history resets by reading epoch without persisting a transcript"
   assert.doesNotMatch(panel, /key=\{followUpQuestion\}/);
   assert.doesNotMatch(followUp, /sessionStorage|localStorage|records|tarot\/follow-up/);
   assert.match(room, /followUpResetKey=\{readingEpoch\.current\}/);
+});
+
+test("persisted clarification results are merged into the active reading snapshot", () => {
+  assert.match(room, /supplementaryDraws/);
+  assert.match(room, /clarification\.requestId/);
 });
 
 test("splitReadingParagraphs removes empty entries and caps the primary reading", () => {

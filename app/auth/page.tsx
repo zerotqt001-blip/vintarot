@@ -12,6 +12,12 @@ function valueOf(value: QueryValue): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function withReferral(returnTo: string, rawReferral: string | undefined): string {
+  const referral = rawReferral?.trim();
+  if (!referral || referral.length > 128) return returnTo;
+  return `${returnTo}${returnTo.includes("?") ? "&" : "?"}ref=${encodeURIComponent(referral)}`;
+}
+
 function modeFor(query: Record<string, QueryValue>): AuthMode {
   const requested = valueOf(query.mode);
   if (valueOf(query.reset) === "1") return "reset";
@@ -23,7 +29,7 @@ function modeFor(query: Record<string, QueryValue>): AuthMode {
 export async function AuthPageView({ searchParams, forcedMode }: { searchParams: Promise<AuthSearchParams>; forcedMode?: AuthMode }) {
   const query = await searchParams;
   const rawReturnTo = valueOf(query.return_to) ?? "/";
-  const returnTo = safeRelativeReturnPath(rawReturnTo);
+  const returnTo = withReferral(safeRelativeReturnPath(rawReturnTo), valueOf(query.ref) ?? valueOf(query.referral));
   const verified = valueOf(query.verified) === "1" ? true : valueOf(query.verified) === "0" ? false : undefined;
 
   return (

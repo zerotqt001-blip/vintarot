@@ -29,6 +29,7 @@ test("consuming any fan card uses its server position order and prevents duplica
 test("Room reflection surface exposes normalized personal reading and follow-up boundary", () => {
   assert.match(roomSource, /api\(['"]tarot\/reading/);
   assert.match(roomSource, /api\(['"]tarot\/follow-up/);
+  assert.match(roomSource, /api\(['"]tarot\/clarification/);
   assert.match(roomSource, /sessionId/);
   for (const field of ["directAnswer", "personalInsights", "reflectionPrompts", "nextSteps", "cardEvidence"]) {
     assert.match(`${roomSource}\n${readingPanelSource}`, new RegExp(`reading\\.${field}`));
@@ -43,6 +44,8 @@ test("Room mounts one editorial reading panel and keeps the question editor sepa
   assert.match(roomSource, /artworkByReadingCardId/);
   assert.match(roomSource, /saveJournal/);
   assert.match(roomSource, /onFollowUpSubmit/);
+  assert.match(roomSource, /onClarificationSubmit/);
+  assert.match(roomSource, /clarification\.requestId/);
   assert.match(roomSource, /followUpResetKey=\{readingEpoch\.current\}/);
   assert.match(roomSource, /ReflectionPanel/);
   assert.match(roomSource, /room-reading-panel-retry/);
@@ -113,6 +116,24 @@ test("completed readings expose the reference CTA and interpretation panel", () 
   assert.match(roomSource, /redrawReading/);
 });
 
+test("completed readings expose a transient owner share action without persisting the link", () => {
+  assert.match(roomSource, /api\(['"]tarot\/shares['"]/);
+  assert.match(roomSource, /reading_id/);
+  assert.match(roomSource, /session_id/);
+  assert.match(roomSource, /share_url/);
+  assert.match(roomSource, /onShare=/);
+  assert.match(readingPanelSource, /onShare/);
+  assert.match(readingPanelSource, /isSharing/);
+  assert.match(readingPanelSource, /shareUrl/);
+  assert.match(readingPanelSource, /shareError/);
+  assert.doesNotMatch(roomSource, /(?:localStorage|sessionStorage)\.[^\n]*share/i);
+  for (const locale of ["en", "vi"] as const) {
+    for (const key of ["reading.share", "reading.sharing", "reading.shareReady", "reading.shareUnavailable"]) {
+      assert.notEqual(messageFor(locale, key), key);
+    }
+  }
+});
+
 test("stale room requests cannot commit after a newer reading starts", () => {
   assert.equal(isRoomRequestCurrent({ epoch: 3, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
   assert.equal(isRoomRequestCurrent({ epoch: 4, id: "old-reading" }, { epoch: 4, id: "new-reading" }), false);
@@ -122,4 +143,9 @@ test("stale room requests cannot commit after a newer reading starts", () => {
   assert.match(roomSource, /requestSessionId/);
   assert.match(roomSource, /readingEpoch\.current/);
   assert.match(roomSource, /follow_up_question/);
+});
+
+test("the local catalog fallback keeps L5 semantics available", () => {
+  assert.match(roomSource, /localizedTarotSpreadSemantics/);
+  assert.match(roomSource, /semantics/);
 });
