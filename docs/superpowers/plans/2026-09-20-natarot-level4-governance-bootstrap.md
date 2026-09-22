@@ -10,6 +10,8 @@
 
 **Spec:** User-supplied `NATAROT LEVEL 4 — PROJECT GOVERNANCE BOOTSTRAP` request; the durable protocol is created at `docs/project/MISSION_PROTOCOL.md`.
 
+> **Historical provenance:** This bootstrap plan was executed from product baseline `757b3b366eb9e16635712302b2f59b889f113f62`. The canonical Level 4 integration re-audit uses product baseline `4db459a016f6335fc94a044a76318663c1b40af5`; the governance documents below are updated to describe that newer source. This retained plan is not evidence that the older baseline remains canonical.
+
 ## Global Constraints
 
 - Preserve all pre-existing staged, modified, untracked, and ignored user work.

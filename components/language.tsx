@@ -14,9 +14,16 @@ type LanguageContextValue = {
 const STORAGE_KEY = "vintarot-locale";
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children, user }: { children: React.ReactNode; user: User }) {
+export function LanguageProvider({ children, user, initialLocale }: { children: React.ReactNode; user: User; initialLocale?: Locale }) {
   const [locale, setLocaleState] = useState<Locale>("vi");
   const localeHydrating = useRef(true);
+
+  useEffect(() => {
+    if (!initialLocale || initialLocale === "vi" || window.localStorage.getItem(STORAGE_KEY)) return;
+    // The server-projected share locale is only a fallback; an explicit local preference wins.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLocaleState(initialLocale);
+  }, [initialLocale]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);

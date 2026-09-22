@@ -32,8 +32,8 @@ test("drawn cards keep pointer selection and dragging without button activation"
 
 test("BookOpen remains the explicit guidebook entry point", () => {
   assert.match(source, /\[BookOpen,t\('room\.guidebook'\),\(\)=>setGuide\(!guide\)\]/);
-  const drawnCardStart = source.indexOf("className={'drawn-card ");
-  const drawnCardEnd = source.indexOf("})}</div>}{readingComplete", drawnCardStart);
+  const drawnCardStart = source.indexOf("const renderSpreadCard=");
+  const drawnCardEnd = source.indexOf("const closeMobileSheet", drawnCardStart);
   assert.ok(drawnCardStart >= 0 && drawnCardEnd > drawnCardStart);
   assert.doesNotMatch(source.slice(drawnCardStart, drawnCardEnd), /setGuide/);
 });

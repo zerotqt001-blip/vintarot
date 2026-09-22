@@ -12,6 +12,6 @@ test("Room saves the exact persisted AI reading through the saved-reading endpoi
 });
 test("guest Room Save uses the existing sign-in flow with a safe room return path", () => {
   assert.match(roomSource, /!user/);
-  assert.match(roomSource, /signin-with-chatgpt\?return_to/);
+  assert.match(roomSource, /\/auth\?return_to/);
   assert.match(roomSource, /encodeURIComponent/);
 });

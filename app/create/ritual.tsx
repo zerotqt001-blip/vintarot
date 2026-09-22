@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Briefcase, Heart, Infinity, Moon, Search, Sparkles, Sprout, Star } from "lucide-react";
 import { useLanguage } from "@/components/language";
 import { messages } from "@/lib/i18n";
+import { findCanonicalSpread, recommendTarotSpread, type TarotTopic } from "@/lib/tarot-recommendation";
 
 type TopicKey = keyof typeof messages.en.create.topics;
 
@@ -39,14 +40,19 @@ export default function CreateRitual() {
   function begin(value: string, topic = selectedTopic) {
     if (opening) return;
     try {
+      const question = value.trim().slice(0, 500);
+      const recommendation = recommendTarotSpread(question, topic as TarotTopic | null);
       sessionStorage.setItem(
         "vintarot:new-reading",
         JSON.stringify({
-          question: value.trim().slice(0, 500),
-          topic: topic,
-          currentQuestion: value.trim().slice(0, 500) || null,
+          question,
+          topic: recommendation.detectedTopic,
+          currentQuestion: question || null,
           optionalContext: optionalContext.trim().slice(0, 5000),
           selectedTopic: topic,
+          categoryId: recommendation.categoryId,
+          spreadTemplateId: recommendation.recommendedSpreadId,
+          spreadMode: "auto",
           locale,
           created: timestamp(),
         }),
@@ -61,6 +67,34 @@ export default function CreateRitual() {
   const suggestions = messages[locale].create.suggestions[selectedTopic ?? "work"];
   const selectedConfig = selectedTopic ? topicConfig[selectedTopic] : null;
   const SelectedTopicIcon = selectedConfig?.Icon;
+  const recommendation = recommendTarotSpread(currentQuestion, selectedTopic as TarotTopic | null);
+  const recommendationSpread = findCanonicalSpread(recommendation.categoryId, recommendation.recommendedSpreadId);
+  const recommendationVisible = Boolean(currentQuestion.trim() || selectedTopic);
+  const recommendationCard = recommendationVisible && recommendationSpread ? (
+    <aside
+      className="create-auto-recommendation"
+      data-auto-recommendation
+      data-confidence={recommendation.confidence}
+      aria-label={t("create.autoRecommendation")}
+    >
+      <div className="create-auto-recommendation-head">
+        <span className="create-auto-badge">{t("create.autoLabel")}</span>
+        <span>{t("create.autoRecommendation")}</span>
+      </div>
+      <div className="create-auto-recommendation-main">
+        <div>
+          <p className="create-auto-label">{t("create.autoRecommendedSpread")}</p>
+          <h2>{recommendationSpread.template.name[locale]}</h2>
+          <p>{t("create.autoReason")}: {t(`create.autoReasons.${recommendation.reasonKey}`)}</p>
+        </div>
+        <span className="create-auto-count">{recommendationSpread.template.cardCount} {t("create.autoCards")}</span>
+      </div>
+      <p className="create-auto-meta">
+        {t("create.autoDetectedTopic")}: {t(`create.topics.${recommendation.detectedTopic}`)} · {t(`create.autoConfidence.${recommendation.confidence}`)}
+      </p>
+      <p className="create-auto-manual">{t("create.autoManual")}</p>
+    </aside>
+  ) : null;
 
   return (
     <section
@@ -146,6 +180,7 @@ export default function CreateRitual() {
                 rows={2}
               />
             </label>
+            {recommendationCard}
             <div className="create-topic-divider"><span>{t("create.chooseTopic")}</span></div>
             <div
               className="question-topics create-topic-grid create-topic-cluster"
@@ -186,6 +221,7 @@ export default function CreateRitual() {
           </>
         ) : (
           <>
+            {recommendationCard}
             <div
               className="question-suggestions create-suggestions create-suggestion-list"
               data-step="suggestions"

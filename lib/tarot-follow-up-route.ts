@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH, TAROT_FOLLOW_UP_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError } from "./ai/provider";
+import { noStoreResponse } from "./request-identity";
 import type { GeneratedTarotFollowUp } from "./tarot-follow-up-service";
 import { TarotFollowUpServiceError } from "./tarot-follow-up-service";
 
@@ -37,14 +38,14 @@ type HandleTarotFollowUpRouteArgs = {
 };
 
 function providerError(error: TarotAIError): Response {
-  if (error.code === "configuration") return Response.json({ error: "Tarot follow-up is not configured yet. Please try again later." }, { status: 503 });
-  return Response.json({ error: "Tarot follow-up is temporarily unavailable. Please try again." }, { status: 503 });
+  if (error.code === "configuration") return noStoreResponse(Response.json({ error: "Tarot follow-up is not configured yet. Please try again later." }, { status: 503 }));
+  return noStoreResponse(Response.json({ error: "Tarot follow-up is temporarily unavailable. Please try again." }, { status: 503 }));
 }
 
 function serviceError(error: TarotFollowUpServiceError): Response {
-  if (error.code === "not_found") return Response.json({ error: "Reading session not found." }, { status: 404 });
-  if (error.code === "invalid_request") return Response.json({ error: "Invalid Tarot follow-up request." }, { status: 400 });
-  return Response.json({ error: "This reading is not ready for a follow-up." }, { status: 409 });
+  if (error.code === "not_found") return noStoreResponse(Response.json({ error: "Reading session not found." }, { status: 404 }));
+  if (error.code === "invalid_request") return noStoreResponse(Response.json({ error: "Invalid Tarot follow-up request." }, { status: 400 }));
+  return noStoreResponse(Response.json({ error: "This reading is not ready for a follow-up." }, { status: 409 }));
 }
 
 export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArgs): Promise<Response> {
@@ -62,7 +63,7 @@ export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArg
     const parsed = requestSchema.safeParse(await args.loadBody());
     if (!parsed.success) {
       log({ status: "failure", httpStatus: 400, failureCategory: "invalid_request" });
-      return Response.json({ error: "Invalid Tarot follow-up request." }, { status: 400 });
+      return noStoreResponse(Response.json({ error: "Invalid Tarot follow-up request." }, { status: 400 }));
     }
     sessionId = parsed.data.session_id;
     const { result, setCookie } = await args.execute(parsed.data, metadata);
@@ -76,7 +77,7 @@ export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArg
       modelName: result.modelName,
       questionLength: parsed.data.follow_up_question.length,
     });
-    return new Response(JSON.stringify({
+    return noStoreResponse(new Response(JSON.stringify({
       session_id: result.sessionId,
       locale: result.locale,
       source: result.source,
@@ -84,9 +85,10 @@ export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArg
       model_name: result.modelName,
       prompt_version: result.promptVersion,
       answer: result.answer,
-    }), { status: 200, headers });
+    }), { status: 200, headers }));
   } catch (error) {
     if (error instanceof Response) {
+      noStoreResponse(error);
       log({ status: "failure", httpStatus: error.status, failureCategory: "request_rejected", sessionId, provider: metadata.provider, modelName: metadata.modelName });
       throw error;
     }
@@ -101,6 +103,6 @@ export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArg
       return response;
     }
     log({ status: "failure", httpStatus: 503, failureCategory: "unexpected", sessionId, provider: metadata.provider, modelName: metadata.modelName });
-    return Response.json({ error: "Could not complete this request. Your input has been kept; please try again." }, { status: 503 });
+    return noStoreResponse(Response.json({ error: "Could not complete this request. Your input has been kept; please try again." }, { status: 503 }));
   }
 }

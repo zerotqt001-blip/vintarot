@@ -1,0 +1,31 @@
+[Unit]
+Description=NaTarot isolated staging Node server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=natarot-staging
+Group=natarot-staging
+WorkingDirectory=/opt/natarot-staging
+EnvironmentFile=-/etc/natarot-staging.env
+Environment=NATAROT_DB_PATH=/var/lib/natarot-staging/natarot.sqlite
+Environment=NATAROT_PUBLIC_ORIGIN=https://staging.natarot.com
+Environment=NATAROT_TRUSTED_PROXY=1
+UMask=0077
+StateDirectory=natarot-staging
+StateDirectoryMode=0700
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/natarot-staging
+NoNewPrivileges=true
+ExecStartPre=/usr/local/bin/node /opt/natarot-staging/scripts/node-migrate.mjs
+ExecStart=/usr/local/bin/node /opt/natarot-staging/node_modules/vinext/dist/cli.js start --port 8788 --hostname 127.0.0.1
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+SyslogIdentifier=natarot-staging
+
+[Install]
+WantedBy=multi-user.target

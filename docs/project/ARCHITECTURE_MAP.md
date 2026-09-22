@@ -1,6 +1,6 @@
 # NaTarot Architecture Map
 
-Evidence snapshot: checked-out branch `codex/tooling-and-version-history`, `HEAD` `757b3b3`, inspected 2026-09-20. This map describes the current source tree. Deployment statements from `docs/PROJECT_STATE.md` are labelled as documented rather than independently re-verified here.
+Evidence snapshot: canonical product source `4db459a016f6335fc94a044a76318663c1b40af5` (`feat: restore approved member authentication`), integrated on branch `codex/natarot-level4-baseline`, inspected 2026-09-20. This map describes the product source at that anchor plus the governance integration. Deployment statements from `docs/PROJECT_STATE.md` are labelled as documented rather than independently re-verified here.
 
 ## 1. High-level architecture
 
@@ -12,7 +12,7 @@ flowchart LR
   Routes --> Shell[VinTarot shell + LanguageProvider]
   Routes --> API[app/api route handlers]
   API --> Boundary[lib/server request boundary]
-  Boundary --> Identity[ChatGPT headers or guest cookie]
+  Boundary --> Identity[Member session or guest cookie]
   Boundary --> DB[Runtime database adapter]
   DB --> Repository[Tarot repository / records / rooms]
   API --> Tarot[Tarot domain services]
@@ -26,14 +26,16 @@ flowchart LR
 | Area | Source of truth | Responsibility |
 | --- | --- | --- |
 | Route entry points | `app/page.tsx`, `app/[section]/page.tsx`, `app/create/page.tsx`, `app/room/page.tsx`, `app/guidebook/[card]/page.tsx` | Server-rendered route selection and user lookup. |
+| Member auth entry points | `app/auth/`, `app/login/page.tsx`, `app/register/page.tsx`, `app/forgot-password/page.tsx`, `app/reset-password/page.tsx`, `app/api/auth/` | Local member login, registration, verification, password recovery, session, and Google OAuth flows. |
 | Shared shell | `app/vintarot.tsx`, `app/layout.tsx`, `app/globals.css` | Navigation, global layout, route shells, brand surfaces, responsive CSS, motion primitives. |
 | Page compositions | `app/pages.tsx`, `app/create/ritual.tsx`, `app/room/room.tsx` | Client interactions for Home sub-pages, Create, and Tarot Room. |
 | UI primitives | `components/ui/`, `components/brand/`, `components/reading/` | Shared controls, brand elements, and reading result sections. |
 | Tarot domain | `lib/tarot.ts`, `lib/tarot-catalog.ts`, `lib/tarot-draw.ts`, `lib/tarot-room.ts`, `lib/tarot-locales.ts` | Card data, catalog, spread positions, draw plans, room metadata, localized meanings. |
-| Server boundary | `lib/server.ts`, `lib/request-identity.ts`, `lib/tarot-guest.ts` | Origin check, bounded JSON parsing, error boundary, authenticated/guest ownership. |
+| Server boundary | `lib/server.ts`, `lib/request-identity.ts`, `lib/tarot-guest.ts`, `lib/member-auth.ts` | Origin check, bounded JSON parsing, error boundary, member-session/guest ownership, and owner matching. |
+| Member authentication | `lib/member-auth.ts`, `lib/auth-handlers.ts`, `lib/google-oauth.ts`, `lib/auth-email.ts`, `lib/member-page.ts`, `app/api/auth/` | Password hashing, opaque sessions/tokens, email verification, password reset, Google OAuth state/PKCE, and protected page lookup. |
 | AI subsystem | `lib/ai/`, `lib/tarot-reading-context.ts`, `lib/tarot-interpretation.ts`, `lib/tarot-reading-service.ts` | Prompt assembly, provider calls, response parsing, contract validation, persistence. |
 | Persistence | `db/schema.ts`, `db/index.ts`, `lib/runtime.ts`, `lib/sqlite-d1.ts`, `lib/tarot-repository.ts` | D1-compatible tables, local Node SQLite adapter, SQL queries, Tarot repositories. |
-| Database history | `drizzle/0000_*.sql` through `0004_reading_payload.sql`, `scripts/node-migrate.mjs` | Ordered schema/data migrations and Node production migration runner. |
+| Database history | `drizzle/0000_*.sql` through `0004_member_auth.sql` and `0004_reading_payload.sql`, `scripts/node-migrate.mjs` | Lexicographically ordered schema/data migrations and Node production migration runner. |
 | Knowledge base | `natarot-knowledge/v5/` | Versioned Tarot reading philosophy, cards, combinations, evaluation material, and prompt assembly references. |
 | Deployment | `.openai/hosting.json`, `vite.config.ts`, `scripts/`, `deploy/nginx/`, `deploy/systemd/` | Sites/Cloudflare build bindings, local preview, VPS reverse proxy, service and migration startup. |
 | Verification | `tests/` and `package.json` scripts | Node test runner through `tsx`, typecheck, build, lint, migration and contract tests. |
@@ -49,13 +51,16 @@ flowchart TD
   Home --> Journal[/journal]
   Home --> Profile[/profile]
   Home --> Rooms[/invites]
+  Home --> Auth[/auth, /login, /register]
   Create -->|sessionStorage vintarot:new-reading| Room[/room?ritual=1]
   Guidebook --> Card[/guidebook/:card]
   Room -->|room state and drawing| APIs[API routes]
   Journal --> Records[/api/records and saved-readings]
 ```
 
-- `/` is `app/page.tsx`, which resolves the optional ChatGPT user and renders `VinTarot` without children for the Home composition.
+- `/` is `app/page.tsx`, which resolves the optional local member session and renders `VinTarot` with the member shell projection for the Home composition.
+- `/auth` is the canonical local member-auth screen; `/login`, `/register`, `/forgot-password`, and `/reset-password` are mode-specific entry points, while `/auth/complete` completes first-time Google registration.
+- `/api/auth/` exposes registration, login, logout, session lookup, email verification/resend, password reset, Google start/callback, and Google completion handlers. They share `app/api/auth/route-handlers.ts` and apply the existing origin/boundary wrappers.
 - `/create` is `app/create/page.tsx` plus `app/create/ritual.tsx`. It stores a bounded question/topic/context draft in `sessionStorage` and redirects to `/room?ritual=1`.
 - `/room` is `app/room/page.tsx` plus `app/room/room.tsx`. It loads the catalog, restores a room or draft, manages shuffle/fan/spread interactions, persists state, and opens the reading panel.
 - `app/[section]/page.tsx` allows `decks`, `guidebook`, `journal`, `daily-spread`, `game`, `community`, `book`, `bookings`, `invites`, and `profile`; `decks` is a compatibility alias for the guidebook.
@@ -65,23 +70,25 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  Request[Incoming request] --> Platform{ChatGPT request headers available?}
-  Platform -->|yes| User[Authenticated user identity]
-  Platform -->|no| Cookie{vintarot_guest cookie valid?}
+  Request[Incoming request] --> Session{natarot_session valid?}
+  Session -->|yes| Member[Local member session]
+  Session -->|no| Cookie{vintarot_guest cookie valid?}
   Cookie -->|yes| Guest[Existing guest owner]
   Cookie -->|no| NewGuest[Random guest owner + HttpOnly cookie]
-  User --> Owner[ReadingOwner user]
+  Member --> Owner[ReadingOwner user]
   Guest --> Owner2[ReadingOwner guest]
   NewGuest --> Owner2
   Owner --> RecordsUser[User-scoped records/rooms/readings]
   Owner2 --> RecordsGuest[Guest-scoped rooms/readings]
 ```
 
-- `app/chatgpt-auth.ts` reads the platform-owned `oai-authenticated-user-*` headers and safely validates return paths for sign-in/sign-out navigation. It does not implement OAuth routes.
-- `lib/request-identity.ts` treats the framework/platform helper as the authentication boundary and does not trust arbitrary request headers. It returns a `RequestIdentity` with a user or guest owner.
-- `lib/tarot-guest.ts` creates/reads the `vintarot_guest` cookie, derives `Secure` from the effective request protocol, and provides guest ownership for Tarot sessions.
-- `app/api/records`, `app/api/rooms`, Tarot session/draw/reading/follow-up routes, and saved-reading routes use server-side ownership checks. Authenticated saved readings require a real platform user; guest Save opens sign-in.
-- `deploy/nginx/natarot-http.conf` clears the platform identity headers on the standalone VPS topology. This is an explicit deployment fact and means that topology falls back to guest identity unless a different trusted auth boundary is introduced.
+- `lib/member-auth.ts` stores normalized member records, PBKDF2 password hashes, hashed opaque session/token values, verification/reset tokens, and Google subjects. The `natarot_session` cookie is HttpOnly, SameSite=Lax, optionally Secure, and has a 30-day maximum age.
+- `lib/google-oauth.ts` implements Google authorization-code flow with a hashed one-time state, PKCE verifier, safe return path, provider identity validation, and no provider token persistence.
+- `lib/auth-email.ts` sends bilingual verification and password-reset links through the configured Resend boundary; credentials and tokens remain runtime-only.
+- `lib/request-identity.ts` first resolves a valid local member session through `lib/tarot-guest.ts`, then falls back to the `vintarot_guest` bearer cookie. It returns a `RequestIdentity` with a member or guest owner.
+- `tests/f001-identity-boundary.test.ts` proves spoofed `oai-authenticated-user-*` headers cannot impersonate another owner in the canonical product source. No `app/chatgpt-auth.ts` or platform-header login implementation exists at this baseline.
+- `app/api/records`, `app/api/rooms`, Tarot session/draw/reading/follow-up routes, and saved-reading routes use server-side ownership checks. Authenticated saved readings require a local member session; guest Save remains sign-in gated.
+- `deploy/nginx/natarot-http.conf` still controls forwarded protocol/host behavior in the standalone topology. Platform identity headers are not a trusted auth mechanism in this source baseline.
 
 ### Security observations carried forward
 
@@ -121,6 +128,8 @@ The draw boundary is `lib/tarot-draw.ts` and `app/api/tarot/draw/route.ts`. The 
 
 The browser-side Room state carries the current phase, question/context, spread, draw plan, selected cards, positions, orientation, notes, drawing paths, and text marks. `/api/rooms` validates a bounded state schema and uses optimistic revision updates for owner/member writes.
 
+The current reading service performs at most one retry after an invalid provider response. It emits metadata-only failure stages and persists only a valid final reading; configuration, upstream, rate-limit, and persistence failures are not silently retried by this application boundary.
+
 ## 6. AI provider flow and contracts
 
 ```mermaid
@@ -137,8 +146,9 @@ flowchart LR
   Persist --> Payload[reading_payload + compatibility columns]
 ```
 
-- Provider selection and server-only configuration are in `lib/ai/factory.ts`.
+- Provider selection and server-only configuration are in `lib/ai/factory.ts` and `lib/runtime.ts`.
 - Transport retry/timeout behavior is in `lib/ai/http.ts`; provider-specific request envelopes are in `openai.ts`, `gemini.ts`, and `deepseek.ts`.
+- `lib/ai/diagnostics.ts`, `lib/tarot-reading-service.ts`, and `lib/tarot-reading-route.ts` classify invalid responses by allowlisted stage, card counts, schema path/code, provider/model, prompt version, attempt, and retry decision without logging customer/provider content.
 - Prompt text and provider JSON contracts are in `lib/ai/prompts/tarot-reading.ts`; the selected V5 knowledge materials are assembled by `lib/ai/knowledge-v5.ts` and `lib/tarot-reading-context.ts`.
 - `lib/tarot-interpretation.ts` validates bounded fields, card evidence coverage, personal opening requirements, cardinality, disclaimer, and persisted payload shape.
 - `lib/tarot-reading-compat.ts` preserves the v2/v3 legacy-row path when `reading_payload` is null.
@@ -148,6 +158,7 @@ flowchart LR
 
 The tracked schema in `db/schema.ts` and migrations currently cover:
 
+- `members`, `auth_sessions`, `auth_tokens`, and `oauth_states`: local member accounts, opaque sessions, email/password-reset/Google-completion tokens, and OAuth state/PKCE records from `drizzle/0004_member_auth.sql`.
 - `records`: owner-scoped profile, journal, practice, game, reader, and future booking-shaped data.
 - `rooms` and `room_members`: owner/member room state, invite token, revision, timestamps.
 - `decks` and `tarot_cards`: active deck/card metadata and image URLs.
@@ -156,31 +167,33 @@ The tracked schema in `db/schema.ts` and migrations currently cover:
 - `reading_sessions` and `reading_cards`: owner-scoped question, chosen spread, card identities, orientations, and positions.
 - `readings`: normalized `reading_payload` plus compatibility columns, provider model, prompt version, and timestamps.
 
-Foreign keys connect cards to decks, meanings to cards, templates to categories, positions to templates, sessions to categories/templates, and reading cards/readings to sessions. `lib/tarot-repository.ts` is the application data-access boundary for the Tarot subsystem.
+Foreign keys connect auth sessions/tokens to members, cards to decks, meanings to cards, templates to categories, positions to templates, sessions to categories/templates, and reading cards/readings to sessions. `lib/tarot-repository.ts` is the application data-access boundary for the Tarot subsystem.
 
 `db/index.ts` consumes the Cloudflare `DB` binding through the runtime environment. `lib/sqlite-d1.ts` adapts Node's `node:sqlite` connection to the D1-shaped API used by the app. `scripts/node-migrate.mjs` applies ordered SQL files to the standalone database path, defaulting to `/var/lib/natarot/natarot.sqlite` unless `NATAROT_DB_PATH` is set.
 
 ## 8. Deployment architecture
 
-Source configuration declares D1 binding `DB` and no R2 binding in `.openai/hosting.json`. `vite.config.ts` configures Vinext, Sites, Cloudflare bindings, and the local profile. `npm run dev` uses Vinext on the portable profile; `npm start` serves the built Worker through Wrangler with local state; managed Linux uses the verified build wrapper.
+Source configuration declares D1 binding `DB` and no R2 binding in `.openai/hosting.json`. `vite.config.ts` configures Vinext, Sites, Cloudflare bindings, and the local profile; the vendored `build/sites-vite-plugin.ts` produces the Sites build artifact. `npm run dev` uses Vinext on the portable profile; `npm start` serves the built Worker through Wrangler with local state; managed Linux uses the verified build wrapper.
 
 The tracked VPS configuration runs a Node Vinext server on `127.0.0.1:8787`, runs migrations from systemd before start, and proxies through Nginx. Nginx sets forwarded protocol/host and security headers, clears platform auth headers, and forwards upgrade traffic. The project state documents a separate Sites deployment and a VPS deployment; this bootstrap does not contact production or independently verify those claims.
 
 ## 9. Testing architecture
 
-The repository has 62 `tests/*.test.ts` files using Node's `node:test` API and TypeScript execution through `tsx`; `package.json` does not define a dedicated `test` script. The test surface includes:
+The repository has 71 tracked `tests/*.test.ts` files using Node's `node:test` API and TypeScript execution through `tsx`; `package.json` does not define a dedicated `test` script. The clean `4db459a` baseline run reported 339 tests with 0 failures. The test surface includes:
 
 - UI/brand/route contract tests for Home, Create, Guidebook, Room, reading panel, mobile and motion behavior.
-- Auth/identity/origin tests in `f001-identity-boundary.test.ts`, `request-identity.test.ts`, and `server-origin.test.ts`.
+- Member-auth, Google OAuth, email, password-reset, legal-page, profile/logout, F-001 identity, request-identity, guest, and origin tests.
 - Tarot catalog, draw, migration, seed, repository, session, reading service, provider, parser, follow-up, and saved-reading tests.
 - D1-shaped SQLite adapter and deployment contract tests.
+
+The Home tests currently untracked in the user's other worktrees are preserved but are not part of this canonical product baseline or its 339-test count.
 
 The current test matrix and required commands are maintained in `docs/project/TEST_MATRIX.md`.
 
 ## 10. Explicitly unimplemented or not proven by source
 
 - `app/api/integrations/route.ts` returns `video: false`, `payments: false`, `email: false`, and `publicAccess: false`.
-- The hosting config declares no R2 bucket. No Google Drive, QR export, image export, public reading link, membership, affiliate, or admin subsystem was found in the inspected source.
+- The hosting config declares no R2 bucket. No Google Drive, QR export, image export, public reading link, subscription-entitlement, affiliate, or admin subsystem was found in the inspected source; local member authentication is documented above.
 - Booking UI exists, but booking creation is rejected as not open and payment/notification services are not connected.
 - The room invite/member flow is implemented as private room sharing; it is not evidence of a public reading-share feature.
 - A configured AI provider is a runtime concern; the local repository can pass contract tests without provider credentials, and this mission does not expose or provision any credential.

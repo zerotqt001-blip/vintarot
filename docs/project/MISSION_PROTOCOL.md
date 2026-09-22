@@ -16,6 +16,16 @@ The phases below are gates, not merely headings. A later phase cannot silently c
 - Do not expose secrets. Do not put credentials in docs, tests, logs, browser storage, commits, or responses.
 - Record discrepancies, suspected security issues, missing coverage, and blocked work instead of hiding them.
 
+## Canonical baseline gate
+
+Before implementation, every mission must identify all three values:
+
+- **CANONICAL BASELINE:** the exact commit or ref whose product behavior is authoritative for the mission.
+- **CURRENT HEAD:** the exact commit or ref from which implementation would run.
+- **RELATIONSHIP TO CANONICAL BASELINE:** equal, an explicitly approved descendant, or divergent/stale.
+
+If `CURRENT HEAD` is neither the canonical baseline nor an explicitly approved descendant, stop implementation and report the divergence. Do not silently implement from a stale ancestor or import newer history without an explicit reconciliation decision.
+
 ## PHASE 0 — Baseline
 
 **Entry:** A mission request exists.
@@ -24,12 +34,13 @@ The phases below are gates, not merely headings. A later phase cannot silently c
 
 1. Read `AGENTS.md` and `docs/PROJECT_STATE.md`.
 2. Inspect repository root, current branch, `HEAD`, tracking status, staged files, modified files, untracked files, and relevant ignored files.
-3. Record the baseline before creating or changing mission files.
-4. Identify existing work that the mission must preserve.
+3. Record **CANONICAL BASELINE**, **CURRENT HEAD**, and **RELATIONSHIP TO CANONICAL BASELINE** before creating or changing mission files.
+4. Record the baseline before creating or changing mission files.
+5. Identify existing work that the mission must preserve.
 
 **Exit gate:** The baseline includes exact branch/HEAD/status evidence and a list of intended mission files. If the tree is dirty, the mission continues only with explicit preservation boundaries.
 
-**Stop:** Any action would overwrite user work, or the checkout is detached and the mission requires branch integration.
+**Stop:** Any action would overwrite user work, the checkout is detached and the mission requires branch integration, or the current HEAD is a stale/divergent baseline without explicit approval.
 
 ## PHASE 1 — Discovery
 
@@ -61,7 +72,7 @@ The phases below are gates, not merely headings. A later phase cannot silently c
 
 **Entry:** Impact analysis is complete.
 
-**Required actions:** Write a bite-sized plan with exact files, interfaces, acceptance criteria, tests, rollback/compatibility considerations, and phase gates. Prefer an existing component or extension over a shared refactor. If the task is substantial, save the plan under `docs/superpowers/plans/` and review it for placeholders and contradictions.
+**Required actions:** Write a bite-sized plan with exact files, interfaces, acceptance criteria, tests, rollback/compatibility considerations, and phase gates. The plan must repeat the canonical baseline, current HEAD, and their relationship. Prefer an existing component or extension over a shared refactor. If the task is substantial, save the plan under `docs/superpowers/plans/` and review it for placeholders and contradictions.
 
 **Exit gate:** Another engineer can execute the plan without guessing the target files, contract, tests, or stop conditions.
 

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { TAROT_PROMPT_VERSION } from "../lib/ai/prompts/tarot-reading";
 import type { TarotAIProvider } from "../lib/ai/provider";
 import { TarotAIError } from "../lib/ai/provider";
 import type { TarotProviderOutputV3 } from "../lib/ai/types";
@@ -108,6 +109,7 @@ function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
     getMeaning: async () => null,
     getMeaningPair: async (cardId) => ({ upright: meaning(cardId, "upright"), reversed: meaning(cardId, "reversed") }),
     saveReading: async () => "saved-reading",
+    updateReadingPayload: async () => false,
     ...overrides,
   };
 }
@@ -162,17 +164,20 @@ test("orchestrates one owner-checked V5 context, provider call, and persistence"
   assert.equal(result.readingId, saved?.id);
   assert.equal(result.provider, "openai");
   assert.equal(result.modelName, "openai:test-model");
-  assert.equal(result.promptVersion, "tarot-reading-v4.1");
+  assert.equal(result.promptVersion, TAROT_PROMPT_VERSION);
   assert.match(result.reading.directAnswer, /spread-level direct answer/);
   assert.equal(result.reading.cardEvidence.length, 3);
   assert.deepEqual(result.reading.cardEvidence.map((card) => card.readingCardId), cards().map((card) => card.id));
   assert.equal(result.reading.cardEvidence[1].position.key, template.positions[1].key);
+  assert.equal(result.reading.followUpSuggestions.length, 3);
+  assert.doesNotMatch(result.reading.followUpSuggestions.join(" "), /Explore the pattern/);
+  assert.equal(saved?.reading.followUpSuggestions.join(" | "), result.reading.followUpSuggestions.join(" | "));
   assert.equal(result.reading.cardEvidence[1].orientation, "reversed");
   assert.equal(saved?.reading.directAnswer, result.reading.directAnswer);
   assert.equal(saved?.reading.cardEvidence.length, result.reading.cardEvidence.length);
   assert.deepEqual(saved?.reading, result.reading);
   assert.equal(saved?.modelName, "openai:test-model");
-  assert.equal(saved?.promptVersion, "tarot-reading-v4.1");
+  assert.equal(saved?.promptVersion, TAROT_PROMPT_VERSION);
 });
 
 test("loads the owner's stored template, exact cards, and requested-locale meaning pairs", async () => {
@@ -292,6 +297,118 @@ test("classifies persistence failure after one provider call", async () => {
       }),
     }),
     (error) => error instanceof TarotReadingServiceError && error.code === "persistence",
+  );
+  assert.equal(providerCalls, 1);
+});
+
+test("retries one invalid provider response, reuses the same context, and persists once", async () => {
+  let providerCalls = 0;
+  let saveCalls = 0;
+  const inputs: unknown[] = [];
+  const events: unknown[] = [];
+  const firstError = new TarotAIError("invalid_response", "safe invalid response", { retryable: true });
+  Object.assign(firstError, {
+    failureStage: "card_evidence_count_invalid",
+    expectedCardCount: 3,
+    actualCardEvidenceCount: 2,
+  });
+
+  const result = await generateTarotReading({
+    repository: repository({ saveReading: async () => { saveCalls += 1; return "saved-reading"; } }),
+    ownerId: "user-service",
+    sessionId: session.id,
+    locale: "en",
+    provider: provider({
+      generateReading: async (input) => {
+        providerCalls += 1;
+        inputs.push(input);
+        if (providerCalls === 1) throw firstError;
+        return provider().generateReading(input);
+      },
+    }),
+    onProviderFailure: (event) => events.push(event),
+  });
+
+  assert.equal(providerCalls, 2);
+  assert.equal(saveCalls, 1);
+  assert.strictEqual(inputs[0], inputs[1]);
+  assert.equal(result.reading.cardEvidence.length, 3);
+  assert.equal(events.length, 1);
+  const event = events[0] as Record<string, unknown>;
+  assert.equal(event.attemptNumber, 1);
+  assert.equal(event.failureStage, "card_evidence_count_invalid");
+  assert.equal(event.expectedCardCount, 3);
+  assert.equal(event.actualCardEvidenceCount, 2);
+  assert.equal(event.retryScheduled, true);
+  assert.doesNotMatch(JSON.stringify(events), /What is the next useful step|Keep this reflective|spread-level direct answer|Choose one practical next step/);
+});
+
+test("returns the safe failure after exactly two invalid provider responses without persistence", async () => {
+  let providerCalls = 0;
+  let saveCalls = 0;
+  const firstError = new TarotAIError("invalid_response", "first safe invalid response", { retryable: true });
+  Object.assign(firstError, { failureStage: "card_evidence_count_invalid", expectedCardCount: 3, actualCardEvidenceCount: 2 });
+  const secondError = new TarotAIError("invalid_response", "second safe invalid response", { retryable: true });
+  Object.assign(secondError, { failureStage: "position_key_invalid", expectedCardCount: 3, actualCardEvidenceCount: 3 });
+  const events: unknown[] = [];
+
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository({ saveReading: async () => { saveCalls += 1; return "saved-reading"; } }),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({
+        generateReading: async () => {
+          providerCalls += 1;
+          throw providerCalls === 1 ? firstError : secondError;
+        },
+      }),
+      onProviderFailure: (event) => events.push(event),
+    }),
+    (error) => error === secondError,
+  );
+
+  assert.equal(providerCalls, 2);
+  assert.equal(saveCalls, 0);
+  assert.deepEqual(events.map((event) => [
+    (event as Record<string, unknown>).attemptNumber,
+    (event as Record<string, unknown>).failureStage,
+    (event as Record<string, unknown>).retryScheduled,
+  ]), [[1, "card_evidence_count_invalid", true], [2, "position_key_invalid", false]]);
+});
+
+test("does not retry non-invalid-response provider errors", async () => {
+  for (const code of ["configuration", "upstream", "timeout"] as const) {
+    let providerCalls = 0;
+    const expected = new TarotAIError(code, `safe ${code}`, { retryable: code !== "configuration" });
+    await assert.rejects(
+      generateTarotReading({
+        repository: repository(),
+        ownerId: "user-service",
+        sessionId: session.id,
+        locale: "en",
+        provider: provider({ generateReading: async () => { providerCalls += 1; throw expected; } }),
+      }),
+      (error) => error === expected,
+    );
+    assert.equal(providerCalls, 1);
+  }
+});
+
+test("does not retry a non-retryable invalid provider response", async () => {
+  let providerCalls = 0;
+  const expected = new TarotAIError("invalid_response", "safe non-retryable invalid response", { retryable: false });
+
+  await assert.rejects(
+    generateTarotReading({
+      repository: repository(),
+      ownerId: "user-service",
+      sessionId: session.id,
+      locale: "en",
+      provider: provider({ generateReading: async () => { providerCalls += 1; throw expected; } }),
+    }),
+    (error) => error === expected,
   );
   assert.equal(providerCalls, 1);
 });

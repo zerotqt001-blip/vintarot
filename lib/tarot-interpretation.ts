@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TarotAIDiagnosticDetails, TarotProviderFailureStage } from "./ai/diagnostics";
 import type { TarotLocale, TarotOrientation, TarotReadingCardContext, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 
 export { TAROT_PROMPT_VERSION as PROMPT_VERSION } from "./ai/prompts/tarot-reading";
@@ -67,6 +68,23 @@ const readingCardEvidenceSchema = z.object({
   interpretation: boundedProviderString(4000),
 }).strict();
 
+const supplementaryDrawSchema = z.object({
+  id: z.string().min(1).max(100),
+  requestId: z.string().min(1).max(100),
+  sequence: z.number().int().min(1).max(3),
+  question: z.string().min(1).max(1000),
+  relationship: z.literal("clarification"),
+  card: z.object({
+    id: z.string().min(1).max(100),
+    nameEn: z.string().min(1).max(200),
+    nameVi: z.string().min(1).max(200),
+    arcana: z.string().min(1).max(50),
+    suit: z.string().max(100).nullable(),
+  }).strict(),
+  orientation: z.enum(["upright", "reversed"]),
+  answer: boundedProviderString(3000),
+}).strict();
+
 export const tarotReadingPayloadSchema = z.object({
   directAnswer: directAnswerSchema,
   // Stored payloads intentionally retain the wider v2/v3 bounds so historical readings remain readable.
@@ -77,6 +95,7 @@ export const tarotReadingPayloadSchema = z.object({
   deeperReading: deeperReadingSchema,
   followUpSuggestions: z.array(followUpSuggestionSchema).max(4),
   disclaimer: boundedProviderString(500),
+  supplementaryDraws: z.array(supplementaryDrawSchema).max(3).optional(),
 }).strict();
 
 export type ReadingPayload = TarotReadingPayload;
@@ -112,30 +131,72 @@ export function assertPersonalOpening(value: string, expectedCards: TarotReading
   }
 }
 
+export class TarotReadingValidationError extends Error {
+  readonly details: TarotAIDiagnosticDetails;
+
+  constructor(message: string, details: TarotAIDiagnosticDetails) {
+    super(message);
+    this.name = "TarotReadingValidationError";
+    this.details = details;
+  }
+}
+
+function schemaValidationError(error: z.ZodError, label = "Invalid Tarot provider output"): TarotReadingValidationError {
+  const issue = error.issues[0];
+  return new TarotReadingValidationError(`${label}: ${issue?.path.join(".") || "reading"}`, {
+    failureStage: "reading_schema_invalid",
+    schemaIssuePath: issue?.path.join(".") || "reading",
+    schemaIssueCode: issue?.code,
+  });
+}
+
+function providerValidationError(message: string, failureStage: TarotProviderFailureStage, details: Omit<TarotAIDiagnosticDetails, "failureStage"> = {}) {
+  return new TarotReadingValidationError(message, { failureStage, ...details });
+}
+
 export function parseReadingPayload(value: unknown, expectedCards: TarotReadingCardContext[], locale: TarotLocale): TarotReadingPayload {
   const parsed = tarotProviderOutputSchema.safeParse(value);
-  if (!parsed.success) throw new Error(`Invalid Tarot provider output: ${parsed.error.issues[0]?.path.join(".") || "reading"}`);
+  if (!parsed.success) throw schemaValidationError(parsed.error);
 
   const expectedIds = expectedCards.map((card) => card.readingCardId);
   if (expectedIds.length === 0 || expectedIds.length > 10 || new Set(expectedIds).size !== expectedIds.length) {
     throw new Error("Invalid expected card coverage for the session");
   }
-  assertPersonalOpening(parsed.data.direct_answer, expectedCards);
+  try {
+    assertPersonalOpening(parsed.data.direct_answer, expectedCards);
+  } catch (error) {
+    throw providerValidationError(
+      error instanceof Error ? error.message : "Invalid direct answer opening.",
+      "reading_schema_invalid",
+      { schemaIssueCode: "personal_opening" },
+    );
+  }
 
   const actualIds = parsed.data.card_evidence.map((evidence) => evidence.reading_card_id);
-  if (
-    actualIds.length !== expectedIds.length
-    || new Set(actualIds).size !== actualIds.length
-    || actualIds.some((id) => !expectedIds.includes(id))
-  ) {
-    throw new Error("Invalid card evidence coverage for the session");
+  if (actualIds.length !== expectedIds.length) {
+    throw providerValidationError("Invalid card evidence coverage for the session.", "card_evidence_count_invalid", {
+      expectedCardCount: expectedIds.length,
+      actualCardEvidenceCount: actualIds.length,
+    });
+  }
+  if (new Set(actualIds).size !== actualIds.length || actualIds.some((id) => !expectedIds.includes(id))) {
+    throw providerValidationError("Invalid card evidence coverage for the session.", "card_identity_invalid", {
+      expectedCardCount: expectedIds.length,
+      actualCardEvidenceCount: actualIds.length,
+    });
   }
 
   const providerById = new Map(parsed.data.card_evidence.map((evidence) => [evidence.reading_card_id, evidence]));
   const cardEvidence = expectedCards.map((expected) => {
     const provider = providerById.get(expected.readingCardId);
-    if (!provider) throw new Error("Invalid card evidence coverage for the session");
-    if (provider.position_key !== expected.position.key) throw new Error("Invalid position coverage for the session");
+    if (!provider) throw providerValidationError("Invalid card evidence coverage for the session.", "card_identity_invalid", {
+      expectedCardCount: expectedIds.length,
+      actualCardEvidenceCount: actualIds.length,
+    });
+    if (provider.position_key !== expected.position.key) throw providerValidationError("Invalid position coverage for the session.", "position_key_invalid", {
+      expectedCardCount: expectedIds.length,
+      actualCardEvidenceCount: actualIds.length,
+    });
     return {
       readingCardId: expected.readingCardId,
       position: expected.position,
@@ -156,7 +217,7 @@ export function parseReadingPayload(value: unknown, expectedCards: TarotReadingC
     disclaimer: disclaimer[locale],
   };
   const result = tarotReadingPayloadSchema.safeParse(normalized);
-  if (!result.success) throw new Error(`Invalid Tarot reading payload: ${result.error.issues[0]?.path.join(".") || "reading"}`);
+  if (!result.success) throw schemaValidationError(result.error, "Invalid Tarot reading payload");
   return result.data;
 }
 

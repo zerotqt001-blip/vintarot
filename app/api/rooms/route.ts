@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       const room: any = await db().prepare("SELECT id FROM rooms WHERE invite=?").bind(body.invite).first();
       if (!room) return respond({ error: "Invitation not found" }, { status: 404 });
       await db().prepare("INSERT OR IGNORE INTO room_members(id,room,user,name) VALUES(?,?,?,?)")
-        .bind(crypto.randomUUID(), room.id, user.userId, user.fullName || user.email.split("@")[0])
+        .bind(crypto.randomUUID(), room.id, user.userId, user.displayName)
         .run();
       return respond({ id: room.id });
     }

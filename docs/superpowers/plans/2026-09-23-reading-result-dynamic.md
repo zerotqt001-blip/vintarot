@@ -22,6 +22,7 @@
 - Do not add unsupported Share Image or QR infrastructure; preserve any existing implementation and report any absent capability accurately.
 - Do not deploy a checkout that could roll back newer production work. Determine the actual production revision and integrate semantically before release.
 - Before VPS deployment, create and verify a fresh backup, keep the current release and two previous successful releases when the installed retention mechanism supports it, and never print secrets or database contents.
+- Apply the production storage guard in docs/operations/natarot-production-storage-guard.md: serialize deploy and cleanup with the shared flock, record disk/release/backup state before the switch, and run the idempotent release-pruning step only after health and browser smoke checks pass.
 - Before any completion claim, run the relevant fresh tests, typecheck, build, browser checks, diff check, and deployment smoke checks and report their actual exit status.
 
 ---

@@ -1,4 +1,11 @@
-import { resolveSpreadGeometry } from "./spread-geometry";
+import {
+  LEGACY_ROOM_BOARD_BOUNDS,
+  projectNormalizedSpreadGeometry,
+  resolveNormalizedSpreadGeometry,
+  resolveTarotSpreadGeometry,
+  type SpreadGeometryInput,
+} from "./tarot-spread-geometry";
+import type { ResolvedTarotSpread } from "./tarot-spread";
 
 export type PanOffset = { x: number; y: number };
 
@@ -7,9 +14,10 @@ export type CardPosition = { x: number; y: number };
 export type SpreadLayoutPosition = CardPosition & {
   scale: number;
   rotation: number;
+  zIndex?: number;
 };
 
-type SpreadPositionLike = { key: string };
+export type SpreadPositionLike = SpreadGeometryInput;
 
 export type PointerPoint = { x: number; y: number };
 
@@ -36,15 +44,25 @@ const MAX_CARD_COLUMNS = 5;
 const MANY_CARD_COLUMNS = 3;
 
 /**
- * Resolve the inspected Moonlight arrangement from semantic position keys.
- * The returned coordinates are in the existing 900px Room table coordinate
- * system, so slots and face-up cards can share exactly the same geometry.
+ * Resolve the semantic Moonlight arrangement through normalized geometry, then
+ * project it into the existing Room coordinate system for compatibility.
  */
-export function resolveSpreadLayout(layoutKey: string | undefined, positions: readonly SpreadPositionLike[]): SpreadLayoutPosition[] {
-  return resolveSpreadGeometry(
-    layoutKey,
-    positions.map((position, index) => ({ key: position.key, order: index })),
-  ).points.map(({ x, y, scale, rotation }) => ({ x, y, scale, rotation }));
+export function resolveSpreadLayout(spread: ResolvedTarotSpread): SpreadLayoutPosition[];
+export function resolveSpreadLayout(layoutKey: string | undefined, positions: readonly SpreadPositionLike[]): SpreadLayoutPosition[];
+export function resolveSpreadLayout(
+  layoutKeyOrSpread: string | undefined | ResolvedTarotSpread,
+  positions: readonly SpreadPositionLike[] = [],
+): SpreadLayoutPosition[] {
+  const normalized = typeof layoutKeyOrSpread === "object" && layoutKeyOrSpread !== null
+    ? resolveTarotSpreadGeometry(layoutKeyOrSpread)
+    : resolveNormalizedSpreadGeometry(layoutKeyOrSpread, positions);
+  return projectNormalizedSpreadGeometry(normalized, LEGACY_ROOM_BOARD_BOUNDS).map(({ x, y, scale, rotation, zIndex }) => ({
+    x,
+    y,
+    scale,
+    rotation,
+    zIndex,
+  }));
 }
 
 /** Keep the camera movement inside the usable tabletop area. */
@@ -72,6 +90,16 @@ export function spreadCardPosition(index: number, spreadCount: number): CardPosi
     x: (column - (columns - 1) / 2) * CARD_X_STEP,
     y: row * CARD_Y_STEP,
   };
+}
+
+/** Prefer the resolved semantic layout while retaining the legacy grid fallback. */
+export function resolveCardPosition(
+  index: number,
+  spreadCount: number,
+  layout?: readonly Pick<SpreadLayoutPosition, "x" | "y">[],
+): CardPosition {
+  const resolved = layout?.[Math.max(0, Math.floor(index))];
+  return resolved ? { x: resolved.x, y: resolved.y } : spreadCardPosition(index, spreadCount);
 }
 
 export function pointerDistance(a: PointerPoint, b: PointerPoint): number {

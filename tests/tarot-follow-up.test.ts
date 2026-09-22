@@ -95,6 +95,7 @@ function repository(overrides: Partial<TarotRepository> = {}): TarotRepository {
     getMeaning: async () => null,
     getMeaningPair: async () => null,
     saveReading: async () => "unexpected-save",
+    updateReadingPayload: async () => false,
     ...overrides,
   };
 }
@@ -177,5 +178,30 @@ test("does not save follow-up transcripts and preserves provider errors", async 
     }),
     (error) => error === expected ? expected.retryable : false,
   );
+  assert.equal(saveCalls, 0);
+});
+
+test("retries one retryable invalid follow-up response without saving a transcript", async () => {
+  let providerCalls = 0;
+  let saveCalls = 0;
+  const invalid = new TarotAIError("invalid_response", "safe invalid follow-up", { retryable: true });
+
+  const result = await generateTarotFollowUp({
+    repository: repository({ saveReading: async () => { saveCalls += 1; return "saved"; } }),
+    owner: { kind: "user", userId: "owner-1" },
+    sessionId: session.id,
+    locale: "en",
+    followUpQuestion: "What should I notice first?",
+    provider: provider({
+      generateFollowUp: async () => {
+        providerCalls += 1;
+        if (providerCalls === 1) throw invalid;
+        return { answer: "Start with the smallest observable step." };
+      },
+    }),
+  });
+
+  assert.equal(result.answer, "Start with the smallest observable step.");
+  assert.equal(providerCalls, 2);
   assert.equal(saveCalls, 0);
 });

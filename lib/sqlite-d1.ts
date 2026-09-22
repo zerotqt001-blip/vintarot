@@ -5,6 +5,10 @@ export type SqliteConnection = {
   prepare(sql: string): unknown;
 };
 
+export type TransactionalD1Database = D1Database & {
+  transaction<T>(work: () => Promise<T>): Promise<T>;
+};
+
 type SqliteValue = string | number | bigint | null | Uint8Array | ArrayBuffer;
 
 type SqliteStatement = {
@@ -77,14 +81,75 @@ export function createSqliteD1Database(sqlite: SqliteConnection): D1Database {
     return statement as unknown as D1PreparedStatement;
   };
 
+  let batchTail: Promise<void> = Promise.resolve();
+  let activeTransactionDepth = 0;
+
+  async function runStatements<T = unknown>(statements: D1PreparedStatement[]): Promise<D1Result<T>[]> {
+    const results: D1Result<T>[] = [];
+    for (const statement of statements) {
+      results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
+    }
+    return results;
+  }
+
+  function enqueue<T>(operation: () => Promise<T>): Promise<T> {
+    const next = batchTail.then(operation);
+    batchTail = next.then(() => undefined, () => undefined);
+    return next;
+  }
+
   return {
     prepare,
     batch: async <T = unknown>(statements: D1PreparedStatement[]) => {
-      const results: D1Result<T>[] = [];
-      for (const statement of statements) {
-        results.push(await (statement as unknown as { run<T>(): Promise<D1Result<T>> }).run<T>());
-      }
-      return results;
+      if (activeTransactionDepth > 0) return runStatements<T>(statements);
+      return enqueue(async () => {
+        const results: D1Result<T>[] = [];
+        let transactionStarted = false;
+        try {
+          sqlite.exec("BEGIN IMMEDIATE");
+          transactionStarted = true;
+          results.push(...await runStatements<T>(statements));
+          sqlite.exec("COMMIT");
+        } catch (error) {
+          if (transactionStarted) {
+            try {
+              sqlite.exec("ROLLBACK");
+            } catch {
+              // Preserve the original statement failure.
+            }
+          }
+          throw error;
+        }
+        return results;
+      });
     },
-  } as unknown as D1Database;
+    transaction: <T>(work: () => Promise<T>) => {
+      if (activeTransactionDepth > 0) {
+        activeTransactionDepth += 1;
+        return work().finally(() => { activeTransactionDepth -= 1; });
+      }
+      return enqueue(async () => {
+        let transactionStarted = false;
+        try {
+          sqlite.exec("BEGIN IMMEDIATE");
+          transactionStarted = true;
+          activeTransactionDepth = 1;
+          const result = await work();
+          sqlite.exec("COMMIT");
+          return result;
+        } catch (error) {
+          if (transactionStarted) {
+            try {
+              sqlite.exec("ROLLBACK");
+            } catch {
+              // Preserve the original operation failure.
+            }
+          }
+          throw error;
+        } finally {
+          activeTransactionDepth = 0;
+        }
+      });
+    },
+  } as unknown as TransactionalD1Database;
 }

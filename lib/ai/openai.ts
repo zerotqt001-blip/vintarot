@@ -1,18 +1,26 @@
 import {
+  buildTarotClarificationPromptContext,
   buildTarotFollowUpPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
   TAROT_RESPONSE_SCHEMA,
   TAROT_SYSTEM_PROMPT,
 } from "./prompts/tarot-reading";
 import { createTarotHTTPClient, type TarotHTTPDependencies } from "./http";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
+import type { TarotProviderFailureStage } from "./diagnostics";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError, type TarotAIProvider } from "./provider";
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 
-function extractOutputText(value: unknown): string | null {
-  if (typeof value !== "object" || value === null || !("output" in value) || !Array.isArray(value.output)) return null;
+type ExtractedOutputText = { content: string } | { failureStage: Extract<TarotProviderFailureStage, "provider_envelope_invalid" | "provider_content_missing"> };
+
+function extractOutputText(value: unknown): ExtractedOutputText {
+  if (typeof value !== "object" || value === null || !("output" in value) || !Array.isArray(value.output) || value.output.length === 0) {
+    return { failureStage: "provider_envelope_invalid" };
+  }
   for (const output of value.output) {
     if (typeof output !== "object" || output === null || !("content" in output) || !Array.isArray(output.content)) continue;
     for (const content of output.content) {
@@ -23,10 +31,10 @@ function extractOutputText(value: unknown): string | null {
         && content.type === "output_text"
         && "text" in content
         && typeof content.text === "string"
-      ) return content.text;
+      ) return { content: content.text };
     }
   }
-  return null;
+  return { failureStage: "provider_content_missing" };
 }
 
 export function createOpenAIProvider(
@@ -61,9 +69,11 @@ export function createOpenAIProvider(
         }),
       });
 
-      const content = extractOutputText(envelope);
-      if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true });
-      return parseTarotProviderContent(content, input);
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotProviderContent(extracted.content, input);
     },
     async generateFollowUp(input) {
       const envelope = await request(OPENAI_RESPONSES_URL, {
@@ -87,9 +97,39 @@ export function createOpenAIProvider(
         }),
       });
 
-      const content = extractOutputText(envelope);
-      if (content === null) throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true });
-      return parseTarotFollowUpContent(content);
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid follow-up response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotFollowUpContent(extracted.content);
+    },
+    async generateClarification(input) {
+      const envelope = await request(OPENAI_RESPONSES_URL, {
+        method: "POST",
+        headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          instructions: TAROT_CLARIFICATION_SYSTEM_PROMPT,
+          input: buildTarotClarificationPromptContext(input),
+          store: false,
+          temperature: 0.35,
+          max_output_tokens: 2200,
+          text: {
+            format: {
+              type: "json_schema",
+              name: "tarot_clarification",
+              strict: true,
+              schema: TAROT_CLARIFICATION_RESPONSE_SCHEMA,
+            },
+          },
+        }),
+      });
+
+      const extracted = extractOutputText(envelope);
+      if ("failureStage" in extracted) {
+        throw new TarotAIError("invalid_response", "OpenAI returned an invalid clarification response.", { retryable: true, failureStage: extracted.failureStage });
+      }
+      return parseTarotClarificationContent(extracted.content);
     },
   };
 }

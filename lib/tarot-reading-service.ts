@@ -1,8 +1,11 @@
 import { TAROT_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError, type TarotAIProvider } from "./ai/provider";
-import type { TarotLocale, TarotReadingPayload } from "./ai/types";
+import type { TarotProviderFailureStage } from "./ai/diagnostics";
+import type { TarotLocale, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 import type { ReadingOwner } from "./tarot-guest";
+import { parseStoredReading, type StoredReadingRow } from "./tarot-reading-compat";
 import { buildTarotReadingInput } from "./tarot-reading-context";
+import { selectContextualFollowUpSuggestions } from "./tarot-follow-up-suggestions";
 import type { TarotRepository } from "./tarot-repository";
 
 export type TarotReadingServiceErrorCode = "not_found" | "incomplete" | "persistence";
@@ -25,6 +28,22 @@ export type GenerateTarotReadingArgs = {
   sessionId: string;
   locale: TarotLocale;
   provider: TarotAIProvider;
+  onProviderFailure?: (event: TarotProviderFailureEvent) => void;
+};
+
+export type TarotProviderFailureEvent = {
+  attemptNumber: number;
+  provider: TarotAIProvider["id"];
+  modelName: string;
+  promptVersion: string;
+  failureStage?: TarotProviderFailureStage;
+  httpStatus?: number;
+  expectedCardCount: number;
+  actualCardEvidenceCount?: number;
+  schemaIssuePath?: string;
+  schemaIssueCode?: string;
+  retryScheduled: boolean;
+  latencyMs: number;
 };
 
 export type GeneratedTarotReading = {
@@ -38,13 +57,28 @@ export type GeneratedTarotReading = {
   reading: TarotReadingPayload;
 };
 
+export type HydratedTarotReading = {
+  readingId: string;
+  sessionId: string;
+  locale: TarotLocale;
+  modelName: string;
+  promptVersion: string;
+  reading: TarotReadingPayload;
+};
+
 function resolveOwner(args: GenerateTarotReadingArgs): ReadingOwner {
   if (args.owner) return args.owner;
   if (args.ownerId) return { kind: "user", userId: args.ownerId };
   throw new TarotReadingServiceError("not_found", "A reading owner is required.");
 }
 
-export async function generateTarotReading(args: GenerateTarotReadingArgs): Promise<GeneratedTarotReading> {
+type PreparedTarotReadingContext = {
+  owner: ReadingOwner;
+  stored: Awaited<ReturnType<TarotRepository["getSessionForOwner"]>>;
+  input: Awaited<ReturnType<typeof buildTarotReadingInput>>;
+};
+
+async function prepareTarotReadingContext(args: GenerateTarotReadingArgs): Promise<PreparedTarotReadingContext> {
   const owner = resolveOwner(args);
   const stored = await args.repository.getSessionForOwner(args.sessionId, owner);
   if (!stored) throw new TarotReadingServiceError("not_found", "Reading session not found.");
@@ -62,23 +96,102 @@ export async function generateTarotReading(args: GenerateTarotReadingArgs): Prom
     meanings.set(cardId, pair);
   }
 
-  let input;
   try {
-    input = buildTarotReadingInput({ session: stored.session, cards: stored.cards, template, meanings, locale: args.locale });
+    return {
+      owner,
+      stored,
+      input: buildTarotReadingInput({ session: stored.session, cards: stored.cards, template, meanings, locale: args.locale }),
+    };
   } catch (error) {
     if (error instanceof TarotReadingServiceError) throw error;
     throw new TarotReadingServiceError("incomplete", "The saved reading context is incomplete.", { cause: error });
   }
+}
 
-  let reading: TarotReadingPayload;
+function readingCardIdentities(input: PreparedTarotReadingContext["input"]): TarotReadingCardIdentity[] {
+  return input.cards.map(({ readingCardId, orientation, position, card }) => ({ readingCardId, orientation, position, card }));
+}
+
+export async function hydrateStoredTarotReading(args: {
+  repository: TarotRepository;
+  owner: ReadingOwner;
+  sessionId: string;
+  locale: TarotLocale;
+  stored?: StoredReadingRow | null;
+}): Promise<HydratedTarotReading | null> {
+  const prepared = await prepareTarotReadingContext({
+    repository: args.repository,
+    owner: args.owner,
+    sessionId: args.sessionId,
+    locale: args.locale,
+    provider: { id: "openai", model: "stored", generateReading: async () => { throw new Error("stored hydration must not call provider"); } },
+  });
+  const stored = args.stored === undefined ? await args.repository.getLatestReadingForOwner(args.sessionId, args.owner) : args.stored;
+  if (!stored) return null;
   try {
-    reading = await args.provider.generateReading(input);
+    return {
+      readingId: stored.id,
+      sessionId: stored.sessionId,
+      locale: args.locale,
+      modelName: stored.modelName,
+      promptVersion: stored.promptVersion,
+      reading: parseStoredReading(stored, readingCardIdentities(prepared.input), args.locale),
+    };
   } catch (error) {
-    if (error instanceof TarotAIError) throw error;
-    throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true, cause: error });
+    throw new TarotReadingServiceError("persistence", "The stored Tarot reading could not be read.", { cause: error });
+  }
+}
+
+export async function generateTarotReading(args: GenerateTarotReadingArgs): Promise<GeneratedTarotReading> {
+  const prepared = await prepareTarotReadingContext(args);
+  const input = prepared.input;
+
+  let reading: TarotReadingPayload | undefined;
+  const modelName = `${args.provider.id}:${args.provider.model}`;
+  for (let attemptNumber = 1; attemptNumber <= 2; attemptNumber += 1) {
+    const attemptStartedAt = Date.now();
+    try {
+      reading = await args.provider.generateReading(input);
+      break;
+    } catch (error) {
+      const shouldRetry = error instanceof TarotAIError
+        && error.code === "invalid_response"
+        && error.retryable
+        && attemptNumber === 1;
+      if (!(error instanceof TarotAIError)) {
+        throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true, cause: error });
+      }
+      if (error.code !== "invalid_response") throw error;
+
+      const event: TarotProviderFailureEvent = {
+        attemptNumber,
+        provider: args.provider.id,
+        modelName,
+        promptVersion: TAROT_PROMPT_VERSION,
+        failureStage: error.failureStage,
+        httpStatus: error.httpStatus,
+        expectedCardCount: input.cards.length,
+        actualCardEvidenceCount: error.actualCardEvidenceCount,
+        schemaIssuePath: error.schemaIssuePath,
+        schemaIssueCode: error.schemaIssueCode,
+        retryScheduled: shouldRetry,
+        latencyMs: Date.now() - attemptStartedAt,
+      };
+      try {
+        args.onProviderFailure?.(event);
+      } catch {
+        // Diagnostics must never turn a provider failure into a different request failure.
+      }
+      if (shouldRetry) continue;
+      throw error;
+    }
   }
 
-  const modelName = `${args.provider.id}:${args.provider.model}`;
+  if (!reading) throw new TarotAIError("upstream", "Tarot AI provider request failed.", { retryable: true });
+  reading = {
+    ...reading,
+    followUpSuggestions: selectContextualFollowUpSuggestions(reading, input.question, args.locale),
+  };
   const readingId = globalThis.crypto.randomUUID();
   try {
     await args.repository.saveReading({

@@ -1,3 +1,5 @@
+import type { TarotSpreadSemantics } from "./tarot-spread-semantics";
+
 export type TarotLocale = "en" | "vi";
 export type TarotOrientation = "upright" | "reversed";
 
@@ -93,6 +95,7 @@ export type TarotCatalogTemplate = Omit<TarotTemplateSeed, "name" | "description
   name: string;
   description: string;
   positions: TarotCatalogPosition[];
+  semantics?: TarotSpreadSemantics;
 };
 
 export type TarotCatalogCategory = Omit<TarotCategorySeed, "name" | "description"> & {

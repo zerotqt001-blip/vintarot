@@ -13,6 +13,7 @@ import type {
   ReadingSessionRow,
   ReadingTemplateWithPositions,
 } from "./tarot-repository";
+import { localizedTarotSpreadSemantics } from "./tarot-spread-semantics";
 
 export const MAX_READING_QUESTION_LENGTH = 500;
 export const MAX_READING_CONTEXT_LENGTH = 5_000;
@@ -79,7 +80,7 @@ function keywords(value: string): string[] {
   return value.split(/[,·]/).map((part) => part.trim()).filter(Boolean);
 }
 
-function meaningEvidence(row: CardMeaningRow, supplemental?: TarotMeaningEvidence): TarotMeaningEvidence {
+export function meaningEvidence(row: CardMeaningRow, supplemental?: TarotMeaningEvidence): TarotMeaningEvidence {
   // Allowlist V5-only guidance. It may never overwrite localized D1 evidence.
   return {
     ...(supplemental ? {
@@ -151,6 +152,24 @@ export function buildTarotReadingInput(args: BuildTarotReadingInputArgs): TarotR
   const storedCards = [...args.cards].sort((left, right) => left.positionOrder - right.positionOrder || left.id.localeCompare(right.id));
   const positionById = new Map(positions.map((position) => [position.id, position]));
   const domain = inferTarotDomain(args.template.category.slug, question);
+  const semantics = args.template.semantics || localizedTarotSpreadSemantics({
+    categorySlug: args.template.category.slug,
+    categoryName: args.template.category.name,
+    categoryDescription: args.template.category.description,
+    template: {
+      slug: args.template.template.slug,
+      name: args.template.template.name,
+      description: args.template.template.description,
+      spreadType: args.template.template.spreadType,
+      cardCount: args.template.template.cardCount,
+    },
+    positions: positions.map((position) => ({
+      key: position.key,
+      order: position.order,
+      label: position.name,
+      description: position.meaning,
+    })),
+  }, args.locale);
   const cards = storedCards.map((card) => {
     const position = positionById.get(card.spreadPositionId);
     if (!position || position.key !== card.positionKey || position.order !== card.positionOrder) {
@@ -175,6 +194,7 @@ export function buildTarotReadingInput(args: BuildTarotReadingInputArgs): TarotR
       key: args.template.template.slug,
       name: args.template.template.name,
       description: args.template.template.description,
+      semantics,
     },
     cards,
     retrievedGuidance: v5Guidance(domain),

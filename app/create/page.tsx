@@ -1,5 +1,5 @@
 import VinTarot from '../vintarot';
 import CreateRitual from './ritual';
-import {getChatGPTUser} from '../chatgpt-auth';
+import {getPageMember,toMemberShellUser} from '@/lib/member-page';
 export const dynamic='force-dynamic';
-export default async function Page(){const u=await getChatGPTUser();return <VinTarot path="/create" user={u?{name:u.fullName||u.email.split('@')[0],email:u.email}:null}><CreateRitual/></VinTarot>}
+export default async function Page(){return <VinTarot path="/create" user={toMemberShellUser(await getPageMember())}><CreateRitual/></VinTarot>}

@@ -1,4 +1,4 @@
-import { spreadCardPosition } from "./room-motion";
+import { resolveCardPosition, type SpreadLayoutPosition } from "./room-motion";
 import { currentSpreadCatalog, type TarotCatalogTemplate, type TarotDrawPlanCard, type TarotPositionSeed } from "./tarot-catalog";
 
 export type LegacySpreadMatch = {
@@ -68,10 +68,11 @@ export function consumeDrawPlan(
   drawn: DynamicRoomCard[],
   cardNumber: number,
   cardCount: number,
+  layout?: readonly Pick<SpreadLayoutPosition, "x" | "y">[],
 ): { card: DynamicRoomCard; remaining: TarotDrawPlanCard[]; position: { x: number; y: number } } | null {
   const selected = plan.find((card) => card.cardNumber === cardNumber);
   if (!selected || drawn.some((card) => card.cardId === selected.cardId || (card.cardNumber ?? card.id) === selected.cardNumber)) return null;
-  const position = spreadCardPosition(selected.positionOrder, cardCount);
+  const position = resolveCardPosition(selected.positionOrder, cardCount, layout);
   const card: DynamicRoomCard = {
     id: selected.cardNumber,
     cardNumber: selected.cardNumber,

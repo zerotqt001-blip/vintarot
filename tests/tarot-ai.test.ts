@@ -3,17 +3,20 @@ import test from "node:test";
 import { tarotReadingProviderOutputFixture, tarotReadingQualityAssertions, tarotReadingQualityFixture } from "./fixtures/tarot-reading-quality";
 import {
   buildTarotFollowUpPromptContext,
+  buildTarotClarificationPromptContext,
   buildTarotPromptContext,
+  TAROT_CLARIFICATION_SYSTEM_PROMPT,
   TAROT_FOLLOW_UP_RESPONSE_SCHEMA,
   TAROT_FOLLOW_UP_SYSTEM_PROMPT,
+  TAROT_CLARIFICATION_RESPONSE_SCHEMA,
   TAROT_JSON_OUTPUT_CONTRACT,
   TAROT_PROMPT_VERSION,
   TAROT_RESPONSE_SCHEMA,
   TAROT_SYSTEM_PROMPT,
 } from "../lib/ai/prompts/tarot-reading";
 import { createTarotAIProvider } from "../lib/ai/factory";
-import { parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
-import type { TarotFollowUpInput } from "../lib/ai/types";
+import { parseTarotClarificationContent, parseTarotFollowUpContent, parseTarotProviderContent, TarotAIError } from "../lib/ai/provider";
+import type { TarotClarificationInput, TarotFollowUpInput } from "../lib/ai/types";
 import { parseReadingPayload } from "../lib/tarot-interpretation";
 
 function providerOutput(ids = tarotReadingQualityAssertions.cardIds) {
@@ -35,6 +38,15 @@ const followUpInput: TarotFollowUpInput = {
   spread: tarotReadingQualityFixture.spread,
   cards: tarotReadingQualityFixture.cards.map(({ readingCardId, position, card, orientation }) => ({ readingCardId, position, card, orientation })),
   reading: parseReadingPayload(providerOutput(), tarotReadingQualityFixture.cards, "vi"),
+};
+
+const clarificationInput: TarotClarificationInput = {
+  ...followUpInput,
+  supplementaryCard: {
+    card: followUpInput.cards[0].card,
+    orientation: "upright",
+    knowledge: tarotReadingQualityFixture.cards[0].knowledge.upright,
+  },
 };
 
 test("normalizes the provider-neutral output with trusted card metadata", () => {
@@ -119,8 +131,8 @@ test("does not serialize secrets, artwork paths, the full catalog, or raw provid
   assert.match(context, /reading-card-persona/);
 });
 
-test("publishes the versioned v4.1 situation-first prompt contract", () => {
-  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.1");
+test("publishes the versioned v4.2.2 situation-first prompt contract", () => {
+  assert.equal(TAROT_PROMPT_VERSION, "tarot-reading-v4.2.2");
   for (const line of [
     "You are NaTarot's Tarot interpretation engine.",
     "Analyze the complete spread before writing any section.",
@@ -153,6 +165,24 @@ test("publishes the versioned v4.1 situation-first prompt contract", () => {
     "Return reflection_prompts as an empty array unless one or two prompts genuinely help examine a specific assumption or decision.",
     "follow_up_suggestions must be questions or angles the customer can explore through conversation, observation, boundaries, or self-reflection, not invitations to draw additional cards.",
     "Never suggest 'rút thêm lá', 'draw another card', 'ask the cards again', or 'repeat the reading', especially when uncertainty or anxiety is present.",
+    "Use tarot card names primarily in card_evidence: normally keep individual card names out of direct_answer, personal_insights, reflection_prompts, next_steps, deeper_reading, and follow_up_suggestions. Mention a card outside card_evidence only when omitting its name would materially reduce clarity, and treat that as rare.",
+    "Before writing personal_insights, compare each candidate with direct_answer; omit any candidate that restates the main thesis and keep only a new mechanism, blind spot, distinction, consequence, or useful angle. One genuinely new insight is better than two repetitive insights.",
+    "Apply the same test to deeper_reading; return null when it adds no new synthesis.",
+    "Do not introduce somatic or therapy-like language unless the question actually concerns bodily or emotional regulation; avoid constructions such as 'để cơ thể bạn cảm nhận', 'hệ thần kinh', 'một phần trong bạn đang bảo vệ', 'cơ chế bảo vệ', 'tạo không gian cho', or 'ôm lấy cảm xúc' unless genuinely necessary.",
+    "Do not invent arbitrary minutes, days, weeks, deadlines, or numeric routines unless grounded in the question, spread semantics, or actual context.",
+    "When two phrasings express the same meaning, choose the simpler spoken Vietnamese phrasing; prefer concrete verbs and ordinary situations over literary constructions that only sound insightful.",
+    "Before returning JSON, silently check each customer-facing sentence by asking whether an experienced Vietnamese Tarot reader would say it aloud to a client; simplify, rewrite, or remove any sentence that only sounds insightful instead of telling the customer something concrete.",
+    "Make direct_answer follow answer → why → what matters now; do not explain one card after another in the primary reading.",
+    "Keep next_steps practical and proportionate; prefer choosing one delayed task and deciding the next move over invented numeric durations or productivity routines.",
+    "Stop trying to sound profound: when simple Vietnamese communicates the same insight, always choose the simpler Vietnamese.",
+    "Write as if an experienced Vietnamese Tarot reader were sitting across from the customer and explaining the reading aloud; before finalizing each sentence, silently ask whether you would naturally say it, not whether it would look impressive in an article.",
+    "Do not invent poetic imagery merely to make an insight sound deeper; avoid constructed metaphors such as 'mắt bị hút về phía đau', 'phần của chính bạn bị bỏ lại phía sau', 'một điều còn nguyên vẹn', 'một nhịp tiến', 'công việc sống lại', 'đà tự quay lại', or 'gọi tên điều đã mất' unless the expression is genuinely the clearest natural wording.",
+    "Never invent a timeframe unless the user's question or provided context explicitly contains one; Tarot symbolism alone is not sufficient justification for minutes, hours, days, weeks, months, 'tuần này', 'tuần vừa rồi', or an arbitrary deadline, and the customer may choose their own timeframe.",
+    "Target 2 to 3 direct_answer paragraphs; do not produce a fourth paragraph unless essential information would otherwise be lost. Give paragraph one the answer, paragraph two the main situation or pattern, and paragraph three what matters now only if needed; keep secondary insights in personal_insights.",
+    "Before emitting each personal_insight, compare it semantically with direct_answer and omit it if the customer would not learn something new; one strong insight is better than two overlapping insights.",
+    "Treat deeper_reading as an exception and default it to null; only populate it when a genuinely new relationship among multiple parts of the reading is not already present in direct_answer, personal_insights, or next_steps.",
+    "Keep next_steps concrete and remove invented productivity mechanics such as artificial deadlines, arbitrary durations, and numerical routines unless supplied by user context.",
+    "Use ordinary Vietnamese for insight and action titles; prefer clear titles such as 'Bạn đang nhìn nhiều vào điều chưa thành công', 'Bạn đang cho đi nhiều hơn mức cần thiết', or 'Bạn chưa nói ra điều mình đã biết' over titles constructed to sound profound.",
     "Before returning JSON, silently check that the answer addresses the question, describes the situation, distinguishes inference from fact, avoids filler, and preserves reader agency.",
     "Do not invent cards, positions, facts, citations, or events.",
     "Return only valid JSON matching the supplied schema. Do not wrap JSON in markdown.",
@@ -212,6 +242,27 @@ test("parses only the bounded follow-up answer and safely rejects malformed outp
     () => parseTarotFollowUpContent("not-json private provider detail"),
     (error) => error instanceof TarotAIError && error.code === "invalid_response" && error.retryable,
   );
+});
+
+test("serializes a bounded clarification context with one trusted supplementary card", () => {
+  const context = JSON.parse(buildTarotClarificationPromptContext(clarificationInput)) as Record<string, unknown>;
+  assert.equal(context.target_language, "vi");
+  assert.equal(context.question, clarificationInput.question);
+  assert.equal(context.follow_up_question, clarificationInput.followUpQuestion);
+  assert.deepEqual(context.current_reading, clarificationInput.reading);
+  assert.equal((context.clarification_card as Record<string, unknown>).orientation, "upright");
+  assert.equal(((context.clarification_card as Record<string, unknown>).card as Record<string, unknown>).id, clarificationInput.supplementaryCard.card.id);
+  assert.equal("request_id" in context, false);
+});
+
+test("parses only the bounded clarification answer and exposes a strict schema", () => {
+  assert.deepEqual(parseTarotClarificationContent(JSON.stringify({ answer: "Notice the next observable choice." })), { answer: "Notice the next observable choice." });
+  assert.throws(
+    () => parseTarotClarificationContent(JSON.stringify({ answer: "" })),
+    (error) => error instanceof TarotAIError && error.code === "invalid_response" && error.retryable,
+  );
+  assert.equal(TAROT_CLARIFICATION_RESPONSE_SCHEMA.additionalProperties, false);
+  assert.deepEqual(TAROT_CLARIFICATION_RESPONSE_SCHEMA.required, ["answer"]);
 });
 
 type FetchCall = { input: string | URL | Request; init?: RequestInit };
@@ -343,6 +394,52 @@ for (const providerId of ["openai", "gemini", "deepseek"] as const) {
       }
       assert.match(messages[1].content, new RegExp(buildTarotPromptContext(tarotReadingQualityFixture).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     }
+    assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
+  });
+}
+
+for (const providerId of ["openai", "gemini", "deepseek"] as const) {
+  test(`${providerId} sends a dedicated clarification request with the trusted selected card`, async () => {
+    const calls: FetchCall[] = [];
+    const provider = createTarotAIProvider(providerEnv(providerId), {
+      fetch: async (input, init) => {
+        calls.push({ input, init });
+        return jsonResponse(providerEnvelope(providerId, { answer: "Notice the smallest observable choice." }));
+      },
+      timeoutMs: 1_000,
+    });
+
+    assert.ok(provider.generateClarification);
+    const result = await provider.generateClarification(clarificationInput);
+    assert.equal(result.answer, "Notice the smallest observable choice.");
+    const body = JSON.parse(String(calls[0].init?.body)) as Record<string, unknown>;
+    const promptContext = buildTarotClarificationPromptContext(clarificationInput);
+    if (providerId === "openai") {
+      assert.deepEqual(body, {
+        model: "openai-tarot-model",
+        instructions: TAROT_CLARIFICATION_SYSTEM_PROMPT,
+        input: promptContext,
+        store: false,
+        temperature: 0.35,
+        max_output_tokens: 2200,
+        text: { format: { type: "json_schema", name: "tarot_clarification", strict: true, schema: TAROT_CLARIFICATION_RESPONSE_SCHEMA } },
+      });
+    } else if (providerId === "gemini") {
+      assert.deepEqual(body, {
+        systemInstruction: { parts: [{ text: TAROT_CLARIFICATION_SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: [{ text: promptContext }] }],
+        generationConfig: { temperature: 0.35, responseMimeType: "application/json", responseJsonSchema: TAROT_CLARIFICATION_RESPONSE_SCHEMA },
+      });
+    } else {
+      assert.deepEqual(body.model, "deepseek-tarot-model");
+      assert.deepEqual(body.response_format, { type: "json_object" });
+      assert.deepEqual(body.thinking, { type: "disabled" });
+      const messages = body.messages as Array<{ role: string; content: string }>;
+      assert.equal(messages[0].content, TAROT_CLARIFICATION_SYSTEM_PROMPT);
+      assert.match(messages[1].content, /\{"answer":"string"\}/);
+      assert.match(messages[1].content, new RegExp(promptContext.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    assert.match(JSON.stringify(body), /clarification_card/);
     assert.doesNotMatch(String(calls[0].init?.body), /test-provider-key/);
   });
 }
@@ -610,4 +707,36 @@ test("maps malformed V4 output to a safe retryable invalid response with an inte
       && !error.cause.message.includes(providerText)
       && error.cause.message.includes("direct_answer"),
   );
+});
+
+test("classifies invalid provider responses without retaining private content", async () => {
+  const privateQuestion = "private customer question marker";
+  const cases = [
+    ["provider_http_json_invalid", () => jsonReaderResponse(async () => { throw new SyntaxError("private provider body"); })],
+    ["provider_envelope_invalid", () => jsonResponse({ choices: [] })],
+    ["provider_content_missing", () => jsonResponse({ choices: [{ message: {} }] })],
+    ["provider_content_json_invalid", () => jsonResponse({ choices: [{ message: { content: "private provider prose" } }] })],
+    ["reading_schema_invalid", () => jsonResponse(providerEnvelope("deepseek", { ...providerOutput(), direct_answer: "" }))],
+    ["card_evidence_count_invalid", () => jsonResponse(providerEnvelope("deepseek", providerOutput(tarotReadingQualityAssertions.cardIds.slice(0, 2))))],
+    ["card_identity_invalid", () => jsonResponse(providerEnvelope("deepseek", providerOutput([tarotReadingQualityAssertions.cardIds[0], "private-provider-card-id", tarotReadingQualityAssertions.cardIds[2]])))],
+    ["position_key_invalid", () => {
+      const output = providerOutput();
+      output.card_evidence[0].position_key = "private-provider-position";
+      return jsonResponse(providerEnvelope("deepseek", output));
+    }],
+  ] as const;
+
+  for (const [stage, responseFactory] of cases) {
+    const provider = createTarotAIProvider(providerEnv("deepseek"), { fetch: async () => responseFactory() });
+    await assert.rejects(
+      provider.generateReading({ ...tarotReadingQualityFixture, question: privateQuestion }),
+      (error) => {
+        assert.ok(error instanceof TarotAIError);
+        assert.equal(error.failureStage, stage);
+        assert.doesNotMatch(error.message, /private customer question marker|private provider body|private provider prose|private-provider-card-id|private-provider-position/);
+        assert.doesNotMatch(JSON.stringify(error), /private customer question marker|private provider body|private provider prose|private-provider-card-id|private-provider-position/);
+        return true;
+      },
+    );
+  }
 });

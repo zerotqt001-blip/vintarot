@@ -35,9 +35,11 @@ export function createTarotHTTPClient(dependencies: TarotHTTPDependencies = {}) 
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      let responseStatus: number | undefined;
 
       try {
         const response = await fetchFn(input, { ...init, signal: controller.signal });
+        responseStatus = response.status;
         if (!response.ok) {
           await consumeResponse(response);
           const retryable = RETRYABLE_STATUSES.has(response.status);
@@ -46,7 +48,7 @@ export function createTarotHTTPClient(dependencies: TarotHTTPDependencies = {}) 
           throw new TarotAIError(
             "upstream",
             `Tarot AI provider request failed with status ${response.status}.`,
-            { retryable },
+            { retryable, httpStatus: response.status },
           );
         }
 
@@ -56,7 +58,11 @@ export function createTarotHTTPClient(dependencies: TarotHTTPDependencies = {}) 
 
         const timedOut = controller.signal.aborted;
         if (!timedOut && error instanceof SyntaxError) {
-          throw new TarotAIError("invalid_response", "Tarot AI provider returned invalid JSON.", { retryable: true });
+          throw new TarotAIError("invalid_response", "Tarot AI provider returned invalid JSON.", {
+            retryable: true,
+            failureStage: "provider_http_json_invalid",
+            httpStatus: responseStatus,
+          });
         }
         if (attempt === 0) continue;
 

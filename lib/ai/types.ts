@@ -62,6 +62,17 @@ export type TarotReadingCardContext = {
 
 export type TarotReadingCardIdentity = Pick<TarotReadingCardContext, "readingCardId" | "orientation" | "position" | "card">;
 
+export type TarotSupplementaryDraw = {
+  id: string;
+  requestId: string;
+  sequence: number;
+  question: string;
+  relationship: "clarification";
+  card: { id: string; nameEn: string; nameVi: string; arcana: string; suit: string | null };
+  orientation: TarotOrientation;
+  answer: string;
+};
+
 export type TarotReadingInput = {
   knowledgeVersion: "5.0";
   domain: string;
@@ -69,7 +80,7 @@ export type TarotReadingInput = {
   question: string;
   optionalContext: string | null;
   category: { id: string; key: string; name: string } | null;
-  spread: { id: string; key: string; name: string; description: string };
+  spread: { id: string; key: string; name: string; description: string; semantics?: import("../tarot-spread-semantics").TarotSpreadSemantics };
   cards: TarotReadingCardContext[];
   retrievedGuidance: TarotRetrievedGuidance;
   combinationHints: TarotCombinationHint[];
@@ -117,6 +128,7 @@ export type TarotReadingPayload = {
   deeperReading: string | null;
   followUpSuggestions: string[];
   disclaimer: string;
+  supplementaryDraws?: TarotSupplementaryDraw[];
 };
 
 export type TarotFollowUpInput = {
@@ -129,6 +141,23 @@ export type TarotFollowUpInput = {
   reading: TarotReadingPayload;
 };
 
+export type TarotClarificationInput = {
+  locale: TarotLocale;
+  question: string;
+  followUpQuestion: string;
+  category: TarotReadingInput["category"];
+  spread: TarotReadingInput["spread"];
+  cards: TarotFollowUpInput["cards"];
+  reading: TarotReadingPayload;
+  supplementaryCard: {
+    card: TarotReadingCardContext["card"];
+    orientation: TarotOrientation;
+    knowledge: TarotMeaningEvidence;
+  };
+};
+
 export type TarotFollowUpPayload = {
   answer: string;
 };
+
+export type TarotClarificationPayload = TarotFollowUpPayload;

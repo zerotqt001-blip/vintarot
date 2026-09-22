@@ -27,5 +27,6 @@ test("Room exposes the complete Moonlight picker and semantic spread layout", ()
   assert.match(source, /key:'everyday'/);
   assert.match(source, /key:'self-care'/);
   assert.match(source, /resolveSpreadLayout\(/);
-  assert.match(source, /resolveSpreadLayout[^]*spread-slots/);
+  assert.match(source, /const spreadGeometry=resolveNormalizedSpreadGeometry\(/);
+  assert.match(source, /<SpreadBoard geometry=\{spreadGeometry\}/);
 });
