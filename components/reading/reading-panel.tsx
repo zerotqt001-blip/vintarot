@@ -7,6 +7,7 @@ import { FollowUpReading } from "./follow-up-reading";
 import { NextSteps } from "./next-steps";
 import { PersonalInsights } from "./personal-insights";
 import { ReadingHeader } from "./reading-header";
+import { ReadingSpread } from "./reading-spread";
 import { ReflectionPrompts } from "./reflection-prompts";
 import { TarotEvidence } from "./tarot-evidence";
 import type { ReadingPanelProps } from "./reading-types";
@@ -34,6 +35,16 @@ export function ReadingPanel({
       <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {reading ? (
           <>
+            {reading.cardEvidence.length > 0 && (
+              <ReadingSpread
+                items={reading.cardEvidence}
+                artwork={artworkByReadingCardId}
+                locale={locale}
+                spreadType={session.spreadType}
+                spreadName={session.spreadName}
+                t={t}
+              />
+            )}
             {(isLoading || error) && (
               <div className="reading-status px-5 pt-5 sm:px-7" aria-live="polite" aria-busy={isLoading}>
                 {isLoading && <p className="text-sm text-antique-gold">{t("reading.loading")}</p>}

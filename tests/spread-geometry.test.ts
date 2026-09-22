@@ -93,3 +93,18 @@ test("recomposes a ten-card desktop geometry to a readable ordered mobile sequen
     assert.ok(card.left + card.width <= projection.width + 0.01);
   }
 });
+
+test("recomposes a scaled four-card geometry when mobile cards would become too small", () => {
+  const geometry = resolveSpreadGeometry("cross-4", positions("one", "two", "three", "four"));
+  const projection = projectSpreadGeometry(geometry, {
+    width: 390,
+    height: 680,
+    cardAspectRatio: 400 / 647,
+    minCardWidth: 108,
+    maxCardWidth: 174,
+    mobile: true,
+  });
+
+  assert.equal(projection.mode, "ordered");
+  assert.deepEqual(projection.cards.map((card) => card.order), [0, 1, 2, 3]);
+});

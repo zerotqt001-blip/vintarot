@@ -58,15 +58,18 @@ test("Room keeps the guidebook closed until the BookOpen control is used", () =>
 
 test("Room exposes the canonical reading hierarchy in source order", () => {
   const orderedMarkers = [
-    "reading.directAnswer",
+    "<ReadingSpread",
+    "<DirectAnswer",
     "reading.personalInsights",
     "reading.nextSteps",
     "reading.reflectionPrompts",
-    "reading.cardEvidence",
+    "<TarotEvidence",
   ];
   const offsets = orderedMarkers.map((marker) => readingPanelSource.indexOf(marker));
   assert.ok(offsets.every((offset) => offset >= 0), `missing canonical section: ${JSON.stringify(offsets)}`);
   assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right));
+  assert.match(readingPanelSource, /reading\.cardEvidence\.length > 0[\s\S]*?<ReadingSpread/);
+  assert.match(readingPanelSource, /reading\.cardEvidence\.length > 0[\s\S]*?<TarotEvidence/);
 });
 
 test("reading errors have bilingual provider-neutral unavailable and retry labels", () => {

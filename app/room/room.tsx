@@ -178,12 +178,12 @@ export default function Room({user}:{user:{name:string,email:string}|null}){
  const chosen=selected!==null?s.cards.find(c=>c.id===selected):null,meaning=chosen?.face?cards[chosen.id]:null,localizedMeaning=meaning?cardMeaning(meaning,locale):null,currentSpreadName=Object.entries(spreads).find(([,labels])=>labels.join('|')===s.spread.join('|'))?.[0]||'';
  const readingComplete=Boolean(s.sessionId&&s.cards.length>0&&s.cards.length===s.spread.length);
  const artworkByReadingCardId=s.cards.reduce<Record<string,{src:string;alt:string}>>((artwork,card)=>{if(card.readingCardId&&cards[card.id])artwork[card.readingCardId]={src:cards[card.id].moonlightImage,alt:cards[card.id].name};return artwork},{});
- const readingSession={question:s.question||t('room.defaultQuestion'),readerName:user?.name||null,spreadName:s.spread.map(spreadLabel).join(' · '),deckName:s.deck};
  const selectedCategory=catalog.categories.find(category=>category.slug===spreadTopic)||catalog.categories.find(category=>category.id===s.categoryId)||null;
  const selectedTemplate=selectedCategory?.templates.find(template=>template.id===s.spreadTemplateId)||null;
  const activeTemplate=catalog.categories.flatMap(category=>category.templates).find(template=>template.id===s.spreadTemplateId)||selectedTemplate;
  const activePositions=activeTemplate?.positions.length===s.spread.length?activeTemplate.positions:s.spread.map((_,index)=>({key:`position-${index}`}));
  const spreadLayout=resolveSpreadLayout(activeTemplate?.spreadType,activePositions);
+ const readingSession={question:s.question||t('room.defaultQuestion'),readerName:user?.name||null,spreadName:activeTemplate?.name||s.spread.map(spreadLabel).join(' · '),spreadType:activeTemplate?.spreadType||null,deckName:s.deck};
  const closeMobileSheet=()=>setModal('');
  const showGuide=guide&&(!isMobile||s.phase!=='ready');
  const toggleDrawMode=()=>{setDrawMode(v=>!v);setTextMode(false);setTextDraft(null);closeMobileSheet()};
