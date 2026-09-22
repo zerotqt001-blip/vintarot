@@ -120,6 +120,7 @@ export type AdjustCreditsInput = {
   owner: CreditOwner;
   units: number;
   adjustmentKey: string;
+  eligibleFrom?: number;
   reason: string;
   policyVersion?: string;
   policySnapshot?: unknown;
@@ -582,6 +583,7 @@ export function createCreditStore(database: D1Database, now: () => number = Date
           source: "ADMIN",
           units: input.units,
           grantKey: `adjustment:${input.adjustmentKey}`,
+          eligibleFrom: input.eligibleFrom,
           policyVersion: input.policyVersion ?? "credits-v1",
           policySnapshot: input.policySnapshot ?? { adjustment: true },
           reason: input.reason,

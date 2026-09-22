@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { grantManualEntitlement, revokeEntitlement } from "@/lib/entitlements";
 import { requirePermission } from "@/lib/admin/context";
+import { AdminServiceError } from "@/lib/admin/member-service";
+import { grantAdminVip, revokeAdminVip } from "@/lib/admin/actions";
+import { CreditError } from "@/lib/credits/repository";
 import { boundary, db, json, originCheck } from "@/lib/server";
 import { noStoreResponse } from "@/lib/request-identity";
 
@@ -15,15 +17,20 @@ export async function POST(request: Request) {
     const database = db();
     const parsed = schema.safeParse(await json(request));
     if (!parsed.success) return noStoreResponse(Response.json({ error: "Invalid VIP mutation." }, { status: 400 }));
-    const permission = parsed.data.action === "grant" ? "admin.vip.adjust" : "admin.vip.adjust";
-    const actor = await requirePermission(request, permission, database);
-    const member = await database.prepare("SELECT id FROM members WHERE id=? AND disabled=0 LIMIT 1").bind(parsed.data.member_id).first<{ id: string }>();
-    if (!member) return noStoreResponse(Response.json({ error: "User not found." }, { status: 404 }));
-    const owner = { kind: "member" as const, ownerId: `member:${member.id}` };
-    if (parsed.data.action === "grant") {
-      const entitlement = await grantManualEntitlement({ database, owner, entitlementType: "VIP", benefitVersion: parsed.data.benefit_version, startsAt: parsed.data.starts_at, endsAt: parsed.data.ends_at, benefitSnapshot: parsed.data.benefit_snapshot, idempotencyKey: parsed.data.idempotency_key, reason: parsed.data.reason, actorId: actor.memberId });
-      return noStoreResponse(Response.json({ entitlement: { id: entitlement.id, status: entitlement.status, startsAt: entitlement.startsAt, endsAt: entitlement.endsAt } }));
+    const actor = await requirePermission(request, "admin.vip.adjust", database);
+    try {
+      if (parsed.data.action === "grant") {
+        const entitlement = await grantAdminVip(database, actor, { memberId: parsed.data.member_id, benefitVersion: parsed.data.benefit_version, startsAt: parsed.data.starts_at, endsAt: parsed.data.ends_at, benefitSnapshot: parsed.data.benefit_snapshot, reason: parsed.data.reason, idempotencyKey: parsed.data.idempotency_key });
+        return noStoreResponse(Response.json({ entitlement: { id: entitlement.id, status: entitlement.status, startsAt: entitlement.startsAt, endsAt: entitlement.endsAt } }));
+      }
+      return noStoreResponse(Response.json({ revoked: await revokeAdminVip(database, actor, { memberId: parsed.data.member_id, entitlementId: parsed.data.entitlement_id, reason: parsed.data.reason, idempotencyKey: parsed.data.idempotency_key }) }));
+    } catch (error) {
+      if (error instanceof AdminServiceError) {
+        const status = error.code === "not_found" ? 404 : error.code === "forbidden" ? 403 : 400;
+        return noStoreResponse(Response.json({ error: status === 404 ? "User not found." : status === 403 ? "Forbidden." : "Invalid VIP mutation." }, { status }));
+      }
+      if (error instanceof CreditError) return noStoreResponse(Response.json({ error: "VIP entitlement conflicts with an existing request." }, { status: 400 }));
+      throw error;
     }
-    return noStoreResponse(Response.json({ revoked: await revokeEntitlement({ database, owner, entitlementId: parsed.data.entitlement_id, reason: parsed.data.reason, actorId: actor.memberId, idempotencyKey: parsed.data.idempotency_key }) }));
   });
 }
