@@ -12,11 +12,11 @@ const room = readFileSync(new URL("../app/room/room.tsx", import.meta.url), "utf
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () => {
-  for (const component of ["ReadingHeader", "DirectAnswer", "PersonalInsights", "ReflectionPrompts", "NextSteps", "TarotEvidence", "FollowUpReading"]) {
+  for (const component of ["ReadingHeader", "ReadingSpread", "DirectAnswer", "PersonalInsights", "ReflectionPrompts", "NextSteps", "TarotEvidence", "FollowUpReading"]) {
     assert.match(panel, new RegExp(component));
   }
 
-  const order = ["ReadingHeader", "DirectAnswer", "PersonalInsights", "NextSteps", "ReflectionPrompts", "TarotEvidence", "FollowUpReading"]
+  const order = ["ReadingHeader", "ReadingSpread", "DirectAnswer", "PersonalInsights", "NextSteps", "ReflectionPrompts", "TarotEvidence", "FollowUpReading"]
     .map((component) => panel.indexOf(`<${component}`));
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
   assert.doesNotMatch(panel, /role=["']tablist/);

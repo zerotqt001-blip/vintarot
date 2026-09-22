@@ -23,6 +23,7 @@ export type ReadingSessionMetadata = {
   question: string;
   readerName?: string | null;
   spreadName?: string | null;
+  spreadType?: string | null;
   deckName?: string | null;
 };
 

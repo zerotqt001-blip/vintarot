@@ -212,21 +212,22 @@ export function projectSpreadGeometry(geometry: SpreadGeometry, options: SpreadP
   const maxCardWidth = Math.max(minCardWidth, options.maxCardWidth);
   const horizontalSpan = Math.max(0, geometry.bounds.right - geometry.bounds.left);
   const estimatedBaseWidth = clamp(width / Math.max(1, horizontalSpan / 200 + 1), minCardWidth, maxCardWidth);
-  const shouldOrderCards = options.mobile && (estimatedBaseWidth < minCardWidth * 1.05 || geometry.points.length > 6);
+  const smallestScaledWidth = geometry.points.length ? estimatedBaseWidth * Math.min(...geometry.points.map((point) => point.scale)) : estimatedBaseWidth;
+  const shouldOrderCards = options.mobile && (smallestScaledWidth < minCardWidth * 0.95 || geometry.points.length > 6);
 
   if (shouldOrderCards) {
     const cardWidth = clamp(Math.min(maxCardWidth, width - 32), minCardWidth, maxCardWidth);
     const cards = geometry.points.map((point, index) => {
-      const cardHeight = cardWidth / cardAspectRatio * point.scale;
+      const cardHeight = cardWidth / cardAspectRatio;
       return {
         key: point.key,
         order: point.order,
-        left: Number(((width - cardWidth * point.scale) / 2).toFixed(2)),
-        top: Number((16 + index * (cardHeight + 28)).toFixed(2)),
-        width: Number((cardWidth * point.scale).toFixed(2)),
+        left: Number(((width - cardWidth) / 2).toFixed(2)),
+        top: Number((16 + index * (cardHeight + 96)).toFixed(2)),
+        width: Number(cardWidth.toFixed(2)),
         height: Number(cardHeight.toFixed(2)),
-        rotation: point.rotation,
-        scale: point.scale,
+        rotation: 0,
+        scale: 1,
       };
     });
     const projectedHeight = cards.length ? cards[cards.length - 1].top + cards[cards.length - 1].height + 16 : height;
