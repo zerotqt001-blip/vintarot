@@ -248,6 +248,7 @@ export async function cleanupTemporaryArtifacts({
   const rootRealPath = await realpath(rootPath).catch(() => rootPath);
   const activeRealPath = await realpath(activePath).catch(() => null);
   const removed = [];
+  const planned = [];
   const skipped = [];
   const rootEntries = await readdir(rootPath, { withFileTypes: true }).catch(() => []);
   for (const entry of rootEntries) {
@@ -273,8 +274,10 @@ export async function cleanupTemporaryArtifacts({
     }
     if (execute) {
       await rm(candidatePath, { recursive: true, force: false });
+      removed.push(candidatePath);
+    } else {
+      planned.push(candidatePath);
     }
-    removed.push(candidatePath);
   }
 
   const tempEntries = await readdir(path.resolve(tempRoot), { withFileTypes: true }).catch(() => []);
@@ -292,11 +295,13 @@ export async function cleanupTemporaryArtifacts({
     }
     if (execute) {
       await rm(archivePath, { force: false });
+      removed.push(archivePath);
+    } else {
+      planned.push(archivePath);
     }
-    removed.push(archivePath);
   }
 
-  return { status: "pass", removed, skipped };
+  return { status: "pass", removed, planned, skipped };
 }
 
 function parseArgs(argv) {
@@ -332,7 +337,7 @@ export async function main(argv = process.argv.slice(2)) {
   const result = await pruneApplicationReleases(options);
   const tempResult = options.cleanupTemp
     ? await cleanupTemporaryArtifacts({ ...options, execute: options.execute })
-    : { status: "not_requested", removed: [], skipped: [] };
+    : { status: "not_requested", removed: [], planned: [], skipped: [] };
   const tempPass = tempResult.status === "pass" || tempResult.status === "not_requested";
   const report = {
     storageGuard: result.status === "pass" && tempPass ? "PASS" : "FAIL",
@@ -346,6 +351,7 @@ export async function main(argv = process.argv.slice(2)) {
     protectedRollbacks: result.selection.protectedReleases.map((release) => release.name),
     oldReleasesRemoved: result.deleted,
     temporaryArtifactsRemoved: tempResult.removed,
+    temporaryArtifactsPlanned: tempResult.planned || [],
     databaseBackupsTouched: "NO",
     backupRetention: "NOT_TOUCHED",
     logRetention: "NOT_TOUCHED",
