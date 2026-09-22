@@ -316,4 +316,4 @@ Provide the simple `natarot.com` test sequence, list only genuinely missing owne
 - [x] Task 5 — safe live migrations, atomic release switch, restart, and public readiness completed.
 - [x] Task 6 — guest, auto-topic, Tarot, live DeepSeek, persistence, and Share/QR production E2E completed.
 - [x] Task 7 — security, HSTS hardening, external-gate classification, responsive smoke, restart persistence, and bounded log review completed.
-- [ ] Task 8 — documentation is written and independently reviewed; the related documentation commit and branch push remain the final handoff actions.
+- [x] Task 8 — documentation is written and independently reviewed; documentation commit `6667fce` is pushed to `origin/codex/natarot-production-full-feature-v1`.
