@@ -31,6 +31,7 @@ export type Order = {
   paymentReference: string | null;
   createdAt: number;
   paymentConfirmedAt: number | null;
+  fulfillmentStartedAt: number | null;
   fulfilledAt: number | null;
   cancelledAt: number | null;
   refundedAt: number | null;
@@ -91,6 +92,7 @@ function mapOrder(row: OrderRow): Order {
     paymentReference: row.paymentReference,
     createdAt: Number(row.createdAt),
     paymentConfirmedAt: row.paymentConfirmedAt === null ? null : Number(row.paymentConfirmedAt),
+    fulfillmentStartedAt: row.fulfillmentStartedAt === null ? null : Number(row.fulfillmentStartedAt),
     fulfilledAt: row.fulfilledAt === null ? null : Number(row.fulfilledAt),
     cancelledAt: row.cancelledAt === null ? null : Number(row.cancelledAt),
     refundedAt: row.refundedAt === null ? null : Number(row.refundedAt),
@@ -105,7 +107,8 @@ const orderSelect = `SELECT o.id, o.account_id AS accountId, a.owner_kind AS own
   o.package_id AS packageId, o.package_version_id AS packageVersionId, o.package_snapshot AS packageSnapshot,
   o.amount_minor AS amountMinor, o.currency, o.status, o.idempotency_key AS idempotencyKey,
   o.request_fingerprint AS requestFingerprint, o.payment_reference AS paymentReference, o.created_at AS createdAt,
-  o.payment_confirmed_at AS paymentConfirmedAt, o.fulfilled_at AS fulfilledAt, o.cancelled_at AS cancelledAt, o.refunded_at AS refundedAt
+  o.payment_confirmed_at AS paymentConfirmedAt, o.fulfillment_started_at AS fulfillmentStartedAt,
+  o.fulfilled_at AS fulfilledAt, o.cancelled_at AS cancelledAt, o.refunded_at AS refundedAt
   FROM orders o JOIN credit_accounts a ON a.id = o.account_id`;
 
 export async function getOrderById(database: D1Database, orderId: string): Promise<Order | null> {
@@ -194,17 +197,30 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
   }
   if (existing.status !== "PAYMENT_CONFIRMED") throw new OrderError("Order requires verified payment before fulfillment", "payment_required");
   const timestamp = now();
-  const benefitTimestamp = existing.paymentConfirmedAt ?? timestamp;
-  const packageSnapshot = existing.packageSnapshot;
+  await input.database.prepare("UPDATE orders SET fulfillment_started_at = COALESCE(fulfillment_started_at, ?) WHERE id = ? AND status = 'PAYMENT_CONFIRMED'")
+    .bind(timestamp, existing.id)
+    .run();
+  const started = await getOrderById(input.database, existing.id);
+  if (!started) throw new OrderError("Order disappeared before fulfillment", "order_unavailable");
+  const fulfillmentTimestamp = started.fulfillmentStartedAt ?? timestamp;
+  const packageSnapshot = started.packageSnapshot;
   const benefits = packageSnapshot.benefitSnapshot as PackageBenefitSnapshot;
+  const creditBenefits = benefits.credits;
+  if (creditBenefits && creditBenefits.units !== packageSnapshot.creditUnits) {
+    throw new OrderError("Package credit benefit does not match the server package", "invalid_package_benefit");
+  }
+  if (creditBenefits?.expiresInSeconds !== undefined && creditBenefits.expiresInSeconds !== null
+    && (!Number.isSafeInteger(creditBenefits.expiresInSeconds) || creditBenefits.expiresInSeconds <= 0)) {
+    throw new OrderError("Package Credit validity is invalid", "invalid_package_benefit");
+  }
   const grant = packageSnapshot.creditUnits > 0
     ? await input.creditStore.grantCredits({
       owner: existing.owner,
       source: "PURCHASE",
       units: packageSnapshot.creditUnits,
       grantKey: `order:${existing.id}:credits`,
-      eligibleFrom: benefitTimestamp,
-      expiresAt: benefits.credits?.expiresInSeconds ? benefitTimestamp + benefits.credits.expiresInSeconds * 1000 : null,
+      eligibleFrom: fulfillmentTimestamp,
+      expiresAt: creditBenefits?.expiresInSeconds ? fulfillmentTimestamp + creditBenefits.expiresInSeconds * 1000 : null,
       sourceType: "ORDER",
       sourceId: existing.id,
       policyVersion: packageSnapshot.policyVersion,
@@ -218,8 +234,8 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
       owner: existing.owner,
       entitlementType: "VIP",
       benefitVersion: benefits.vip.benefitVersion,
-      startsAt: benefitTimestamp,
-      endsAt: benefitTimestamp + vipDuration * 1000,
+      startsAt: fulfillmentTimestamp,
+      endsAt: fulfillmentTimestamp + vipDuration * 1000,
       sourceType: "ORDER",
       sourceId: existing.id,
       grantKey: `order:${existing.id}:vip`,
@@ -240,7 +256,7 @@ export async function fulfillOrder(input: { database: D1Database; creditStore: C
     input.database.prepare("UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?").bind(timestamp, existing.accountId),
     input.database.prepare("INSERT OR IGNORE INTO order_fulfillments (id, order_id, payment_event_id, fulfillment_key, result_snapshot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(fulfillmentId, existing.id, input.paymentEventId ?? null, fulfillmentKey, resultSnapshot, timestamp, timestamp),
     input.database.prepare("INSERT OR IGNORE INTO commercial_events (id, event_type, aggregate_type, aggregate_id, payload, idempotency_key, created_at) VALUES (?, 'ORDER_FULFILLED', 'ORDER', ?, ?, ?, ?)").bind(`event:${eventKey}`, existing.id, resultSnapshot, eventKey, timestamp),
-    input.database.prepare("UPDATE orders SET status = 'FULFILLED', fulfilled_at = ? WHERE id = ? AND status = 'PAYMENT_CONFIRMED'").bind(timestamp, existing.id),
+    input.database.prepare("UPDATE orders SET status = 'FULFILLED', fulfilled_at = ? WHERE id = ? AND status = 'PAYMENT_CONFIRMED'").bind(fulfillmentTimestamp, existing.id),
   ]);
   const order = await getOrderById(input.database, existing.id);
   const fulfillment = await getFulfillment(input.database, existing.id);

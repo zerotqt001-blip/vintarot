@@ -1,4 +1,6 @@
 import type { D1Database, D1Result } from "@cloudflare/workers-types";
+import { prepareAuditInsert } from "../audit/service";
+import type { AuditAppendInput } from "../audit/types";
 import { createRequestFingerprint, validateLedgerEntry } from "./ledger";
 import type {
   CreditBalance,
@@ -112,6 +114,8 @@ export type GrantCreditsInput = {
   policyVersion: string;
   policySnapshot: unknown;
   reason: string;
+  audit?: AuditAppendInput;
+  auditStrict?: boolean;
 };
 
 export type RefundCreditsInput = Omit<GrantCreditsInput, "source">;
@@ -120,9 +124,12 @@ export type AdjustCreditsInput = {
   owner: CreditOwner;
   units: number;
   adjustmentKey: string;
+  eligibleFrom?: number;
   reason: string;
   policyVersion?: string;
   policySnapshot?: unknown;
+  audit?: AuditAppendInput;
+  auditStrict?: boolean;
 };
 
 export type ReserveCreditsInput = {
@@ -142,6 +149,8 @@ export type ConsumeReservationInput = {
   resultId?: string | null;
   reason?: string;
   eventType?: "CONSUME" | "ADJUSTMENT";
+  audit?: AuditAppendInput;
+  auditStrict?: boolean;
 };
 
 export type ReleaseReservationInput = {
@@ -363,13 +372,15 @@ export function createCreditStore(database: D1Database, now: () => number = Date
       effectiveAt: eligibleFrom,
       createdAt: timestamp,
     });
-    await database.batch([
+    const statements = [
       database.prepare("UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?").bind(timestamp, account.id),
       database.prepare("INSERT OR IGNORE INTO credit_grants (id, account_id, source, source_type, source_id, grant_key, request_fingerprint, units, available_units, eligible_from, expires_at, policy_version, policy_snapshot, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
         .bind(grantId, account.id, input.source, input.sourceType ?? null, input.sourceId ?? null, input.grantKey, requestFingerprint, input.units, input.units, eligibleFrom, expiresAt, input.policyVersion, policySnapshot, timestamp, timestamp),
       database.prepare("INSERT OR IGNORE INTO credit_ledger (id, account_id, grant_id, reservation_id, event_type, units, reference_type, reference_id, idempotency_key, request_fingerprint, actor_kind, actor_id, reason, effective_at, created_at, reversed_entry_id) VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL)")
         .bind(ledgerId, account.id, grantId, eventType, input.units, input.sourceType ?? "grant", input.sourceId ?? input.grantKey, ledgerKey, requestFingerprint, input.reason, eligibleFrom, timestamp),
-    ]);
+    ];
+    if (input.audit) statements.push(prepareAuditInsert(database, input.audit, timestamp, { ignoreExisting: input.auditStrict !== true }));
+    await database.batch(statements);
     const row = await first<GrantRow>(database, "SELECT id, account_id AS accountId, source, source_type AS sourceType, source_id AS sourceId, grant_key AS grantKey, request_fingerprint AS requestFingerprint, units, available_units AS availableUnits, eligible_from AS eligibleFrom, expires_at AS expiresAt, policy_version AS policyVersion, policy_snapshot AS policySnapshot, created_at AS createdAt, updated_at AS updatedAt FROM credit_grants WHERE id = ? AND account_id = ?", grantId, account.id);
     if (!row) throw new CreditError("Credit grant was not persisted", "grant_unavailable");
     if (row.requestFingerprint !== requestFingerprint) throw new CreditIdempotencyError(`Grant key ${input.grantKey} already belongs to a different request`);
@@ -478,7 +489,7 @@ export function createCreditStore(database: D1Database, now: () => number = Date
     const eventType: CreditLedgerEventType = input.eventType ?? "CONSUME";
     const reason = input.reason ?? (eventType === "ADJUSTMENT" ? "Credit adjustment" : "Credit usage consumed");
     const requestFingerprint = createRequestFingerprint({ reservationId: input.reservationId, resultType: input.resultType ?? null, resultId: input.resultId ?? null, eventType });
-    await database.batch([
+    const statements = [
       database.prepare("UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?").bind(timestamp, accountId),
       database.prepare(`INSERT OR IGNORE INTO credit_ledger (id, account_id, grant_id, reservation_id, event_type, units, reference_type, reference_id, idempotency_key, request_fingerprint, actor_kind, actor_id, reason, effective_at, created_at, reversed_entry_id)
         SELECT 'credit-ledger:' || r.id || ':' || a.grant_id || ':' || ?, r.account_id, a.grant_id, r.id, ?, -(a.held_units - a.consumed_units - a.released_units), 'reservation', r.id, 'consume:' || r.id || ':' || a.grant_id || ':' || ?, ?, 'system', NULL, ?, ?, ?, NULL
@@ -488,7 +499,9 @@ export function createCreditStore(database: D1Database, now: () => number = Date
       database.prepare("UPDATE credit_reservation_allocations SET consumed_units = held_units - released_units, updated_at = ? WHERE reservation_id = ? AND consumed_units + released_units < held_units").bind(timestamp, input.reservationId),
       database.prepare("UPDATE credit_reservations SET status = 'CONSUMED', result_type = ?, result_id = ?, reason = ?, consumed_at = ?, updated_at = ? WHERE id = ? AND account_id = ? AND status = 'RESERVED'")
         .bind(input.resultType ?? null, input.resultId ?? null, reason, timestamp, timestamp, input.reservationId, accountId),
-    ]);
+    ];
+    if (input.audit) statements.push(prepareAuditInsert(database, input.audit, timestamp, { ignoreExisting: input.auditStrict !== true }));
+    await database.batch(statements);
     const result = await getReservationRow(input.owner, input.reservationId);
     if (!result) throw new CreditNotFoundError("Reservation disappeared during consume");
     if (result.status !== "CONSUMED") throw new CreditReservationStateError(`Reservation ${input.reservationId} did not reach CONSUMED state`);
@@ -582,9 +595,12 @@ export function createCreditStore(database: D1Database, now: () => number = Date
           source: "ADMIN",
           units: input.units,
           grantKey: `adjustment:${input.adjustmentKey}`,
+          eligibleFrom: input.eligibleFrom,
           policyVersion: input.policyVersion ?? "credits-v1",
           policySnapshot: input.policySnapshot ?? { adjustment: true },
           reason: input.reason,
+          audit: input.audit,
+          auditStrict: input.auditStrict,
         }, "ADJUSTMENT");
       }
       const reservation = await reserveCredits({
@@ -595,7 +611,18 @@ export function createCreditStore(database: D1Database, now: () => number = Date
         resourceId: input.adjustmentKey,
         idempotencyKey: `adjustment:${input.adjustmentKey}`,
       });
-      return consumeReservation({ owner: input.owner, reservationId: reservation.id, eventType: "ADJUSTMENT", reason: input.reason });
+      try {
+        return await consumeReservation({ owner: input.owner, reservationId: reservation.id, eventType: "ADJUSTMENT", reason: input.reason, audit: input.audit, auditStrict: input.auditStrict });
+      } catch (error) {
+        if (input.audit) {
+          try {
+            await releaseReservation({ owner: input.owner, reservationId: reservation.id, reason: "Credit adjustment audit write failed" });
+          } catch {
+            // Preserve the original mutation/audit failure for the caller.
+          }
+        }
+        throw error;
+      }
     },
     async getBalance(owner) {
       const account = await ensureAccount(owner);

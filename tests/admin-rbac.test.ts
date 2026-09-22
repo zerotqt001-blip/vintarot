@@ -47,11 +47,16 @@ test("the fixed role matrix denies spoofing and enforces every privilege boundar
   const checks: Array<[AdminRole, Permission, boolean]> = [
     ["USER", "admin.users.read", false],
     ["SUPPORT", "admin.users.read", true],
+    ["SUPPORT", "admin.dashboard.read", true],
+    ["SUPPORT", "admin.readings.read", false],
     ["SUPPORT", "admin.credits.adjust", false],
+    ["FINANCE", "admin.dashboard.read", true],
     ["FINANCE", "admin.credits.adjust", true],
     ["FINANCE", "admin.roles.manage", false],
     ["CONTENT_ADMIN", "admin.users.read", false],
+    ["CONTENT_ADMIN", "admin.dashboard.read", false],
     ["ADMIN", "admin.affiliate.manage", true],
+    ["ADMIN", "admin.readings.read", true],
     ["ADMIN", "admin.roles.manage", false],
     ["ADMIN", "admin.security.manage", false],
     ["SUPER_ADMIN", "admin.roles.manage", true],
@@ -113,8 +118,11 @@ test("ban, unban, role changes, and targeted session revocation are audited", as
 
 test("permission helper agrees with the documented matrix", () => {
   assert.equal(hasPermission("USER", "admin.users.read"), false);
+  assert.equal(hasPermission("SUPPORT", "admin.dashboard.read"), true);
+  assert.equal(hasPermission("SUPPORT", "admin.readings.read"), false);
   assert.equal(hasPermission("SUPPORT", "admin.sessions.revoke"), true);
   assert.equal(hasPermission("FINANCE", "admin.affiliate.adjust"), true);
+  assert.equal(hasPermission("ADMIN", "admin.readings.read"), true);
   assert.equal(hasPermission("CONTENT_ADMIN", "admin.orders.read"), false);
   assert.equal(hasPermission("ADMIN", "admin.security.manage"), false);
   assert.equal(hasPermission("SUPER_ADMIN", "admin.audit.read"), true);

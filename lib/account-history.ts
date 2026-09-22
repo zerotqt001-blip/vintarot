@@ -17,6 +17,7 @@ export type AccountHistoryItem = {
   currency: string | null;
   units: number | null;
   reason: string | null;
+  sourceType: string | null;
   savedReadingId?: string;
   sessionId?: string;
   readingId?: string;
@@ -40,6 +41,8 @@ export type AccountSummary = {
     id: string;
     entitlementType: string;
     benefitVersion: string;
+    sourceType: string;
+    isInternalTest: boolean;
     startsAt: number;
     endsAt: number | null;
     status: string;
@@ -135,6 +138,7 @@ function mapHistoryRow(row: Record<string, unknown>): AccountHistoryItem {
     currency: row.currency == null ? null : String(row.currency),
     units: row.units == null ? null : Number(row.units),
     reason: row.reason == null ? null : String(row.reason),
+    sourceType: row.source_type == null ? null : String(row.source_type),
   };
   if (kind === "reading") {
     const parsed = marker(row.private_marker);
@@ -149,26 +153,26 @@ function mapHistoryRow(row: Record<string, unknown>): AccountHistoryItem {
 
 const historyUnion = `
   SELECT r.id, 'reading' AS kind, r.updated AS created_at, NULL AS reference_id, NULL AS status,
-    NULL AS amount_minor, NULL AS currency, NULL AS units, NULL AS reason, r.data AS private_marker, NULL AS payment_reference
+    NULL AS amount_minor, NULL AS currency, NULL AS units, NULL AS reason, NULL AS source_type, r.data AS private_marker, NULL AS payment_reference
     FROM records r WHERE r.owner=? AND r.kind='tarot-reading'
   UNION ALL
   SELECT rs.id, 'share' AS kind, rs.created_at, r.id AS reference_id, rs.status,
-    NULL, NULL, NULL, NULL, NULL, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
     FROM reading_shares rs JOIN readings r ON r.id=rs.reading_id JOIN reading_sessions s ON s.id=r.session_id
     WHERE s.user_id=?
   UNION ALL
   SELECT o.id, 'order' AS kind, o.created_at, o.id AS reference_id, o.status,
-    o.amount_minor, o.currency, NULL, NULL, NULL, o.payment_reference
+    o.amount_minor, o.currency, NULL, NULL, NULL, NULL, o.payment_reference
     FROM orders o JOIN credit_accounts a ON a.id=o.account_id
     WHERE a.owner_kind='member' AND a.owner_id=?
   UNION ALL
   SELECT l.id, 'credit' AS kind, l.created_at, l.reference_id, l.event_type,
-    NULL, NULL, l.units, l.reason, NULL, NULL
-    FROM credit_ledger l JOIN credit_accounts a ON a.id=l.account_id
+    NULL, NULL, l.units, l.reason, g.source_type, NULL, NULL
+    FROM credit_ledger l JOIN credit_accounts a ON a.id=l.account_id LEFT JOIN credit_grants g ON g.id=l.grant_id
     WHERE a.owner_kind='member' AND a.owner_id=?
   UNION ALL
   SELECT c.id, 'affiliate' AS kind, c.created_at, c.order_id, c.status,
-    c.commission_minor, c.currency, NULL, NULL, NULL, NULL
+    c.commission_minor, c.currency, NULL, NULL, NULL, NULL, NULL
     FROM affiliate_conversions c WHERE c.member_id=?
 `;
 
@@ -189,7 +193,7 @@ export async function listAccountHistory(input: { database: D1Database; owner: C
   }
   values.push(limit + 1);
   const where = predicates.length ? `WHERE ${predicates.join(" AND ")}` : "";
-  const result = await input.database.prepare(`SELECT id, kind, created_at, reference_id, status, amount_minor, currency, units, reason, private_marker, payment_reference FROM (${historyUnion}) history ${where} ORDER BY history.created_at DESC, history.id DESC LIMIT ?`).bind(...values).all<Record<string, unknown>>();
+  const result = await input.database.prepare(`SELECT id, kind, created_at, reference_id, status, amount_minor, currency, units, reason, source_type, private_marker, payment_reference FROM (${historyUnion}) history ${where} ORDER BY history.created_at DESC, history.id DESC LIMIT ?`).bind(...values).all<Record<string, unknown>>();
   const rows = result.results.map(mapHistoryRow);
   const items = rows.slice(0, limit);
   const nextCursor = rows.length > limit && items.length > 0 ? encodeHistoryCursor(items[items.length - 1].createdAt, items[items.length - 1].id) : null;
@@ -208,7 +212,7 @@ export async function getAccountSummary(input: { database: D1Database; owner: Cr
     balance: await creditStore.getBalance(input.owner),
     history: await creditStore.listHistory(input.owner, 10),
   };
-  const vip = (await getActiveEntitlements(input.database, input.owner, currentTime)).map((entitlement) => ({ id: entitlement.id, entitlementType: entitlement.entitlementType, benefitVersion: entitlement.benefitVersion, startsAt: entitlement.startsAt, endsAt: entitlement.endsAt, status: entitlement.status }));
+  const vip = (await getActiveEntitlements(input.database, input.owner, currentTime)).map((entitlement) => ({ id: entitlement.id, entitlementType: entitlement.entitlementType, benefitVersion: entitlement.benefitVersion, sourceType: entitlement.sourceType, isInternalTest: entitlement.sourceType === "OWNER_TEST_GRANT", startsAt: entitlement.startsAt, endsAt: entitlement.endsAt, status: entitlement.status }));
   const readings = await input.database.prepare("SELECT COUNT(*) AS count FROM records WHERE owner=? AND kind='tarot-reading'").bind(ownerId).first<{ count: number }>();
   const shares = await input.database.prepare("SELECT COUNT(*) AS count FROM reading_shares rs JOIN readings r ON r.id=rs.reading_id JOIN reading_sessions s ON s.id=r.session_id WHERE s.user_id=?").bind(ownerId).first<{ count: number }>();
   const orders = account ? await input.database.prepare("SELECT COUNT(*) AS count FROM orders WHERE account_id=?").bind(account.id).first<{ count: number }>() : { count: 0 };

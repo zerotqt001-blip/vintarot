@@ -25,6 +25,7 @@ test("backend completion exposes only a small functional UI surface", () => {
 
   assert.match(pageSources, /FUNCTIONAL UI — NOT FINAL DESIGN/);
   for (const endpoint of [
+    "/api/admin/overview",
     "/api/admin/users",
     "/api/admin/orders",
     "/api/admin/affiliate",
@@ -32,7 +33,13 @@ test("backend completion exposes only a small functional UI surface", () => {
     "/api/admin/credits",
     "/api/admin/vip",
     "/api/admin/users/",
+    "/readings",
   ]) assert.match(admin, new RegExp(endpoint.replaceAll("/", "\\/")), endpoint);
+  for (const label of ["Dashboard", "Users", "Credits", "VIP", "Orders", "Affiliate", "Readings", "Audit"]) assert.match(admin, new RegExp(label), label);
+  assert.match(admin, /q=/);
+  assert.match(admin, /emailMasked|phoneMasked/);
+  assert.match(admin, /paymentReferenceMasked/);
+  assert.doesNotMatch(admin, /paymentReference\s*:/);
   assert.match(account, /\/api\/account\/summary/);
   assert.match(account, /\/api\/account\/history/);
   assert.match(admin, /reason/);

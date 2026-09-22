@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { boundary, db, json, originCheck } from "@/lib/server";
 import { requirePermission } from "@/lib/admin/context";
-import { AdminServiceError, getMemberDetail, setMemberRole, setMemberStatus } from "@/lib/admin/member-service";
+import { AdminServiceError, setMemberRole, setMemberStatus } from "@/lib/admin/member-service";
+import { getAdminMemberDetail } from "@/lib/admin/read-model";
 import { ADMIN_ROLES } from "@/lib/admin/permissions";
 import { noStoreResponse } from "@/lib/request-identity";
 
@@ -22,7 +23,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     const actor = await requirePermission(request, "admin.users.read", database);
     const { id } = await context.params;
     try {
-      return noStoreResponse(Response.json({ user: await getMemberDetail(database, actor, id) }));
+      return noStoreResponse(Response.json({ user: await getAdminMemberDetail(database, actor, id) }));
     } catch (error) {
       const response = serviceError(error);
       if (response) return response;
