@@ -114,8 +114,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     </a>;
   });
 
-  const shellClass = isMembership ? `membership-shell${membershipTheme === "soft" ? " membership-shell-soft" : ""}` : isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell";
-  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} className={shellClass}>
+  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} className={isHome ? "home-shell" : isMembership ? `membership-shell${membershipTheme === "soft" ? " membership-shell-soft" : ""}` : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
       <div className="brand-lockup">
