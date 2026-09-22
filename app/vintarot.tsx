@@ -5,7 +5,7 @@ import Logo from "@/components/brand/logo";
 import ReferralCapture from "@/components/affiliate/referral-capture";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import { useEffect, useRef, useState } from "react";
-import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, UserRound, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, UserRound, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight, Search, Home, Crown, Share2 } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -36,6 +36,104 @@ function ArcLabel({ id, text, className = "", curve = "top" }: ArcLabelProps) {
   </svg>;
 }
 
+type Translator = (key: string) => string;
+type GuidebookTargetTheme = "night" | "soft";
+
+const guidebookTargetHeaderNav = [
+  ["nav.decks", "/guidebook"],
+  ["nav.practice", "/community"],
+  ["nav.book", "/book"],
+] as const;
+
+const guidebookTargetNav = [
+  ["nav.home", Home, "/"],
+  ["nav.drawNow", Sparkles, "/room?ritual=1"],
+  ["nav.targetMembership", Crown, "/packages"],
+  ["nav.affiliate", Share2, "/affiliate"],
+  ["nav.targetAccount", UserRound, "/account"],
+] as const;
+
+function GuidebookTargetHeader({
+  path,
+  t,
+  theme,
+  profileHref,
+  onSearch,
+  onCollection,
+  onTheme,
+}: {
+  path: string;
+  t: Translator;
+  theme: GuidebookTargetTheme;
+  profileHref: string;
+  onSearch: () => void;
+  onCollection: () => void;
+  onTheme: () => void;
+}) {
+  return (
+    <header className="guidebook-target-header">
+      <div className="guidebook-target-brand">
+        <Logo variant="dark" href="/" aria-label="NaTarot" priority />
+        <span>{t("header.tagline")}</span>
+      </div>
+      <nav className="guidebook-target-header-nav" aria-label={t("nav.decks")}>
+        {guidebookTargetHeaderNav.map(([key, href]) => (
+          <a className={href === path || (href === "/guidebook" && path === "/decks") ? "active" : ""} aria-current={href === path || (href === "/guidebook" && path === "/decks") ? "page" : undefined} href={href} key={href}>
+            {t(key)}
+          </a>
+        ))}
+      </nav>
+      <div className="guidebook-target-header-actions">
+        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.search")} onClick={onSearch}>
+          <Search size={18} strokeWidth={1.35} />
+        </button>
+        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.collection")} onClick={onCollection}>
+          <Heart size={18} strokeWidth={1.35} />
+        </button>
+        <LanguageSelect />
+        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.theme")} aria-pressed={theme === "soft"} onClick={onTheme}>
+          <Moon size={18} strokeWidth={1.35} />
+        </button>
+        <a className="guidebook-target-account" href={profileHref} aria-label={t("nav.targetAccount")}>
+          <UserRound size={17} strokeWidth={1.35} />
+          <span>{t("nav.targetAccount")}</span>
+        </a>
+      </div>
+    </header>
+  );
+}
+
+function GuidebookTargetSidebar({ t }: { t: Translator }) {
+  const links = guidebookTargetNav.map(([key, Icon, href]) => (
+    <a className={href === "/" ? "active" : ""} href={href} key={href}>
+      <span className="guidebook-target-sidebar-icon"><Icon size={24} strokeWidth={1.25} /></span>
+      <span>{t(key)}</span>
+    </a>
+  ));
+  return (
+    <>
+      <aside className="guidebook-target-sidebar" aria-label={t("nav.primary")}>
+        <nav className="guidebook-target-sidebar-nav">{links}</nav>
+        <div className="guidebook-target-sidebar-signoff"><strong>NaTarot</strong><span>Find Your Inner Light</span></div>
+      </aside>
+      <nav className="guidebook-target-mobile-nav" aria-label={t("nav.primary")}>{links}</nav>
+    </>
+  );
+}
+
+function GuidebookTargetFooter({ t }: { t: Translator }) {
+  return (
+    <footer className="guidebook-target-footer">
+      <div className="guidebook-target-footer-brand"><Logo variant="dark" href="/" compact /><span>{t("header.tagline")}</span></div>
+      <nav aria-label={t("nav.footer")}>
+        <a href="/guidebook">{t("auth.footerGuide")}</a>
+        <a href="/privacy">{t("auth.footerPrivacy")}</a>
+        <a href="/terms">{t("auth.footerTerms")}</a>
+      </nav>
+    </footer>
+  );
+}
+
 export default function VinTarot({ user, children, path = "/" }: { user: User; children?: React.ReactNode; path?: string }) {
   return <LanguageProvider user={user}><VinTarotShell user={user} path={path}>{children}</VinTarotShell></LanguageProvider>;
 }
@@ -43,6 +141,7 @@ export default function VinTarot({ user, children, path = "/" }: { user: User; c
 function VinTarotShell({ user, children, path }: { user: User; children?: React.ReactNode; path: string }) {
   const { t } = useLanguage();
   const [modal, setModal] = useState<"" | "collection" | "notifications" | "help">("");
+  const [guidebookTheme, setGuidebookTheme] = useState<GuidebookTargetTheme>("night");
   const isHome = path === "/" && !children;
   const isGuidebook = path === "/guidebook" || path === "/decks";
   const isCreate = path === "/create";
@@ -92,9 +191,11 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
-  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
+  const focusGuidebookSearch = () => window.dispatchEvent(new Event("guidebook:focus-search"));
+  const shellClassName = isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell guidebook-target-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell";
+  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-guidebook-theme={isGuidebook ? guidebookTheme : undefined} className={shellClassName}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
-    <header className="topbar">
+    {isGuidebook ? <GuidebookTargetHeader path={path} t={t} theme={guidebookTheme} profileHref="/account" onSearch={focusGuidebookSearch} onCollection={() => setModal("collection")} onTheme={() => setGuidebookTheme((current) => current === "night" ? "soft" : "night")} /> : <header className="topbar">
       <div className="brand-lockup">
         <Logo variant="dark" href="/" aria-label="NaTarot" priority={isHome} />
         <span className="brand-tagline">{t("header.tagline")}</span>
@@ -109,25 +210,25 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
         <a className="black button" href="/create">{t("header.room")}</a>
         <a className="avatar" href={profileHref} aria-label={t("header.profile")}><Moon size={20} /></a>
       </div>
-    </header>
-    {!isRoom && <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+    </header>}
+    {!isRoom && !isGuidebook && <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
       {renderCommerceAccessLinks()}
     </nav>}
-    {!isRoom && <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+    {!isRoom && !isGuidebook && <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
       {renderCommerceAccessLinks()}
     </nav>}
-    <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
+    {isGuidebook ? <GuidebookTargetSidebar t={t} /> : <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
       <nav className="main-nav">{nav.map(([key, Icon, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href} aria-label={t(key)}><div className="nav-orb"><Icon size={29} strokeWidth={1.3} /></div><ArcLabel id={`nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav>
       <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>
-    </SidebarContent></Sidebar>
+    </SidebarContent></Sidebar>}
     <main className="main">{children || <>
       <section className="ritual-hero"><div className="aura" /><div className="hero-phase" aria-hidden="true">☾ ◐ ✦ ◑ ☽</div><h1>{t("home.hello")}</h1><h2>{t("home.start")}</h2><p className="muted">{t("home.intro")}</p><a className="ritual" href="/create" aria-label={t("home.ritual")}><Plus size={28} /><ArcLabel id="ritual-arc" className="ritual-label" curve="left" text={t("home.ritual")} /></a><p className="ritual-caption">{t("home.ritual")}</p><p className="video-caption"><Video size={15} />{t("home.video")}</p></section>
       <section className="daily-panel"><h2>{t("home.daily")}</h2><p>{t("home.dailyText")}</p><a className="pill" href="/daily-spread">{t("home.social")} <ArrowRight size={15} /></a><div className="daily-cards">{[["home.feel", "feel"], ["home.need", "need"]].map(([key, id]) => <div key={id}><p>{t(key)}:</p><a href="/daily-spread" className="card-back" aria-label={t("home.pull")}><CardMark /></a></div>)}</div><p className="daily-quote">“{t("home.dailyQuote")}”</p><a href="/daily-spread" className="daily-panel-link">{t("home.pull")} <ArrowUpRight size={16} /></a></section>
       <section className="feature-row"><div><h2>{t("home.rhythm")}</h2><p>{t("home.rhythmText")}</p><a href="/community" className="button peach">{t("home.practice")} <ArrowUpRight size={16} /></a></div><div className="feature-cards"><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div><div className="card-back"><CardMark /></div></div></section>
       <section className="feature-row reversed"><div><h2>{t("home.digital")}</h2><p>{t("home.digitalText")}</p><a className="button peach" href="/guidebook">{t("home.explore")}</a></div><BookOpen size={120} strokeWidth={0.5} /></section>
     </>}</main>
-    <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>
-    <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
+    {isGuidebook ? <GuidebookTargetFooter t={t} /> : <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>}
+    {!isGuidebook && <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>}
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
   </div></SidebarProvider>;
 }
