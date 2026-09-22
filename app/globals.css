@@ -1366,6 +1366,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
 /* Member, packages, and affiliate surfaces. This extends the Moonlight shell with a compact
    operational layer while keeping the existing navigation and celestial palette intact. */
+/* Production navigation discoverability: keep member destinations shared, labeled, and secondary
+   to the ritual navigation without burying them in the scrollable personal rail. */
+.commerce-access-nav--desktop{position:fixed;top:78px;right:clamp(18px,3vw,42px);z-index:45;display:flex;align-items:center;gap:4px;min-width:0;padding:4px;border:1px solid var(--color-border);border-radius:14px;background:rgba(6,21,34,.78);box-shadow:0 8px 20px rgba(0,0,0,.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--color-text-muted)}
+.commerce-access-nav__link{display:inline-flex;min-height:34px;align-items:center;gap:6px;padding:7px 8px;border:1px solid transparent;border-radius:10px;color:var(--color-text-muted);font-size:10px;line-height:1.1;white-space:nowrap;transition:background .2s ease,border-color .2s ease,color .2s ease}
+.commerce-access-nav__link svg{flex:0 0 auto;color:var(--color-gold-bright)}
+.commerce-access-nav__link:hover,.commerce-access-nav__link.active{border-color:var(--color-border);background:var(--color-gold-subtle);color:var(--color-gold-bright)}
+.commerce-access-nav__link:focus-visible{border-color:var(--color-border-active)}
+.commerce-access-nav--mobile{display:none}
+@media(max-width:1100px) and (min-width:701px){.commerce-access-nav--desktop{right:16px}.commerce-access-nav--desktop .commerce-access-nav__link{gap:4px;padding-inline:6px;font-size:9px}.commerce-access-nav--desktop .commerce-access-nav__link svg{width:14px;height:14px}}
+@media(max-width:700px){
+  .commerce-access-nav--desktop{display:none}
+  .commerce-access-nav--mobile{position:fixed;right:10px;bottom:calc(84px + env(safe-area-inset-bottom));left:10px;z-index:59;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border:1px solid var(--color-border);border-radius:14px;background:rgba(6,21,34,.78);box-shadow:0 8px 20px rgba(0,0,0,.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .commerce-access-nav--mobile .commerce-access-nav__link{min-width:0;min-height:44px;justify-content:center;padding:6px 4px;border-radius:10px;font-size:9px;text-align:center}
+  .commerce-access-nav--mobile .commerce-access-nav__link svg{display:none}
+  .commerce-access-nav--mobile .commerce-access-nav__link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .home-shell .main,.site-shell:not(.room-shell) .main{padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
+  .home-shell .help,.site-shell:not(.room-shell) .help{bottom:calc(142px + env(safe-area-inset-bottom))!important}
+}
 .home-shell .commerce-nav,.site-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .commerce-nav{display:grid;gap:2px;padding:10px 9px;border:1px solid var(--color-border);border-radius:18px;background:linear-gradient(180deg,rgba(16,40,59,.86),rgba(6,21,34,.82));box-shadow:var(--shadow-brand-panel),inset 0 0 0 1px rgba(255,255,255,.035);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .home-shell .commerce-nav a,.site-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .commerce-nav a{display:flex;min-height:32px;align-items:center;gap:8px;padding:7px 7px;border-radius:9px;color:var(--color-text-muted);font-size:11px;line-height:1.2;text-decoration:none;transition:background .2s ease,color .2s ease}
 .home-shell .commerce-nav a:hover,.home-shell .commerce-nav a.active,.site-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .commerce-nav a:hover,.site-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .commerce-nav a.active{background:var(--color-gold-subtle);color:var(--color-gold-bright)}

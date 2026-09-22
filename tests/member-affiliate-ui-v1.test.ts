@@ -54,6 +54,25 @@ test("shared shell and account expose member destinations while preserving exist
   assert.match(styles, /max-width:768px/);
 });
 
+test("member destinations have separate shared desktop and mobile access regions", () => {
+  const shell = source("app/vintarot.tsx");
+  const styles = source("app/globals.css");
+  const sidebarIndex = shell.indexOf("<Sidebar collapsible");
+  const desktopNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--desktop');
+  const mobileNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--mobile');
+
+  assert.notEqual(sidebarIndex, -1);
+  assert.ok(desktopNavIndex >= 0 && desktopNavIndex < sidebarIndex, "desktop access must be outside the scrollable sidebar");
+  assert.ok(mobileNavIndex >= 0 && mobileNavIndex < sidebarIndex, "mobile access must be outside the primary bottom navigation");
+  assert.match(shell, /commerce-access-nav__link/);
+  assert.match(shell, /className="main-nav"/);
+  assert.doesNotMatch(shell, /<nav className="commerce-nav"/);
+  assert.match(styles, /\.commerce-access-nav--desktop/);
+  assert.match(styles, /\.commerce-access-nav--mobile/);
+  assert.match(styles, /min-height:44px/);
+  assert.match(styles, /padding-bottom:calc\(132px \+ env\(safe-area-inset-bottom\)\)/);
+});
+
 test("localized functional states are present for member and Affiliate surfaces", () => {
   const messages = source("lib/i18n.ts");
   const commerce = source("app/commerce/commerce-pages.tsx");
