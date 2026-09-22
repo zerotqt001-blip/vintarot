@@ -48,6 +48,6 @@ test("storage guard leaves unsafe, protected, and young temporary paths alone", 
 });
 
 test("storage guard keeps its lock and backup locations explicit", () => {
-  assert.equal(DEFAULT_LOCK_PATH, "/run/lock/natarot-production-deploy.lock");
+  assert.equal(DEFAULT_LOCK_PATH, "/run/lock/natarot-deploy.lock");
   assert.equal(DEFAULT_BACKUP_ROOT, "/var/backups/natarot");
 });
