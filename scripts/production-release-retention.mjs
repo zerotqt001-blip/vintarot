@@ -333,8 +333,9 @@ export async function main(argv = process.argv.slice(2)) {
   const tempResult = options.cleanupTemp
     ? await cleanupTemporaryArtifacts({ ...options, execute: options.execute })
     : { status: "not_requested", removed: [], skipped: [] };
+  const tempPass = tempResult.status === "pass" || tempResult.status === "not_requested";
   const report = {
-    storageGuard: result.status === "pass" && tempResult.status === "pass" ? "PASS" : "FAIL",
+    storageGuard: result.status === "pass" && tempPass ? "PASS" : "FAIL",
     diskBefore: result.before.disk,
     diskAfter: result.after.disk,
     applicationReleasesBefore: result.before.releaseCount,
@@ -354,7 +355,7 @@ export async function main(argv = process.argv.slice(2)) {
     tempResult,
   };
   process.stdout.write(JSON.stringify(report, null, 2) + "\n");
-  if (result.status !== "pass" || tempResult.status !== "pass") process.exitCode = 75;
+  if (result.status !== "pass" || !tempPass) process.exitCode = 75;
   return report;
 }
 
