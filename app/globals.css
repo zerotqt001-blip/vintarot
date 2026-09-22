@@ -1168,7 +1168,7 @@ html,body{background:var(--color-bg-deep);color:var(--color-text)}
 .brand-input:-webkit-autofill,.brand-input:-webkit-autofill:hover,.brand-input:-webkit-autofill:focus{-webkit-text-fill-color:var(--color-text);-webkit-box-shadow:0 0 0 1000px var(--color-surface) inset;transition:background-color 9999s ease-out 0s}
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:var(--color-focus)}
 .topbar-nav a{white-space:nowrap}
-@media(max-width:1100px) and (min-width:701px){
+@media(max-width:1500px) and (min-width:701px){
   .home-shell .topbar,.site-shell .topbar,.room-page .topbar{gap:10px;padding-inline:12px}
   .home-shell .brand-tagline,.site-shell .brand-tagline,.room-page .brand-tagline{display:none}
   .home-shell .brand-lockup,.site-shell .brand-lockup,.room-page .brand-lockup{flex:0 0 auto;gap:0}
@@ -1493,6 +1493,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .home-shell .home-footer-links a{font-size:11px}
   .home-shell .home-footer-socials{gap:5px}
   .home-shell .home-footer-socials span{width:34px;height:34px}
+}
+@media(max-width:920px) and (min-width:701px){
+  .home-shell .topbar{gap:8px;padding-inline:10px}
+  .home-shell .brand-lockup .brand-logo-image{width:132px}
+  .home-shell .home-header-nav{gap:12px}
+  .home-shell .home-header-nav a{font-size:12px}
+  .home-shell .home-header-actions{gap:4px}
+  .home-shell .home-icon-link{width:34px;height:34px}
+  .home-shell .home-header-actions .language-select select{width:84px;min-height:34px;padding:0 20px 0 9px;font-size:10px}
+  .home-shell .home-account-link{width:34px;min-height:34px;padding:0;border-radius:50%}
+  .home-shell .home-account-link span{display:none}
+  .home-shell .site-sidebar{top:92px;bottom:84px}
+  .home-shell .home-primary-nav{padding-block:12px}
+  .home-shell .home-primary-nav a{min-height:84px}
+  .home-shell .home-rail-signature{margin-top:6px;padding-top:10px}
+  .home-shell .main{padding-left:210px;padding-right:18px}
+  .home-shell .home-draw-cta{margin-top:38px}
+  .home-shell .home-value-props{gap:14px;margin-top:45px}
+  .home-shell .home-value-item{width:125px;font-size:13px}
 }
 @media(max-width:700px){
   .home-shell{min-height:100svh}

@@ -162,7 +162,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     {isHome ? <footer className="home-footer">
       <div className="home-footer-brand"><Logo variant="dark" href="/" compact /><span>{t("header.tagline")}</span></div>
           <nav className="home-footer-links" aria-label={t("home.footerLinks")}><a href="/guidebook">{t("home.explore")}</a><a href="/privacy">{t("home.privacy")}</a><a href="/terms">{t("home.terms")}</a></nav>
-      <div className="home-footer-socials" aria-label={t("home.socialLinks")}><span><Heart size={17} /></span><span><Play size={16} /></span><span><Camera size={17} /></span><span><Music2 size={17} /></span></div>
+      <div className="home-footer-socials" aria-hidden="true"><span><Heart size={17} /></span><span><Play size={16} /></span><span><Camera size={17} /></span><span><Music2 size={17} /></span></div>
     </footer> : <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>}
     {!isHome && <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>}
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>

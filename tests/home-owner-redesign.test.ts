@@ -28,6 +28,7 @@ test("Home header keeps only the target center navigation and exposes honest con
   assert.match(shell, /Search/);
   assert.match(shell, /home-theme-toggle/);
   assert.match(shell, /href="\/guidebook"[\s\S]*Search/);
+  assert.match(shell, /className="home-footer-socials" aria-hidden="true"/);
 });
 
 test("Home target copy and responsive surface hooks are localized", () => {
@@ -38,6 +39,8 @@ test("Home target copy and responsive surface hooks are localized", () => {
   assert.match(styles, /\.home-primary-nav/);
   assert.match(styles, /\.home-value-props/);
   assert.match(styles, /\.home-footer/);
+  assert.match(styles, /@media\(max-width:1500px\) and \(min-width:701px\)/);
+  assert.match(styles, /@media\(max-width:920px\) and \(min-width:701px\)/);
   assert.match(styles, /@media\(max-width:700px\)/);
   assert.match(styles, /@media\(max-width:430px\)/);
   assert.match(styles, /prefers-reduced-motion/);
