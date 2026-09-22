@@ -102,7 +102,7 @@ async function runGuestReading({ origin, fetchImpl, timeoutMs, index }) {
       question: `Production health gate ${index}`,
       optional_context: "synthetic operator health check",
       category_id: "category-everyday",
-      spread_template_id: "spread-persona-obstacle-solution",
+      spread_template_id: "spread-everyday-persona-obstacle-solution",
       deck_id: "deck-rider-waite-smith",
       locale: "en",
       reversals: true,

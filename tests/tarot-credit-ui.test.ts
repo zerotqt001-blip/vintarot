@@ -13,7 +13,7 @@ test("member credit failures have a dedicated bilingual account path", () => {
     assert.notEqual(action, "room.interpretationCreditsAction");
     assert.match(`${message} ${action}`, /credit|Credit/i);
   }
-  assert.match(room, /error\?\.status===402/);
+  assert.match(room, /error\.status===402/);
   assert.match(room, /setInterpretationCreditsRequired\(true\)/);
   assert.match(room, /href="\/account"/);
   assert.match(room, /interpretationCreditsAction/);
