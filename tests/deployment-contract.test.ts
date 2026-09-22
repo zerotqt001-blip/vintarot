@@ -4,6 +4,7 @@ import test from "node:test";
 
 const service = readFileSync(new URL("../deploy/systemd/natarot.service", import.meta.url), "utf8");
 const backupService = readFileSync(new URL("../deploy/systemd/natarot-backup.service", import.meta.url), "utf8");
+const restoreTestService = readFileSync(new URL("../deploy/systemd/natarot-restore-test.service", import.meta.url), "utf8");
 const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.meta.url), "utf8");
 
 test("systemd service runs the Node migration and Vinext on localhost", () => {
@@ -24,6 +25,13 @@ test("production backup service follows the managed current release", () => {
   assert.match(backupService, /Environment=NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
   assert.match(backupService, /ExecStart=\/usr\/local\/sbin\/natarot-backup/);
   assert.match(backupService, /ProtectSystem=full/);
+});
+
+test("restore verification follows the managed current release", () => {
+  assert.match(restoreTestService, /Environment=NATAROT_APP_ROOT=\/opt\/natarot\/current/);
+  assert.match(restoreTestService, /Environment=NATAROT_PRODUCTION_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(restoreTestService, /ExecStart=\/usr\/local\/sbin\/natarot-restore-test/);
+  assert.match(restoreTestService, /ProtectSystem=full/);
 });
 
 test("Nginx proxies both public hosts with bounded requests and forwarded headers", () => {
