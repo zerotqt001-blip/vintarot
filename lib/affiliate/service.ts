@@ -187,11 +187,33 @@ export async function listAffiliateHistory(database: D1Database, memberOwnerId: 
   return result.results.map((row) => ({ id: String(row.id), orderId: String(row.order_id), amountMinor: Number(row.amount_minor), currency: String(row.currency), commissionMinor: Number(row.commission_minor), status: String(row.status) as AffiliateHistoryItem["status"], fulfilledAt: Number(row.fulfilled_at), eligibleAt: row.eligible_at == null ? null : Number(row.eligible_at), reversedAt: row.reversed_at == null ? null : Number(row.reversed_at), createdAt: Number(row.created_at) }));
 }
 
+export async function listAffiliateOwnerHistory(database: D1Database, memberOwnerId: string, limit = 50): Promise<AffiliateHistoryItem[]> {
+  const memberId = memberIdFromOwner(requireBounded(memberOwnerId, 160, "Invalid member owner"));
+  if (!memberId) return [];
+  const boundedLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
+  const result = await database.prepare(`SELECT id, order_id, amount_minor, currency, commission_minor, status, fulfilled_at, eligible_at, reversed_at, created_at
+    FROM affiliate_conversions
+    WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?)
+    ORDER BY created_at DESC, id DESC LIMIT ?`).bind(memberId, boundedLimit).all<Record<string, unknown>>();
+  return result.results.map((row) => ({ id: String(row.id), orderId: String(row.order_id), amountMinor: Number(row.amount_minor), currency: String(row.currency), commissionMinor: Number(row.commission_minor), status: String(row.status) as AffiliateHistoryItem["status"], fulfilledAt: Number(row.fulfilled_at), eligibleAt: row.eligible_at == null ? null : Number(row.eligible_at), reversedAt: row.reversed_at == null ? null : Number(row.reversed_at), createdAt: Number(row.created_at) }));
+}
+
 export async function getAffiliateSummary(database: D1Database, memberOwnerId: string): Promise<AffiliateSummary> {
   const memberId = memberIdFromOwner(requireBounded(memberOwnerId, 160, "Invalid member owner"));
   if (!memberId) return { conversions: 0, held: 0, eligible: 0, reversed: 0, creditedMinor: 0, debitedMinor: 0, netMinor: 0 };
   const counts = await database.prepare("SELECT COUNT(*) AS conversions, SUM(CASE WHEN status='HELD' THEN 1 ELSE 0 END) AS held, SUM(CASE WHEN status='ELIGIBLE' THEN 1 ELSE 0 END) AS eligible, SUM(CASE WHEN status='REVERSED' THEN 1 ELSE 0 END) AS reversed FROM affiliate_conversions WHERE member_id=?").bind(memberId).first<Record<string, unknown>>();
   const amounts = await database.prepare("SELECT COALESCE(SUM(CASE WHEN l.direction='CREDIT' THEN l.amount_minor ELSE 0 END), 0) AS credited, COALESCE(SUM(CASE WHEN l.direction='DEBIT' THEN l.amount_minor ELSE 0 END), 0) AS debited FROM affiliate_commission_ledger l JOIN affiliate_conversions c ON c.id=l.conversion_id WHERE c.member_id=?").bind(memberId).first<Record<string, unknown>>();
+  const creditedMinor = Number(amounts?.credited ?? 0);
+  const debitedMinor = Number(amounts?.debited ?? 0);
+  return { conversions: Number(counts?.conversions ?? 0), held: Number(counts?.held ?? 0), eligible: Number(counts?.eligible ?? 0), reversed: Number(counts?.reversed ?? 0), creditedMinor, debitedMinor, netMinor: creditedMinor - debitedMinor };
+}
+
+export async function getAffiliateOwnerSummary(database: D1Database, memberOwnerId: string): Promise<AffiliateSummary> {
+  const memberId = memberIdFromOwner(requireBounded(memberOwnerId, 160, "Invalid member owner"));
+  if (!memberId) return { conversions: 0, held: 0, eligible: 0, reversed: 0, creditedMinor: 0, debitedMinor: 0, netMinor: 0 };
+  const scope = "affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?)";
+  const counts = await database.prepare(`SELECT COUNT(*) AS conversions, SUM(CASE WHEN status='HELD' THEN 1 ELSE 0 END) AS held, SUM(CASE WHEN status='ELIGIBLE' THEN 1 ELSE 0 END) AS eligible, SUM(CASE WHEN status='REVERSED' THEN 1 ELSE 0 END) AS reversed FROM affiliate_conversions WHERE ${scope}`).bind(memberId).first<Record<string, unknown>>();
+  const amounts = await database.prepare(`SELECT COALESCE(SUM(CASE WHEN l.direction='CREDIT' THEN l.amount_minor ELSE 0 END), 0) AS credited, COALESCE(SUM(CASE WHEN l.direction='DEBIT' THEN l.amount_minor ELSE 0 END), 0) AS debited FROM affiliate_commission_ledger l JOIN affiliate_conversions c ON c.id=l.conversion_id WHERE c.${scope}`).bind(memberId).first<Record<string, unknown>>();
   const creditedMinor = Number(amounts?.credited ?? 0);
   const debitedMinor = Number(amounts?.debited ?? 0);
   return { conversions: Number(counts?.conversions ?? 0), held: Number(counts?.held ?? 0), eligible: Number(counts?.eligible ?? 0), reversed: Number(counts?.reversed ?? 0), creditedMinor, debitedMinor, netMinor: creditedMinor - debitedMinor };
