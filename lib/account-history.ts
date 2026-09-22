@@ -7,6 +7,15 @@ import { getAffiliateSummary } from "./affiliate/service";
 export type AccountHistoryKind = "readings" | "shares" | "orders" | "credits" | "affiliate" | "all";
 type AccountHistoryItemKind = "reading" | "share" | "order" | "credit" | "affiliate";
 
+export type AccountPackageSummary = {
+  slug: string;
+  nameEn: string;
+  nameVi: string;
+  version: number;
+  creditUnits: number;
+  vipDurationSeconds: number | null;
+};
+
 export type AccountHistoryItem = {
   id: string;
   kind: AccountHistoryItemKind;
@@ -21,6 +30,7 @@ export type AccountHistoryItem = {
   sessionId?: string;
   readingId?: string;
   paymentReference?: string | null;
+  package?: AccountPackageSummary;
 };
 
 export type AccountSummary = {
@@ -123,6 +133,32 @@ function marker(value: unknown): { readingId?: string; sessionId?: string } {
   }
 }
 
+function packageSummary(value: unknown): AccountPackageSummary | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    const parsed = JSON.parse(value) as Record<string, unknown>;
+    const vipDurationSeconds = parsed.vipDurationSeconds;
+    if (
+      typeof parsed.slug !== "string" || !parsed.slug.trim() ||
+      typeof parsed.nameEn !== "string" || !parsed.nameEn.trim() ||
+      typeof parsed.nameVi !== "string" || !parsed.nameVi.trim() ||
+      !Number.isSafeInteger(parsed.version) || Number(parsed.version) < 1 ||
+      !Number.isSafeInteger(parsed.creditUnits) || Number(parsed.creditUnits) < 0 ||
+      !(vipDurationSeconds === null || (Number.isSafeInteger(vipDurationSeconds) && Number(vipDurationSeconds) >= 0))
+    ) return undefined;
+    return {
+      slug: parsed.slug,
+      nameEn: parsed.nameEn,
+      nameVi: parsed.nameVi,
+      version: Number(parsed.version),
+      creditUnits: Number(parsed.creditUnits),
+      vipDurationSeconds: vipDurationSeconds === null ? null : Number(vipDurationSeconds),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 function mapHistoryRow(row: Record<string, unknown>): AccountHistoryItem {
   const kind = String(row.kind) as AccountHistoryItemKind;
   const item: AccountHistoryItem = {
@@ -143,32 +179,36 @@ function mapHistoryRow(row: Record<string, unknown>): AccountHistoryItem {
     item.sessionId = parsed.sessionId;
   }
   if (kind === "share") item.readingId = item.referenceId ?? undefined;
-  if (kind === "order") item.paymentReference = row.payment_reference == null ? null : String(row.payment_reference);
+  if (kind === "order") {
+    item.paymentReference = row.payment_reference == null ? null : String(row.payment_reference);
+    const safePackage = packageSummary(row.package_snapshot);
+    if (safePackage) item.package = safePackage;
+  }
   return item;
 }
 
 const historyUnion = `
   SELECT r.id, 'reading' AS kind, r.updated AS created_at, NULL AS reference_id, NULL AS status,
-    NULL AS amount_minor, NULL AS currency, NULL AS units, NULL AS reason, r.data AS private_marker, NULL AS payment_reference
+    NULL AS amount_minor, NULL AS currency, NULL AS units, NULL AS reason, r.data AS private_marker, NULL AS payment_reference, NULL AS package_snapshot
     FROM records r WHERE r.owner=? AND r.kind='tarot-reading'
   UNION ALL
   SELECT rs.id, 'share' AS kind, rs.created_at, r.id AS reference_id, rs.status,
-    NULL, NULL, NULL, NULL, NULL, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
     FROM reading_shares rs JOIN readings r ON r.id=rs.reading_id JOIN reading_sessions s ON s.id=r.session_id
     WHERE s.user_id=?
   UNION ALL
   SELECT o.id, 'order' AS kind, o.created_at, o.id AS reference_id, o.status,
-    o.amount_minor, o.currency, NULL, NULL, NULL, o.payment_reference
+    o.amount_minor, o.currency, NULL, NULL, NULL, o.payment_reference, o.package_snapshot
     FROM orders o JOIN credit_accounts a ON a.id=o.account_id
     WHERE a.owner_kind='member' AND a.owner_id=?
   UNION ALL
   SELECT l.id, 'credit' AS kind, l.created_at, l.reference_id, l.event_type,
-    NULL, NULL, l.units, l.reason, NULL, NULL
+    NULL, NULL, l.units, l.reason, NULL, NULL, NULL
     FROM credit_ledger l JOIN credit_accounts a ON a.id=l.account_id
     WHERE a.owner_kind='member' AND a.owner_id=?
   UNION ALL
   SELECT c.id, 'affiliate' AS kind, c.created_at, c.order_id, c.status,
-    c.commission_minor, c.currency, NULL, NULL, NULL, NULL
+    c.commission_minor, c.currency, NULL, NULL, NULL, NULL, NULL
     FROM affiliate_conversions c WHERE c.member_id=?
 `;
 
@@ -189,7 +229,7 @@ export async function listAccountHistory(input: { database: D1Database; owner: C
   }
   values.push(limit + 1);
   const where = predicates.length ? `WHERE ${predicates.join(" AND ")}` : "";
-  const result = await input.database.prepare(`SELECT id, kind, created_at, reference_id, status, amount_minor, currency, units, reason, private_marker, payment_reference FROM (${historyUnion}) history ${where} ORDER BY history.created_at DESC, history.id DESC LIMIT ?`).bind(...values).all<Record<string, unknown>>();
+  const result = await input.database.prepare(`SELECT id, kind, created_at, reference_id, status, amount_minor, currency, units, reason, private_marker, payment_reference, package_snapshot FROM (${historyUnion}) history ${where} ORDER BY history.created_at DESC, history.id DESC LIMIT ?`).bind(...values).all<Record<string, unknown>>();
   const rows = result.results.map(mapHistoryRow);
   const items = rows.slice(0, limit);
   const nextCursor = rows.length > limit && items.length > 0 ? encodeHistoryCursor(items[items.length - 1].createdAt, items[items.length - 1].id) : null;

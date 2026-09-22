@@ -1,5 +1,5 @@
 import VinTarot from "@/app/vintarot";
-import AccountHistory from "@/components/account/account-history";
+import AccountDashboard from "@/components/account/account-dashboard";
 import { getPageMember, toMemberShellUser } from "@/lib/member-page";
 
 export const dynamic = "force-dynamic";
@@ -7,5 +7,5 @@ export const dynamic = "force-dynamic";
 /* FUNCTIONAL UI — NOT FINAL DESIGN */
 export default async function AccountPage() {
   const member = await getPageMember();
-  return <VinTarot user={toMemberShellUser(member)} path="/account"><AccountHistory authenticated={Boolean(member)} /></VinTarot>;
+  return <VinTarot user={toMemberShellUser(member)} path="/account"><AccountDashboard authenticated={Boolean(member)} /></VinTarot>;
 }

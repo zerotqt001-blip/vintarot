@@ -44,7 +44,7 @@ function seedOwnerData(fixture: ReturnType<typeof createFixture>) {
   sqlite.prepare("INSERT OR IGNORE INTO credit_accounts (id, owner_kind, owner_id, mutation_version, created_at, updated_at) VALUES (?, 'member', ?, 0, ?, ?)").run(accountId, owner.ownerId, now, now);
   sqlite.prepare("INSERT INTO packages (id, slug, name_en, name_vi, active, created_at, updated_at) VALUES ('package-account', 'package-account', 'Account', 'Tài khoản', 1, ?, ?)").run(now, now);
   sqlite.prepare("INSERT INTO package_versions (id, package_id, version, amount_minor, currency, credit_units, vip_duration_seconds, benefit_snapshot, policy_version, status, starts_at, created_at) VALUES ('package-account-v1', 'package-account', 1, 12345, 'VND', 10, 86400, '{}', 'packages-v1', 'active', ?, ?)").run(now - 1, now);
-  sqlite.prepare("INSERT INTO orders (id, account_id, package_id, package_version_id, package_snapshot, amount_minor, currency, status, idempotency_key, request_fingerprint, payment_reference, created_at, payment_confirmed_at, fulfilled_at, cancelled_at, refunded_at) VALUES ('order-account', ?, 'package-account', 'package-account-v1', 'private-package-snapshot', 12345, 'VND', 'FULFILLED', 'account-order', 'fingerprint', 'payment-ref', ?, ?, ?, NULL, NULL)").run(accountId, now, now, now);
+  sqlite.prepare("INSERT INTO orders (id, account_id, package_id, package_version_id, package_snapshot, amount_minor, currency, status, idempotency_key, request_fingerprint, payment_reference, created_at, payment_confirmed_at, fulfilled_at, cancelled_at, refunded_at) VALUES ('order-account', ?, 'package-account', 'package-account-v1', ?, 12345, 'VND', 'FULFILLED', 'account-order', 'fingerprint', 'payment-ref', ?, ?, ?, NULL, NULL)").run(accountId, JSON.stringify({ id: "package-account-v1", packageId: "package-account", slug: "package-account", nameEn: "Account", nameVi: "Tài khoản", version: 1, amountMinor: 12345, currency: "VND", creditUnits: 10, vipDurationSeconds: 86400, benefitSnapshot: { credits: { units: 10 } }, policyVersion: "packages-v1", status: "active", startsAt: now - 1, endsAt: null, createdAt: now }), now, now, now);
   sqlite.prepare("INSERT INTO order_fulfillments (id, order_id, fulfillment_key, result_snapshot, created_at) VALUES ('fulfillment-account', 'order-account', 'fulfillment-key', 'credits-vip-result', ?)").run(now);
   return accountId;
 }
@@ -65,8 +65,14 @@ test("account history is owner-scoped, metadata-first, and cursor-stable", async
   assert.doesNotMatch(serialized, /private-reading-payload|private-package-snapshot|token-hash-only/);
   assert.ok(allItems.some((item) => item.kind === "reading" && item.savedReadingId === "saved-reading:reading-owner"));
   assert.ok(allItems.some((item) => item.kind === "share" && item.readingId === "reading-owner"));
-  assert.ok(allItems.some((item) => item.kind === "order" && item.paymentReference === "payment-ref"));
+  const orderItem = allItems.find((item) => item.kind === "order");
+  assert.equal(orderItem?.paymentReference, "payment-ref");
+  assert.deepEqual(orderItem?.package, { slug: "package-account", nameEn: "Account", nameVi: "Tài khoản", version: 1, creditUnits: 10, vipDurationSeconds: 86400 });
   assert.ok(allItems.some((item) => item.kind === "credit" && item.units === 4));
+  fixtureData.sqlite.prepare("UPDATE orders SET package_snapshot=? WHERE id='order-account'").run("private-package-snapshot");
+  const legacyOrder = await listAccountHistory({ database: fixtureData.database, owner, kind: "orders" });
+  assert.equal(legacyOrder.items[0]?.package, undefined);
+  assert.doesNotMatch(JSON.stringify(legacyOrder), /private-package-snapshot/);
   assert.equal((await listAccountHistory({ database: fixtureData.database, owner: { kind: "member", ownerId: "member:other" }, kind: "all" })).items.length, 0);
   await assert.rejects(() => listAccountHistory({ database: fixtureData.database, owner, cursor: "not-a-cursor" }), (error: unknown) => error instanceof Error && error.message === "Invalid history cursor");
   await assert.rejects(() => listAccountHistory({ database: fixtureData.database, owner, limit: 51 }), (error: unknown) => error instanceof Error && error.message === "Invalid history limit");

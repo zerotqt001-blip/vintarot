@@ -5,7 +5,7 @@ import Logo from "@/components/brand/logo";
 import ReferralCapture from "@/components/affiliate/referral-capture";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import { useEffect, useRef, useState } from "react";
-import { Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Home, Moon, BookOpen, Layers, Sparkles, CalendarDays, Gift, AlignLeft, Heart, ShoppingBag, Video, Plus, HelpCircle, ArrowUpRight, ArrowRight, Search, UserRound, Sun, Share2, WalletCards } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -49,6 +49,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isPractice = path === "/community";
   const isRoom = path === "/room";
   const isDaily = path === "/daily-spread";
+  const isAccount = path === "/account";
+  const [accountTheme, setAccountTheme] = useState<"night" | "soft">("night");
   const profileHref = user ? "/profile" : "/auth?return_to=/profile";
   const shellRef = useRef<HTMLDivElement>(null);
   const nav = [["nav.home", Moon, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
@@ -90,6 +92,17 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
+  useEffect(() => {
+    if (!isAccount) return;
+    const savedTheme = window.localStorage.getItem("natarot-account-theme");
+    if (savedTheme === "night" || savedTheme === "soft") setAccountTheme(savedTheme);
+  }, [isAccount]);
+  function toggleAccountTheme() {
+    const nextTheme = accountTheme === "night" ? "soft" : "night";
+    setAccountTheme(nextTheme);
+    window.localStorage.setItem("natarot-account-theme", nextTheme);
+  }
+  if (isAccount) return <AccountShell user={user} path={path} theme={accountTheme} onToggleTheme={toggleAccountTheme}>{children}</AccountShell>;
   return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} className={isHome ? "home-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell" : isCreate ? "site-shell create-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : "site-shell"}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
     <header className="topbar">
@@ -121,5 +134,59 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     <footer><Logo variant="dark" href="/" compact /><div className="marquee"><span>{t("home.welcome").repeat(8)}</span></div><a href="/guidebook">{t("home.guidebook")}</a><a href={profileHref}>{t("nav.yourSpace")}</a><a href="/privacy">Privacy / Riêng tư</a><a href="/terms">Terms / Điều khoản</a></footer>
     <button className="help" aria-label={t("header.help")} onClick={() => setModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>
     <Dialog open={!!modal} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
+  </div></SidebarProvider>;
+}
+
+function AccountShell({ user, children, path, theme, onToggleTheme }: { user: User; children?: React.ReactNode; path: string; theme: "night" | "soft"; onToggleTheme: () => void }) {
+  const { t } = useLanguage();
+  const profileHref = user ? "/profile" : "/auth?return_to=/account";
+  const nav = [
+    { key: "nav.home", href: "/", Icon: Home },
+    { key: "account.navDraw", href: "/room", Icon: Layers },
+    { key: "account.navMembership", href: "/packages", Icon: WalletCards },
+    { key: "account.navAffiliate", href: "/affiliate", Icon: Share2 },
+    { key: "account.navAccount", href: "/account", Icon: UserRound },
+  ] as const;
+  const topNav = [
+    ["nav.home", "/"],
+    ["nav.decks", "/guidebook"],
+    ["nav.practice", "/community"],
+    ["nav.book", "/book"],
+  ] as const;
+  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div className={`account-shell account-shell--${theme}`}>
+    <header className="topbar account-topbar">
+      <div className="brand-lockup">
+        <Logo variant="dark" href="/" aria-label="NaTarot" priority />
+        <span className="brand-tagline">{t("header.tagline")}</span>
+      </div>
+      <nav className="topbar-nav account-topbar-nav" aria-label={t("account.primaryNavigation")}>
+        {topNav.map(([key, href]) => <a className={href === path ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
+      </nav>
+      <div className="top-actions account-top-actions">
+        <a className="account-icon-link" href="/guidebook" aria-label={t("account.search")}><Search size={17} aria-hidden="true" /></a>
+        <a className="account-icon-link" href="/journal?tab=saved" aria-label={t("account.savedReadings")}><Heart size={17} aria-hidden="true" /></a>
+        <LanguageSelect />
+        <button className="account-theme-toggle" type="button" onClick={onToggleTheme} aria-label={t("account.toggleTheme")} aria-pressed={theme === "soft"}>{theme === "night" ? <Moon size={17} aria-hidden="true" /> : <Sun size={17} aria-hidden="true" />}</button>
+        <a className="account-header-profile" href={user ? "/account" : "/auth?return_to=/account"} aria-current="page"><UserRound size={17} aria-hidden="true" /><span>{t("account.navAccount")}</span></a>
+      </div>
+    </header>
+    <aside className="account-rail" aria-label={t("account.memberNavigation")}>
+      <nav className="account-rail-nav">
+        {nav.map(({ key, href, Icon }) => <a className={href === path ? "active" : ""} href={href} key={href} aria-current={href === path ? "page" : undefined}>
+          <span className="account-rail-icon"><Icon size={20} strokeWidth={1.45} aria-hidden="true" /></span><span>{t(key)}</span>
+        </a>)}
+      </nav>
+      <div className="account-rail-signature"><Logo variant="dark" href="/" compact /><p>{t("account.railSignature")}</p></div>
+    </aside>
+    <main className="account-main">{children}</main>
+    <footer className="account-footer">
+      <div className="account-footer-brand"><Logo variant="dark" href="/" compact /><span>{t("header.tagline")}</span></div>
+      <nav aria-label={t("account.footerNavigation")}>
+        <a href="/guidebook">{t("home.guidebook")}</a>
+        <a href="/privacy">{t("account.privacy")}</a>
+        <a href="/terms">{t("account.terms")}</a>
+        <a href={profileHref}>{t("account.profile")}</a>
+      </nav>
+    </footer>
   </div></SidebarProvider>;
 }

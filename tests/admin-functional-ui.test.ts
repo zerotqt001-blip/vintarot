@@ -49,7 +49,7 @@ test("account and admin links are reachable from the existing shell without chan
   const accountPage = source("app/account/page.tsx");
   assert.match(shell, /ReferralCapture/);
   assert.match(adminPage, /AdminConsole/);
-  assert.match(accountPage, /AccountHistory/);
+  assert.match(accountPage, /AccountDashboard/);
   assert.match(shell, /\/profile/);
   assert.match(shell, /\/guidebook/);
 });

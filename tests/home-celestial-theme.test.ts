@@ -2,10 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
-const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
-const styles = readFileSync(`${root}/app/globals.css`, "utf8");
-const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
+const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+const i18n = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
 test("homepage renders the NaTarot celestial scene layers and daily ritual content", () => {
   assert.match(shell, /className=\{isHome \? "home-shell"/);
