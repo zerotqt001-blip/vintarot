@@ -36,6 +36,7 @@ test("Home target copy and responsive surface hooks are localized", () => {
     assert.match(messages, new RegExp(marker));
   }
   assert.match(styles, /\.home-hero/);
+  assert.match(styles, /\.home-shell \.main\{[^}]*padding:112px 0 102px/);
   assert.match(styles, /\.home-primary-nav/);
   assert.match(styles, /\.home-value-props/);
   assert.match(styles, /\.home-footer/);
