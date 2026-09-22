@@ -1,8 +1,9 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import { prepareAuditInsert } from "./audit/service";
+import type { AuditAppendInput } from "./audit/types";
 import { createRequestFingerprint } from "./credits/ledger";
 import { creditAccountId, CreditIdempotencyError } from "./credits/repository";
 import type { CreditOwner } from "./credits/types";
-import { createAuditService } from "./audit/service";
 
 export type Entitlement = {
   id: string;
@@ -32,6 +33,7 @@ export type ActivateEntitlementInput = {
   grantKey: string;
   benefitSnapshot: unknown;
   now?: number;
+  audit?: AuditAppendInput;
 };
 
 type EntitlementRow = {
@@ -71,12 +73,14 @@ export async function activateEntitlement(database: D1Database, input: ActivateE
   const timestamp = input.now ?? Date.now();
   const benefitSnapshot = typeof input.benefitSnapshot === "string" ? input.benefitSnapshot : createRequestFingerprint(input.benefitSnapshot);
   const entitlementId = `entitlement:${accountId}:${input.grantKey}`;
-  await database.prepare("INSERT OR IGNORE INTO credit_accounts (id, owner_kind, owner_id, mutation_version, mutation_token, created_at, updated_at) VALUES (?, ?, ?, 0, NULL, ?, ?)")
-    .bind(accountId, input.owner.kind, input.owner.ownerId, timestamp, timestamp)
-    .run();
-  await database.prepare("INSERT OR IGNORE INTO entitlements (id, account_id, entitlement_type, benefit_version, starts_at, ends_at, status, source_type, source_id, grant_key, benefit_snapshot, created_at, updated_at, cancelled_at) VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE', ?, ?, ?, ?, ?, ?, NULL)")
-    .bind(entitlementId, accountId, input.entitlementType, input.benefitVersion, input.startsAt, input.endsAt, input.sourceType, input.sourceId, input.grantKey, benefitSnapshot, timestamp, timestamp)
-    .run();
+  const statements = [
+    database.prepare("INSERT OR IGNORE INTO credit_accounts (id, owner_kind, owner_id, mutation_version, mutation_token, created_at, updated_at) VALUES (?, ?, ?, 0, NULL, ?, ?)")
+      .bind(accountId, input.owner.kind, input.owner.ownerId, timestamp, timestamp),
+    database.prepare("INSERT OR IGNORE INTO entitlements (id, account_id, entitlement_type, benefit_version, starts_at, ends_at, status, source_type, source_id, grant_key, benefit_snapshot, created_at, updated_at, cancelled_at) VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE', ?, ?, ?, ?, ?, ?, NULL)")
+      .bind(entitlementId, accountId, input.entitlementType, input.benefitVersion, input.startsAt, input.endsAt, input.sourceType, input.sourceId, input.grantKey, benefitSnapshot, timestamp, timestamp),
+  ];
+  if (input.audit) statements.push(prepareAuditInsert(database, input.audit, timestamp));
+  await database.batch(statements);
   const row = await first<EntitlementRow>(database, "SELECT id, account_id AS accountId, entitlement_type AS entitlementType, benefit_version AS benefitVersion, starts_at AS startsAt, ends_at AS endsAt, status, source_type AS sourceType, source_id AS sourceId, grant_key AS grantKey, benefit_snapshot AS benefitSnapshot, created_at AS createdAt, updated_at AS updatedAt, cancelled_at AS cancelledAt FROM entitlements WHERE id = ? AND account_id = ?", entitlementId, accountId);
   if (!row) throw new Error("Entitlement was not persisted");
   const mapped = mapEntitlement(row);
@@ -115,6 +119,8 @@ export async function grantManualEntitlement(input: {
     throw new Error("Invalid entitlement mutation");
   }
   const timestamp = input.now ?? Date.now();
+  const grantKey = `admin-vip:${input.idempotencyKey}`;
+  const entitlementId = `entitlement:${creditAccountId(input.owner)}:${grantKey}`;
   const entitlement = await activateEntitlement(input.database, {
     owner: input.owner,
     entitlementType: input.entitlementType,
@@ -123,19 +129,19 @@ export async function grantManualEntitlement(input: {
     endsAt: input.endsAt,
     sourceType: "ADMIN",
     sourceId: input.actorId,
-    grantKey: `admin-vip:${input.idempotencyKey}`,
+    grantKey,
     benefitSnapshot: input.benefitSnapshot,
     now: timestamp,
-  });
-  await createAuditService(input.database).append({
-    actorKind: "member",
-    actorId: input.actorId,
-    action: "vip.granted",
-    targetType: "entitlement",
-    targetId: entitlement.id,
-    reason: input.reason,
-    idempotencyKey: `admin.vip.grant:${input.idempotencyKey}`,
-    metadata: { entitlementType: input.entitlementType, benefitVersion: input.benefitVersion },
+    audit: {
+      actorKind: "member",
+      actorId: input.actorId,
+      action: "vip.granted",
+      targetType: "entitlement",
+      targetId: entitlementId,
+      reason: input.reason,
+      idempotencyKey: `admin.vip.grant:${input.idempotencyKey}`,
+      metadata: { entitlementType: input.entitlementType, benefitVersion: input.benefitVersion },
+    },
   });
   return entitlement;
 }
@@ -144,9 +150,7 @@ export async function revokeEntitlement(input: { database: D1Database; owner: Cr
   if (!input.reason.trim() || input.reason.length > 500 || !input.idempotencyKey.trim() || input.idempotencyKey.length > 200 || !input.actorId.trim()) throw new Error("Invalid entitlement mutation");
   const accountId = creditAccountId(input.owner);
   const timestamp = input.now ?? Date.now();
-  const result = await input.database.prepare("UPDATE entitlements SET status='CANCELLED', cancelled_at=?, updated_at=? WHERE id=? AND account_id=? AND status IN ('PENDING', 'ACTIVE')").bind(timestamp, timestamp, input.entitlementId, accountId).run();
-  if (Number(result.meta.changes) === 0) return false;
-  await createAuditService(input.database).append({
+  const audit: AuditAppendInput = {
     actorKind: "member",
     actorId: input.actorId,
     action: "vip.revoked",
@@ -155,6 +159,10 @@ export async function revokeEntitlement(input: { database: D1Database; owner: Cr
     reason: input.reason,
     idempotencyKey: `admin.vip.revoke:${input.idempotencyKey}`,
     metadata: { ownerKind: input.owner.kind },
-  });
-  return true;
+  };
+  const results = await input.database.batch([
+    input.database.prepare("UPDATE entitlements SET status='CANCELLED', cancelled_at=?, updated_at=? WHERE id=? AND account_id=? AND status IN ('PENDING', 'ACTIVE')").bind(timestamp, timestamp, input.entitlementId, accountId),
+    prepareAuditInsert(input.database, audit, timestamp, { ignoreExisting: false, guardSql: "changes() > 0" }),
+  ]);
+  return Number(results[0]?.meta.changes ?? 0) > 0;
 }

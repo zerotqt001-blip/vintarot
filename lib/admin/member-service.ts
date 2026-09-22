@@ -16,9 +16,9 @@ export class AdminServiceError extends Error {
 export interface MemberAdminView {
   id: string;
   username: string;
-  email: string;
-  phone: string;
-  displayName: string | null;
+  emailMasked: string;
+  phoneMasked: string;
+  displayNameMasked: string | null;
   role: AdminRole;
   disabled: boolean;
   disabledAt: number | null;
@@ -47,15 +47,38 @@ function required(value: string, max: number): string {
   return normalized;
 }
 
+function maskEmail(value: string): string {
+  const normalized = value.trim();
+  const separator = normalized.indexOf("@");
+  if (separator <= 0 || separator === normalized.length - 1) return "••••";
+  return `${normalized.slice(0, 1)}••••@${normalized.slice(separator + 1)}`;
+}
+
+function maskPhone(value: string): string {
+  const normalized = value.trim();
+  if (normalized.length < 5) return "••••";
+  return `${normalized.slice(0, 3)}${"•".repeat(Math.max(1, normalized.length - 5))}${normalized.slice(-2)}`;
+}
+
+function maskDisplayName(value: string | null): string | null {
+  if (!value) return null;
+  const normalized = value.trim();
+  return normalized ? `${normalized.slice(0, 1)}••••` : null;
+}
+
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (character) => `\\${character}`);
+}
+
 function memberProjection(row: Record<string, unknown>): MemberAdminView {
   const role = String(row.role);
   if (!isAdminRole(role)) throw new AdminServiceError("invalid", "Invalid member role.");
   return {
     id: String(row.id),
     username: String(row.username),
-    email: String(row.email),
-    phone: String(row.phone),
-    displayName: row.display_name == null ? null : String(row.display_name),
+    emailMasked: maskEmail(String(row.email)),
+    phoneMasked: maskPhone(String(row.phone)),
+    displayNameMasked: maskDisplayName(row.display_name == null ? null : String(row.display_name)),
     role,
     disabled: Number(row.disabled) === 1,
     disabledAt: row.disabled_at == null ? null : Number(row.disabled_at),
@@ -90,10 +113,14 @@ async function auditMutation(database: D1Database, actor: AdminActor, action: st
   });
 }
 
-export async function listMembers(database: D1Database, actor: AdminActor, limit = 50): Promise<MemberAdminView[]> {
+export async function listMembers(database: D1Database, actor: AdminActor, limit = 50, search = ""): Promise<MemberAdminView[]> {
   requirePermission(actor, "admin.users.read");
   const boundedLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
-  const result = await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const normalizedSearch = search.trim().slice(0, 120);
+  const like = normalizedSearch ? `%${escapeLike(normalizedSearch.toLowerCase())}%` : null;
+  const result = like
+    ? await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members WHERE lower(id) LIKE ? ESCAPE '\\' OR lower(username) LIKE ? ESCAPE '\\' OR lower(email) LIKE ? ESCAPE '\\' OR lower(phone) LIKE ? ESCAPE '\\' OR lower(COALESCE(display_name, '')) LIKE ? ESCAPE '\\' ORDER BY created_at DESC, id DESC LIMIT ?").bind(like, like, like, like, like, boundedLimit).all<Record<string, unknown>>()
+    : await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
   return result.results.map(memberProjection);
 }
 

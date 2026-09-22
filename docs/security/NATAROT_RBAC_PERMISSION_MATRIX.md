@@ -10,6 +10,7 @@ The exact roles are `USER`, `SUPPORT`, `FINANCE`, `CONTENT_ADMIN`, `ADMIN`, and 
 
 | Permission | USER | SUPPORT | FINANCE | CONTENT_ADMIN | ADMIN | SUPER_ADMIN |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `admin.dashboard.read` |  | ✓ | ✓ |  | ✓ | ✓ |
 | `admin.users.read` |  | ✓ | ✓ |  | ✓ | ✓ |
 | `admin.users.status` |  | ✓ |  |  | ✓ | ✓ |
 | `admin.roles.manage` |  |  |  |  |  | ✓ |
@@ -18,6 +19,7 @@ The exact roles are `USER`, `SUPPORT`, `FINANCE`, `CONTENT_ADMIN`, `ADMIN`, and 
 | `admin.credits.adjust` |  |  | ✓ |  | ✓ | ✓ |
 | `admin.vip.adjust` |  |  | ✓ |  | ✓ | ✓ |
 | `admin.orders.read` |  | ✓ | ✓ |  | ✓ | ✓ |
+| `admin.readings.read` |  |  |  |  | ✓ | ✓ |
 | `admin.affiliate.read` |  |  | ✓ |  | ✓ | ✓ |
 | `admin.affiliate.manage` |  |  |  |  | ✓ | ✓ |
 | `admin.affiliate.adjust` |  |  | ✓ |  | ✓ | ✓ |
