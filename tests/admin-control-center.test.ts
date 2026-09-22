@@ -140,6 +140,10 @@ test("Admin credit commands use the canonical ledger and create one replay-safe 
   const positive = await adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: 5, reason: "owner QA credit grant", idempotencyKey: "qa-credit-1" });
   const replay = await adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: 5, reason: "owner QA credit grant", idempotencyKey: "qa-credit-1" });
   assert.equal(positive.id, replay.id);
+  await assert.rejects(
+    () => adjustAdminMemberCredits(fixtureData.database, staff, { memberId: "member-alpha", units: 6, reason: "owner QA credit grant", idempotencyKey: "qa-credit-1" }),
+    (error: unknown) => error instanceof Error && error.message.includes("different request"),
+  );
   assert.equal((await createCreditStore(fixtureData.database, () => 1_000).getBalance({ kind: "member", ownerId: "member:member-alpha" })).totalUnits, 12);
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE account_id='credit-account:member:member:member-alpha' AND idempotency_key LIKE 'grant:adjustment:%qa-credit-1' ").first<{ count: number }>())?.count, 1);
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='credits.adjusted' AND target_id='member-alpha'").first<{ count: number }>())?.count, 1);
@@ -164,6 +168,26 @@ test("Admin VIP commands use entitlement invariants and audit grant/revoke", asy
   assert.equal((await fixtureData.database.prepare("SELECT status FROM entitlements WHERE id=?").bind(granted.id).first<{ status: string }>())?.status, "CANCELLED");
   assert.equal((await fixtureData.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.revoked'").first<{ count: number }>())?.count, 1);
   fixtureData.sqlite.close();
+});
+
+test("Admin VIP mutations roll back when their required audit insert fails", async () => {
+  const grantFixture = fixture();
+  await seedTargetData(grantFixture.database);
+  grantFixture.sqlite.exec("CREATE TRIGGER fail_vip_grant_audit BEFORE INSERT ON audit_events WHEN NEW.action='vip.granted' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  await assert.rejects(() => grantAdminVip(grantFixture.database, actor(), { memberId: "member-alpha", benefitVersion: "vip-audit-rollback", startsAt: 2_000, endsAt: 3_000, benefitSnapshot: { source: "test" }, reason: "audit rollback test", idempotencyKey: "audit-rollback-vip" }));
+  assert.equal((await grantFixture.database.prepare("SELECT COUNT(*) AS count FROM entitlements WHERE benefit_version='vip-audit-rollback'").first<{ count: number }>())?.count, 0);
+  assert.equal((await grantFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.granted'").first<{ count: number }>())?.count, 0);
+  grantFixture.sqlite.close();
+
+  const revokeFixture = fixture();
+  await seedTargetData(revokeFixture.database);
+  const entitlement = await revokeFixture.database.prepare("SELECT id FROM entitlements WHERE grant_key='fixture-alpha-vip'").first<{ id: string }>();
+  assert.ok(entitlement);
+  revokeFixture.sqlite.exec("CREATE TRIGGER fail_vip_revoke_audit BEFORE INSERT ON audit_events WHEN NEW.action='vip.revoked' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  await assert.rejects(() => revokeAdminVip(revokeFixture.database, actor(), { memberId: "member-alpha", entitlementId: entitlement.id, reason: "audit rollback test", idempotencyKey: "audit-rollback-vip-revoke" }));
+  assert.equal((await revokeFixture.database.prepare("SELECT status FROM entitlements WHERE id=?").bind(entitlement.id).first<{ status: string }>())?.status, "ACTIVE");
+  assert.equal((await revokeFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='vip.revoked'").first<{ count: number }>())?.count, 0);
+  revokeFixture.sqlite.close();
 });
 
 test("Admin read models honor the server permission matrix", async () => {

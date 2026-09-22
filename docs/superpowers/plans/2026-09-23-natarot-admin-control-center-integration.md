@@ -57,15 +57,16 @@
 - Produces: the Admin dashboard/users/detail/Credits/VIP/orders/affiliate/readings/audit routes and UI with server-side RBAC, masked projections and canonical service calls.
 
 - [x] Merge `codex/natarot-admin-control-center-v1` with the exact commit `d9e2a6e`; stop if Git selects files outside the named Admin diff or if uncommitted worker files appear.
-- [ ] Run the focused Admin tests and record every failure before fixing it.
-- [ ] Run the existing Credits, entitlement, audit, orders, affiliate, owner-QA and RBAC suites to identify integration regressions.
-- [ ] Confirm no package catalog, checkout, SePay production, account deployment or unrelated UI files entered the diff.
+- [x] Run the focused Admin tests and record every failure before fixing it.
+- [x] Run the existing Credits, entitlement, audit, orders, affiliate, owner-QA and RBAC suites to identify integration regressions.
+- [x] Confirm no package catalog, checkout, SePay production, account deployment or unrelated UI files entered the diff.
 
 ### Task 3: Resolve the shared Credits/audit boundary with TDD
 
 **Files:**
 - Modify: `lib/credits/repository.ts`
 - Modify: `lib/audit/service.ts`
+- Modify: `lib/entitlements.ts`
 - Modify: `lib/admin/actions.ts`
 - Modify: `app/api/admin/credits/route.ts`
 - Test: `tests/admin-integration-credits.test.ts`
@@ -76,12 +77,14 @@
 - Consumes: `AuditAppendInput`, `prepareAuditInsert`, `createCreditStore`, Admin actor/member resolution and existing D1 batch semantics.
 - Produces: optional audited `grantCredits`/`adjustCredits`/`consumeReservation` inputs, an atomic audit insert helper, and replay-safe Admin credit commands.
 
-- [ ] Add a failing trigger-backed test showing that a required audit insert failure leaves no Admin ledger mutation, entitlement/credit projection change or orphaned audit row.
-- [ ] Add or refine a failing test showing idempotency-key reuse with changed units/reason is rejected without altering the owner balance.
-- [ ] Implement the smallest shared audit boundary: validate and prepare the audit insert once, include it in the same batch as positive grants and negative consume events, and retain current commercial SQL and eligibility/FIFO/rebuild behavior.
-- [ ] Implement replay detection in the Admin action using the owner-scoped audit key plus units/reason and the matching grant/reservation row, then return the original result without a second audit or ledger row.
-- [ ] Run the red/green tests after each mutation, then run the focused Credits/replay/Admin/audit suites.
-- [ ] Inspect SQL owner predicates and verify the UI/route never accepts a client-supplied owner object.
+- [x] Add a failing trigger-backed test showing that a required audit insert failure leaves no Admin ledger mutation, entitlement/credit projection change or orphaned audit row.
+- [x] Add a failing trigger-backed VIP test showing that grant and revoke cannot leave an entitlement change without its required audit row.
+- [x] Add or refine a failing test showing idempotency-key reuse with changed units/reason is rejected without altering the owner balance.
+- [x] Implement the smallest shared audit boundary: validate and prepare the audit insert once, include it in the same batch as positive grants and negative consume events, and retain current commercial SQL and eligibility/FIFO/rebuild behavior.
+- [x] Route Admin VIP grant/revoke through the same batch-safe audit boundary while preserving the canonical entitlement model and `sourceType: ADMIN`.
+- [x] Implement replay detection in the Admin action using the owner-scoped audit key plus units/reason and the matching grant/reservation row, then return the original result without a second audit or ledger row.
+- [x] Run the red/green tests after each mutation, then run the focused Credits/replay/Admin/audit suites.
+- [x] Inspect SQL owner predicates and verify the UI/route never accepts a client-supplied owner object.
 
 ### Task 4: Verify the complete local closed loop
 

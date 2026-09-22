@@ -62,7 +62,6 @@ test("audited credit adjustments preserve commercial ledger semantics and replay
     eligibleFrom: 0,
     reason: "owner QA audited grant",
     audit: audit({ units: 3, key: "owner-qa-positive", reason: "owner QA audited grant" }),
-    auditStrict: true,
   };
   const positive = await (store.adjustCredits as (input: typeof positiveInput) => Promise<{ id: string }>)(positiveInput);
   const positiveReplay = await (store.adjustCredits as (input: typeof positiveInput) => Promise<{ id: string }>)(positiveInput);
@@ -74,7 +73,6 @@ test("audited credit adjustments preserve commercial ledger semantics and replay
     adjustmentKey: "owner-qa-negative",
     reason: "owner QA audited correction",
     audit: audit({ units: -2, key: "owner-qa-negative", reason: "owner QA audited correction" }),
-    auditStrict: true,
   };
   const negative = await (store.adjustCredits as (input: typeof negativeInput) => Promise<{ id: string }>)(negativeInput);
   const negativeReplay = await (store.adjustCredits as (input: typeof negativeInput) => Promise<{ id: string }>)(negativeInput);
@@ -88,4 +86,60 @@ test("audited credit adjustments preserve commercial ledger semantics and replay
   await store.rebuildGrantProjections(owner);
   assert.deepEqual(await store.getBalance(owner), { availableUnits: 8, reservedUnits: 0, totalUnits: 8 });
   sqlite.close();
+});
+
+test("required credit audits roll back positive and negative adjustments", async () => {
+  const positiveFixture = fixture();
+  const positiveStore = createCreditStore(positiveFixture.database, () => 1_000);
+  await positiveStore.grantCredits({
+    owner,
+    source: "PURCHASE",
+    units: 7,
+    grantKey: "purchase:rollback-positive",
+    policyVersion: "commercial-v1",
+    policySnapshot: { priceMinor: 15_000, units: 7 },
+    reason: "rollback fixture",
+  });
+  positiveFixture.sqlite.exec("CREATE TRIGGER fail_credit_audit BEFORE INSERT ON audit_events WHEN NEW.action='credits.adjusted' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  const positiveInput = {
+    owner,
+    units: 3,
+    adjustmentKey: "rollback-positive",
+    eligibleFrom: 0,
+    reason: "positive audit rollback",
+    audit: audit({ units: 3, key: "rollback-positive", reason: "positive audit rollback" }),
+    auditStrict: true,
+  };
+  await assert.rejects(() => (positiveStore.adjustCredits as (input: typeof positiveInput) => Promise<unknown>)(positiveInput));
+  assert.deepEqual(await positiveStore.getBalance(owner), { availableUnits: 7, reservedUnits: 0, totalUnits: 7 });
+  assert.equal((await positiveFixture.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE event_type='ADJUSTMENT'").first<{ count: number }>())?.count, 0);
+  assert.equal((await positiveFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='credits.adjusted'").first<{ count: number }>())?.count, 0);
+  positiveFixture.sqlite.close();
+
+  const negativeFixture = fixture();
+  const negativeStore = createCreditStore(negativeFixture.database, () => 1_000);
+  await negativeStore.grantCredits({
+    owner,
+    source: "PURCHASE",
+    units: 7,
+    grantKey: "purchase:rollback-negative",
+    policyVersion: "commercial-v1",
+    policySnapshot: { priceMinor: 15_000, units: 7 },
+    reason: "rollback fixture",
+  });
+  negativeFixture.sqlite.exec("CREATE TRIGGER fail_credit_audit BEFORE INSERT ON audit_events WHEN NEW.action='credits.adjusted' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+  const negativeInput = {
+    owner,
+    units: -2,
+    adjustmentKey: "rollback-negative",
+    reason: "negative audit rollback",
+    audit: audit({ units: -2, key: "rollback-negative", reason: "negative audit rollback" }),
+    auditStrict: true,
+  };
+  await assert.rejects(() => (negativeStore.adjustCredits as (input: typeof negativeInput) => Promise<unknown>)(negativeInput));
+  assert.deepEqual(await negativeStore.getBalance(owner), { availableUnits: 7, reservedUnits: 0, totalUnits: 7 });
+  assert.equal((await negativeFixture.database.prepare("SELECT COUNT(*) AS count FROM credit_ledger WHERE event_type='ADJUSTMENT'").first<{ count: number }>())?.count, 0);
+  assert.equal((await negativeFixture.database.prepare("SELECT COUNT(*) AS count FROM audit_events WHERE action='credits.adjusted'").first<{ count: number }>())?.count, 0);
+  assert.equal((await negativeFixture.database.prepare("SELECT COUNT(*) AS count FROM credit_reservations WHERE status='RESERVED'").first<{ count: number }>())?.count, 0);
+  negativeFixture.sqlite.close();
 });

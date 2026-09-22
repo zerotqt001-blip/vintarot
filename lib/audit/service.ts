@@ -1,4 +1,4 @@
-import type { D1Database } from "@cloudflare/workers-types";
+import type { D1Database, D1PreparedStatement } from "@cloudflare/workers-types";
 import { redactAuditMetadata } from "../security/redaction";
 import type { AuditAppendInput, AuditEvent, AuditListFilter } from "./types";
 
@@ -36,34 +36,51 @@ async function byIdempotency(database: D1Database, idempotencyKey: string): Prom
   return row ? projection(row) : null;
 }
 
+export function prepareAuditInsert(
+  database: D1Database,
+  input: AuditAppendInput,
+  createdAt = Date.now(),
+  options: { ignoreExisting?: boolean; guardSql?: string; guardValues?: unknown[] } = {},
+): D1PreparedStatement {
+  const actorId = safeString(input.actorId, 160);
+  const action = safeString(input.action, 160);
+  const reason = safeString(input.reason, 500);
+  const idempotencyKey = safeString(input.idempotencyKey, 200);
+  if (!actorId || !action || !reason || !idempotencyKey || !["member", "system"].includes(input.actorKind)) throw new Error("Invalid audit event");
+  const targetType = safeString(input.targetType, 120);
+  const targetId = safeString(input.targetId, 160);
+  const outcome = input.outcome ?? "SUCCESS";
+  if (!["SUCCESS", "DENIED", "FAILURE"].includes(outcome)) throw new Error("Invalid audit event");
+  const metadataJson = JSON.stringify(redactAuditMetadata(input.metadata ?? {}));
+  const id = safeString(input.id, 160) ?? globalThis.crypto.randomUUID();
+  const insert = options.ignoreExisting === false ? "INSERT" : "INSERT OR IGNORE";
+  const values = [
+    id,
+    input.actorKind,
+    actorId,
+    action,
+    targetType ?? null,
+    targetId ?? null,
+    reason,
+    idempotencyKey,
+    outcome,
+    metadataJson,
+    createdAt,
+  ];
+  const placeholders = values.map(() => "?").join(", ");
+  const statement = options.guardSql
+    ? `${insert} INTO audit_events (id, actor_kind, actor_id, action, target_type, target_id, reason, idempotency_key, outcome, metadata_json, created_at) SELECT ${placeholders} WHERE ${options.guardSql}`
+    : `${insert} INTO audit_events (id, actor_kind, actor_id, action, target_type, target_id, reason, idempotency_key, outcome, metadata_json, created_at) VALUES (${placeholders})`;
+  return database.prepare(statement).bind(...values, ...(options.guardValues ?? []));
+}
+
 export function createAuditService(database: D1Database, now: () => number = () => Date.now()) {
   return {
     redactMetadata: redactAuditMetadata,
     async append(input: AuditAppendInput): Promise<AuditEvent> {
-      const actorId = safeString(input.actorId, 160);
-      const action = safeString(input.action, 160);
-      const reason = safeString(input.reason, 500);
       const idempotencyKey = safeString(input.idempotencyKey, 200);
-      if (!actorId || !action || !reason || !idempotencyKey || !["member", "system"].includes(input.actorKind)) throw new Error("Invalid audit event");
-      const targetType = safeString(input.targetType, 120);
-      const targetId = safeString(input.targetId, 160);
-      const outcome = input.outcome ?? "SUCCESS";
-      if (!["SUCCESS", "DENIED", "FAILURE"].includes(outcome)) throw new Error("Invalid audit event");
-      const metadataJson = JSON.stringify(redactAuditMetadata(input.metadata ?? {}));
-      const id = safeString(input.id, 160) ?? globalThis.crypto.randomUUID();
-      await database.prepare("INSERT OR IGNORE INTO audit_events (id, actor_kind, actor_id, action, target_type, target_id, reason, idempotency_key, outcome, metadata_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(
-        id,
-        input.actorKind,
-        actorId,
-        action,
-        targetType ?? null,
-        targetId ?? null,
-        reason,
-        idempotencyKey,
-        outcome,
-        metadataJson,
-        now(),
-      ).run();
+      if (!idempotencyKey) throw new Error("Invalid audit event");
+      await prepareAuditInsert(database, input, now()).run();
       const existing = await byIdempotency(database, idempotencyKey);
       if (!existing) throw new Error("Audit event was not recorded");
       return existing;
