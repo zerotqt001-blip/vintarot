@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { DEFAULT_BACKUP_ROOT, DEFAULT_LOCK_PATH, planReleaseCleanup } from "../scripts/production-storage-guard.mjs";
 
@@ -50,4 +52,10 @@ test("storage guard leaves unsafe, protected, and young temporary paths alone", 
 test("storage guard keeps its lock and backup locations explicit", () => {
   assert.equal(DEFAULT_LOCK_PATH, "/run/lock/natarot-deploy.lock");
   assert.equal(DEFAULT_BACKUP_ROOT, "/var/backups/natarot");
+});
+
+test("storage guard CLI runs when invoked through a release symlink", () => {
+  const script = fileURLToPath(new URL("../scripts/production-storage-guard.mjs", import.meta.url));
+  const output = execFileSync(process.execPath, [script, "help"], { encoding: "utf8" });
+  assert.match(output, /Usage: production-storage-guard\.mjs audit\|cleanup\|post-success/);
 });
