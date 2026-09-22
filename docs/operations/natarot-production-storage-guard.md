@@ -23,9 +23,11 @@ run a read-only inventory and review its JSON report:
 scripts/production-release-retention.sh
 ~~~
 
-The tool recognizes only direct children named natarot.rollback-* or
-natarot.previous-* with a valid DEPLOYMENT_REVISION marker. Unknown
-directories remain untouched.
+The tool recognizes the canonical `/opt/natarot/releases` children when they
+carry a deployment marker, plus legacy `natarot.rollback-*` and
+`natarot.previous-*` directories for migration compatibility. Unknown
+directories remain untouched. `/opt/natarot/current`, `previous-1` and
+`previous-2` are resolved before any deletion.
 
 ## After health passes
 

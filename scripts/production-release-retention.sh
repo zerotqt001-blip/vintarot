@@ -15,8 +15,8 @@ fi
 
 arguments=(
   "$script_dir/production-release-retention.mjs"
-  --root "${NATAROT_RELEASE_ROOT:-/opt}"
-  --active "${NATAROT_ACTIVE_RELEASE:-/opt/natarot}"
+  --root "${NATAROT_RELEASE_ROOT:-/opt/natarot/releases}"
+  --active "${NATAROT_ACTIVE_RELEASE:-/opt/natarot/current}"
   --backup-root "${NATAROT_BACKUP_ROOT:-/var/backups/natarot}"
   --temp-root "${NATAROT_DEPLOY_TEMP_ROOT:-/tmp}"
 )

@@ -3,14 +3,14 @@ import { lstat, readdir, readFile, realpath, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const DEFAULT_RELEASE_ROOT = "/opt";
-export const DEFAULT_ACTIVE_RELEASE = "/opt/natarot";
+export const DEFAULT_RELEASE_ROOT = "/opt/natarot/releases";
+export const DEFAULT_ACTIVE_RELEASE = "/opt/natarot/current";
 export const DEFAULT_BACKUP_ROOT = "/var/backups/natarot";
 export const DEFAULT_TEMP_ROOT = "/tmp";
 export const DEFAULT_RETAINED_ROLLBACKS = 2;
 
-const RELEASE_DIRECTORY_PATTERN = /^natarot\.(?:rollback|previous)-[A-Za-z0-9][A-Za-z0-9._-]*$/;
-const CANDIDATE_DIRECTORY_PATTERN = /^natarot\.(?:candidate|deploy|extract)-[A-Za-z0-9][A-Za-z0-9._-]*$/;
+const LEGACY_RELEASE_DIRECTORY_PATTERN = /^natarot\.(?:rollback|previous)-[A-Za-z0-9][A-Za-z0-9._-]*$/;
+const CANDIDATE_DIRECTORY_PATTERN = /^(?:natarot\.(?:candidate|deploy|extract)|candidate|staging)-[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const TEMP_ARCHIVE_PATTERN = /^natarot-release-[A-Za-z0-9][A-Za-z0-9._-]*\.tar\.gz$/;
 
 function parseKeyValueText(value) {
@@ -98,6 +98,7 @@ async function inspectReleaseDirectory(rootPath, entryName, { includeSize = true
   if (!entryStat.isDirectory() || entryStat.isSymbolicLink()) return null;
   const directoryRealPath = await realpath(directoryPath);
   const marker = await readMarker(directoryPath);
+  if (!LEGACY_RELEASE_DIRECTORY_PATTERN.test(entryName) && !marker.source_commit && !marker.release_id) return null;
   return {
     name: entryName,
     path: directoryPath,
@@ -120,7 +121,6 @@ export async function inspectReleaseInventory({
   const entries = await readdir(rootPath, { withFileTypes: true });
   const releases = [];
   for (const entry of entries) {
-    if (!RELEASE_DIRECTORY_PATTERN.test(entry.name)) continue;
     const record = await inspectReleaseDirectory(rootPath, entry.name, { includeSize }).catch(() => null);
     if (!record) continue;
     record.isActive = record.realPath === activeRealPath;

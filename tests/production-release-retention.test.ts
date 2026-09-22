@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
 import test from "node:test";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -92,6 +92,26 @@ test("cleans only marked stale deployment candidates and exact temp archives", a
   await assert.rejects(() => stat(stale));
   await assert.rejects(() => stat(path.join(unknown, "DEPLOYMENT_CANDIDATE")));
   await stat(staging);
+  await rm(root, { recursive: true, force: true });
+});
+
+test("understands the managed current/previous release topology", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "natarot-managed-"));
+  const releaseRoot = path.join(root, "releases");
+  const active = path.join(root, "current");
+  await mkdir(releaseRoot, { recursive: true });
+  const current = await makeDirectory(releaseRoot, "base-20260923T000000Z", "release_id=base-20260923T000000Z\n");
+  await makeDirectory(releaseRoot, "legacy-first", revision("first", "2026-09-22T00:00:00Z"));
+  await makeDirectory(releaseRoot, "legacy-second", revision("second", "2026-09-21T00:00:00Z"));
+  await makeDirectory(releaseRoot, "obsolete-older", revision("older", "2026-09-20T00:00:00Z"));
+  await symlink(current, active);
+
+  const result = await pruneApplicationReleases({ root: releaseRoot, activePath: active, backupRoot: path.join(root, "backups"), execute: true });
+  assert.equal(result.status, "pass");
+  assert.deepEqual(result.selection.protectedReleases.map((release: { name: string }) => release.name), ["legacy-first", "legacy-second"]);
+  assert.deepEqual(result.deleted, ["obsolete-older"]);
+  await stat(active);
+  await stat(path.join(releaseRoot, "base-20260923T000000Z", "DEPLOYMENT_REVISION"));
   await rm(root, { recursive: true, force: true });
 });
 
