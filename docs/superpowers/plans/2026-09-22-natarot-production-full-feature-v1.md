@@ -306,3 +306,14 @@ Run `git push -u origin codex/natarot-production-full-feature-v1` and verify `gi
 - [ ] **Step 6: Deliver the exact owner checklist and verdict**
 
 Provide the simple `natarot.com` test sequence, list only genuinely missing owner-provided items (expected: the invalid Resend key), and end with the exact verdict lines required by the runbook. Do not start UI redesign, real payments, or another milestone.
+
+## Execution status (2026-09-22)
+
+- [x] Task 1 — source/live audit, reconciliation, and plan checkpoint completed.
+- [x] Task 2 — local tests/build/type/security gates and migration compatibility checks completed.
+- [x] Task 3 — fresh production backup, checksum, archive, integrity, and restore-readiness checks completed.
+- [x] Task 4 — reproducible candidate archive, Linux dependency/build verification, and migration dry run completed.
+- [x] Task 5 — safe live migrations, atomic release switch, restart, and public readiness completed.
+- [x] Task 6 — guest, auto-topic, Tarot, live DeepSeek, persistence, and Share/QR production E2E completed.
+- [x] Task 7 — security, HSTS hardening, external-gate classification, responsive smoke, restart persistence, and bounded log review completed.
+- [ ] Task 8 — documentation is written and independently reviewed; the related documentation commit and branch push remain the final handoff actions.
