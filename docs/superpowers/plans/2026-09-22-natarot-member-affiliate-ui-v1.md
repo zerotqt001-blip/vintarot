@@ -174,3 +174,24 @@ migration, release switch, restart, credential change, Nginx change, or real-mon
 action was performed. Resume with locally configured authorized VPS access or an
 approved console path, then perform the existing reversible backup/deploy/E2E
 procedure and update the project state with the resulting evidence.
+
+## Final execution checkpoint (2026-09-22)
+
+Task 8 is complete. The existing `natarot-vps` access alias was recovered without
+exposing credentials. Fresh backup `natarot-production-20260922-110519` was
+checksum-verified and restore-tested; the release archive and rollback path are
+recorded in `docs/PROJECT_STATE.md`. Commit `e4db7d286ce21cca6d3ac35a823bde96e31841d2`
+from `codex/natarot-member-affiliate-ui-v1` is live on `https://natarot.com` via
+the reversible atomic release procedure. No schema migration, payment, payout,
+credential rotation or unrelated service restart was performed.
+
+Live API and browser acceptance passed for the new Packages/Checkout/Account/
+Affiliate routes, the safe empty-catalog and auth-boundary states, Auto Topic,
+the recommended planning spread, three-card draw, DeepSeek interpretation, and
+the complete Share/QR/analytics/idempotency/revoke loop. Exact production
+viewport checks at 375px, 390px, 412px and desktop found no horizontal overflow.
+A controlled post-deploy restart preserved the deployed marker, clean SQLite
+integrity and the same three-card session. The authenticated member dashboard
+fixture, Resend delivery, approved production package catalog and real-money
+SePay activation remain explicit external gates; the final UI redesign is safe
+to begin.
