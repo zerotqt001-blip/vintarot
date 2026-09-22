@@ -35,6 +35,7 @@ test("parses disk metadata and release markers without treating unknown releases
     successful: true,
   });
   assert.equal(parseRevisionMarker("source_commit=abc\n").successful, false);
+  assert.equal(parseRevisionMarker("release_id=managed-current\n").successful, true);
 });
 
 test("retains current plus two newest successful rollback releases and never prunes backups or unknown directories", async () => {
@@ -110,6 +111,7 @@ test("understands the managed current/previous release topology", async () => {
   assert.equal(result.status, "pass");
   assert.deepEqual(result.selection.protectedReleases.map((release: { name: string }) => release.name), ["legacy-first", "legacy-second"]);
   assert.deepEqual(result.deleted, ["obsolete-older"]);
+  assert.ok((result.before.activeSizeKb ?? 0) > 0);
   await stat(active);
   await stat(path.join(releaseRoot, "base-20260923T000000Z", "DEPLOYMENT_REVISION"));
   await rm(root, { recursive: true, force: true });

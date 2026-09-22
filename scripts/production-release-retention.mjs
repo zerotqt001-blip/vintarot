@@ -34,7 +34,7 @@ export function parseRevisionMarker(value) {
   return {
     ...marker,
     deployedAt,
-    successful: Boolean(marker.source_commit && deployedAt),
+    successful: Boolean((marker.source_commit && deployedAt) || marker.release_id),
   };
 }
 
@@ -142,7 +142,9 @@ export async function inspectStorage({
   includeSize = true,
 } = {}) {
   const inventory = await inspectReleaseInventory({ root, activePath, includeSize });
-  const activeSizeKb = includeSize ? runDuKilobytes(activePath) : null;
+  const activeSizeKb = includeSize && inventory.activeRealPath
+    ? runDuKilobytes(inventory.activeRealPath)
+    : null;
   const backupSizeKb = includeSize ? runDuKilobytes(backupRoot) : null;
   return {
     disk: readDiskSnapshot(root),
