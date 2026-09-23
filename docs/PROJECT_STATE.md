@@ -385,3 +385,70 @@ Direct inspection of the owner Image2 reference informed the screenshot → comp
 Post-deploy health returned `ok` locally and at both `https://natarot.com/api/health` and `https://www.natarot.com/api/health`; the service is active. The four server packages are present with the approved 30-day validity (`1/5/10/20 Credits`, `15,000/69,000/129,000/229,000 VND`, 10 Credits popular). Guest protected-route boundaries returned the expected `401`/method boundary, security headers remained present, the SePay production key names remained configured without exposing values, and no real-money payment or bank transfer was performed.
 
 Status: **PRODUCTION LIVE; READY FOR OWNER VISUAL REVIEW.** Remaining external gates are authenticated Admin/member/reading-result fixtures and any real-money/SePay transaction verification; those were intentionally not performed in this UI deployment.
+
+## NaTarot Affiliate Dashboard + VPS Storage Guard Final (2026-09-23)
+
+The Affiliate redesign is complete on `codex/affiliate-dashboard-redesign-v1`.
+The target cosmic dashboard is implemented in `components/affiliate/affiliate-dashboard.tsx`
+and `app/affiliate/page.tsx`, with owner-scoped ledger read models, server-controlled
+policy/tier boundaries, honest empty states, no invented referral links or payout
+actions, and responsive target-shell navigation. The production lineage also preserves
+the Packages redesign and dynamic Reading Result work through merge checkpoints
+`b8a7c2a` and `3c5f194`. The branch was pushed to GitHub.
+
+The integrated release `affiliate-integrated-3c5f194-20260923T071051Z` is live at
+`https://natarot.com`. Managed references are:
+
+- current: `/opt/natarot/releases/affiliate-integrated-3c5f194-20260923T071051Z`
+- previous-1: `/opt/natarot/releases/reading-result-e05733d-20260923T000035Z`
+- previous-2: `/opt/natarot/releases/packages-5dafeec-20260922T235128Z`
+
+The service is enabled/active. Production smoke returned `200` for Home, Affiliate,
+Packages, Guidebook, health, package catalog and Affiliate policy; the authenticated
+Affiliate dashboard returned the expected `401` guest boundary. Fresh production browser
+QA confirmed the target heading and cosmic shell at desktop and `390x844` mobile,
+with no old commerce rail and no horizontal overflow. The in-app production tab was
+returned to its default viewport after QA.
+
+### VPS storage guard report
+
+`natarot-release-manager` now runs the shared lock and versioned storage guard on both
+preflight and post-success cleanup. The active guard implementation hash matches the
+repository helper `scripts/production-release-retention.mjs`; the manager also retains
+the explicit application-root storage guard and bounded health/backup gates.
+
+- disk before remediation: `97%` used, approximately `987,564 KiB` free;
+- disk after deployment: `62%` used, `11,218,168 KiB` free (about `10.7 GiB`);
+- space reclaimed: more than `10 GiB` observed across the safe legacy-release,
+  dependency-pool and marked temporary cleanup; the final manager cleanup removed one
+  unreferenced release and a marked stale release archive;
+- application releases before: flat legacy tree with `16+` old release/candidate
+  directories observed; after: exactly three managed current/rollback releases;
+- database backups touched by application cleanup: `NO`;
+- backup policy: `PASS`, observed canonical retention `7 daily / 1 weekly / 1 monthly`;
+- restore/backup verification: `PASS`, checksum-verified latest backup and successful
+  restore-test metadata remained valid before and after promotion;
+- log retention: `PASS`, host journald/logrotate policy left intact;
+- cleanup automation: `YES`, one deployment lock, headroom guard, bounded health gates,
+  marker/path/process revalidation and post-success cleanup;
+- no broad wildcard deletion was used. Database, WAL/journal, env/secrets, persistent
+  data, backups, Nginx, systemd and active logs were preserved.
+
+The repository now includes both `deploy:production:storage-audit` /
+`deploy:production:storage-cleanup` and the locked retention wrappers. Candidate source,
+host-build log and remote candidate directory were removed after the successful switch
+under the deployment lock; the running release does not depend on them.
+
+Rollback verification completed with `natarot-release-manager rollback-test --to previous-1`:
+the service switched to the verified Reading Result rollback, passed health checks after
+the expected warm-up retries, and restored the Affiliate integrated release. The final
+managed references and service health were rechecked after restoration.
+
+Final local verification on the integrated worktree: full tracked test suite `596/596`,
+`npx tsc --noEmit`, production `npm run build`, focused Affiliate/Packages/Reading/storage
+contracts, `npm audit --omit=dev` and `git diff --check` pass. The historical Home test
+was corrected to read the active worktree and current `home.intro`/`home-hero-phase`
+contract instead of a hard-coded checkout path and removed label, without changing
+production behavior.
+
+Status: **AFFILIATE PRODUCTION LIVE; STORAGE GUARD PASS; ROLLBACK VERIFIED.**

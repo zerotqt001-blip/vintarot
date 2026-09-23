@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
+const root = process.cwd();
 const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
 const styles = readFileSync(`${root}/app/globals.css`, "utf8");
 const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
@@ -13,8 +13,8 @@ test("homepage renders the NaTarot celestial scene layers and daily ritual conte
     assert.match(shell, new RegExp(`cosmic-layer cosmic-${layer}`));
   }
   assert.match(shell, /NaTarot/);
-  assert.match(shell, /home\.dailyQuote/);
-  assert.match(shell, /hero-phase/);
+  assert.match(shell, /home\.intro/);
+  assert.match(shell, /home-hero-phase/);
 });
 
 test("homepage defines the midnight blue, antique gold glass palette and responsive motion", () => {
