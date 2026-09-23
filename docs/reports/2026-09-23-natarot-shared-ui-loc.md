@@ -20,7 +20,7 @@ Measured after the verified implementation on the same worktree. Markdown is cou
 | Production app/components TS/TSX, excluding API routes | 12,548 | +36 |
 | `app/globals.css` | 1,977 | +12 |
 | Tracked test files | 13,816 | +136 |
-| Tracked Markdown docs | 17,952 | +45 |
+| Tracked Markdown docs | 17,956 | +49 |
 
 The shared shell is now concentrated in `components/shell/` (header, sidebar, footer, celestial background, shell composition, and shared types), totaling 401 lines across the new shell files. `app/vintarot.tsx` is a thin `LanguageProvider` + `NaTarotShell` composition wrapper; route owners remain in their existing pages and backend boundaries remain server-side.
 
