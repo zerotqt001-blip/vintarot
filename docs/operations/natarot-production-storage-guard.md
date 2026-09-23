@@ -1,68 +1,90 @@
-# NaTarot production storage guard
+# NaTarot production release and storage guard
 
-Every production deployment must run the storage guard under the shared
-deployment lock. The guard is deliberately separate from database backup
-retention: it prunes only positively identified application release
-directories and marked temporary deployment artifacts.
+NaTarot production releases use a managed release topology. The active service
+must run from `/opt/natarot/current`, which is a symlink to one successful
+release under `/opt/natarot/releases/<release-id>`. `/opt/natarot/previous-1`
+and `/opt/natarot/previous-2` are the only protected rollback references.
+`/opt/natarot/.staging` and `/opt/natarot/.failed` are reserved for the release
+manager's serialized candidate and failure handling.
 
-## Before a release switch
+## Required workflow
 
-Run a read-only inventory and record:
+Every production deployment runs under `/run/lock/natarot-deploy.lock` through
+the installed `/usr/local/sbin/natarot-release-manager`. Before a release is
+copied, the manager checks filesystem headroom (at least 1 GiB and 10% free by
+default), verifies the latest checksum-checked backup and restore-test status,
+and rejects candidates containing environment files, databases, logs, private
+keys or persistent upload/data directories. Candidate and production health
+probes use bounded retries so a normal Vinext listener warm-up cannot turn a
+healthy release into a false rollback.
 
-- df -h for the filesystem containing /opt and /var/backups/natarot;
-- the size of /opt/natarot, known rollback directories, staging and
-  temporary deployment locations;
-- the application release count and total application-release size;
-- the database-backup size and the backup/restore status metadata;
-- journald/logrotate usage.
+After a successful health-gated promotion, cleanup retains exactly the current
+release and the two protected rollback releases. It removes only successful
+release directories outside those references and managed staging directories
+that carry the manager marker. Failed or incomplete candidates are quarantined
+until they are proven inactive. The manager resolves paths and checks active
+processes before deletion; it never removes the database, WAL/journal files,
+environment/secrets, persistent uploads, Nginx/systemd configuration, or
+database backup retention sets.
 
-Do not create a candidate release while free space is dangerously low. First
-run a read-only inventory and review its JSON report:
+Database backups remain a separate retention domain. The manager verifies the
+installed policy and current `latest-success`/restore-test records; it does not
+apply the three-release application rule to backup archives. The observed
+canonical policy is seven daily, one weekly, and one monthly archive. Log
+growth remains under the host's canonical `logrotate`/journald policy.
 
-~~~sh
-scripts/production-release-retention.sh
-~~~
+The first migration from the historical flat tree must be run once with the
+versioned current-topology unit as its source:
 
-The tool recognizes the canonical `/opt/natarot/releases` children when they
-carry a deployment marker, plus legacy `natarot.rollback-*` and
-`natarot.previous-*` directories for migration compatibility. Unknown
-directories remain untouched. `/opt/natarot/current`, `previous-1` and
-`previous-2` are resolved before any deletion.
+```sh
+NATAROT_SERVICE_UNIT_SOURCE=/path/to/deploy/systemd/natarot.service \
+  /usr/local/sbin/natarot-release-manager migrate-flat --release-id RELEASE_ID
+```
 
-## After health passes
+Normal releases use:
 
-The deploy/switch and cleanup operations use the same flock lock:
+```sh
+/usr/local/sbin/natarot-release-manager deploy \
+  --source-dir /path/to/verified-candidate \
+  --release-id RELEASE_ID
+```
 
-~~~sh
+Before and after each deploy, record `df -h`, the storage audit, current and
+rollback paths, release sizes, backup size, and the exact cleanup result. If
+headroom is insufficient, remove only positively identified inactive obsolete
+application releases or failed deployment artifacts before creating another
+candidate; never trade away protected backups or persistent data to force a
+release through.
+
+## Versioned guard helpers
+
+The repository includes a read-only audit and post-success guard for local or
+host-installed deployment tooling:
+
+```sh
+npm run deploy:production:storage-audit
+npm run deploy:production:storage-cleanup
+```
+
+The retention wrapper shares the same deployment lock and can be used by a
+release adapter that supplies the verified release markers:
+
+```sh
 scripts/production-deploy-lock.sh -- <atomic-deploy-command>
 NATAROT_RETENTION_EXECUTE=1 scripts/production-release-retention.sh
-~~~
+```
 
-The execute step keeps the current release plus the two newest successful
-rollback releases. It resolves and rechecks real paths and deployment markers
-before deletion, skips symlinks and paths outside the application root, and
-never touches the database, environment, uploads, TLS, Nginx, systemd or
-backup-retention directories. Marked stale candidates and exact
-/tmp/natarot-release-*.tar.gz artifacts are removed only when older than the
-guard grace period.
+The helpers resolve `/opt/natarot/current`, `previous-1`, and `previous-2`
+before any deletion, retain the current release plus two newest successful
+rollback releases, skip symlinks and unknown paths, and remove only explicitly
+recognized inactive artifacts. They never touch database backups, WAL files,
+environment/secrets, persistent data, TLS, Nginx, systemd, or active logs.
 
-The cleanup must run only after all of these pass:
+## Deployment report contract
 
-- the active service is healthy;
-- the local health endpoint and real production smoke checks pass;
-- the current release path and its marker are confirmed;
-- the previous and second-previous successful releases are present.
-
-If a deploy fails, do not prune known-good releases. Roll back first and
-remove only the inactive failed candidate after revalidation.
-
-## Backup and logs
-
-The production backup service is authoritative for database retention. The
-installed policy is seven daily, four weekly and three monthly archives. The
-storage guard reports backup retention as not touched and does not delete
-database backups. The restore-test timer remains independent.
-
-Logs remain under journald/logrotate policy. The storage guard reports log
-retention as not touched; unexpectedly large logs require a separate rotation
-fix, not manual deletion of active logs.
+Each successful deployment records disk before/after, reclaimed space, release
+counts and paths before/after, deleted releases, temporary artifacts removed,
+database backups touched (`NO` for application cleanup), backup and log
+retention checks, and whether cleanup was automated. Rollback verification must
+confirm that all three managed references resolve to distinct healthy releases
+before a cleanup step is allowed to delete anything.

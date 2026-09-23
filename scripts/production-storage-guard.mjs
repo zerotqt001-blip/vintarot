@@ -4,6 +4,7 @@ import { execFile as execFileCallback } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
+import { pathToFileURL } from "node:url";
 
 const execFile = promisify(execFileCallback);
 
@@ -407,7 +408,7 @@ async function main() {
   throw new Error(`Unknown command: ${command}`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(path.resolve(process.argv[1] ?? "")).href) {
   main().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Clock3, CreditCard, ExternalLink, Gift, History, Link2, Moon, PackageCheck, ShieldCheck, Sparkles, Users, WalletCards } from "lucide-react";
+import { ArrowRight, Clock3, CreditCard, Crown, ExternalLink, Gift, History, Link2, Moon, PackageCheck, Share2, ShieldCheck, Sparkles, Users, WalletCards } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useLanguage } from "@/components/language";
@@ -91,7 +91,7 @@ function vipDays(seconds: number | null): number | null {
 }
 
 function creditValidityDays(item: PackageVersion): number | null {
-  const seconds = item.benefitSnapshot.credits?.expiresInSeconds;
+  const seconds = item.benefitSnapshot.credits ? item.benefitSnapshot.credits.expiresInSeconds : null;
   if (!Number.isSafeInteger(seconds) || !seconds || seconds <= 0) return null;
   const snapshotDays = item.benefitSnapshot.credits?.validityDays;
   return Number.isSafeInteger(snapshotDays) && snapshotDays && snapshotDays > 0 ? snapshotDays : Math.round(seconds / 86_400);
@@ -110,49 +110,56 @@ function rateLabel(rateBps: number, locale: string): string {
   return `${new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US", { maximumFractionDigits: 2 }).format(rateBps / 100)}%`;
 }
 
-function benefitKeys(item: PackageVersion, t: (key: string) => string): string[] {
-  const labels: string[] = [];
-  const benefits = item.benefitSnapshot.vip?.benefits ?? {};
-  const supported: Record<string, string> = {
-    premiumSpreads: "member.benefitPremiumSpreads",
-    guidebookAccess: "member.benefitGuidebookAccess",
-    savedReadings: "member.benefitSavedReadings",
-  };
-  for (const [key, labelKey] of Object.entries(supported)) if (benefits[key] === true) labels.push(t(labelKey));
-  return labels;
+function sortPackagesForPresentation(items: PackageVersion[]): PackageVersion[] {
+  const order = new Map([[1, 0], [5, 1], [10, 2], [20, 3]]);
+  return [...items].sort((left, right) => {
+    const leftOrder = order.get(left.creditUnits) ?? 99;
+    const rightOrder = order.get(right.creditUnits) ?? 99;
+    return leftOrder - rightOrder || left.creditUnits - right.creditUnits || left.id.localeCompare(right.id);
+  });
 }
 
-function MemberStatusPanel({ summary, locale, t }: { summary: AccountSummary; locale: string; t: Translate }) {
-  const activeVip = summary.vip[0] ?? null;
+function packageDescriptorKey(item: PackageVersion): string {
+  if (item.creditUnits === 1) return "member.packageExperience";
+  if (item.creditUnits === 5) return "member.packageStarter";
+  if (item.creditUnits === 10) return "member.packagePopular";
+  if (item.creditUnits === 20) return "member.packageBestValue";
+  return "member.packageEyebrow";
+}
+
+function isPopularPackage(item: PackageVersion): boolean {
+  if (typeof item.benefitSnapshot.catalog?.popular === "boolean") return item.benefitSnapshot.catalog.popular;
+  return /popular|phổ biến/i.test(`${item.nameEn} ${item.nameVi}`) || item.creditUnits === 10;
+}
+
+function MembershipBalance({ summary, accountLoading, authenticated, t }: { summary: AccountSummary | null; accountLoading: boolean; authenticated: boolean; t: Translate }) {
   return (
-    <section className="commerce-member-status functional-section" aria-labelledby="member-status-title">
-      <div className="functional-section-heading">
-        <div><span className="commerce-eyebrow">{t("member.statusEyebrow")}</span><h2 id="member-status-title">{summary.member.displayName || summary.member.username}</h2><p>{t("member.statusText")}</p></div>
-        <ShieldCheck size={22} aria-hidden="true" />
+    <section className="membership-balance" aria-labelledby="membership-balance-title">
+      <div className="membership-balance-icon"><WalletCards size={24} strokeWidth={1.3} aria-hidden="true" /></div>
+      <div className="membership-balance-copy">
+        <span id="membership-balance-title">{t("member.balanceEyebrow")}</span>
+        <strong>{accountLoading ? t("member.balanceLoading") : summary ? <>{summary.credits.balance.availableUnits} <small>{t("member.credits")}</small></> : t(authenticated ? "member.balanceUnavailable" : "member.balanceSignIn")}</strong>
       </div>
-      <div className="commerce-stat-grid">
-        <div><WalletCards size={17} aria-hidden="true" /><span>{t("member.creditsAvailable")}</span><strong>{summary.credits.balance.availableUnits}</strong><small>{t("member.creditsReserved", { value: summary.credits.balance.reservedUnits })}</small></div>
-        <div><Moon size={17} aria-hidden="true" /><span>{t("member.vipStatus")}</span><strong>{activeVip ? t("member.vipActive") : t("member.vipInactive")}</strong><small>{activeVip?.isInternalTest ? t("member.internalTestEntitlement") : activeVip?.endsAt ? t("member.vipUntil", { value: dateLabel(activeVip.endsAt, locale) }) : activeVip ? activeVip.benefitVersion : t("member.noVip")}</small></div>
-        <div><History size={17} aria-hidden="true" /><span>{t("member.readingHistory")}</span><strong>{summary.counts.readings}</strong><small>{t("member.shareCount", { value: summary.counts.shares })}</small></div>
-        <div><PackageCheck size={17} aria-hidden="true" /><span>{t("member.orderHistory")}</span><strong>{summary.counts.orders}</strong><small>{t("member.entitlementCount", { value: summary.vip.length })}</small></div>
-      </div>
-      <div className="functional-inline-actions"><Link className="button" href="/account">{t("member.openAccount")} <ArrowRight size={15} aria-hidden="true" /></Link><Link className="button" href="/affiliate">{t("member.openAffiliate")} <ArrowRight size={15} aria-hidden="true" /></Link></div>
+      <Link className="membership-balance-link" href={authenticated ? "/account" : "/auth?return_to=/packages"}>{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link>
     </section>
   );
 }
 
 function PackageCard({ item, locale, t }: { item: PackageVersion; locale: string; t: Translate }) {
-  const days = vipDays(item.vipDurationSeconds ?? item.benefitSnapshot.vip?.durationSeconds ?? null);
-  const creditDays = creditValidityDays(item);
-  const benefits = benefitKeys(item, t);
+  const days = creditValidityDays(item);
   const unitPrice = item.creditUnits > 0 ? moneyLabel(item.amountMinor / item.creditUnits, item.currency, locale, 2) : null;
+  const popular = isPopularPackage(item);
   return (
-    <article className="commerce-package-card functional-section">
-      <div className="functional-section-heading"><div><span className="commerce-eyebrow">{t("member.packageEyebrow")}</span><h2>{packageName(item, locale)} {item.benefitSnapshot.catalog?.popular && <small>{t("member.popular")}</small>}</h2><p>{t("member.packageReady")}</p></div><Sparkles size={20} aria-hidden="true" /></div>
-      <div className="commerce-package-price"><strong>{moneyLabel(item.amountMinor, item.currency, locale)}</strong><span>{item.currency}</span></div>
-      <div className="commerce-benefit-list"><div><CreditCard size={17} aria-hidden="true" /><span>{t("member.credits")}</span><strong>{item.creditUnits}</strong></div>{creditDays && <div><Clock3 size={17} aria-hidden="true" /><span>{t("member.creditValidityLabel")}</span><strong>{t("member.days", { value: creditDays })}</strong></div>}<div><Moon size={17} aria-hidden="true" /><span>{t("member.vipDuration")}</span><strong>{days ? t("member.days", { value: days }) : t("member.notIncluded")}</strong></div>{benefits.map((benefit) => <div key={benefit}><Check size={17} aria-hidden="true" /><span>{benefit}</span></div>)}</div>
-      {unitPrice && <p className="commerce-unit-price">{t("member.unitPrice", { value: unitPrice })}</p>}
-      <Link className="button black" href={`/checkout?package=${encodeURIComponent(item.id)}`}>{t("member.choosePackage")} <ArrowRight size={15} aria-hidden="true" /></Link>
+    <article className={`membership-package-card${popular ? " is-popular" : ""}`} aria-label={packageName(item, locale)}>
+      {popular && <span className="membership-package-badge">{t("member.popularBadge")}</span>}
+      <div className="membership-package-heading"><div><span className="membership-package-label">{t(packageDescriptorKey(item))}</span><h2>{item.creditUnits}<span>{t(item.creditUnits === 1 ? "member.creditUnitLabelSingular" : "member.creditUnitLabel")}</span></h2></div><Sparkles size={20} strokeWidth={1.2} aria-hidden="true" /></div>
+      <div className="membership-package-price"><strong>{moneyLabel(item.amountMinor, item.currency, locale)}</strong><span>{unitPrice ? t("member.unitPrice", { value: unitPrice }) : item.currency}</span></div>
+      <div className="membership-benefits">
+        <span><CreditCard size={16} strokeWidth={1.3} aria-hidden="true" />{t(item.creditUnits === 1 ? "member.readingCountSingular" : "member.readingCount", { value: item.creditUnits })}</span>
+        {days ? <span><Moon size={16} strokeWidth={1.3} aria-hidden="true" />{t("member.validForCredits", { value: days })}</span> : <span><Moon size={16} strokeWidth={1.3} aria-hidden="true" />{t("member.validityUnavailable")}</span>}
+        <span><Sparkles size={16} strokeWidth={1.3} aria-hidden="true" />{t("member.aiAccess")}</span>
+      </div>
+      <Link className="membership-package-cta" href={`/checkout?package=${encodeURIComponent(item.id)}`}>{t(item.creditUnits === 1 ? "member.chooseCreditPackageSingular" : "member.chooseCreditPackage", { value: item.creditUnits })} <ArrowRight size={15} aria-hidden="true" /></Link>
     </article>
   );
 }
@@ -185,17 +192,37 @@ export function PackagesPage({ authenticated = false }: { authenticated?: boolea
     return () => { active = false; };
   }, [authenticated]);
 
+  const orderedPackages = sortPackagesForPresentation(packages);
   return (
-    <div className="functional-page commerce-page">
-      <header className="page-head functional-page-head commerce-hero"><span className="commerce-eyebrow">{t("member.eyebrow")}</span><h1>{t("member.title")}</h1><p>{t("member.intro")}</p>{!authenticated && <div className="functional-inline-actions commerce-hero-actions"><Link className="button black" href="/auth?return_to=/packages">{t("member.signIn")}</Link><Link className="button" href="/auth?mode=register&return_to=/packages">{t("member.register")}</Link></div>}</header>
-      {authenticated && accountLoading && <p className="functional-status" role="status" aria-live="polite">{t("member.statusLoading")}</p>}
-      {authenticated && !accountLoading && summary && <MemberStatusPanel summary={summary} locale={locale} t={t} />}
-      {loading && <p className="functional-status" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}
-      {!loading && messageKey && <p className="functional-status functional-status--error" role="status" aria-live="polite">{t(messageKey)}</p>}
-      {!loading && !messageKey && packages.length === 0 && <section className="functional-section commerce-empty" role="status"><PackageCheck size={24} aria-hidden="true" /><h2>{t("member.packageEmpty")}</h2><p>{t("member.packageEmptyText")}</p></section>}
-      {!loading && !messageKey && packages.length > 0 && <><section id="vip" className="commerce-package-grid" aria-labelledby="packages-title"><div className="commerce-section-heading"><div><span className="commerce-eyebrow">{t("member.packageEyebrow")}</span><h2 id="packages-title">{t("member.packagesTitle")}</h2></div><Link className="text-button" href="/account">{t("member.openHistory")} <ArrowRight size={14} aria-hidden="true" /></Link></div><div className="commerce-package-cards">{packages.map((item) => <PackageCard key={item.id} item={item} locale={locale} t={t} />)}</div></section><section className="functional-section commerce-comparison" aria-labelledby="comparison-title"><div className="functional-section-heading"><div><span className="commerce-eyebrow">{t("member.comparisonEyebrow")}</span><h2 id="comparison-title">{t("member.comparisonTitle")}</h2><p>{t("member.comparisonText")}</p></div><CreditCard size={20} aria-hidden="true" /></div><div className="commerce-comparison-grid">{packages.map((item) => { const days = vipDays(item.vipDurationSeconds ?? item.benefitSnapshot.vip?.durationSeconds ?? null); return <article key={item.id}><strong>{packageName(item, locale)}</strong><span><CreditCard size={14} aria-hidden="true" />{item.creditUnits} {t("member.credits")}</span><span><Moon size={14} aria-hidden="true" />{days ? t("member.days", { value: days }) : t("member.notIncluded")}</span></article>; })}</div></section></>}
-      {!loading && !messageKey && !packages.some((item) => Boolean(item.vipDurationSeconds || item.benefitSnapshot.vip)) && <section id="vip" className="functional-section commerce-vip-pending" aria-labelledby="vip-pending-title"><div className="functional-section-heading"><div><h2 id="vip-pending-title">{t("member.vipCatalogPending")}</h2><p>{t("member.vipCatalogPendingText")}</p></div><Moon size={20} aria-hidden="true" /></div></section>}
-      <div className="functional-toolbar"><Link className="button" href="/affiliate">{t("member.openAffiliate")} <ArrowRight size={15} aria-hidden="true" /></Link><Link className="button" href="/account">{t("member.openAccount")} <ArrowRight size={15} aria-hidden="true" /></Link></div>
+    <div className="membership-page">
+      <header className="membership-hero">
+        <div className="membership-hero-motif" aria-hidden="true"><span>☾</span><i>✦</i><span>◐</span><b>✧</b><span>☽</span></div>
+        <span className="membership-eyebrow">{t("member.eyebrow")}</span>
+        <h1>{t("member.title")}</h1>
+        <p>{t("member.intro")}</p>
+      </header>
+      <div className="membership-balance-row">
+        <div className="membership-editorial membership-editorial-left">{t("member.editorialLeft")}</div>
+        <MembershipBalance summary={summary} accountLoading={accountLoading} authenticated={authenticated} t={t} />
+        <div className="membership-editorial membership-editorial-right">{t("member.editorialRight")}</div>
+      </div>
+      {loading && <p className="membership-status" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}
+      {!loading && messageKey && <p className="membership-status membership-status-error" role="status" aria-live="polite">{t(messageKey)}</p>}
+      {!loading && !messageKey && orderedPackages.length === 0 && <section className="membership-empty" role="status"><PackageCheck size={26} aria-hidden="true" /><h2>{t("member.packageEmpty")}</h2><p>{t("member.packageEmptyText")}</p><Link className="membership-secondary-cta" href="/room">{t("member.backToTarot")} <ArrowRight size={15} aria-hidden="true" /></Link></section>}
+      {!loading && !messageKey && orderedPackages.length > 0 && <>
+        <section className="membership-packages" aria-label={t("member.packageEyebrow")}>
+          <div className="membership-package-grid">{orderedPackages.map((item) => <PackageCard key={item.id} item={item} locale={locale} t={t} />)}</div>
+        </section>
+        <section className="membership-journey" aria-labelledby="journey-title">
+          <div className="membership-section-heading"><div><span className="membership-eyebrow">{t("member.journeyEyebrow")}</span><h2 id="journey-title">{t("member.journeyTitle")}</h2><p>{t("member.journeyIntro")}</p></div><Sparkles size={21} strokeWidth={1.2} aria-hidden="true" /></div>
+          <div className="membership-journey-grid">{["question", "draw", "reading"].map((step, index) => <div className="membership-journey-step" key={step}><div className="membership-journey-icon">{index === 0 ? "?" : index === 1 ? <CreditCard size={22} strokeWidth={1.2} aria-hidden="true" /> : <Moon size={22} strokeWidth={1.2} aria-hidden="true" />}</div><div><span>0{index + 1}</span><h3>{t(`member.journey.${step}.title`)}</h3><p>{t(`member.journey.${step}.text`)}</p></div>{index < 2 && <ArrowRight className="membership-journey-arrow" size={17} strokeWidth={1.1} aria-hidden="true" />}</div>)}</div>
+        </section>
+        <div className="membership-support-grid">
+          <section className="membership-support-panel membership-vip" aria-label={t("member.vipCatalogPending")} aria-labelledby="vip-title"><div className="membership-support-icon"><Crown size={22} strokeWidth={1.2} aria-hidden="true" /></div><div><span className="membership-eyebrow">{t("member.vipEyebrow")}</span><h2 id="vip-title">{t("member.vipTitle")}</h2><p>{t("member.vipText")}</p></div><span className="membership-coming-soon">{t("member.vipComingSoon")}</span></section>
+          <section className="membership-support-panel membership-affiliate" aria-labelledby="affiliate-title"><div className="membership-support-icon"><Share2 size={22} strokeWidth={1.2} aria-hidden="true" /></div><div><span className="membership-eyebrow">{t("member.affiliateEyebrow")}</span><h2 id="affiliate-title">{t("member.affiliateTitle")}</h2><p>{t("member.affiliateText")}</p></div><Link className="membership-secondary-cta" href="/affiliate">{t("member.exploreAffiliate")} <ArrowRight size={15} aria-hidden="true" /></Link></section>
+        </div>
+        <section className="membership-trust" aria-label={t("member.trustLabel")}><span><ShieldCheck size={17} strokeWidth={1.3} aria-hidden="true" />{t("member.trustSafe")}</span><span><CreditCard size={17} strokeWidth={1.3} aria-hidden="true" />{t("member.trustFulfillment")}</span><span><History size={17} strokeWidth={1.3} aria-hidden="true" />{t("member.trustHistory")}</span></section>
+      </>}
     </div>
   );
 }

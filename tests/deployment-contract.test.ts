@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 
 const service = readFileSync(new URL("../deploy/systemd/natarot.service", import.meta.url), "utf8");
+const backupService = readFileSync(new URL("../deploy/systemd/natarot-backup.service", import.meta.url), "utf8");
+const restoreTestService = readFileSync(new URL("../deploy/systemd/natarot-restore-test.service", import.meta.url), "utf8");
 const nginx = readFileSync(new URL("../deploy/nginx/natarot-http.conf", import.meta.url), "utf8");
 const candidatePath = new URL("../deploy/systemd/natarot-candidate@.service", import.meta.url);
 const journaldPath = new URL("../deploy/systemd/journald-natarot-retention.conf", import.meta.url);
@@ -15,6 +17,8 @@ test("systemd service runs the Node migration and Vinext on localhost", () => {
   assert.match(service, /WorkingDirectory=\/opt\/natarot\/current/);
   assert.match(service, /ExecStartPre=.*\/opt\/natarot\/current\/scripts\/node-migrate\.mjs/);
   assert.match(service, /ExecStart=.*\/opt\/natarot\/current\/node_modules\/vinext\/dist\/cli\.js start/);
+  assert.match(service, /ExecStartPre=.*scripts\/node-migrate\.mjs/);
+  assert.match(service, /ExecStart=.*vinext\/dist\/cli\.js start/);
   assert.match(service, /--port 8787/);
   assert.match(service, /--hostname 127\.0\.0\.1/);
   assert.match(service, /Restart=always/);
@@ -37,6 +41,20 @@ test("release retention templates expose the candidate, lock, and bounded-journa
   assert.match(journald, /SystemMaxUse=/);
   assert.match(journald, /SystemKeepFree=/);
   assert.match(journald, /MaxRetentionSec=/);
+});
+
+test("production backup service follows the managed current release", () => {
+  assert.match(backupService, /Environment=NATAROT_APP_ROOT=\/opt\/natarot\/current/);
+  assert.match(backupService, /Environment=NATAROT_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(backupService, /ExecStart=\/usr\/local\/sbin\/natarot-backup/);
+  assert.match(backupService, /ProtectSystem=full/);
+});
+
+test("restore verification follows the managed current release", () => {
+  assert.match(restoreTestService, /Environment=NATAROT_APP_ROOT=\/opt\/natarot\/current/);
+  assert.match(restoreTestService, /Environment=NATAROT_PRODUCTION_DB_PATH=\/var\/lib\/natarot\/natarot\.sqlite/);
+  assert.match(restoreTestService, /ExecStart=\/usr\/local\/sbin\/natarot-restore-test/);
+  assert.match(restoreTestService, /ProtectSystem=full/);
 });
 
 test("Nginx proxies both public hosts with bounded requests and forwarded headers", () => {
