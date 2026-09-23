@@ -9,4 +9,3 @@ export async function GET() {
     return noStoreResponse(Response.json({ policy: projectAffiliatePolicy(policy) }));
   });
 }
-

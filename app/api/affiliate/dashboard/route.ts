@@ -10,4 +10,3 @@ export async function GET(request: Request) {
     return noStoreResponse(Response.json(await getAffiliateCustomerDashboard(database, owner)));
   });
 }
-

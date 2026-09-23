@@ -1777,3 +1777,48 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .membership-journey .membership-section-heading>svg{display:none}.membership-support-panel{grid-template-columns:auto minmax(0,1fr);padding:15px}.membership-support-panel .membership-coming-soon,.membership-support-panel .membership-secondary-cta{grid-column:2;justify-self:start}.membership-footer{gap:12px}.membership-footer .brand-logo-image{width:105px}.membership-footer-tagline{font-size:10px}.membership-footer nav{justify-content:flex-start;gap:14px}.membership-footer nav a{font-size:9px}.membership-footer-socials{width:100%;justify-content:flex-end}
 }
 @media(prefers-reduced-motion:reduce){.membership-shell .main-nav a,.membership-package-card,.membership-package-cta,.membership-shell .membership-icon-button,.membership-shell .membership-account-link{transition:none}.membership-shell .main-nav a:hover,.membership-package-card:hover,.membership-package-cta:hover,.membership-shell .membership-icon-button:hover,.membership-shell .membership-account-link:hover{transform:none}}
+/* Reading Result is an immersive surface: the room remains the source of truth,
+   while the completed interpretation earns the whole canvas under the header. */
+.room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:62px;right:0;bottom:0;left:0;width:auto;min-width:0;max-width:none;height:auto;border:0;border-radius:0;background:linear-gradient(180deg,rgba(4,14,27,.99),rgba(3,12,24,.985));box-shadow:0 -12px 60px rgba(2,8,18,.54);animation:room-reading-result-in .48s cubic-bezier(.22,1,.36,1) both}
+.room-page.has-interpretation .tabletop,.room-page.has-interpretation .room-question,.room-page.has-interpretation .room-reading-actions,.room-page.has-interpretation .media-tools,.room-page.has-interpretation .zoom-tools,.room-page.has-interpretation .camera-nav,.room-page.has-interpretation .room-toolbar,.room-page.has-interpretation .room-status{visibility:hidden;pointer-events:none;opacity:0}
+.room-page.has-interpretation .tabletop{right:0;width:100%;transition:opacity .25s ease,visibility .25s ease}
+.room-page.has-interpretation .room-question{left:0;right:0}
+.room-reading-panel-shell .reading-panel{display:flex;width:100%;height:100%;max-width:none;max-height:none;min-height:0}
+.room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 clamp(18px,3.2vw,56px) clamp(96px,10vh,140px);scroll-padding-bottom:clamp(96px,10vh,140px)}
+.room-reading-panel-shell .reading-panel__actions{padding-inline:clamp(18px,3.2vw,56px);}
+
+.room-reading-panel-shell .brand-reading-header{background:linear-gradient(180deg,rgba(10,29,46,.98),rgba(5,18,32,.97))}
+.room-reading-panel-shell .reading-spread{width:100%;max-width:1280px;margin:0 auto;padding:clamp(28px,4vw,58px) 0 clamp(34px,5vw,70px);border-bottom:1px solid rgba(199,166,106,.24);background:linear-gradient(180deg,rgba(8,24,40,.96),rgba(5,18,32,.985)),radial-gradient(circle at 50% 30%,rgba(45,91,116,.2),transparent 44%);}
+.room-reading-panel-shell .reading-spread__header{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;width:min(100%,1180px);margin:0 auto clamp(20px,3vw,34px);}
+.room-reading-panel-shell .reading-spread__title{font:400 clamp(1.7rem,3.2vw,3.1rem)/1.05 'Instrument Serif','Times New Roman',serif;letter-spacing:-.035em;color:var(--color-ivory);}
+.room-reading-panel-shell .reading-spread__count{margin-top:8px;color:var(--color-gold-bright);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;}
+.room-reading-panel-shell .reading-spread__hint{max-width:32ch;color:var(--color-text-muted);font-size:.78rem;line-height:1.55;text-align:right;}
+.room-reading-panel-shell .reading-spread__stage{position:relative;width:min(100%,1180px);margin:0 auto;overflow:hidden;border-top:1px solid rgba(199,166,106,.2);border-bottom:1px solid rgba(199,166,106,.14);background:radial-gradient(ellipse at 50% 42%,rgba(199,166,106,.1),transparent 46%),radial-gradient(ellipse at 50% 68%,rgba(27,74,92,.2),transparent 62%);isolation:isolate;}
+.room-reading-panel-shell .reading-spread__stage-light{position:absolute;inset:12% 12% 16%;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,rgba(199,166,106,.12),transparent 68%);filter:blur(22px);pointer-events:none;}
+.room-reading-panel-shell .reading-spread__card{position:absolute;z-index:1;margin:0;transform-origin:50% 12%;transition:filter .25s ease,transform .25s ease;}
+.room-reading-panel-shell .reading-spread__card:hover{z-index:3;filter:drop-shadow(0 18px 26px rgba(2,8,18,.58)) drop-shadow(0 0 22px rgba(199,166,106,.18));}
+.room-reading-panel-shell .reading-spread__card-frame{position:relative;width:100%;aspect-ratio:400/647;overflow:hidden;border:1px solid rgba(227,201,143,.7);border-radius:10px;background:rgba(4,14,27,.78);box-shadow:0 16px 34px rgba(2,8,18,.5),inset 0 0 0 1px rgba(255,255,255,.08);}
+.room-reading-panel-shell .reading-spread__card-art{display:block;width:100%;height:100%;object-fit:cover;}
+.room-reading-panel-shell .reading-spread__card-placeholder{display:grid;width:100%;height:100%;place-items:center;padding:14px;color:var(--color-text-muted);font:400 1rem/1.2 'Instrument Serif','Times New Roman',serif;text-align:center;}
+.room-reading-panel-shell .reading-spread__caption{display:grid;gap:4px;padding:10px 4px 0;text-align:center;}
+.room-reading-panel-shell .reading-spread__position{overflow:hidden;color:var(--color-gold-bright);font-size:.65rem;letter-spacing:.1em;line-height:1.2;text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap;}
+.room-reading-panel-shell .reading-spread__card-name{color:var(--color-ivory);font:400 clamp(.95rem,1.25vw,1.22rem)/1.08 'Instrument Serif','Times New Roman',serif;}
+.room-reading-panel-shell .reading-spread__orientation{color:var(--color-text-muted);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;}
+
+@keyframes room-reading-result-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:768px){
+  .room-page.has-interpretation .room-reading-panel-shell{top:56px;top:calc(56px + env(safe-area-inset-top));}
+  .room-reading-panel-shell .reading-panel__scroll{padding-inline:clamp(14px,5vw,24px);padding-bottom:calc(94px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(94px + env(safe-area-inset-bottom));}
+  .room-reading-panel-shell .reading-panel__actions{padding-inline:clamp(14px,5vw,24px);padding-bottom:max(14px,env(safe-area-inset-bottom));}
+  .room-reading-panel-shell .reading-spread{padding-top:24px;padding-bottom:34px;}
+  .room-reading-panel-shell .reading-spread__header{align-items:flex-start;gap:12px;margin-bottom:20px;}
+  .room-reading-panel-shell .reading-spread__title{font-size:clamp(1.7rem,8vw,2.35rem);}
+  .room-reading-panel-shell .reading-spread__hint{max-width:18ch;font-size:.7rem;}
+  .room-reading-panel-shell .reading-spread__stage{width:100%;}
+  .room-reading-panel-shell .reading-spread__card-name{font-size:1.08rem;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none;}
+}
