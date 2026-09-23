@@ -5,6 +5,10 @@ umask 077
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 readonly APP_ROOT="${NATAROT_APP_ROOT:-/opt/natarot}"
+readonly APP_NAME="$(basename "$APP_ROOT")"
+readonly HISTORY_ROOT="${NATAROT_HISTORY_ROOT:-$(dirname "$APP_ROOT")}"
+readonly ACTIVE_STAGING_ROOT="${NATAROT_ACTIVE_STAGING_ROOT:-$HISTORY_ROOT/$APP_NAME-staging}"
+readonly STAGING_HISTORY_MAX_AGE_SECONDS="${NATAROT_STAGING_HISTORY_MAX_AGE_SECONDS:-86400}"
 readonly RELEASE_ROOT="${NATAROT_RELEASE_ROOT:-$APP_ROOT/releases}"
 readonly STAGING_ROOT="${NATAROT_STAGING_ROOT:-$APP_ROOT/.staging}"
 readonly FAILED_ROOT="${NATAROT_FAILED_ROOT:-$APP_ROOT/.failed}"
@@ -129,11 +133,28 @@ assert_release_id() {
 
 assert_external_state() {
   assert_managed_roots
-  local release_real backup_real db_real env_real
+  local release_real backup_real db_real env_real history_real app_real active_staging_real
   release_real=$(canonical_path "$RELEASE_ROOT")
   backup_real=$(canonical_path "$BACKUP_ROOT")
   db_real=$(canonical_path "$DB_PATH")
   env_real=$(canonical_path "$ENV_FILE")
+  app_real=$(canonical_path "$APP_ROOT")
+  [[ -d "$HISTORY_ROOT" && ! -L "$HISTORY_ROOT" ]] || die "history_root_invalid"
+  [[ "$HISTORY_ROOT" != "/" ]] || die "history_root_invalid"
+  history_real=$(canonical_existing "$HISTORY_ROOT")
+  case "$app_real" in
+    "$history_real"/*) ;;
+    *) die "history_root_does_not_contain_app_root" ;;
+  esac
+  active_staging_real=$(canonical_path "$ACTIVE_STAGING_ROOT")
+  case "$active_staging_real" in
+    "$history_real"/*) ;;
+    *) die "active_staging_root_outside_history_root" ;;
+  esac
+  [[ "$active_staging_real" != "$release_real" && "$active_staging_real" != "$release_real"/* ]] || die "active_staging_overlaps_release_root"
+  [[ "$active_staging_real" != "$backup_real" && "$active_staging_real" != "$backup_real"/* ]] || die "active_staging_overlaps_backup_root"
+  [[ "$active_staging_real" != "$db_real" && "$active_staging_real" != "$db_real"/* ]] || die "active_staging_overlaps_database"
+  [[ "$active_staging_real" != "$env_real" && "$active_staging_real" != "$env_real"/* ]] || die "active_staging_overlaps_environment"
   [[ "$backup_real" != "$release_real" && "$backup_real" != "$release_real"/* ]] || die "backup_root_overlaps_release_root"
   [[ "$db_real" != "$release_real"/* ]] || die "database_path_inside_release_root"
   [[ "$env_real" != "$release_real"/* ]] || die "environment_path_inside_release_root"
@@ -571,6 +592,37 @@ cleanup_manager_staging() {
   done < <(find "$STAGING_ROOT" -mindepth 1 -maxdepth 1 -type d -print0 | LC_ALL=C sort -z)
 }
 
+staging_history_is_old_enough() {
+  local path="$1"
+  [[ "$STAGING_HISTORY_MAX_AGE_SECONDS" =~ ^[0-9]+$ ]] || die "staging_history_max_age_invalid"
+  local age_minutes=$(( (STAGING_HISTORY_MAX_AGE_SECONDS + 59) / 60 ))
+  (( age_minutes >= 1 )) || age_minutes=1
+  [[ "$(find "$path" -maxdepth 0 -type d -mmin "+$age_minutes" -print -quit 2>/dev/null || true)" == "$path" ]]
+}
+
+cleanup_external_staging_history() {
+  assert_external_state
+  local active_staging_real
+  active_staging_real=$(canonical_path "$ACTIVE_STAGING_ROOT")
+  local entry entry_real name size_kib
+  while IFS= read -r -d '' entry; do
+    name=$(basename "$entry")
+    [[ "$name" == "$APP_NAME-staging."* ]] || continue
+    [[ -d "$entry" && ! -L "$entry" ]] || continue
+    entry_real=$(canonical_existing "$entry")
+    [[ "$entry_real" == "$active_staging_real" ]] && continue
+    assert_inside "$HISTORY_ROOT" "$entry"
+    if ! staging_history_is_old_enough "$entry"; then
+      log "staging_history_cleanup_skip reason=too_new path=$entry"
+      continue
+    fi
+    process_references_path "$entry" && die "staging_history_referenced_by_active_process"
+    size_kib=$(du -sk "$entry" | awk '{ print $1 + 0 }')
+    rm -rf -- "$entry"
+    log "staging_history_cleanup_removed path=$entry size_kib=$size_kib"
+  done < <(find "$HISTORY_ROOT" -mindepth 1 -maxdepth 1 -type d -print0 | LC_ALL=C sort -z)
+}
+
 cleanup_all() {
   phase="cleanup"
   [[ "${NATAROT_BROWSER_VERIFIED:-0}" == 1 ]] || die "browser_verification_required"
@@ -580,6 +632,7 @@ cleanup_all() {
   verify_backups
   cleanup_release_dirs
   cleanup_manager_staging
+  cleanup_external_staging_history
   printf 'cleanup_complete=true\n'
 }
 
@@ -767,6 +820,7 @@ deploy_release() {
   if (( browser_verification_completed == 1 )); then
     cleanup_release_dirs
     cleanup_manager_staging
+    cleanup_external_staging_history
     printf 'post_success_cleanup=complete browser_verification=pass\n'
   else
     log "post_success_cleanup_deferred reason=real_browser_verification_required"

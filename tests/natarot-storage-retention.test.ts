@@ -7,6 +7,7 @@ import {
   readFileSync,
   readlinkSync,
   symlinkSync,
+  utimesSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -234,6 +235,25 @@ test("cleanup requires explicit real-browser verification", () => {
   assert.notEqual(result.status, 0);
   assert.match(`${result.stdout}\n${result.stderr}`, /browser_verification_required/);
   assert.deepEqual(existingReleaseIds(fixture), ["r-001", "r-002", "r-003", "r-004", "r-005"]);
+});
+
+test("cleanup removes only stale external staging history and preserves active or fresh staging", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 3 });
+  const activeStaging = join(fixture.root, "natarot-staging");
+  const staleHistory = join(fixture.root, "natarot-staging.before-old");
+  const freshHistory = join(fixture.root, "natarot-staging.before-fresh");
+  mkdirSync(join(activeStaging, "node_modules"), { recursive: true });
+  mkdirSync(staleHistory, { recursive: true });
+  mkdirSync(freshHistory, { recursive: true });
+  const staleDate = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  utimesSync(staleHistory, staleDate, staleDate);
+  const result = runManager(fixture, ["cleanup"], {
+    NATAROT_STAGING_HISTORY_MAX_AGE_SECONDS: "3600",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(existsSync(staleHistory), false);
+  assert.equal(existsSync(activeStaging), true);
+  assert.equal(existsSync(freshHistory), true);
 });
 
 test("failed promotion restores the former current release and performs no cleanup", () => {
