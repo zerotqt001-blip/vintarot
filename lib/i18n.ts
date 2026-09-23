@@ -212,6 +212,10 @@ export const messages = {
       accountTitle: "Your account",
       accountText: "A private, metadata-first view of your NaTarot activity.",
       accountDestinations: "Account destinations",
+      recentReadings: "Recent readings",
+      quickAccess: "Quick access",
+      transactions: "Recent transactions",
+      security: "Account & security",
       signInHistory: "Sign in to see your Tarot readings, shares, orders, Credits, and Affiliate activity.",
       creditsReservedLabel: "Reserved",
       creditsTotalLabel: "Total granted",
@@ -1033,6 +1037,10 @@ export const messages = {
       accountTitle: "Tài khoản của bạn",
       accountText: "Một góc nhìn riêng tư, ưu tiên metadata cho hoạt động NaTarot của bạn.",
       accountDestinations: "Đi đến tài khoản",
+      recentReadings: "Những lời đọc gần đây",
+      quickAccess: "Truy cập nhanh",
+      transactions: "Giao dịch gần đây",
+      security: "Tài khoản & bảo mật",
       signInHistory: "Đăng nhập để xem trải bài Tarot, lượt chia sẻ, đơn hàng, Credit và hoạt động Affiliate.",
       creditsReservedLabel: "Đang giữ",
       creditsTotalLabel: "Tổng đã cấp",
@@ -1778,10 +1786,13 @@ export function localeLabel(locale: Locale): string {
   return locale === "vi" ? messages.vi.common.vietnamese : messages.en.common.english;
 }
 
-export function messageFor(locale: Locale, key: string): string {
+export type MessageValues = Record<string, string | number>;
+
+export function messageFor(locale: Locale, key: string, values: MessageValues = {}): string {
   const value = key.split(".").reduce<unknown>((current, part) => {
     if (current && typeof current === "object" && part in current) return (current as Record<string, unknown>)[part];
     return undefined;
   }, messages[locale]);
-  return typeof value === "string" ? value : key;
+  if (typeof value !== "string") return key;
+  return value.replace(/\{([a-zA-Z0-9_]+)\}/g, (placeholder, name: string) => name in values ? String(values[name]) : placeholder);
 }

@@ -1975,3 +1975,192 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-reduced-motion:reduce){
   .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none;}
 }
+
+/* Final visual fidelity V1: desktop composition scale is tuned to the owner targets.
+   Responsive variants remain owned by the route-specific breakpoints above. */
+@media(min-width:1181px){
+  .guidebook-target-map{grid-template-rows:185px 285px 120px;height:590px;width:min(1280px,100%)}
+  .guidebook-target-node{width:238px;padding:16px 14px 13px}
+  .guidebook-target-node-art{width:140px;height:118px}
+  .guidebook-target-node-copy{max-width:204px}
+  .guidebook-target-node-copy strong{font-size:29px}
+      .guidebook-target-node-copy small{max-width:192px}
+      .guidebook-target-center{width:198px;height:198px;transform:translateY(-48px)}
+      .guidebook-target-node-left,.guidebook-target-node-right{transform:translateY(-74px)}
+      .guidebook-target-node-bottom-left,.guidebook-target-node-bottom-right{transform:translateY(-72px)}
+      .guidebook-target-node-bottom-left:hover,.guidebook-target-node-bottom-left:focus-visible{transform:translate(-4px,-76px) scale(1.03)}
+      .guidebook-target-node-bottom-right:hover,.guidebook-target-node-bottom-right:focus-visible{transform:translate(4px,-76px) scale(1.03)}
+}
+@media(min-width:1201px){
+  .practice-shell .practice-v1-composition{grid-template-columns:minmax(320px,40%) minmax(0,1fr);gap:48px;max-width:1120px}
+  .practice-shell .practice-v1-card-geometry{width:372px;height:372px}
+  .practice-shell .practice-v1-card-stage .practice-card-frame{width:min(258px,78%)}
+  .membership-package-grid{gap:16px}
+}
+@media(min-width:1500px){
+  .practice-shell .practice-v1-layout{transform:translateX(28px)}
+  .practice-shell .practice-v1-composition{grid-template-columns:minmax(420px,44%) minmax(0,1fr);gap:48px}
+  .practice-shell .practice-v1-card-stage .practice-card-frame{width:min(240px,78%);position:relative;left:15px}
+}
+@media(min-width:901px){
+  .affiliate-kpi-grid{gap:14px}
+  .affiliate-dashboard-grid,.affiliate-dashboard-grid__main,.affiliate-dashboard-grid__side{gap:16px}
+}
+.account-dashboard{max-width:1320px}
+.room-reading-panel-shell .reading-spread{max-width:1320px}
+
+/* Final V1 chrome correction: the generic site-shell rule is intentionally broad and
+   otherwise wins the route-specific dashboard canvas. Account and Affiliate share the
+   64px member chrome and the wider owner-target work area with Packages. */
+@media(min-width:1181px){
+  .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .topbar,
+  .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .topbar{height:64px}
+  .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .site-sidebar,
+  .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .site-sidebar{top:80px;bottom:66px}
+  .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .main{
+    width:calc(100% - 190px);max-width:none;margin:64px 0 50px 190px;padding:16px 18px 82px
+  }
+  .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .main{
+    width:calc(100% - 190px);max-width:none;margin:64px 0 50px 190px;padding:16px clamp(22px,3.2vw,52px) 88px
+  }
+  .site-shell.account-shell .account-dashboard{max-width:1320px;margin-left:0;margin-right:auto;gap:14px}
+  .site-shell.account-shell .account-dashboard-hero{min-height:112px;padding:0 0 8px}
+  .site-shell.account-shell .account-profile-card{width:min(100%,680px)}
+  .site-shell.account-shell .account-dashboard-grid{grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);gap:14px}
+  .site-shell.account-shell .account-stat-grid{gap:12px}
+  .site-shell.account-shell .account-stat-card{min-height:158px;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto 1fr auto;align-items:start;gap:5px 11px;padding:16px}
+  .site-shell.account-shell .account-stat-icon{grid-row:1 / span 4}
+  .site-shell.account-shell .account-stat-label,.site-shell.account-shell .account-stat-card strong,.site-shell.account-shell .account-stat-caption,.site-shell.account-shell .account-stat-card__action{grid-column:2}
+  .site-shell.account-shell .account-stat-caption{display:block;overflow:hidden;color:var(--nt-text-muted);font-size:10px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+  .site-shell.account-shell .account-stat-card__action{display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;min-height:36px;margin-top:4px;padding:8px 12px;border:1px solid var(--nt-border);border-radius:999px;background:rgba(6,21,34,.24);color:var(--nt-gold-bright);font-size:10px;line-height:1.2}
+  .site-shell.account-shell .account-stat-card:first-child .account-stat-card__action{border-color:var(--nt-gold-bright);background:linear-gradient(135deg,var(--nt-gold-bright),var(--nt-gold));color:var(--nt-bg-primary)}
+  .site-shell.account-shell .account-stat-card__action svg{flex:0 0 auto}
+  .site-shell.account-shell .account-panel{padding:18px}
+  .site-shell.account-shell .account-security-list{gap:0}
+  .site-shell.account-shell .account-security-list{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:0}
+  .site-shell.account-shell .account-security-item{min-width:0}
+  .site-shell.account-shell .account-security-item:nth-child(1),
+  .site-shell.account-shell .account-security-item:nth-child(2){border-top:0;padding-top:0}
+  .site-shell.account-shell .account-security-item:nth-child(n+3){padding-top:11px}
+  .site-shell.account-shell .account-history-heading p{display:none}
+      .site-shell.account-shell .account-bottom-grid .account-panel{padding:14px 18px 8px}
+  .site-shell.account-shell .account-bottom-grid .account-dashboard-eyebrow{display:none}
+  .site-shell.account-shell .account-bottom-grid .account-history-heading label,
+  .site-shell.account-shell .account-bottom-grid .account-history-heading select{margin:0}
+
+  .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .main{padding:16px 32px 88px 88px}
+  .site-shell.affiliate-shell .affiliate-dashboard{width:min(100%,1360px);margin-left:0;margin-right:0;gap:10px}
+  .site-shell.affiliate-shell .affiliate-dashboard__hero{min-height:143px;padding:8px 22px 10px}
+  .site-shell.affiliate-shell .affiliate-hero-copy{max-width:1120px;gap:8px}
+  .site-shell.affiliate-shell .affiliate-hero-copy h1{max-width:none;font-size:clamp(42px,3.2vw,54px)}
+  .site-shell.affiliate-shell .affiliate-hero-copy>p{font-size:12px;line-height:1.45}
+  .site-shell.affiliate-shell .affiliate-hero-status{font-size:10px}
+  .site-shell.affiliate-shell .affiliate-kpi-grid{gap:14px}
+  .site-shell.affiliate-shell .affiliate-kpi{min-height:90px;padding:12px 16px;grid-template-columns:42px minmax(0,1fr);gap:10px}
+  .site-shell.affiliate-shell .affiliate-kpi__icon{width:42px;height:42px}
+  .site-shell.affiliate-shell .affiliate-kpi__copy{gap:2px}
+  .site-shell.affiliate-shell .affiliate-kpi__copy strong{font-size:clamp(1.25rem,1.8vw,1.65rem)}
+  .site-shell.affiliate-shell .affiliate-dashboard-grid,
+  .site-shell.affiliate-shell .affiliate-dashboard-grid__main,
+  .site-shell.affiliate-shell .affiliate-dashboard-grid__side{gap:10px}
+  .site-shell.affiliate-shell .affiliate-panel{padding:14px 18px}
+  .site-shell.affiliate-shell .affiliate-panel-heading__icon{width:34px;height:34px}
+  .site-shell.affiliate-shell .affiliate-panel-heading__copy h2{font-size:clamp(1.25rem,1.7vw,1.55rem)}
+  .site-shell.affiliate-shell .affiliate-panel-heading__copy p{margin-top:4px;font-size:10px;line-height:1.35}
+  .site-shell.affiliate-shell .affiliate-tier-track{margin-top:14px}
+  .site-shell.affiliate-shell .affiliate-tier-summary{margin-top:14px;padding-top:10px;gap:10px}
+  .site-shell.affiliate-shell .affiliate-tier-next{margin-top:8px}
+  .site-shell.affiliate-shell .affiliate-income-grid{margin-top:14px}
+  .site-shell.affiliate-shell .affiliate-income-grid>div{padding-top:11px}
+  .site-shell.affiliate-shell .affiliate-link-field{margin-top:12px}
+  .site-shell.affiliate-shell .affiliate-unavailable{margin-top:12px;padding:12px 10px;gap:6px}
+  .site-shell.affiliate-shell .affiliate-unavailable p{font-size:10px;line-height:1.35}
+  .site-shell.affiliate-shell .affiliate-unavailable span{font-size:9px}
+  .site-shell.affiliate-shell .affiliate-empty-list{padding:15px 8px 4px}
+  .site-shell.affiliate-shell .affiliate-lower-grid{align-items:start;gap:10px}
+  .site-shell.affiliate-shell .affiliate-how-panel{padding:12px 18px}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-panel-heading__copy p{display:none}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-panel-heading__icon{width:30px;height:30px}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-flow{margin-top:10px;gap:0}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-flow-step{display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:auto auto;column-gap:7px;row-gap:2px;align-items:center;padding-right:14px}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-flow-icon{grid-row:1 / span 2;width:30px;height:30px}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-flow-step>span{grid-column:2;grid-row:1}
+  .site-shell.affiliate-shell .affiliate-how-panel .affiliate-flow-step p{grid-column:2;grid-row:2;max-width:18ch}
+      .site-shell.affiliate-shell .affiliate-policy-panel .affiliate-policy-meta,
+      .site-shell.affiliate-shell .affiliate-policy-panel .affiliate-tier-table{display:none}
+
+      .membership-shell .main{padding-top:16px}
+      .membership-page{gap:14px}
+      .membership-hero-motif{height:24px}
+      .membership-hero h1{font-size:clamp(42px,4vw,54px)}
+      .membership-balance-row{position:relative;display:block;height:0;margin:0;pointer-events:none}
+      .membership-balance{position:absolute;top:-115px;right:-16px;width:230px;min-height:76px;pointer-events:auto}
+      .membership-editorial{position:absolute;z-index:1}
+      .membership-editorial-left{top:-43px;left:-24px;width:190px}
+      .membership-editorial-right{top:205px;right:-16px;width:130px}
+      .membership-package-grid{max-width:920px;margin:0 auto;gap:14px}
+      .membership-package-card{padding:23px 14px 18px}
+      .membership-journey{gap:10px;padding:20px 25px}
+      .membership-journey .membership-eyebrow{display:none}
+      .membership-journey .membership-section-heading{align-items:center}
+      .membership-journey .membership-section-heading>div{display:flex;min-width:0;align-items:baseline;gap:15px}
+      .membership-journey .membership-section-heading h2{margin:0;font-size:28px;white-space:nowrap}
+      .membership-journey .membership-section-heading p{max-width:none;margin:0;font-size:10px;white-space:nowrap}
+      .membership-journey .membership-section-heading>svg{display:none}
+      .membership-footer{min-height:64px;padding-top:8px;padding-bottom:8px}
+      .membership-footer .brand-logo-image{width:124px}
+}
+
+@media(max-width:900px) and (min-width:701px){
+  .practice-shell .topbar{gap:12px;padding-inline:12px}
+  .practice-shell .brand-tagline,.practice-shell .topbar-nav{display:none}
+  .practice-shell .brand-lockup{min-width:0;gap:0}
+  .practice-shell .brand-lockup .brand-logo-image{width:132px}
+  .practice-shell .top-actions{gap:4px;margin-left:auto}
+  .practice-shell .practice-v1-account{min-width:40px;padding-inline:10px}
+  .practice-shell .practice-v1-account span{display:none}
+  .guidebook-target-map{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;grid-template-areas:"top top" "center center" "left right" "bottom-left bottom-right";gap:12px;width:100%;height:auto}
+  .guidebook-target-map-lines,.guidebook-target-editorial{display:none}
+  .guidebook-target-node-left,.guidebook-target-node-right,.guidebook-target-node-bottom-left,.guidebook-target-node-bottom-right,.guidebook-target-center{transform:none}
+  .guidebook-target-center{width:170px;height:170px;margin:0 auto}
+  .guidebook-target-node{width:min(190px,100%);margin:0 auto;padding:12px 10px 10px}
+  .guidebook-target-node-art{scale:.82;height:96px}
+  .guidebook-target-node-copy strong{font-size:24px}
+}
+
+.account-security-list{display:grid;gap:8px}
+.account-security-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0;padding:11px 0;border-top:1px solid var(--nt-border);color:var(--nt-text)}
+.account-security-item:first-child{border-top:0;padding-top:0}
+.account-security-item:hover{color:var(--nt-text-primary)}
+.account-security-item>span:nth-child(2){display:grid;gap:3px;min-width:0}
+.account-security-item strong{overflow:hidden;color:var(--nt-text-primary);font-size:11px;font-weight:500;text-overflow:ellipsis;white-space:nowrap}
+.account-security-item small{overflow:hidden;color:var(--nt-text-muted);font-size:9px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+.account-security-item>svg{color:var(--nt-gold-bright)}
+.account-security-item--button{width:100%;border:0;background:transparent;text-align:left;font:inherit;cursor:pointer}
+.account-security-item--button:disabled{opacity:.55;cursor:wait}
+
+/* The shared SidebarProvider owns the viewport-width row.  Route shells must fill
+   that row; an auto-sized flex item otherwise shrinks to the widest dashboard child
+   and leaves an empty strip beside Affiliate/Account at desktop widths. */
+.site-shell,.home-shell,.membership-shell{width:100%;min-width:0;flex:1 1 auto}
+
+@media(min-width:701px){
+  .account-stat-card{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto auto;align-items:start;gap:5px 11px;padding:16px}
+  .account-stat-icon{grid-row:1 / span 4}
+  .account-stat-label,.account-stat-card strong,.account-stat-caption,.account-stat-card__action{grid-column:2}
+  .account-stat-caption{display:block;overflow:hidden;color:var(--nt-text-muted);font-size:10px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+  .account-stat-card__action{display:inline-flex;align-items:center;gap:5px;width:max-content;margin-top:4px;color:var(--nt-gold-bright);font-size:10px;line-height:1.2}
+  .account-stat-card__action svg{flex:0 0 auto}
+}
+
+@media(max-width:1200px) and (min-width:701px){
+  .account-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:700px){
+  .account-stat-card{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto auto;align-items:start}
+  .account-stat-icon{grid-row:1 / span 4}
+  .account-stat-label,.account-stat-card strong,.account-stat-caption,.account-stat-card__action{grid-column:2}
+  .account-stat-caption{display:block;overflow:hidden;color:var(--nt-text-muted);font-size:9px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+  .account-stat-card__action{display:inline-flex;align-items:center;gap:4px;width:max-content;margin-top:3px;color:var(--nt-gold-bright);font-size:9px;line-height:1.2}
+}
