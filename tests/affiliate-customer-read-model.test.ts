@@ -63,7 +63,6 @@ test("public affiliate policy projection only exposes active server policy field
   });
   assert.doesNotMatch(JSON.stringify(projected), /policy-live|tier-base|affiliate-owner|code_hash|raw/i);
 });
-
 test("affiliate dashboard is owner-scoped and computes current tier from active policy", async () => {
   const fixture = makeFixture();
   fixture.sqlite.prepare("UPDATE affiliate_policy_versions SET status='ACTIVE', starts_at=? WHERE id='affiliate-v1-default'").run(now - 1);
@@ -85,4 +84,3 @@ test("affiliate dashboard is owner-scoped and computes current tier from active 
   assert.doesNotMatch(JSON.stringify(owner), /code_hash|rawCode|profile-owner|affiliate-owner|payoutUrl/i);
   fixture.sqlite.close();
 });
-

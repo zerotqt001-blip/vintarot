@@ -13,7 +13,6 @@ export const records = sqliteTable(
   },
   (table) => [index("idx_records_owner_kind").on(table.owner, table.kind)],
 );
-
 export const rooms = sqliteTable(
   "rooms",
   {
@@ -738,4 +737,3 @@ export const affiliateCommissionLedger = sqliteTable(
     index("affiliate_commission_ledger_actor_idx").on(table.actorId, table.createdAt, table.id),
   ],
 );
-
