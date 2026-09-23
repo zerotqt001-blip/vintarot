@@ -294,6 +294,7 @@ function GuidebookLibrary() {
   const [query, setQuery] = useState("");
   const [orientation, setOrientation] = useState<"all" | "upright" | "reversed">("all");
   const [sort, setSort] = useState<"classic" | "alphabetical">("classic");
+  const guidebookSearchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const syncFromUrl = () => {
@@ -310,6 +311,17 @@ function GuidebookLibrary() {
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
     return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
+
+  useEffect(() => {
+    const focusSearch = () => {
+      setSelectedSuit(null);
+      setView("library");
+      window.history.pushState({}, "", "/guidebook?group=all");
+      window.setTimeout(() => guidebookSearchRef.current?.focus(), 0);
+    };
+    window.addEventListener("guidebook:focus-search", focusSearch);
+    return () => window.removeEventListener("guidebook:focus-search", focusSearch);
   }, []);
 
   const selectGroup = (group: GuidebookGroup | null) => {
@@ -359,7 +371,7 @@ function GuidebookLibrary() {
             <div className="guidebook-toolbar">
               <label className="guidebook-search">
                 <Search size={16} />
-                <input aria-label={t("pages.searchCards")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("pages.searchGuidebook")} />
+                <input ref={guidebookSearchRef} aria-label={t("pages.searchCards")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("pages.searchGuidebook")} />
               </label>
               <div className="guidebook-filters" role="group" aria-label={t("pages.readingFilter")}>
                 {(["all", "upright", "reversed"] as const).map((value) => (
@@ -395,31 +407,42 @@ function GuidebookLibrary() {
 
   return (
     <div className="guidebook-cosmic-page guidebook-worlds-page" data-section={section}>
-      <section className="guidebook-worlds-hero">
+      <section className="guidebook-target-hero">
         <span className="guidebook-kicker">{t("pages.cardsHeroKicker")}</span>
         <h1>{t("pages.cardsHeroTitle")}</h1>
         <p>{t("pages.cardsHeroDescription")}</p>
       </section>
-      <div className="guidebook-world-map" aria-label={t("pages.chooseGroup")}>
-        <div className="guidebook-world-orbit guidebook-world-orbit-one" />
-        <div className="guidebook-world-orbit guidebook-world-orbit-two" />
-        <div className="guidebook-world-center">
+      <div className="guidebook-target-map" aria-label={t("pages.chooseGroup")}>
+        <div className="guidebook-target-map-lines" aria-hidden="true" />
+        <aside className="guidebook-target-editorial guidebook-target-editorial-left" aria-label={t("pages.editorialLeftOne")}>
+          <span>{t("pages.editorialLeftOne")}</span>
+          <span>{t("pages.editorialLeftTwo")}</span>
+          <span>{t("pages.editorialLeftThree")}</span>
+          <span>{t("pages.editorialLeftFour")}</span>
+        </aside>
+        <div className="guidebook-target-center">
           <span>{t("pages.chooseGroup")}</span>
-          <strong>5</strong>
-          <small>78 {t("common.cards")}</small>
+          <strong>78</strong>
+          <small>{t("common.cards")}</small>
         </div>
         {guidebookMapLayout.map((layout) => {
           const group = guidebookGroups.find((item) => item.suit === layout.suit);
           if (!group) return null;
           return (
-            <button type="button" className={`guidebook-world-node guidebook-world-node-${layout.position}`} style={{ "--world-accent": layout.accent } as CSSProperties} key={group.suit} onClick={() => selectGroup(group)} aria-label={`${t(groupLabelKey(group.suit))}: ${group.cardIds.length} ${t("common.cards")}`}>
-              <span className="guidebook-world-node-art">{group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}</span>
-              <span className="guidebook-world-node-copy"><strong>{t(groupLabelKey(group.suit))}</strong><small>{t(groupDescriptionKey(group.suit))}</small><em>{group.cardIds.length} {t("common.cards")} · {t(groupElementKey(group.suit))}</em></span>
+            <button type="button" className={`guidebook-target-node guidebook-target-node-${layout.position}`} style={{ "--world-accent": layout.accent } as CSSProperties} key={group.suit} onClick={() => selectGroup(group)} aria-label={`${t(groupLabelKey(group.suit))}: ${group.cardIds.length} ${t("common.cards")}`}>
+              <span className="guidebook-target-node-art">{group.previewIds.map((id) => <CardFace key={id} card={cards[id]} source="moonlight" />)}</span>
+              <span className="guidebook-target-node-copy"><strong>{t(groupLabelKey(group.suit))}</strong><small>{t(groupDescriptionKey(group.suit))}</small><em>{group.cardIds.length} {t("common.cards")} · {t(groupElementKey(group.suit))}</em><span className="guidebook-target-explore">{t("pages.exploreGroup")} <ArrowRight size={14} /></span></span>
             </button>
           );
         })}
+        <aside className="guidebook-target-editorial guidebook-target-editorial-right" aria-label={t("pages.editorialRightOne")}>
+          <span>{t("pages.editorialRightOne")}</span>
+          <span>{t("pages.editorialRightTwo")}</span>
+          <span>{t("pages.editorialRightThree")}</span>
+          <span>{t("pages.editorialRightFour")}</span>
+        </aside>
       </div>
-      <p className="guidebook-worlds-hint">{t("pages.meaningsText")}</p>
+      <p className="guidebook-target-hint">{t("pages.meaningsText")}</p>
     </div>
   );
 }

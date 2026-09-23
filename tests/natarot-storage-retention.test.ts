@@ -162,6 +162,7 @@ function envFor(fixture: Fixture, overrides: Record<string, string> = {}) {
     NATAROT_MIN_FREE_PERCENT: "0",
     NATAROT_BACKUP_MAX_AGE_SECONDS: "999999999",
     NATAROT_PRODUCTION_SMOKE_RESULT: "pass",
+    NATAROT_BROWSER_VERIFIED: "1",
     NATAROT_TEST_SKIP_BACKUP: "1",
     NATAROT_TEST_SKIP_SERVICE: "1",
     NATAROT_SKIP_OWNERSHIP: "1",
@@ -227,6 +228,14 @@ test("cleanup keeps current and both rollback references and removes only old su
   assert.equal(existsSync(fixture.database), true);
 });
 
+test("cleanup requires explicit real-browser verification", () => {
+  const fixture = createReleaseFixture({ successfulReleaseCount: 5 });
+  const result = runManager(fixture, ["cleanup"], { NATAROT_BROWSER_VERIFIED: "0" });
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}\n${result.stderr}`, /browser_verification_required/);
+  assert.deepEqual(existingReleaseIds(fixture), ["r-001", "r-002", "r-003", "r-004", "r-005"]);
+});
+
 test("failed promotion restores the former current release and performs no cleanup", () => {
   const fixture = createReleaseFixture({ successfulReleaseCount: 3 });
   const before = snapshotProtectedReferences(fixture);
@@ -253,7 +262,7 @@ test("production health tolerates the bounded service startup window", () => {
   const fakeSystemctl = join(fixture.root, "bin/systemctl");
   const fakeCurl = join(fixture.root, "bin/curl");
   const curlState = join(fixture.root, "curl-state");
-  writeFile(fakeSystemctl, "#!/bin/sh\nexit 0\n", 0o755);
+  writeFile(fakeSystemctl, "#!/bin/sh\nfor argument in \"$@\"; do\n  [ \"$argument\" = \"--wait\" ] && exit 99\ndone\nexit 0\n", 0o755);
   writeFile(fakeCurl, "#!/bin/sh\nif [ ! -f \"$NATAROT_TEST_CURL_STATE\" ]; then\n  : > \"$NATAROT_TEST_CURL_STATE\"\n  exit 7\nfi\nexit 0\n", 0o755);
   const result = runManager(fixture, ["deploy", "--source-dir", fixture.candidateSource, "--release-id", "r-004"], {
     NATAROT_TEST_SKIP_SERVICE: "0",

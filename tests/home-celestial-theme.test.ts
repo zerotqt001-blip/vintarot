@@ -8,8 +8,8 @@ const styles = readFileSync(`${root}/app/globals.css`, "utf8");
 const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
 
 test("homepage renders the NaTarot celestial scene and approved hero hierarchy", () => {
-  assert.match(shell, /const shellClass = isHome \? "home-shell"/);
-  assert.match(shell, /className=\{shellClass\}/);
+  assert.match(shell, /const shellClassName = isMembership \? .*isHome \? "home-shell"/);
+  assert.match(shell, /className=\{shellClassName\}/);
   for (const layer of ["sky", "nebula", "planets", "architecture", "floor", "foreground"]) {
     assert.match(shell, new RegExp(`cosmic-layer cosmic-${layer}`));
   }

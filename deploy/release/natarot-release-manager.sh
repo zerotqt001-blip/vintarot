@@ -43,6 +43,7 @@ lock_fd_open=0
 lock_directory_owned=0
 promotion_attempted=0
 promotion_committed=0
+browser_verification_completed=0
 old_current_target=""
 candidate_release_dir=""
 staging_release_dir=""
@@ -416,6 +417,7 @@ production_health() {
   [[ "${NATAROT_PRODUCTION_SMOKE_RESULT:-pass}" == pass ]] || die "production_smoke_failed"
   if [[ -n "${NATAROT_BROWSER_SMOKE_COMMAND:-}" ]]; then
     "$NATAROT_BROWSER_SMOKE_COMMAND"
+    browser_verification_completed=1
   fi
 }
 
@@ -571,6 +573,7 @@ cleanup_manager_staging() {
 
 cleanup_all() {
   phase="cleanup"
+  [[ "${NATAROT_BROWSER_VERIFIED:-0}" == 1 ]] || die "browser_verification_required"
   acquire_lock
   trap release_lock EXIT
   disk_preflight "$APP_ROOT" 0 "$CLEANUP_MIN_FREE_PERCENT" "$CLEANUP_MIN_FREE_KIB"
@@ -758,7 +761,7 @@ deploy_release() {
   write_revision_marker "$release_dir" "$release_id"
   candidate_release_dir="$release_dir"
   phase="candidate_health"
-  systemctl_run start --wait "${CANDIDATE_SERVICE_PREFIX}${release_id}.service"
+  systemctl_run start "${CANDIDATE_SERVICE_PREFIX}${release_id}.service"
   http_smoke "http://127.0.0.1:$CANDIDATE_PORT/api/tarot/catalog?locale=en"
   systemctl_run stop "${CANDIDATE_SERVICE_PREFIX}${release_id}.service" || true
   old_current_target=$(reference_target "$CURRENT_LINK")
@@ -774,8 +777,14 @@ deploy_release() {
   promotion_committed=1
   phase="post_success_cleanup"
   verify_backups
-  cleanup_release_dirs
-  cleanup_manager_staging
+  if (( browser_verification_completed == 1 )); then
+    cleanup_release_dirs
+    cleanup_manager_staging
+    printf 'post_success_cleanup=complete browser_verification=pass\n'
+  else
+    log "post_success_cleanup_deferred reason=real_browser_verification_required"
+    printf 'post_success_cleanup=deferred browser_verification=required\n'
+  fi
   printf 'deployment_success=true release_id=%s\n' "$release_id"
 }
 
