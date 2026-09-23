@@ -16,7 +16,8 @@
     "db:seed:tarot": "npx tsx scripts/generate-tarot-seed.ts",
     "db:seed:spreads": "npx tsx scripts/generate-spread-catalog-migration.ts",
     "deploy:production:storage-audit": "node scripts/production-storage-guard.mjs audit",
-    "deploy:production:storage-cleanup": "node scripts/production-storage-guard.mjs post-success"
+    "deploy:production:storage-cleanup": "node scripts/production-storage-guard.mjs post-success",
+    "deploy:retention": "bash scripts/production-release-retention.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
