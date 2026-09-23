@@ -18,14 +18,25 @@ keys or persistent upload/data directories. Candidate and production health
 probes use bounded retries so a normal Vinext listener warm-up cannot turn a
 healthy release into a false rollback.
 
-After a successful health-gated promotion, cleanup retains exactly the current
-release and the two protected rollback releases. It removes only successful
-release directories outside those references and managed staging directories
-that carry the manager marker. Failed or incomplete candidates are quarantined
-until they are proven inactive. The manager resolves paths and checks active
-processes before deletion; it never removes the database, WAL/journal files,
-environment/secrets, persistent uploads, Nginx/systemd configuration, or
-database backup retention sets.
+After a successful health-gated promotion, the manager defers destructive
+application cleanup until a real-browser verification has completed. If a
+deployment supplies `NATAROT_BROWSER_SMOKE_COMMAND`, that command is the
+explicit browser gate and cleanup may run in the same locked deploy; otherwise
+the deploy returns with cleanup deferred. The follow-up cleanup must be run
+only after the browser check:
+
+```sh
+NATAROT_BROWSER_VERIFIED=1 /usr/local/sbin/natarot-release-manager cleanup
+```
+
+The cleanup retains exactly the current release and the two protected rollback
+releases. It removes only successful release directories outside those
+references and managed staging directories that carry the manager marker.
+Failed or incomplete candidates are quarantined until they are proven
+inactive. The manager resolves paths and checks active processes before
+deletion; it never removes the database, WAL/journal files, environment/secrets,
+persistent uploads, Nginx/systemd configuration, or database backup retention
+sets.
 
 Database backups remain a separate retention domain. The manager verifies the
 installed policy and current `latest-success`/restore-test records; it does not
