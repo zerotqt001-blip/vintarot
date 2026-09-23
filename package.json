@@ -14,7 +14,9 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "db:seed:tarot": "npx tsx scripts/generate-tarot-seed.ts",
-    "db:seed:spreads": "npx tsx scripts/generate-spread-catalog-migration.ts"
+    "db:seed:spreads": "npx tsx scripts/generate-spread-catalog-migration.ts",
+    "deploy:production:storage-audit": "node scripts/production-storage-guard.mjs audit",
+    "deploy:production:storage-cleanup": "node scripts/production-storage-guard.mjs post-success"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
