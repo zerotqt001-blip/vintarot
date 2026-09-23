@@ -92,6 +92,7 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
   const router = useRouter();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [items, setItems] = useState<HistoryItem[]>([]);
+  const [recentItems, setRecentItems] = useState<HistoryItem[]>([]);
   const [kind, setKind] = useState<AccountHistoryKind>(initialKind);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(authenticated);
@@ -105,11 +106,13 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
     void (async () => {
       setLoading(true); setMessage(false);
       const query = new URLSearchParams({ kind, limit: "20" });
+      const historyPath = `/api/account/history?${query.toString()}`;
+      const recentHistoryPath = kind === "readings" ? historyPath : "/api/account/history?kind=readings&limit=3";
       try {
-        const [nextSummary, history] = await Promise.all([readJson<Summary>("/api/account/summary"), readJson<HistoryResponse>(`/api/account/history?${query.toString()}`)]);
+        const [nextSummary, history, recentHistory] = await Promise.all([readJson<Summary>("/api/account/summary"), readJson<HistoryResponse>(historyPath), readJson<HistoryResponse>(recentHistoryPath)]);
         if (!active) return;
-        setSummary(nextSummary); setItems(history.items); setNextCursor(history.nextCursor);
-      } catch { if (active) setMessage(true); } finally { if (active) setLoading(false); }
+        setSummary(nextSummary); setItems(history.items); setRecentItems(recentHistory.items.filter((item) => item.kind === "reading").slice(0, 3)); setNextCursor(history.nextCursor);
+      } catch { if (active) { setRecentItems([]); setMessage(true); } } finally { if (active) setLoading(false); }
     })();
     return () => { active = false; };
   }, [authenticated, initialKind, kind]);
@@ -139,7 +142,9 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
 
   const displayName = summary?.member.displayName || summary?.member.username || t("nav.yourSpace");
   const vipStatusLabel = summary?.vip.length ? (summary.vip.some((item) => item.isInternalTest) ? t("member.internalTestEntitlement") : t("member.vipActive")) : t("member.noVip");
-  const recentItems = items.filter((item) => item.kind === "reading").slice(0, 3);
+  const vipEndsAt = summary?.vip.find((item) => item.endsAt)?.endsAt ?? null;
+  const vipStatusDetail = summary?.vip.length && vipEndsAt ? `${vipStatusLabel} · ${t("member.activeUntil").replace("{value}", dateLabel(vipEndsAt, locale))}` : vipStatusLabel;
+  const creditsBalanceDetail = summary ? `${t("member.creditsReservedLabel")}: ${summary.credits.balance.reservedUnits} · ${t("member.creditsTotalLabel")}: ${summary.credits.balance.totalUnits}` : t("member.creditsAvailable");
   const quickActions = [
     ["nav.drawNow", "/create", Sparkles, "member.statusText"],
     ["member.readingHistory", "/journal?tab=saved", BookOpen, "member.activityText"],
@@ -160,8 +165,8 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
     </section>
 
     <section className="account-stat-grid" aria-label={t("member.statusEyebrow")}>
-      <AccountStatCard icon={WalletCards} value={summary?.credits.balance.availableUnits ?? "—"} label={t("member.credits")} caption={t("member.creditsAvailable")} action={t("member.topUpCredits")} href="/packages" />
-      <AccountStatCard icon={Moon} value={summary?.vip.length ? "VIP" : "—"} label={t("member.vipEntitlement")} caption={vipStatusLabel} action={t("member.viewVipPackages")} href="/packages#vip" />
+      <AccountStatCard icon={WalletCards} value={summary?.credits.balance.availableUnits ?? "—"} label={t("member.credits")} caption={creditsBalanceDetail} action={t("member.topUpCredits")} href="/packages" />
+      <AccountStatCard icon={Moon} value={summary?.vip.length ? "VIP" : "—"} label={t("member.vipEntitlement")} caption={vipStatusDetail} action={t("member.viewVipPackages")} href="/packages#vip" />
       <AccountStatCard icon={BookOpen} value={summary?.counts.readings ?? "—"} label={t("member.readingHistory")} caption={t("member.activityText")} action={t("member.openHistory")} href="/journal?tab=saved" />
       <AccountStatCard icon={Share2} value={summary?.affiliate.conversions ?? "—"} label={t("member.openAffiliate")} caption={t("member.shareCount").replace("{value}", String(summary?.affiliate.conversions ?? 0))} action={t("member.openAffiliate")} href="/affiliate" />
     </section>
@@ -174,7 +179,7 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
     {loading && <p className="functional-status" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}{!loading && message && <p className="functional-status functional-status--error" role="status" aria-live="polite">{t("member.catalogError")}</p>}
     <div className="account-dashboard-grid account-bottom-grid">
       <section id="account-history" className="account-panel account-history-panel account-transactions-panel functional-history" aria-labelledby="account-history-title"><div className="account-panel-heading account-history-heading"><div><span className="account-dashboard-eyebrow">{t("member.accountTitle")}</span><h2 id="account-history-title">{t("member.transactions")}</h2><p>{t("member.activityText")}</p></div><label>{t("member.filterLabel")}<select value={kind} onChange={(event) => setKind(event.target.value as AccountHistoryKind)}><option value="all">{t("member.filterAll")}</option><option value="readings">{t("member.filterReadings")}</option><option value="shares">{t("member.filterShares")}</option><option value="orders">{t("member.filterOrders")}</option><option value="credits">{t("member.filterCredits")}</option><option value="affiliate">{t("member.filterAffiliate")}</option></select></label></div>{!loading && !message && items.length === 0 && <p className="functional-status">{t("member.activityEmpty")}</p>}{!loading && !message && items.length > 0 && <div className="functional-history-list">{items.map((item) => <HistoryRow item={item} locale={locale} t={t} key={item.id} />)}</div>}{nextCursor && <button className="button functional-more" type="button" onClick={() => void loadMore()} disabled={loadingMore}>{loadingMore ? t("member.loadingMore") : t("member.loadMore")}</button>}</section>
-      <section className="account-panel account-security-panel" aria-labelledby="account-security-title"><div className="account-panel-heading"><div><span className="account-dashboard-eyebrow">{t("member.security")}</span><h2 id="account-security-title">{t("member.security")}</h2></div><KeyRound size={20} aria-hidden="true" /></div><div className="account-security-list"><Link className="account-security-item" href="/profile"><span className="account-quick-icon"><UserRound size={18} aria-hidden="true" /></span><span><strong>{t("header.profile")}</strong><small>{t("member.accountText")}</small></span><ArrowRight size={15} aria-hidden="true" /></Link><Link className="account-security-item" href="/profile#security"><span className="account-quick-icon"><KeyRound size={18} aria-hidden="true" /></span><span><strong>{t("member.vipEntitlement")}</strong><small>{vipStatusLabel}</small></span><ArrowRight size={15} aria-hidden="true" /></Link><div className="account-security-item"><span className="account-quick-icon"><Globe2 size={18} aria-hidden="true" /></span><span><strong>{t("common.language")}</strong><small>{locale === "vi" ? t("common.vietnamese") : t("common.english")}</small></span></div><button className="account-security-item account-security-item--button" type="button" onClick={() => void logout()} disabled={loggingOut}><span className="account-quick-icon"><LogOut size={18} aria-hidden="true" /></span><span><strong>{t("auth.logout")}</strong><small>{loggingOut ? t("member.statusLoading") : t("member.accountText")}</small></span><ArrowRight size={15} aria-hidden="true" /></button></div></section>
+      <section id="account-security" className="account-panel account-security-panel" aria-labelledby="account-security-title"><div className="account-panel-heading"><div><span className="account-dashboard-eyebrow">{t("member.security")}</span><h2 id="account-security-title">{t("member.security")}</h2></div><KeyRound size={20} aria-hidden="true" /></div><div className="account-security-list"><Link className="account-security-item" href="/profile"><span className="account-quick-icon"><UserRound size={18} aria-hidden="true" /></span><span><strong>{t("header.profile")}</strong><small>{t("member.accountText")}</small></span><ArrowRight size={15} aria-hidden="true" /></Link><Link className="account-security-item" href="/account#account-security"><span className="account-quick-icon"><KeyRound size={18} aria-hidden="true" /></span><span><strong>{t("member.vipEntitlement")}</strong><small>{vipStatusDetail}</small></span><ArrowRight size={15} aria-hidden="true" /></Link><div className="account-security-item"><span className="account-quick-icon"><Globe2 size={18} aria-hidden="true" /></span><span><strong>{t("common.language")}</strong><small>{locale === "vi" ? t("common.vietnamese") : t("common.english")}</small></span></div><button className="account-security-item account-security-item--button" type="button" onClick={() => void logout()} disabled={loggingOut}><span className="account-quick-icon"><LogOut size={18} aria-hidden="true" /></span><span><strong>{t("auth.logout")}</strong><small>{loggingOut ? t("member.statusLoading") : t("member.accountText")}</small></span><ArrowRight size={15} aria-hidden="true" /></button></div></section>
     </div>
   </div>;
 }

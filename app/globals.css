@@ -1961,7 +1961,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @keyframes room-reading-result-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:768px){
-  .room-page.has-interpretation .room-reading-panel-shell{top:56px;top:calc(56px + env(safe-area-inset-top));}
+  .room-page.has-interpretation .room-reading-panel-shell{top:64px;top:calc(64px + env(safe-area-inset-top));}
   .room-reading-panel-shell .reading-panel__scroll{padding-inline:clamp(14px,5vw,24px);padding-bottom:calc(94px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(94px + env(safe-area-inset-bottom));}
   .room-reading-panel-shell .reading-panel__actions{padding-inline:clamp(14px,5vw,24px);padding-bottom:max(14px,env(safe-area-inset-bottom));}
   .room-reading-panel-shell .reading-spread{padding-top:24px;padding-bottom:34px;}
@@ -2098,7 +2098,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       .membership-editorial{position:absolute;z-index:1}
       .membership-editorial-left{top:-43px;left:-24px;width:190px}
       .membership-editorial-right{top:205px;right:-16px;width:130px}
-      .membership-package-grid{max-width:920px;margin:0 auto;gap:14px}
+      .membership-package-grid{max-width:920px;margin:0 auto;gap:16px}
       .membership-package-card{padding:23px 14px 18px}
       .membership-journey{gap:10px;padding:20px 25px}
       .membership-journey .membership-eyebrow{display:none}

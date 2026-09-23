@@ -67,6 +67,13 @@ test("final fidelity uses server truth instead of owner screenshot demo values",
   assert.match(affiliate, /\/api\/affiliate\/dashboard/);
   assert.match(account, /\/api\/account\/summary/);
   assert.match(account, /\/api\/account\/history/);
+  assert.match(account, /creditsReservedLabel/);
+  assert.match(account, /creditsTotalLabel/);
+  assert.match(account, /activeUntil/);
+  assert.match(account, /recentItems/);
+  assert.match(account, /kind=readings&limit=3/);
+  assert.match(account, /id="account-security"/);
+  assert.match(account, /\/account#account-security/);
   for (const source of [affiliate, account]) {
     for (const literal of ["96", "1.245.000", "320.000", "4.860.000", "THANH123"]) {
       assert.doesNotMatch(source, new RegExp(literal.replaceAll(".", "\\.")), literal);
@@ -85,6 +92,7 @@ test("final desktop composition has the target visual weight and mobile safety h
   assert.match(styles, /\.membership-page\{[^}]*gap:14px/);
   assert.match(styles, /\.membership-balance-row\{[^}]*height:0/);
   assert.match(styles, /\.membership-package-grid\{[^}]*max-width:920px/);
+  assert.match(styles, /@media\(min-width:1181px\)[\s\S]*\.membership-package-grid\{max-width:920px;margin:0 auto;gap:16px\}/);
   assert.match(styles, /\.membership-journey\{[^}]*gap:10px/);
   assert.match(styles, /\.membership-footer\{[^}]*min-height:64px/);
   assert.match(styles, /\.affiliate-kpi-grid\{[^}]*gap:14px/);
@@ -96,6 +104,7 @@ test("final desktop composition has the target visual weight and mobile safety h
   assert.match(styles, /\.site-shell\.affiliate-shell[^}]*\.main\{[^}]*padding:16px 32px 88px 88px/);
   assert.match(styles, /\.site-shell\.account-shell \.account-security-list\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)/);
   assert.match(styles, /\.room-reading-panel-shell \.reading-spread\{[^}]*max-width:1320px/);
+  assert.match(styles, /@media\(max-width:768px\)[\s\S]*\.room-page\.has-interpretation \.room-reading-panel-shell\{top:64px/);
   for (const breakpoint of ["max-width:768px", "max-width:700px", "max-width:420px", "max-width:400px"]) {
     assert.match(styles, new RegExp(`@media\\(${breakpoint}\\)`), breakpoint);
   }
