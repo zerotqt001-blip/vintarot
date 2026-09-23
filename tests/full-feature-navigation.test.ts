@@ -17,6 +17,8 @@ test("full-feature commerce routes expose the existing owner-scoped contracts", 
   const checkout = source("app/checkout/page.tsx");
   const affiliate = source("app/affiliate/page.tsx");
   const commerce = source("app/commerce/commerce-pages.tsx");
+  const affiliateDashboard = source("components/affiliate/affiliate-dashboard.tsx");
+  const account = source("components/account/account-history.tsx");
 
   assert.match(commerce, /\/api\/packages/);
   assert.match(commerce, /\/checkout\?package=/);
@@ -27,15 +29,18 @@ test("full-feature commerce routes expose the existing owner-scoped contracts", 
   assert.match(commerce, /checkoutReturnPath\(packageId\)/);
   assert.match(commerce, /setIdempotencyKey\(createCheckoutIdempotencyKey\(\)\)/);
   assert.match(commerce, /\/api\/account\/summary/);
-  assert.match(commerce, /\/api\/account\/history\?kind=affiliate/);
-  assert.match(commerce, /auth\?return_to=\/affiliate/);
+  assert.match(account, /\/api\/account\/history/);
+  assert.match(account, /initialKind/);
+  assert.match(affiliateDashboard, /auth\?return_to=\/affiliate/);
+  assert.match(affiliateDashboard, /\/api\/affiliate\/policy/);
+  assert.match(affiliateDashboard, /\/api\/affiliate\/dashboard/);
 
-  for (const page of [packages, checkout, affiliate, commerce]) {
+  for (const page of [packages, checkout, affiliate, commerce, affiliateDashboard, account]) {
     assert.doesNotMatch(page, /SEPAY_SECRET_KEY|NATAROT_PII_KEY|secretKey|token_hash|reading_payload/);
   }
 });
 
 test("account history provides minimal links to the owner-testable feature surfaces", () => {
   const account = source("components/account/account-history.tsx");
-  for (const destination of ["/packages", "/affiliate", "/admin"]) assert.match(account, new RegExp(destination.replaceAll("/", "\\/")), destination);
+  for (const destination of ["/packages", "/affiliate", "/profile"]) assert.match(account, new RegExp(destination.replaceAll("/", "\\/")), destination);
 });

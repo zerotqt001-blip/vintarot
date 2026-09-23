@@ -2,11 +2,15 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
-const pages = readFileSync(`${root}/app/pages.tsx`, "utf8");
-const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
-const styles = readFileSync(`${root}/app/globals.css`, "utf8");
-const translations = readFileSync(`${root}/lib/i18n.ts`, "utf8");
+const pages = readFileSync(new URL("../app/pages.tsx", import.meta.url), "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/natarot-header.tsx",
+  "../components/shell/natarot-sidebar.tsx",
+  "../components/shell/natarot-footer.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+const translations = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
 test("Practice V1 keeps the target shell and existing interaction contracts", () => {
   for (const marker of [
@@ -18,7 +22,7 @@ test("Practice V1 keeps the target shell and existing interaction contracts", ()
   ]) assert.match(pages + shell + styles, new RegExp(marker));
 
   for (const marker of [
-    "practiceNav",
+    "practice-v1-icon-button",
     "header.search",
     "header.theme",
     "nav.drawNow",

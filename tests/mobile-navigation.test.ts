@@ -2,12 +2,16 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/natarot-header.tsx",
+  "../components/shell/natarot-sidebar.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("mobile primary navigation exposes readable labels and preserves Room's dedicated controls", () => {
-  assert.match(shell, /const isRoom = path === "\/room";/);
-  assert.match(shell, /isRoom \? "site-shell room-shell"/);
+  assert.match(shell, /path === "\/room"/);
+  assert.match(shell, /variant === "immersive"[\s\S]*"site-shell room-shell"/);
   assert.match(shell, /className="mobile-nav-label">\{t\(key\)\}<\/span>/);
 });
 

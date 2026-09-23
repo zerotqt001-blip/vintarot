@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Globe2, HelpCircle, Heart, ShoppingBag, Star, UserRound, Gift } from "lucide-react";
+import Link from "next/link";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import ReferralCapture from "@/components/affiliate/referral-capture";
@@ -27,7 +28,7 @@ function HomeContent({ t }: { t: Translator }) {
     <h1 id="home-heading">{t("home.hello")}</h1>
     <h2>{t("home.start")}</h2>
     <p className="home-intro">{t("home.intro")}</p>
-    <a className="home-draw-cta" href="/create" aria-label={t("home.drawNow")}><Star size={39} strokeWidth={1.2} /><span>{t("home.drawNow")}</span><ArrowRight size={26} strokeWidth={1.3} /><span className="home-ritual-compat" aria-hidden="true"><ArcLabel id="home-ritual-arc" className="ritual-label" curve="left" text={t("home.drawNow")} /></span></a>
+    <Link className="home-draw-cta" href="/create" aria-label={t("home.drawNow")}><Star size={39} strokeWidth={1.2} /><span>{t("home.drawNow")}</span><ArrowRight size={26} strokeWidth={1.3} /><span className="home-ritual-compat" aria-hidden="true"><ArcLabel id="home-ritual-arc" className="ritual-label" curve="left" text={t("home.drawNow")} /></span></Link>
     <div className="home-value-props" aria-label={t("home.valuesLabel")}>
       <div className="home-value-item"><span className="home-value-icon"><Globe2 size={26} strokeWidth={1.25} /></span><span>{t("home.valueSelf")}</span></div>
       <span className="home-value-divider" aria-hidden="true" />
@@ -138,17 +139,17 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
       <NaTarotHeader path={path} variant={variant} t={t} user={user} profileHref={profileHref} accountHref={accountHref} theme={theme} onTheme={toggleTheme} onModal={openModal} onSearch={focusGuidebookSearch} />
       {showCommerceAccess && <>
         <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
-          {commerceNav.map(([key, Icon, href]) => <a className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></a>)}
+          {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}
         </nav>
         <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
-          {commerceNav.map(([key, Icon, href]) => <a className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></a>)}
+          {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}
         </nav>
       </>}
       <NaTarotSidebar path={path} variant={variant} t={t} user={user} accountHref={accountHref} />
       <main className="main">{children || (isHome ? <HomeContent t={t} /> : null)}</main>
       <NaTarotFooter variant={variant} t={t} />
       {!isHome && variant !== "library" && variant !== "practice" && variant !== "membership" && <button className="help" aria-label={t("header.help")} onClick={() => openModal("help")}><HelpCircle size={23} strokeWidth={1} /></button>}
-      <Dialog open={Boolean(modal)} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><a href="/guidebook" className="button">{t("home.guidebook")}</a></DialogContent></Dialog>
+      <Dialog open={Boolean(modal)} onOpenChange={() => setModal("")}><DialogContent><DialogTitle>{modalTitle}</DialogTitle><DialogDescription>{modalDescription}</DialogDescription><Link href="/guidebook" className="button">{t("home.guidebook")}</Link></DialogContent></Dialog>
     </div>
   </SidebarProvider>;
 }

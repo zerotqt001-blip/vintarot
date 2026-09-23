@@ -2,7 +2,11 @@ import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const shellSource = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const shellSource = [
+  "../components/shell/natarot-header.tsx",
+  "../components/shell/natarot-sidebar.tsx",
+  "../components/shell/natarot-footer.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
 const pagesSource = readFileSync(new URL("../app/pages.tsx", import.meta.url), "utf8");
 const i18nSource = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 

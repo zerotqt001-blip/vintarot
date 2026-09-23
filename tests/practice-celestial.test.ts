@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
-const pages = readFileSync(`${root}/app/pages.tsx`, "utf8");
-const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
-const styles = readFileSync(`${root}/app/globals.css`, "utf8");
+const pages = readFileSync(new URL("../app/pages.tsx", import.meta.url), "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/celestial-background.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("practice page uses the Celestial sanctuary composition without replacing its actions", () => {
   for (const className of [

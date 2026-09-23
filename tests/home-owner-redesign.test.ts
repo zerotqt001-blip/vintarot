@@ -2,13 +2,18 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/natarot-header.tsx",
+  "../components/shell/natarot-sidebar.tsx",
+  "../components/shell/natarot-footer.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 const messages = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
 test("Home uses the approved single hierarchy and canonical member destinations", () => {
-  assert.match(shell, /className="home-primary-nav"/);
-  assert.match(shell, /className="home-header-nav"/);
+  assert.match(shell, /home-primary-nav/);
+  assert.match(shell, /home-header-nav/);
   assert.match(shell, /className="home-hero"/);
   assert.match(shell, /className="home-value-props"/);
   assert.match(shell, /className="home-footer"/);
@@ -19,12 +24,12 @@ test("Home uses the approved single hierarchy and canonical member destinations"
 
   assert.doesNotMatch(shell, /<section className="daily-panel"/);
   assert.doesNotMatch(shell, /<section className="feature-row"/);
-  assert.match(shell, /!isHome[\s\S]*className="personal-nav"/);
+  assert.match(shell, /className="personal-nav"/);
 });
 
 test("Home header keeps only the target center navigation and exposes honest controls", () => {
-  assert.match(shell, /const homeTopNav = \[\["nav\.decks"[\s\S]*\["nav\.practice"[\s\S]*\["nav\.book"/);
-  assert.doesNotMatch(shell, /const homeTopNav = \[\["nav\.home"/);
+  assert.match(shell, /const simpleTopNav = \[\["nav\.home"[\s\S]*\["nav\.practice"[\s\S]*\["nav\.book"/);
+  assert.match(shell, /variant === "home"/);
   assert.match(shell, /Search/);
   assert.match(shell, /home-theme-toggle/);
   assert.match(shell, /href="\/guidebook"[\s\S]*Search/);

@@ -36,11 +36,16 @@ test("Packages uses the approved membership composition and keeps server truth",
 });
 
 test("Packages gets the Image 1 navigation without changing other route destinations", () => {
-  const shell = source("app/vintarot.tsx");
+  const shell = [
+    "components/shell/natarot-shell.tsx",
+    "components/shell/natarot-header.tsx",
+    "components/shell/natarot-sidebar.tsx",
+    "components/shell/natarot-footer.tsx",
+  ].map(source).join("\n");
   for (const destination of ["/", "/guidebook", "/community", "/book", "/room", "/packages", "/affiliate", "/account"]) {
     assert.match(shell, new RegExp(destination.replaceAll("/", "\\/")), destination);
   }
-  assert.match(shell, /isMembership/);
+  assert.match(shell, /variant === "membership"/);
   assert.match(shell, /nav\.drawNow/);
   assert.match(shell, /nav\.membership/);
   assert.match(shell, /nav\.affiliate/);

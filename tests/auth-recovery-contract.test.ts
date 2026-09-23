@@ -28,7 +28,7 @@ test("member auth exposes the public page and API entrypoints", () => {
 });
 
 test("logged-out profile entrypoints resolve through the member auth screen", () => {
-  const shell = readFileSync(resolve(root, "app/vintarot.tsx"), "utf8");
+  const shell = readFileSync(resolve(root, "components/shell/natarot-shell.tsx"), "utf8");
   const room = readFileSync(resolve(root, "app/room/room.tsx"), "utf8");
 
   assert.match(shell, /profileHref\s*=\s*user\s*\?\s*[\s\S]*?\/auth\?return_to=\/profile/);

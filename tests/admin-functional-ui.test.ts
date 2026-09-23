@@ -51,7 +51,12 @@ test("backend completion exposes only a small functional UI surface", () => {
 });
 
 test("account and admin links are reachable from the existing shell without changing brand destinations", () => {
-  const shell = source("app/vintarot.tsx");
+  const shell = [
+    "components/shell/natarot-shell.tsx",
+    "components/shell/natarot-header.tsx",
+    "components/shell/natarot-sidebar.tsx",
+    "components/shell/natarot-footer.tsx",
+  ].map(source).join("\n");
   const adminPage = source("app/admin/page.tsx");
   const accountPage = source("app/account/page.tsx");
   assert.match(shell, /ReferralCapture/);
