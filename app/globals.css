@@ -1446,11 +1446,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .affiliate-shell .main{position:relative;z-index:1;width:calc(100% - 264px);max-width:none;margin:64px 0 50px 232px;padding:clamp(28px,3.6vw,52px) clamp(22px,3.2vw,52px) 88px;color:var(--affiliate-text)}
 .affiliate-shell .main> .affiliate-dashboard{width:min(100%,1360px);margin:0 auto}
 .affiliate-shell .affiliate-dashboard{display:grid;gap:14px;min-width:0}
-.affiliate-dashboard__hero{position:relative;display:grid;place-items:center;min-height:194px;padding:12px 22px 18px;overflow:hidden;text-align:center}
-.affiliate-hero-copy{position:relative;z-index:1;display:grid;justify-items:center;gap:12px;max-width:920px}
+.affiliate-dashboard__hero{position:relative;display:grid;place-items:center;min-height:158px;padding:10px 22px 14px;overflow:hidden;text-align:center}
+.affiliate-hero-copy{position:relative;z-index:1;display:grid;justify-items:center;gap:9px;max-width:min(1200px,100%)}
 .affiliate-hero-kicker{color:var(--affiliate-gold-light);font-size:10px;font-weight:600;letter-spacing:.22em;line-height:1.4}
-.affiliate-hero-copy h1{max-width:21ch;color:var(--affiliate-ivory);font-size:clamp(42px,4.3vw,66px);letter-spacing:-.045em;line-height:.98;text-wrap:balance;text-shadow:0 9px 28px rgba(0,0,0,.26)}
-.affiliate-hero-copy>p{max-width:66ch;color:var(--affiliate-muted);font-size:13px;line-height:1.65}
+.affiliate-hero-copy h1{max-width:none;color:var(--affiliate-ivory);font-size:clamp(40px,3.2vw,53px);letter-spacing:-.045em;line-height:1.02;text-wrap:balance;text-shadow:0 9px 28px rgba(0,0,0,.26)}
+.affiliate-hero-copy>p{max-width:78ch;color:var(--affiliate-muted);font-size:13px;line-height:1.55}
 .affiliate-hero-status{display:flex;align-items:center;gap:8px;color:var(--affiliate-gold-light);font-size:11px;letter-spacing:.04em}
 .affiliate-status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--affiliate-subtle);box-shadow:0 0 0 3px rgba(232,225,214,.07)}
 .affiliate-status-dot--active,.affiliate-status-dot--eligible{background:#72c797;box-shadow:0 0 0 3px rgba(114,199,151,.12)}

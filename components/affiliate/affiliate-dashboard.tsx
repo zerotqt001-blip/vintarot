@@ -205,7 +205,7 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   }, [authenticated]);
 
   const activePolicy = dashboard?.policy ?? policy;
-  const isReady = Boolean(dashboard?.profile?.status === "ACTIVE" && activePolicy);
+  const hasActiveAffiliateProfile = dashboard?.profile?.status === "ACTIVE";
   const currency = dashboard?.income.currency ?? activePolicy?.currency ?? null;
   const kpis = useMemo(() => dashboard ? [
     { icon: Sparkles, label: t("affiliate.currentCommission"), value: rateLabel(dashboard.progress?.currentTier?.rateBps ?? null, locale), note: dashboard.progress?.currentTier ? t("affiliate.serverPolicyRate") : t("affiliate.notAvailable") },
@@ -217,13 +217,13 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   if (loading) return <LoadingState label={t("affiliate.loading")} />;
   return <div className="affiliate-dashboard">
     <section className="affiliate-dashboard__hero">
-      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{dashboard?.profile?.status === "ACTIVE" && <div className="affiliate-hero-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.active")} · {t("affiliate.serverScoped")}</div>}{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
+      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
       <div className="affiliate-hero-orbit" aria-hidden="true"><div className="affiliate-orbit-ring affiliate-orbit-ring--outer" /><div className="affiliate-orbit-ring affiliate-orbit-ring--inner" /><Sparkles size={42} strokeWidth={1} /><span>✦</span><span>✧</span></div>
     </section>
-    {dashboard && isReady ? <>
+    {dashboard && hasActiveAffiliateProfile ? <>
       <section className="affiliate-kpi-grid" aria-label={t("affiliate.dashboardEyebrow")}>{kpis.map((item) => <StatCard key={item.label} {...item} />)}</section>
       <div className="affiliate-dashboard-grid"><div className="affiliate-dashboard-grid__main"><TierPanel dashboard={dashboard} policy={activePolicy} t={t} locale={locale} /><IncomePanel dashboard={dashboard} currency={currency} t={t} locale={locale} /></div><div className="affiliate-dashboard-grid__side"><ReferralLinkPanel dashboard={dashboard} t={t} /><ReferralHistoryPanel dashboard={dashboard} t={t} locale={locale} /></div></div>
-      <div className="affiliate-lower-grid"><HowItWorks t={t} /><PolicyPanel policy={activePolicy!} t={t} locale={locale} /></div>
+      <div className="affiliate-lower-grid"><HowItWorks t={t} />{activePolicy ? <PolicyPanel policy={activePolicy} t={t} locale={locale} /> : <EmptyPolicyPanel t={t} />}</div>
     </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} /><HowItWorks t={t} /></div>}
   </div>;
 }
