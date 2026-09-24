@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { encryptField, keyringFromEnvironment } from "../security/encryption";
 import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds } from "./policy";
 import { findReferralAttribution, findReferralCode, getAffiliateConversion, hashReferralCode, memberIdFromOwner, ownerKey } from "./repository";
+import { scopedAffiliateLedgerIdempotencyKeys } from "./idempotency";
 import type { AffiliateConversion, AffiliateHistoryItem, AffiliateOwner, AffiliateProfileStatus, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
 
 export type { AffiliateConversion, AffiliateHistoryItem, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
@@ -28,17 +29,14 @@ async function loadConversion(database: D1Database, id: string): Promise<Affilia
   return getAffiliateConversion(database, { id }) as Promise<AffiliateConversion | null>;
 }
 
-function scopedLedgerKey(entryType: "eligibility" | "reversal" | "adjustment", conversionId: string, rawKey: string): { key: string; legacyKey: string } {
+function scopedLedgerKey(entryType: "eligibility" | "reversal" | "adjustment", conversionId: string, rawKey: string): { key: string; previousScopedKey: string; legacyKey: string } {
   const normalized = requireBounded(rawKey, 200, `Invalid ${entryType} key`);
-  return {
-    key: `affiliate:${entryType}:${conversionId}:${normalized}`,
-    legacyKey: `affiliate:${entryType}:${normalized}`,
-  };
+  return scopedAffiliateLedgerIdempotencyKeys(entryType, conversionId, normalized);
 }
 
-async function hasLedgerEntry(database: D1Database, conversionId: string, entryType: "ELIGIBILITY" | "REVERSAL" | "ADJUSTMENT", keys: { key: string; legacyKey: string }): Promise<boolean> {
-  const row = await database.prepare("SELECT 1 AS present FROM affiliate_commission_ledger WHERE conversion_id=? AND entry_type=? AND idempotency_key IN (?, ?) LIMIT 1")
-    .bind(conversionId, entryType, keys.key, keys.legacyKey)
+async function hasLedgerEntry(database: D1Database, conversionId: string, entryType: "ELIGIBILITY" | "REVERSAL" | "ADJUSTMENT", keys: { key: string; previousScopedKey: string; legacyKey: string }): Promise<boolean> {
+  const row = await database.prepare("SELECT 1 AS present FROM affiliate_commission_ledger WHERE conversion_id=? AND entry_type=? AND idempotency_key IN (?, ?, ?) LIMIT 1")
+    .bind(conversionId, entryType, keys.key, keys.previousScopedKey, keys.legacyKey)
     .first<{ present: number }>();
   return Boolean(row);
 }

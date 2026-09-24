@@ -12,6 +12,10 @@ import { ReflectionPrompts } from "./reflection-prompts";
 import { TarotEvidence } from "./tarot-evidence";
 import type { ReadingPanelProps } from "./reading-types";
 
+function ReadingResultHeader({ session, t }: Pick<ReadingPanelProps, "session" | "t">) {
+  return <div className="reading-result-header"><ReadingHeader session={session} t={t} /></div>;
+}
+
 export function ReadingPanel({
   reading,
   locale,
@@ -39,9 +43,7 @@ export function ReadingPanel({
       <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {reading ? (
           <div className="reading-result-layout">
-            <div className="reading-result-header">
-              <ReadingHeader session={session} t={t} />
-            </div>
+            <ReadingResultHeader session={session} t={t} />
             {reading.cardEvidence.length > 0 && (
               <div className="reading-result-spread">
                 <ReadingSpread
@@ -101,19 +103,26 @@ export function ReadingPanel({
               </div>
             )}
           </div>
-        ) : isLoading ? (
-          <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite" aria-busy="true">
-            <p className="text-sm text-antique-gold">{t("reading.loading")}</p>
-          </div>
-        ) : error ? (
-          <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite">
-            <p className="text-sm leading-6 text-rose-200" role="alert">{error}</p>
-          </div>
         ) : (
-          <section className="reading-empty px-5 py-8 sm:px-7" aria-labelledby="reading-empty-title">
-            <h3 id="reading-empty-title" className="text-lg font-medium text-ivory">{t("reading.emptyTitle")}</h3>
-            <p className="mt-3 max-w-[65ch] text-sm leading-7 text-ivory/70">{t("reading.emptyDescription")}</p>
-          </section>
+          <>
+            <div className="reading-result-layout reading-result-layout--context">
+              <ReadingResultHeader session={session} t={t} />
+            </div>
+            {isLoading ? (
+              <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite" aria-busy="true">
+                <p className="text-sm text-antique-gold">{t("reading.loading")}</p>
+              </div>
+            ) : error ? (
+              <div className="reading-status px-5 pt-8 sm:px-7" aria-live="polite">
+                <p className="text-sm leading-6 text-rose-200" role="alert">{error}</p>
+              </div>
+            ) : (
+              <section className="reading-empty px-5 py-8 sm:px-7" aria-labelledby="reading-empty-title">
+                <h3 id="reading-empty-title" className="text-lg font-medium text-ivory">{t("reading.emptyTitle")}</h3>
+                <p className="mt-3 max-w-[65ch] text-sm leading-7 text-ivory/70">{t("reading.emptyDescription")}</p>
+              </section>
+            )}
+          </>
         )}
       </div>
       <footer className="reading-panel__actions flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-9">

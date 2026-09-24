@@ -25,9 +25,10 @@
 
 **Files:** No application files.
 
-- [x] Confirm the live release is `affiliate-referral-3405b75-20260924T113918Z`, health is `ok`, Affiliate policy is inactive, and the three release references are distinct.
-- [x] Confirm `3405b75` is an ancestor of Affiliate branch `f95e207`; the UI V2 branch is `fc39e60` and the two source worktrees are clean.
-- [x] Confirm the merge base is `e5474d3` and the known conflict set is exactly `app/globals.css`, `docs/PROJECT_STATE.md`, and `tests/member-affiliate-ui-v1.test.ts`; inspect overlap in `lib/i18n.ts` and `tests/affiliate-dashboard-redesign.test.ts`.
+- [x] Recheck the live release rather than relying on the earlier audit: current is `create-nav-e326acd-20260924T223927Z`, service and public health are healthy, policy API is `null`/DRAFT, and `current`, `previous-1`, and `previous-2` are distinct.
+- [x] Confirm exact live source `e326acda1e2437642bdbc0a656990bf6ffc33508`, Affiliate branch `f95e207`, and UI V2 branch `fc39e60` share integration base `e5474d3`; the production release had advanced after the first baseline check, so its exact commit was explicitly merged into this integration.
+- [x] Inspect live source and production SQLite read-only: the current source tree omitted the public-referral-link module/migration file, while migration `0009_affiliate_referral_links.sql` remains applied exactly once; integrity is `ok`, FK violations are zero, referral/attribution/conversion/commission rows are zero, there are two Affiliate profiles, and policy version 1 remains `DRAFT` with its existing values unchanged.
+- [x] Confirm the original Affiliate/UI V2 conflict set (`app/globals.css`, `docs/PROJECT_STATE.md`, `tests/member-affiliate-ui-v1.test.ts`) plus the later live-production conflict (`app/vintarot.tsx`); inspect localization, dashboard tests, production Room/Create navigation changes, and the canonical V2 shell.
 - [x] Install locked dependencies in this isolated worktree and capture the Affiliate baseline full-suite result (`624/624`).
 
 ### Task 2: Merge UI V2 and resolve only integration conflicts
@@ -38,19 +39,20 @@
 - Modify: `tests/member-affiliate-ui-v1.test.ts`
 - Review: `lib/i18n.ts`, `tests/affiliate-dashboard-redesign.test.ts`, and the complete UI V2 diff.
 
-- [x] Merge `origin/codex/natarot-final-ui-correction-v2` into the integration branch.
+- [x] Merge `origin/codex/natarot-final-ui-correction-v2` and exact live production commit `e326acda1e2437642bdbc0a656990bf6ffc33508` into the Affiliate-based integration branch.
 - [x] Keep the V2 shared shell/style refactor intact and retain the Affiliate referral styles exactly once in the same stylesheet.
 - [x] Combine the V2 shell/account assertions with the Affiliate owner-scoped referral/policy-gate assertions in the member/Affiliate regression test.
 - [x] Preserve both branch histories in `docs/PROJECT_STATE.md`, with production claims tied to the verified release and V2 verification clearly marked as pending until measured.
 - [x] Review all changed-file and CSS selector diffs for duplicate shell components, duplicated rules, lost referral behavior, or unrequested policy changes.
+- [x] Port live `/create` Home-rail parity into the existing V2 canonical sidebar instead of restoring the obsolete monolithic shell; retain live Room auto-hide and responsive rail styles with V2 label classes and sufficient cascade priority.
 
 ### Task 3: Verify integrated behavior
 
 **Files:** Tests already present on both source branches; add a regression test only if a concrete integration defect is found.
 
-- [x] Run focused UI V2, Affiliate referral, Affiliate dashboard, policy gate, owner-scoping, attribution, commission-ledger/idempotency, and payment-verification tests (`63/63`).
-- [x] Run the full `npx tsx --test tests/*.test.ts` suite and record the complete exit status/count (`645/645`).
-- [x] Run `npx tsc --noEmit`, `npm run build`, changed-file ESLint, `git diff --check`, and production dependency audit (all pass).
+- [x] Run focused UI V2/Reading Result/navigation tests (`29/29`), Affiliate/service/route tests (`10/10`), and policy gate, owner-scoping, attribution, commission-ledger/idempotency, and payment-verification coverage.
+- [x] Run the full `npx tsx --test tests/*.test.ts` suite after the exact live-production merge and regression fixes (`649/649`).
+- [x] Run `npx tsc --noEmit`, `npm run build`, changed-file ESLint (0 errors; CSS ignored by ESLint configuration), and `npm audit --omit=dev --audit-level=high` (0 vulnerabilities).
 - [x] Verify test fixtures exercise real application boundaries and do not create or imply production test data.
 
 ### Task 4: Production QA and screenshot evidence

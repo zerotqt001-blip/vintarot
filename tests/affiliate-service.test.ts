@@ -3,7 +3,9 @@ import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { createAuditService } from "../lib/audit/service";
 import { adjustAffiliateCommission, captureAttribution, createAffiliateConversion, getAffiliateSummary, listAffiliateHistory, markCommissionEligible, reverseAffiliateCommission, type VerifiedFulfillmentEvent } from "../lib/affiliate/service";
+import { affiliateAdjustmentAuditIdempotencyKey } from "../lib/affiliate/idempotency";
 import { hashReferralCode } from "../lib/affiliate/repository";
 import { createPendingOrder, recordVerifiedPayment } from "../lib/orders";
 import { createCreditStore } from "../lib/credits/repository";
@@ -188,6 +190,45 @@ test("commission mutation idempotency is scoped to its conversion", async () => 
   assert.equal(entries.filter((entry) => entry.entry_type === "ELIGIBILITY").length, 2);
   assert.equal(entries.filter((entry) => entry.entry_type === "REVERSAL").length, 2);
   assert.equal(entries.filter((entry) => entry.entry_type === "ADJUSTMENT").length, 2);
+  assert.equal((await loadConversionForTest(fixture, first!.id))?.status, "REVERSED");
+  assert.equal((await loadConversionForTest(fixture, second!.id))?.status, "REVERSED");
+
+  const audit = createAuditService(fixture.database, () => fixture.now.value);
+  const firstAuditKey = await affiliateAdjustmentAuditIdempotencyKey(first!.id, "bar:baz");
+  const secondAuditKey = await affiliateAdjustmentAuditIdempotencyKey(second!.id, "baz");
+  assert.notEqual(firstAuditKey, secondAuditKey);
+  const firstAudit = await audit.append({ actorKind: "member", actorId: "admin-a", action: "affiliate.commission.adjusted", targetType: "affiliate_conversion", targetId: first!.id, reason: "verified adjustment", idempotencyKey: firstAuditKey });
+  await audit.append({ actorKind: "member", actorId: "admin-a", action: "affiliate.commission.adjusted", targetType: "affiliate_conversion", targetId: second!.id, reason: "verified adjustment", idempotencyKey: secondAuditKey });
+  const duplicateAudit = await audit.append({ actorKind: "member", actorId: "admin-a", action: "affiliate.commission.adjusted", targetType: "affiliate_conversion", targetId: first!.id, reason: "verified adjustment", idempotencyKey: firstAuditKey });
+  assert.equal(duplicateAudit.id, firstAudit.id);
+  const auditTargets = fixture.sqlite.prepare("SELECT target_id FROM audit_events WHERE action='affiliate.commission.adjusted' ORDER BY target_id").all() as Array<{ target_id: string }>;
+  assert.deepEqual(auditTargets.map((row) => row.target_id), [first!.id, second!.id].sort());
+  fixture.sqlite.close();
+});
+
+test("commission mutation keys remain distinct when conversion IDs and keys contain delimiters", async () => {
+  const fixture = makeFixture();
+  await seedAffiliate(fixture.sqlite, "profile-a", "affiliate-a", "MOON-A");
+  await captureAttribution({ database: fixture.database, owner: buyerOwner, rawCode: "MOON-A", source: "query", now: fixture.now.value });
+
+  const firstEvent = await seedFulfilledOrder(fixture, "foo");
+  const secondEvent = await seedFulfilledOrder(fixture, "foo:bar");
+  const first = await createAffiliateConversion({ database: fixture.database, event: firstEvent });
+  const second = await createAffiliateConversion({ database: fixture.database, event: secondEvent });
+  assert.ok(first);
+  assert.ok(second);
+
+  await adjustAffiliateCommission({ database: fixture.database, conversionId: first!.id, direction: "CREDIT", amountMinor: 100, reason: "verified adjustment", idempotencyKey: "bar:baz", actorId: "admin-a" });
+  await adjustAffiliateCommission({ database: fixture.database, conversionId: second!.id, direction: "CREDIT", amountMinor: 100, reason: "verified adjustment", idempotencyKey: "baz", actorId: "admin-a" });
+  await markCommissionEligible({ database: fixture.database, conversionId: first!.id, idempotencyKey: "bar:baz", reason: "hold elapsed" });
+  await markCommissionEligible({ database: fixture.database, conversionId: second!.id, idempotencyKey: "baz", reason: "hold elapsed" });
+  await reverseAffiliateCommission({ database: fixture.database, conversionId: first!.id, idempotencyKey: "bar:baz", reason: "verified refund", actorId: "system" });
+  await reverseAffiliateCommission({ database: fixture.database, conversionId: second!.id, idempotencyKey: "baz", reason: "verified refund", actorId: "system" });
+
+  for (const entryType of ["ADJUSTMENT", "ELIGIBILITY", "REVERSAL"]) {
+    const rows = fixture.sqlite.prepare("SELECT conversion_id FROM affiliate_commission_ledger WHERE entry_type=? ORDER BY conversion_id").all(entryType) as Array<{ conversion_id: string }>;
+    assert.deepEqual(rows.map((row) => row.conversion_id), [first!.id, second!.id].sort(), `${entryType} entries should be recorded for both conversions`);
+  }
   assert.equal((await loadConversionForTest(fixture, first!.id))?.status, "REVERSED");
   assert.equal((await loadConversionForTest(fixture, second!.id))?.status, "REVERSED");
   fixture.sqlite.close();

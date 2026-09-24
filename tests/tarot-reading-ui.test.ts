@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { ReadingPanel } from "../components/reading/reading-panel";
 import { splitReadingParagraphs } from "../lib/reading-text";
 
 const panel = readFileSync(new URL("../components/reading/reading-panel.tsx", import.meta.url), "utf8");
@@ -30,8 +33,6 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.match(panel, /aria-live=["']polite["']/);
   assert.match(header, /<header/);
   assert.match(panel, /reading-panel__scroll/);
-  assert.match(panel, /\) : isLoading \?/);
-  assert.match(panel, /\) : error \?/);
   assert.match(panel, /deeperReading/);
   assert.match(panel, /reading\.personalInsights\.length > 0/);
   assert.match(panel, /reading\.reflectionPrompts\.length > 0/);
@@ -44,6 +45,31 @@ test("ReadingHeader makes the original question the reading title hierarchy", ()
   assert.match(header, /<h1 className="reading-header__question/);
   assert.match(header, /reading-header__meta/);
   assert.doesNotMatch(panel, /reading-question/);
+});
+
+test("ReadingPanel preserves the real question and spread context while loading, errored, or empty", () => {
+  const states = [
+    { isLoading: true, error: null },
+    { isLoading: false, error: "Reading could not be completed" },
+    { isLoading: false, error: null },
+  ];
+  for (const state of states) {
+    const markup = renderToStaticMarkup(createElement(ReadingPanel, {
+      reading: null,
+      locale: "vi",
+      session: { question: "Should I accept the new role?", spreadName: "Three-card spread", deckName: "Moonlight deck" },
+      artworkByReadingCardId: {},
+      t: (key) => key,
+      ...state,
+    }));
+    assert.match(markup, /reading-header__question/);
+    assert.match(markup, /Should I accept the new role\?/);
+    assert.match(markup, /Three-card spread/);
+    assert.match(markup, /Moonlight deck/);
+    if (state.isLoading) assert.match(markup, /reading\.loading/);
+    else if (state.error) assert.match(markup, /role="alert">Reading could not be completed/);
+    else assert.match(markup, /reading\.emptyTitle/);
+  }
 });
 
 test("DirectAnswer gives the first deterministic paragraph one editorial takeaway", () => {

@@ -42,7 +42,9 @@ test("Affiliate dashboard remains an authenticated owner-scoped no-store project
 
 test("Affiliate commission adjustment audit keys are conversion-scoped and legacy-aware", () => {
   const route = readFileSync(join(repoRoot, "app/api/admin/affiliate/route.ts"), "utf8");
-  assert.match(route, /digestToken\(JSON\.stringify\(\{\s*conversionId:\s*conversion\.id/);
+  const idempotency = readFileSync(join(repoRoot, "lib/affiliate/idempotency.ts"), "utf8");
+  assert.match(route, /affiliateAdjustmentAuditIdempotencyKey\(conversion\.id,\s*parsed\.data\.idempotency_key\)/);
+  assert.match(idempotency, /digestToken\(JSON\.stringify\(\{\s*conversionId,\s*idempotencyKey\s*\}\)\)/);
   assert.match(route, /legacyAuditKey/);
   assert.match(route, /SELECT target_id FROM audit_events[^]*bind\(legacyAuditKey\)/);
 });
