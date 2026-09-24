@@ -130,7 +130,7 @@ test("affiliate dashboard income buckets come from the verified commission ledge
 test("Affiliate target source preserves real-data boundaries and the approved shell direction", () => {
   const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
   const customer = source("lib/affiliate/customer.ts");
-  const shell = source("app/vintarot.tsx");
+  const shell = ["components/shell/natarot-shell.tsx", "components/shell/natarot-sidebar.tsx"].map(source).join("\n");
   const messages = source("lib/i18n.ts");
 
   assert.match(dashboard, /affiliate-dashboard/);
@@ -148,7 +148,7 @@ test("Affiliate target source preserves real-data boundaries and the approved sh
   assert.match(customer, /currentMonthMinor/);
   assert.match(customer, /confirmedMinor/);
   assert.match(customer, /pendingMinor/);
-  assert.match(shell, /const isAffiliate = path === "\/affiliate";/);
+  assert.match(shell, /path === "\/affiliate"/);
   assert.match(shell, /affiliate-shell/);
   assert.match(shell, /nav\.drawNow/);
   assert.doesNotMatch(shell, /isAffiliate[\s\S]{0,600}\+ Phòng/);
