@@ -40,6 +40,9 @@ function makeFixture() {
     "0005_natarot_share_persistence.sql",
     "0006_credits_vip.sql",
     "0007_backend_completion.sql",
+    "0007_sepay_commercial.sql",
+    "0008_credit_fulfillment_timestamp.sql",
+    "0009_affiliate_referral_links.sql",
   ]) sqlite.exec(readFileSync(join(repoRoot, "drizzle", migration), "utf8"));
   sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, 0, 'USER')").run("affiliate-owner", "affiliate-owner", "owner@example.test", "+84912345678", now, now);
   sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, 0, 'USER')").run("other-owner", "other-owner", "other@example.test", "+84987654321", now, now);
@@ -75,8 +78,11 @@ test("affiliate dashboard is owner-scoped and computes current tier from active 
   assert.equal(owner.progress?.currentTier?.tierCode, "BASE");
   assert.equal(owner.progress?.currentTier?.rateBps, 777);
   assert.equal(owner.progress?.nextTier?.tierCode, "NEXT");
-  assert.equal(owner.referralLink.available, false);
-  assert.equal(owner.referralLink.reason, "not_supported_by_current_backend");
+  assert.equal(owner.referralLink.available, true);
+  if (owner.referralLink.available) {
+    assert.match(owner.referralLink.code, /^NTR-[A-Z0-9-]{16,}$/);
+    assert.equal(owner.referralLink.url, `https://natarot.com/affiliate?ref=${encodeURIComponent(owner.referralLink.code)}`);
+  }
   assert.equal(foreign.profile, null);
   assert.equal(foreign.progress, null);
   assert.equal(foreign.summary.conversions, 0);

@@ -612,6 +612,7 @@ export const referralCodes = sqliteTable(
     id: text("id").primaryKey(),
     affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
     codeHash: text("code_hash").notNull(),
+    publicCode: text("public_code"),
     status: text("status").notNull().default("ACTIVE"),
     source: text("source"),
     createdAt: integer("created_at").notNull(),
@@ -619,6 +620,8 @@ export const referralCodes = sqliteTable(
   },
   (table) => [
     uniqueIndex("referral_codes_hash_unique").on(table.codeHash),
+    uniqueIndex("referral_codes_public_code_unique").on(table.publicCode).where(sql`${table.publicCode} IS NOT NULL`),
+    uniqueIndex("referral_codes_dashboard_profile_unique").on(table.affiliateProfileId).where(sql`${table.status} = 'ACTIVE' AND ${table.source} = 'natarot-dashboard-v1'`),
     index("referral_codes_profile_status_idx").on(table.affiliateProfileId, table.status, table.expiresAt),
   ],
 );

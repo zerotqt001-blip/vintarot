@@ -61,3 +61,9 @@ export type AffiliateSummary = {
 };
 
 export type AffiliateOwner = CreditOwner;
+
+export type AffiliateReferralLinkUnavailableReason = "not_eligible" | "policy_inactive" | "profile_inactive";
+
+export type AffiliateReferralLink =
+  | { available: false; reason: AffiliateReferralLinkUnavailableReason }
+  | { available: true; code: string; url: string; qrUrl: string; downloadName: string };

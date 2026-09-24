@@ -20,6 +20,7 @@ const routePaths = [
   "app/api/admin/affiliate/route.ts",
 ];
 const authenticatedBoundaryRoutes = ["app/api/affiliate/attribute/route.ts"];
+const ownerReadRoutes = ["app/api/affiliate/dashboard/route.ts"];
 
 function source(relativePath: string): string {
   return readFileSync(join(repoRoot, relativePath), "utf8");
@@ -66,6 +67,12 @@ test("all privileged mutation routes enforce origin, server permission, strict i
     assert.match(route, /noStoreResponse/, routePath);
     assert.match(route, /\.strict\(\)/, routePath);
     assert.doesNotMatch(route, /x-role|oai-authenticated-user|body\.owner/, routePath);
+  }
+  for (const routePath of ownerReadRoutes) {
+    const route = source(routePath);
+    assert.match(route, /requireMemberCreditOwner\(request, database\)/, routePath);
+    assert.match(route, /noStoreResponse/, routePath);
+    assert.doesNotMatch(route, /request\.json\(\)|body\.member|body\.profile|searchParams/, routePath);
   }
 
   const privateProjections = [
