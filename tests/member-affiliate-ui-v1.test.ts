@@ -31,12 +31,18 @@ test("member UI renders server catalog data without submitting authoritative pri
 
 test("Affiliate UI uses dynamic policy/dashboard data and has no fake payout action", () => {
   const commerce = source("app/commerce/commerce-pages.tsx");
+  const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
   assert.match(commerce, new RegExp("/api/affiliate/policy"));
   assert.match(commerce, new RegExp("/api/affiliate/dashboard"));
   assert.match(commerce, /referralLink/);
   assert.match(commerce, /currentTier/);
   assert.match(commerce, /commissionMinor/);
   assert.match(commerce, /not_supported_by_current_backend/);
+  assert.match(dashboard, /link\.code/);
+  assert.match(dashboard, /navigator\.clipboard/);
+  assert.match(dashboard, /navigator\.share/);
+  assert.match(dashboard, /download=/);
+  assert.match(dashboard, /link\.qrUrl/);
   assert.doesNotMatch(commerce, /withdraw|payout.*POST|requestPayout/i);
 });
 

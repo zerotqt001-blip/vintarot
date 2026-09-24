@@ -1963,3 +1963,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-reduced-motion:reduce){
   .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none;}
 }
+
+/* Affiliate referral actions stay scoped to the existing Moonlight panel. */
+.affiliate-link-field__value{display:grid;gap:4px;min-width:0;flex:1}.affiliate-link-field__label{color:var(--affiliate-subtle)!important;font-size:9px!important;letter-spacing:.08em;text-transform:uppercase}.affiliate-link-field__value code{overflow:hidden;color:var(--affiliate-gold-light);font:500 12px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;text-overflow:ellipsis;white-space:nowrap}.affiliate-link-field__actions{display:flex;flex:0 0 auto;flex-wrap:wrap;gap:6px}.affiliate-link-download{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;color:#5d4650;font-size:9px;font-weight:600;line-height:1.2;text-decoration:none;white-space:nowrap}.affiliate-link-download:hover{text-decoration:underline;text-underline-offset:3px}.affiliate-panel-note--error{color:#f2b6a5}.affiliate-panel-note--error svg{color:#f2b6a5}
