@@ -148,3 +148,20 @@ test("Affiliate target source preserves real-data boundaries and the approved sh
     assert.match(messages, new RegExp(`${key.split(".")[1]}:`));
   }
 });
+
+test("Affiliate target composition keeps the reference dashboard hierarchy without changing data boundaries", () => {
+  const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
+  const shell = source("app/vintarot.tsx");
+  const styles = source("app/globals.css");
+
+  for (const className of ["affiliate-referral-layout", "affiliate-qr-download", "affiliate-history-table-heading"]) {
+    assert.match(dashboard, new RegExp(className), className);
+  }
+  assert.match(shell, /affiliate-account-link/);
+  assert.match(shell, /affiliate-footer-socials/);
+  assert.match(styles, /\.affiliate-shell \.shared-navigation-sidebar\.shared-navigation-sidebar/);
+  assert.match(styles, /\.affiliate-referral-layout/);
+  assert.match(styles, /\.affiliate-history-table-heading/);
+  assert.match(styles, /\.affiliate-footer-socials/);
+  assert.doesNotMatch(dashboard, /18 referred|1\.245\.000|320\.000|4\.860\.000|925\.000|THANH123/);
+});

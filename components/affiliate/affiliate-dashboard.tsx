@@ -9,10 +9,12 @@ import {
   CircleDollarSign,
   Clock3,
   Copy,
+  Download,
   Gift,
   Link2,
   LoaderCircle,
   LockKeyhole,
+  MessageCircle,
   ReceiptText,
   Share2,
   Sparkles,
@@ -93,7 +95,7 @@ function LoadingState({ label }: { label: string }) {
 }
 
 function EmptyPolicyPanel({ t }: { t: (key: string) => string }) {
-  return <section className="affiliate-policy-panel affiliate-panel affiliate-panel--empty" aria-labelledby="affiliate-policy-title"><PanelHeading icon={Gift} title={t("affiliate.policyTitle")} description={t("affiliate.policyUnavailable")} /><p className="affiliate-panel-note"><CircleAlert size={16} aria-hidden="true" />{t("affiliate.policyPending")}</p></section>;
+  return <section className="affiliate-policy-panel affiliate-panel affiliate-panel--empty" aria-labelledby="affiliate-policy-title"><PanelHeading icon={Gift} title={t("affiliate.policyTitle")} description={t("affiliate.policyUnavailable")} action={<span className="affiliate-panel-heading__status">{t("affiliate.policyComingSoon")}</span>} /><p className="affiliate-panel-note"><CircleAlert size={16} aria-hidden="true" />{t("affiliate.policyPending")}</p></section>;
 }
 
 function PolicyPanel({ policy, t, locale }: { policy: PublicAffiliatePolicy; t: (key: string, values?: Record<string, string | number>) => string; locale: string }) {
@@ -121,11 +123,14 @@ function ReferralLinkPanel({ dashboard, t }: { dashboard: AffiliateDashboard; t:
   };
   return <section className="affiliate-link-panel affiliate-panel" aria-labelledby="affiliate-link-title">
     <PanelHeading icon={Link2} title={t("affiliate.referralLinkTitle")} description={link.available ? t("affiliate.linkReady") : t("affiliate.linkUnavailable")} />
-    {link.available ? <>
-      <div className="affiliate-link-field"><span>{link.url}</span><button type="button" onClick={copy} aria-label={copied ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={17} aria-hidden="true" />{copied ? t("affiliate.copied") : t("affiliate.copyLink")}</button></div>
-      {link.qrUrl && <div className="affiliate-qr"><img src={link.qrUrl} alt={t("affiliate.qrAlt")} /></div>}
-      <p className="affiliate-panel-note"><BadgeCheck size={16} aria-hidden="true" />{t("affiliate.linkSecurityText")}</p>
-    </> : <div className="affiliate-unavailable"><LockKeyhole size={24} aria-hidden="true" /><p>{t("affiliate.linkSecurityText")}</p><span>{t("affiliate.linkUnavailableAction")}</span></div>}
+    {link.available ? <div className="affiliate-referral-layout">
+      <div className="affiliate-referral-copy">
+        <div className="affiliate-link-field"><span>{link.url}</span><button type="button" onClick={copy} aria-label={copied ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={17} aria-hidden="true" />{copied ? t("affiliate.copied") : t("affiliate.copyLink")}</button></div>
+        <div className="affiliate-share-marks" aria-label={t("affiliate.shareQuickly")}><span className="affiliate-share-marks__label">{t("affiliate.shareQuickly")}</span><span aria-hidden="true"><b>f</b></span><span aria-hidden="true"><MessageCircle size={14} /></span><span aria-hidden="true"><Share2 size={14} /></span><span aria-hidden="true"><Link2 size={14} /></span></div>
+        <p className="affiliate-panel-note"><BadgeCheck size={16} aria-hidden="true" />{t("affiliate.linkSecurityText")}</p>
+      </div>
+      {link.qrUrl && <div className="affiliate-qr-stack"><div className="affiliate-qr"><img src={link.qrUrl} alt={t("affiliate.qrAlt")} /></div><a className="affiliate-qr-download" href={link.qrUrl} download aria-label={t("affiliate.downloadQr")}><Download size={14} aria-hidden="true" />{t("affiliate.downloadQr")}</a></div>}
+    </div> : <div className="affiliate-unavailable"><LockKeyhole size={24} aria-hidden="true" /><p>{t("affiliate.linkSecurityText")}</p><span>{t("affiliate.linkUnavailableAction")}</span></div>}
   </section>;
 }
 
@@ -140,8 +145,9 @@ function TierPanel({ dashboard, policy, t, locale }: { dashboard: AffiliateDashb
   const percent = next ? Math.min(100, Math.max(0, ((progress.qualifiedConversions - start) / span) * 100)) : 100;
   const remaining = next ? Math.max(0, next.minQualifiedConversions - progress.qualifiedConversions) : 0;
   return <section className="affiliate-tier-panel affiliate-panel" aria-labelledby="affiliate-tier-title">
-    <PanelHeading icon={Sparkles} title={t("affiliate.tierTitle")} description={t("affiliate.qualified", { value: progress.qualifiedConversions })} action={<span className="affiliate-panel-heading__mark" aria-hidden="true">✦</span>} />
+    <PanelHeading icon={Sparkles} title={t("affiliate.tierTitle")} description={t("affiliate.tierDescription")} action={<Sparkles className="affiliate-panel-heading__mark" size={22} strokeWidth={1.2} aria-hidden="true" />} />
     <div className="affiliate-tier-track" aria-label={t("affiliate.tierProgressLabel")}><div className="affiliate-tier-track__line"><span style={{ width: `${percent}%` }} /></div><div className="affiliate-tier-track__nodes">{policy.tiers.map((tier, index) => <div className={current?.tierCode === tier.tierCode ? "is-current" : tier.minQualifiedConversions <= progress.qualifiedConversions ? "is-reached" : ""} key={`${tier.tierCode}-${index}`}><span className="affiliate-tier-node" aria-hidden="true">✦</span><strong>{tierCodeLabel(tier.tierCode)}</strong><b>{rateLabel(tier.rateBps, locale)}</b><small>{tier.minQualifiedConversions}</small></div>)}</div></div>
+    <p className="affiliate-tier-qualified">{t("affiliate.qualifiedProgress", { value: progress.qualifiedConversions, next: next?.minQualifiedConversions ?? progress.qualifiedConversions })}</p>
     <div className="affiliate-tier-summary"><div><span>{t("affiliate.currentTier")}</span><strong>{current ? `${tierCodeLabel(current.tierCode)} · ${rateLabel(current.rateBps, locale)}` : t("affiliate.notAvailable")}</strong></div><div><span>{next ? t("affiliate.nextTier") : t("affiliate.highestTier")}</span><strong>{next ? `${tierCodeLabel(next.tierCode)} · ${t("affiliate.tierFrom", { value: next.minQualifiedConversions })}` : t("affiliate.highestTierValue")}</strong></div></div>
     {next && <p className="affiliate-tier-next">{t("affiliate.remaining", { value: remaining })}</p>}
   </section>;
@@ -157,7 +163,7 @@ function IncomePanel({ dashboard, currency, t, locale }: { dashboard: AffiliateD
 function ReferralHistoryPanel({ dashboard, t, locale }: { dashboard: AffiliateDashboard; t: (key: string) => string; locale: string }) {
   return <section className="affiliate-referrals-panel affiliate-panel" aria-labelledby="affiliate-referrals-title">
     <PanelHeading icon={UsersRound} title={t("affiliate.recentTitle")} description={t("affiliate.recentText")} action={<Link className="affiliate-panel-link" href="/account?tab=activity">{t("affiliate.viewAll")} <ChevronRight size={14} aria-hidden="true" /></Link>} />
-    {dashboard.history.length === 0 ? <div className="affiliate-empty-list"><UsersRound size={25} aria-hidden="true" /><p>{t("affiliate.historyEmpty")}</p></div> : <div className="affiliate-history-list">{dashboard.history.slice(0, 5).map((item) => <div className="affiliate-history-row" key={item.id}><div className="affiliate-history-avatar" aria-hidden="true"><UsersRound size={17} /></div><div className="affiliate-history-copy"><strong>{t("affiliate.qualifiedMember")}</strong><span>{dateLabel(item.fulfilledAt, locale)}</span></div><div className="affiliate-history-status"><span className={`affiliate-status-dot affiliate-status-dot--${statusKey(item.status)}`} aria-hidden="true" />{t(`affiliate.status.${statusKey(item.status)}`)}</div><strong className="affiliate-history-amount">{item.currency ? moneyLabel(item.commissionMinor, item.currency, locale) : t("affiliate.notAvailable")}</strong></div>)}</div>}
+    {dashboard.history.length === 0 ? <div className="affiliate-empty-list"><UsersRound size={25} aria-hidden="true" /><p>{t("affiliate.historyEmpty")}</p></div> : <div className="affiliate-history-table" role="table" aria-label={t("affiliate.recentTitle")}><div className="affiliate-history-table-heading" role="row"><span role="columnheader">{t("affiliate.referredMember")}</span><span role="columnheader">{t("affiliate.referralDate")}</span><span role="columnheader">{t("affiliate.referralStatus")}</span><span role="columnheader">{t("affiliate.referralCommission")}</span></div><div className="affiliate-history-list">{dashboard.history.slice(0, 5).map((item) => <div className="affiliate-history-row" role="row" key={item.id}><strong className="affiliate-history-member" role="cell">{t("affiliate.qualifiedMember")}</strong><span className="affiliate-history-date" role="cell">{dateLabel(item.fulfilledAt, locale)}</span><div className="affiliate-history-status" role="cell"><span className={`affiliate-status-dot affiliate-status-dot--${statusKey(item.status)}`} aria-hidden="true" />{t(`affiliate.status.${statusKey(item.status)}`)}</div><strong className="affiliate-history-amount" role="cell">{item.currency ? moneyLabel(item.commissionMinor, item.currency, locale) : t("affiliate.notAvailable")}</strong></div>)}</div></div>}
   </section>;
 }
 
