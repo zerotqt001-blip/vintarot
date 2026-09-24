@@ -1963,3 +1963,39 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-reduced-motion:reduce){
   .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none;}
 }
+
+/* Shared primary rail: the five labeled destinations stay present while the visitor changes routes. */
+.shared-navigation-sidebar.shared-navigation-sidebar{position:fixed!important;top:110px;right:auto!important;bottom:96px;left:20px;width:202px!important;height:auto!important;padding:0!important;z-index:55;background:transparent!important}
+.shared-navigation-sidebar.shared-navigation-sidebar [data-slot="sidebar-content"]{display:flex;height:100%;min-height:0;gap:0;overflow:visible;background:transparent}
+.shared-primary-nav{display:grid;align-content:start;gap:4px;width:100%;padding:18px 9px;border:1px solid rgba(231,199,125,.38);border-radius:20px;background:linear-gradient(180deg,rgba(7,25,46,.91),rgba(3,14,28,.84));box-shadow:0 20px 45px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.035);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.shared-primary-nav a{display:grid;min-height:112px;place-items:center;align-content:center;gap:13px;border-radius:16px;color:var(--color-ivory);font-size:14px;line-height:1.2;text-align:center;text-decoration:none;transition:background .2s ease,color .2s ease,transform .2s ease}
+.shared-primary-nav a:hover,.shared-primary-nav a:focus-visible,.shared-primary-nav a.active{background:linear-gradient(135deg,rgba(216,174,104,.16),rgba(16,40,59,.62));color:var(--color-gold-bright);outline:none}
+.shared-primary-nav a:hover{transform:translateY(-1px)}
+.shared-primary-nav .shared-nav-orb{display:grid;width:58px;height:58px;place-items:center;border:1px solid rgba(231,199,125,.78);border-radius:50%;background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.14),rgba(4,17,32,.92));color:var(--color-gold-bright);box-shadow:0 0 18px rgba(215,179,106,.1)}
+.shared-primary-nav a.active .shared-nav-orb{background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.23),rgba(4,17,32,.88));box-shadow:0 0 25px rgba(215,179,106,.18)}
+.shared-primary-nav .shared-nav-label{display:block;max-width:100%;overflow:hidden;color:inherit;font-size:14px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+.shared-rail-signature{display:grid;gap:5px;margin:10px 18px 2px;padding-top:17px;border-top:1px solid rgba(231,199,125,.3);text-align:center}
+.shared-rail-signature strong{color:var(--color-ivory);font:400 16px/1 'Instrument Serif','Times New Roman',serif}
+.shared-rail-signature small{color:rgba(218,222,224,.46);font-size:10px;letter-spacing:.04em;line-height:1.2}
+.home-shell .shared-navigation-sidebar ~ .main{margin-left:0;width:100%}
+.site-shell:not(.room-shell) .shared-navigation-sidebar ~ .main,.membership-shell .shared-navigation-sidebar ~ .main{width:calc(100% - 232px);margin-left:232px}
+.room-shell .shared-navigation-sidebar ~ .main{width:100%;margin-left:0;padding:0}
+
+@media(max-width:700px){
+  .shared-navigation-sidebar.shared-navigation-sidebar{top:auto!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:86px!important;padding:0!important;z-index:70}
+  .shared-navigation-sidebar.shared-navigation-sidebar [data-slot="sidebar-content"]{display:block;height:100%;min-height:0;overflow:visible}
+  .shared-primary-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:0;width:100%;height:100%;min-height:0;padding:4px 2px max(4px,env(safe-area-inset-bottom));border-width:1px 0 0;border-radius:0;background:rgba(3,14,28,.96);box-shadow:0 -12px 26px rgba(0,0,0,.3);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .shared-primary-nav a{min-height:0;gap:5px;padding:4px 2px 3px;border-radius:10px;font-size:9px;line-height:1.1}
+  .shared-primary-nav a:hover{transform:none}
+  .shared-primary-nav .shared-nav-orb{width:34px;height:34px}
+  .shared-primary-nav .shared-nav-orb svg{width:18px;height:18px}
+  .shared-primary-nav .shared-nav-label{max-width:70px;font-size:9px;text-align:center}
+  .shared-rail-signature{display:none}
+  .shared-navigation-sidebar ~ .main{width:100%!important;margin-left:0!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+  .room-shell .shared-navigation-sidebar ~ .main{padding-bottom:calc(86px + env(safe-area-inset-bottom))!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .shared-primary-nav a{transition:none!important}
+  .shared-primary-nav a:hover{transform:none}
+}

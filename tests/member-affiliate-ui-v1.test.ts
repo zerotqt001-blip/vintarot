@@ -57,7 +57,7 @@ test("shared shell and account expose member destinations while preserving exist
 test("member destinations have separate shared desktop and mobile access regions", () => {
   const shell = source("app/vintarot.tsx");
   const styles = source("app/globals.css");
-  const sidebarIndex = shell.indexOf("<Sidebar collapsible");
+  const sidebarIndex = shell.indexOf('className="site-sidebar"');
   const desktopNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--desktop');
   const mobileNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--mobile');
 

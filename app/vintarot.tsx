@@ -116,6 +116,35 @@ function GuidebookTargetSidebar({ t }: { t: Translator }) {
   );
 }
 
+const sharedPrimaryNav = [
+  ["nav.home", Home, "/"],
+  ["nav.drawNow", Layers, "/create"],
+  ["nav.membership", Crown, "/packages"],
+  ["nav.affiliate", Gift, "/affiliate"],
+] as const;
+
+export function SharedPrimaryNav({ path, accountHref, t }: { path: string; accountHref: string; t: Translator }) {
+  const links = [...sharedPrimaryNav, ["nav.account", CircleUserRound, accountHref] as const];
+  return (
+    <Sidebar collapsible="none" className="shared-navigation-sidebar">
+      <SidebarContent>
+        <nav className="shared-primary-nav home-primary-nav" aria-label={t("nav.primary")}>
+          {links.map(([key, Icon, href]) => {
+            const active = href === path || (key === "nav.drawNow" && path === "/room") || (key === "nav.account" && path === "/account");
+            return (
+              <a className={active ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={active ? "page" : undefined}>
+                <span className="shared-nav-orb nav-orb"><Icon size={27} strokeWidth={1.35} aria-hidden="true" /></span>
+                <span className="shared-nav-label home-nav-label">{t(key)}</span>
+              </a>
+            );
+          })}
+          <span className="shared-rail-signature home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
+        </nav>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
+
 function GuidebookTargetFooter({ t }: { t: Translator }) {
   return (
     <footer className="guidebook-target-footer">
@@ -284,7 +313,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     {!isHome && !isRoom && !isGuidebook && !isPractice && !isAffiliate && !isMembership && <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
       {renderCommerceAccessLinks()}
     </nav>}
-    {isGuidebook ? <GuidebookTargetSidebar t={t} /> : <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
+    <SharedPrimaryNav path={path} accountHref={accountHref} t={t} />
+    {false && <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
       {isHome ? <nav className="home-primary-nav" aria-label={t("nav.home")}>{renderHomePrimaryNav()}<span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span></nav> : isPractice ? <nav className="main-nav">{practiceNav.map(([key, Icon, href]) => {
         const active = String(href) === String(path);
         const variant = href === "/" ? "home" : href === "/room" ? "cards" : "book";
