@@ -77,3 +77,12 @@ test("auth copy exposes the new shared brand, placeholders, quotes, and footer l
     assert.match(messages, new RegExp(`${key}:`));
   }
 });
+
+test("auth password validation and copy use the eight-character minimum", () => {
+  const auth = read("app/auth/auth.tsx");
+  const messages = read("lib/i18n.ts");
+
+  assert.match(auth, /fields\.password\.length < 8/);
+  assert.match(messages, /invalidPassword: "Use a password between 8 and 128 characters\."/);
+  assert.match(messages, /invalidPassword: "Mật khẩu dài từ 8 đến 128 ký tự\."/);
+});

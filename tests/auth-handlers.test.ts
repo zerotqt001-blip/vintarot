@@ -92,7 +92,7 @@ test("registration rejects invalid local credentials without creating a member",
     { ...validRegistration, username: "bad-name" },
     { ...validRegistration, email: "not-an-email" },
     { ...validRegistration, phone: "12345" },
-    { ...validRegistration, password: "too-short" },
+    { ...validRegistration, password: "too-sh" },
   ]) {
     const response = await harness.handlers.register(jsonRequest("/api/auth/register", input));
     assert.equal(response.status, 400);

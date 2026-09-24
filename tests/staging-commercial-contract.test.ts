@@ -10,5 +10,6 @@ test("commercial staging seed is fail-closed to the isolated sandbox database", 
   assert.match(script, /SEPAY_ENVIRONMENT.*sandbox/);
   assert.match(script, /package-staging-sepay-sandbox-v1/);
   assert.match(script, /10_000/);
+  assert.match(script, /stagingMemberPassword\.length < 8/);
   assert.doesNotMatch(script, /SEPAY_SECRET_KEY|SEPAY_IPN_SECRET|Authorization|X-Secret-Key/);
 });

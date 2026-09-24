@@ -34,7 +34,7 @@ try {
   }
   console.log(`Verified staging sandbox package ${slug}`);
   if (stagingMemberPassword) {
-    if (stagingMemberPassword.length < 10 || stagingMemberPassword.length > 128) throw new Error("NATAROT_STAGING_MEMBER_PASSWORD must be 10-128 characters");
+    if (stagingMemberPassword.length < 8 || stagingMemberPassword.length > 128) throw new Error("NATAROT_STAGING_MEMBER_PASSWORD must be 8-128 characters");
     const salt = randomBytes(16);
     const derived = pbkdf2Sync(stagingMemberPassword, salt, 600_000, 32, "sha256");
     const encode = (value) => value.toString("base64url");

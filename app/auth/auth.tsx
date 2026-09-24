@@ -55,7 +55,7 @@ function validateRegisterFields(fields: typeof emptyFields): FieldErrors {
   if (!fields.phone.trim()) errors.phone = "auth.fieldRequired";
   else if (!phonePattern.test(phone)) errors.phone = "auth.invalidPhone";
   if (!fields.password) errors.password = "auth.fieldRequired";
-  else if (fields.password.length < 10 || fields.password.length > 128) errors.password = "auth.invalidPassword";
+  else if (fields.password.length < 8 || fields.password.length > 128) errors.password = "auth.invalidPassword";
   return errors;
 }
 

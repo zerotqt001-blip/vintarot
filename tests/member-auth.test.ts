@@ -63,8 +63,8 @@ test("opaque token storage uses a digest and safe relative return paths", async 
 });
 
 test("validation enforces the member input boundaries", () => {
-  assert.equal(validatePassword("1234567890"), "1234567890");
-  assert.throws(() => validatePassword("short"));
+  assert.equal(validatePassword("12345678"), "12345678");
+  assert.throws(() => validatePassword("1234567"));
   assert.throws(() => validatePassword("x".repeat(129)));
   assert.throws(() => normalizeEmail("not-an-email"));
   assert.throws(() => normalizeUsername("bad name"));

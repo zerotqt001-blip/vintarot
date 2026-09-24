@@ -76,7 +76,7 @@ export interface OAuthStatePayload {
 const emailValue = z.string().trim().email().max(254);
 const usernameValue = z.string().trim().regex(/^[a-z0-9_]{3,24}$/i);
 const phoneValue = z.string().trim().regex(/^\+[1-9]\d{7,14}$/);
-const passwordValue = z.string().min(10).max(128);
+const passwordValue = z.string().min(8).max(128);
 
 export const registrationSchema = z.object({
   email: emailValue,
@@ -126,7 +126,7 @@ export function normalizePhone(value: string): string {
 }
 
 export function validatePassword(value: string): string {
-  if (!passwordValue.safeParse(value).success) fail("Password must be 10-128 characters");
+  if (!passwordValue.safeParse(value).success) fail("Password must be 8-128 characters");
   return value;
 }
 
