@@ -3,7 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
-import { captureAttribution, createAffiliateConversion, getAffiliateSummary, listAffiliateHistory, markCommissionEligible, reverseAffiliateCommission, type VerifiedFulfillmentEvent } from "../lib/affiliate/service";
+import { adjustAffiliateCommission, captureAttribution, createAffiliateConversion, getAffiliateSummary, listAffiliateHistory, markCommissionEligible, reverseAffiliateCommission, type VerifiedFulfillmentEvent } from "../lib/affiliate/service";
 import { hashReferralCode } from "../lib/affiliate/repository";
 import { createPendingOrder, recordVerifiedPayment } from "../lib/orders";
 import { createCreditStore } from "../lib/credits/repository";
@@ -79,10 +79,11 @@ function fulfilledEvent(sqlite: DatabaseSync, now: number, orderId: string, fulf
   };
 }
 
-async function seedFulfilledOrder(fixture: ReturnType<typeof makeFixture>) {
-  const versionId = seedPackage(fixture.sqlite, fixture.now.value);
-  const order = await createPendingOrder({ database: fixture.database, creditStore: fixture.creditStore, owner: buyerOwner, packageVersionId: versionId, idempotencyKey: "affiliate-order", now: () => fixture.now.value });
-  await recordVerifiedPayment(fixture.database, { orderId: order.id, paymentReference: "verified-affiliate-payment", verifiedAt: fixture.now.value });
+async function seedFulfilledOrder(fixture: ReturnType<typeof makeFixture>, suffix = "one") {
+  const existingPackage = fixture.sqlite.prepare("SELECT id FROM package_versions WHERE id='package-affiliate-v1'").get() as { id: string } | undefined;
+  const versionId = existingPackage?.id ?? seedPackage(fixture.sqlite, fixture.now.value);
+  const order = await createPendingOrder({ database: fixture.database, creditStore: fixture.creditStore, owner: buyerOwner, packageVersionId: versionId, idempotencyKey: `affiliate-order-${suffix}`, now: () => fixture.now.value });
+  await recordVerifiedPayment(fixture.database, { orderId: order.id, paymentReference: `verified-affiliate-payment-${suffix}`, verifiedAt: fixture.now.value });
   fixture.sqlite.prepare("INSERT INTO order_fulfillments (id, order_id, fulfillment_key, result_snapshot, created_at) VALUES (?, ?, ?, ?, ?)")
     .run(`fulfillment:${order.id}`, order.id, `order:${order.id}:fulfilled:v1`, "snapshot", fixture.now.value);
   fixture.sqlite.prepare("UPDATE orders SET status='FULFILLED', fulfilled_at=? WHERE id=?").run(fixture.now.value, order.id);
@@ -165,3 +166,33 @@ test("concurrent fulfillment retries produce one conversion and one commission e
   assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM affiliate_commission_ledger").get() as { count: number }).count, 1);
   fixture.sqlite.close();
 });
+
+test("commission mutation idempotency is scoped to its conversion", async () => {
+  const fixture = makeFixture();
+  await seedAffiliate(fixture.sqlite, "profile-a", "affiliate-a", "MOON-A");
+  await captureAttribution({ database: fixture.database, owner: buyerOwner, rawCode: "MOON-A", source: "query", now: fixture.now.value });
+
+  const first = await createAffiliateConversion({ database: fixture.database, event: await seedFulfilledOrder(fixture, "first") });
+  const second = await createAffiliateConversion({ database: fixture.database, event: await seedFulfilledOrder(fixture, "second") });
+  assert.ok(first);
+  assert.ok(second);
+
+  await markCommissionEligible({ database: fixture.database, conversionId: first!.id, idempotencyKey: "reused-key", reason: "hold elapsed", now: fixture.now.value + 8 * 86_400_000 });
+  await markCommissionEligible({ database: fixture.database, conversionId: second!.id, idempotencyKey: "reused-key", reason: "hold elapsed", now: fixture.now.value + 8 * 86_400_000 });
+  await reverseAffiliateCommission({ database: fixture.database, conversionId: first!.id, idempotencyKey: "reused-key", reason: "verified refund", actorId: "system", now: fixture.now.value + 9 * 86_400_000 });
+  await reverseAffiliateCommission({ database: fixture.database, conversionId: second!.id, idempotencyKey: "reused-key", reason: "verified refund", actorId: "system", now: fixture.now.value + 9 * 86_400_000 });
+  await adjustAffiliateCommission({ database: fixture.database, conversionId: first!.id, direction: "CREDIT", amountMinor: 100, reason: "verified adjustment", idempotencyKey: "reused-key", actorId: "admin-a" });
+  await adjustAffiliateCommission({ database: fixture.database, conversionId: second!.id, direction: "CREDIT", amountMinor: 100, reason: "verified adjustment", idempotencyKey: "reused-key", actorId: "admin-a" });
+
+  const entries = fixture.sqlite.prepare("SELECT conversion_id, entry_type FROM affiliate_commission_ledger WHERE entry_type IN ('ELIGIBILITY', 'REVERSAL', 'ADJUSTMENT') ORDER BY conversion_id, entry_type").all() as Array<{ conversion_id: string; entry_type: string }>;
+  assert.equal(entries.filter((entry) => entry.entry_type === "ELIGIBILITY").length, 2);
+  assert.equal(entries.filter((entry) => entry.entry_type === "REVERSAL").length, 2);
+  assert.equal(entries.filter((entry) => entry.entry_type === "ADJUSTMENT").length, 2);
+  assert.equal((await loadConversionForTest(fixture, first!.id))?.status, "REVERSED");
+  assert.equal((await loadConversionForTest(fixture, second!.id))?.status, "REVERSED");
+  fixture.sqlite.close();
+});
+
+async function loadConversionForTest(fixture: ReturnType<typeof makeFixture>, id: string) {
+  return fixture.database.prepare("SELECT status FROM affiliate_conversions WHERE id=?").bind(id).first<{ status: string }>();
+}

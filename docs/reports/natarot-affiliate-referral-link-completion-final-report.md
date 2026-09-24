@@ -10,7 +10,7 @@ REFERRAL LINK: **PASS**
 
 QR: **PASS**
 
-ATTRIBUTION: **PASS** — cơ chế hiện hành được giữ nguyên; không thêm anonymous cookie hoặc attribution rule mới.
+ATTRIBUTION: **PARTIAL** — cơ chế hiện hành được giữ nguyên và không thêm anonymous cookie hoặc attribution rule mới; attribution hiện chỉ chạy cho member đã đăng nhập, nên mở link trước đăng nhập cần một quyết định policy riêng để replay sau auth.
 
 COMMISSION SAFETY: **PASS**
 
@@ -20,7 +20,7 @@ PRODUCTION POLICY: **INACTIVE** — policy `affiliate-v1-default` vẫn `DRAFT`,
 
 CUSTOMER FEATURE AVAILABLE: **NO** — bị policy gate đúng thiết kế; production không tạo link giả cho tài khoản khi policy chưa ACTIVE.
 
-REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riêng để chuyển policy sang `ACTIVE`. Sau khi policy ACTIVE, cần một phiên QA có tài khoản member đủ điều kiện đã xác thực để kiểm tra live code/link/QR và đăng nhập lại; không tự thực hiện activation.
+REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riêng để chuyển policy sang `ACTIVE`; attribution trước đăng nhập chưa được mở rộng theo đúng phê duyệt không thêm anonymous cookie; PR integration với UI V2 còn conflict cần xử lý riêng. Sau khi policy ACTIVE, cần một phiên QA có tài khoản member đủ điều kiện đã xác thực để kiểm tra live code/link/QR và đăng nhập lại; không tự thực hiện activation.
 
 ## Đã triển khai
 
@@ -29,7 +29,7 @@ REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riê
 - Customer dashboard API trả owner-scoped `referralLink` gồm code, canonical `https://natarot.com/affiliate?ref=...`, QR SVG data URL và filename tải xuống.
 - Affiliate panel hiện có code, link, copy code/link, share, QR và download QR; trạng thái unavailable policy/profile/eligibility được hiển thị và không có action/link/QR giả.
 - `scripts/node-migrate.mjs` bọc migration mới cùng migration marker trong transaction; historical seed migration đang tự quản lý `BEGIN/COMMIT` được giữ nguyên.
-- Attribution capture, cookie behavior, eligibility, active-policy gating, commission ledger, verified fulfillment và idempotency không bị thay đổi.
+- Attribution capture, cookie behavior, eligibility và active-policy gating được giữ nguyên. Commission ledger và verified fulfillment vẫn là ranh giới authoritative; mutation idempotency được scope theo conversion, đồng thời nhận diện legacy key để không tạo duplicate history.
 
 ## Migration/data safety
 
@@ -40,14 +40,14 @@ REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riê
 
 ## Verification
 
-- Full regression: `622/622` pass.
-- Focused Affiliate/migration/UI suite: `9/9` pass sau red-green fix loop.
+- Full regression: `623/623` pass.
+- Focused Affiliate/migration/UI suite: `9/9` pass; Affiliate service idempotency regression: `5/5` pass sau red-green fix loop.
 - `npx tsc --noEmit`: pass.
 - `npm run build`: pass.
 - Targeted ESLint: `0 errors`, một warning hiện hữu cho QR `<img>` data URL (`@next/next/no-img-element`).
 - `npm audit --omit=dev --audit-level=high`: `0 vulnerabilities`.
 - `git diff --check` và staged secret-pattern scan: pass.
-- Verified tests cover unique/stable code, owner isolation, QR exact payload, inactive policy/profile, no self-referral, existing attribution behavior, fulfilled-only commission and idempotent ledger behavior.
+- Verified tests cover unique/stable code, owner isolation, QR exact payload, inactive policy/profile, no self-referral, existing attribution behavior, fulfilled-only commission, conversion-scoped idempotency and legacy ledger compatibility.
 
 ## Production evidence
 
