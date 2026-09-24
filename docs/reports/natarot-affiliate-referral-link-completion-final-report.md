@@ -29,7 +29,7 @@ REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riê
 - Customer dashboard API trả owner-scoped `referralLink` gồm code, canonical `https://natarot.com/affiliate?ref=...`, QR SVG data URL và filename tải xuống.
 - Affiliate panel hiện có code, link, copy code/link, share, QR và download QR; trạng thái unavailable policy/profile/eligibility được hiển thị và không có action/link/QR giả.
 - `scripts/node-migrate.mjs` bọc migration mới cùng migration marker trong transaction; historical seed migration đang tự quản lý `BEGIN/COMMIT` được giữ nguyên.
-- Attribution capture, cookie behavior, eligibility và active-policy gating được giữ nguyên. Commission ledger và verified fulfillment vẫn là ranh giới authoritative; mutation idempotency được scope theo conversion, đồng thời nhận diện legacy key để không tạo duplicate history.
+- Attribution capture, cookie behavior, eligibility và active-policy gating được giữ nguyên. Commission ledger và verified fulfillment vẫn là ranh giới authoritative; mutation idempotency được scope theo conversion, đồng thời nhận diện legacy ledger/audit key để không tạo duplicate history hoặc mất audit event.
 
 ## Migration/data safety
 
@@ -40,14 +40,15 @@ REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riê
 
 ## Verification
 
-- Full regression: `623/623` pass.
+- Full regression: `624/624` pass.
 - Focused Affiliate/migration/UI suite: `9/9` pass; Affiliate service idempotency regression: `5/5` pass sau red-green fix loop.
+- Admin Affiliate route audit-key contract: `3/3` pass.
 - `npx tsc --noEmit`: pass.
 - `npm run build`: pass.
 - Targeted ESLint: `0 errors`, một warning hiện hữu cho QR `<img>` data URL (`@next/next/no-img-element`).
 - `npm audit --omit=dev --audit-level=high`: `0 vulnerabilities`.
 - `git diff --check` và staged secret-pattern scan: pass.
-- Verified tests cover unique/stable code, owner isolation, QR exact payload, inactive policy/profile, no self-referral, existing attribution behavior, fulfilled-only commission, conversion-scoped idempotency and legacy ledger compatibility.
+- Verified tests cover unique/stable code, owner isolation, QR exact payload, inactive policy/profile, no self-referral, existing attribution behavior, fulfilled-only commission, conversion-scoped ledger idempotency, legacy ledger/audit compatibility and conversion-scoped audit keys.
 
 ## Production evidence
 
