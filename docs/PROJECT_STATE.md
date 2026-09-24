@@ -1,5 +1,8 @@
 # VinTarot state
 
+## Room sidebar auto-hide (2026-09-24, source-only)
+In Room only, the shared sidebar now rests mostly beyond the left edge on desktop/fine-pointer devices, leaving a 14px hover strip; it slides open on pointer hover or keyboard focus. Touch navigation and every other route remain unchanged, and reduced-motion preferences disable the transition. This is a presentation-only CSS change with no API/backend edits and no VPS deployment. Validation: focused navigation tests 4/4, tracked test suite 617/617, and `npm run build` pass.
+
 ## Product
 Moonlight-inspired tarot website. Preserve reference interactions and smooth motion. The visible product brand is now NaTarot; internal component and storage names retain their existing compatibility. User wants real production services but has not provisioned payment/video/email accounts.
 

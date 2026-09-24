@@ -218,6 +218,21 @@
 @media(prefers-reduced-motion:reduce){.guidebook-map-shell::before{animation:none}.guidebook-map-node,.guidebook-map-node-art img{transition:none}}
 
 /* Celestial Luxury Tarot: the room is a dark observatory stage and the cards remain the focus. */
+@media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+  .room-shell .site-sidebar {
+    left: 0 !important;
+    transform: translateX(calc(-100% + 14px));
+    transition: transform 240ms cubic-bezier(.16, 1, .3, 1);
+  }
+
+  .room-shell .site-sidebar:hover,
+  .room-shell .site-sidebar:focus-within {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-shell .site-sidebar { transition: none; }
+}
 .room-page{--tarot-bg-deep:#06111F;--tarot-bg:#081A2B;--tarot-surface:rgba(7, 20, 36, 0.78);--tarot-surface-hover:rgba(13, 34, 54, 0.88);--tarot-gold:#C7A66A;--tarot-gold-light:#E3C98F;--tarot-gold-muted:rgba(199, 166, 106, 0.45);--tarot-gold-border:rgba(199, 166, 106, 0.35);--tarot-ivory:#EEE7D8;--tarot-text:#E9E2D4;--tarot-text-secondary:#AEB7BE;--tarot-text-muted:#7E8C97;--tarot-teal:#315E63;--tarot-glow:rgba(199, 166, 106, 0.20);--table:var(--tarot-bg);--table-edge:var(--tarot-bg-deep);--ink:var(--tarot-text);background-color:var(--tarot-bg-deep);background-image:linear-gradient(rgba(3, 12, 24, 0.18),rgba(3, 12, 24, 0.32)),url('/room/celestial-observatory.png');background-position:center top;background-size:cover;background-repeat:no-repeat;color:var(--tarot-text);font-family:'Work Sans',Arial,sans-serif;isolation:isolate}
 .room-page .topbar{height:62px;padding:0 24px;background:rgba(4, 15, 28, 0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(199, 166, 106, 0.18);color:var(--tarot-text);box-shadow:0 8px 30px rgba(2, 8, 18, 0.24)}
 .room-page .brand{color:var(--tarot-ivory);font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;letter-spacing:-.8px;text-shadow:0 1px 18px rgba(199, 166, 106, 0.2)}

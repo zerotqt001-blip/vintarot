@@ -26,3 +26,9 @@ test("mobile bottom navigation clears the old fixed footer and keeps the page co
   assert.match(styles, /(?:\.site-shell:not\(\.room-shell\) footer,\.home-shell footer|\.home-shell footer,\.site-shell:not\(\.room-shell\) footer)\{display:none\}/);
   assert.match(styles, /(?:\.site-shell:not\(\.room-shell\) \.main,\.home-shell \.main|\.home-shell \.main,\.site-shell:not\(\.room-shell\) \.main)\{[^}]*padding-bottom:calc\(/);
 });
+
+test("Room navigation tucks to the left edge on desktop pointers and opens on hover or keyboard focus", () => {
+  assert.ok(/@media\s*\(hover:\s*hover\)\s*and\s*\(pointer:\s*fine\)\s*and\s*\(min-width:\s*821px\)/.test(styles), "Room auto-hide should only target desktop pointer devices");
+  assert.ok(/\.room-shell \.site-sidebar\s*\{[^}]*transform:\s*translateX\(calc\(-100% \+ 14px\)\)/s.test(styles), "Room navigation should leave a 14px edge trigger");
+  assert.ok(/\.room-shell \.site-sidebar:hover\s*,\s*\.room-shell \.site-sidebar:focus-within\s*\{[^}]*transform:\s*translateX\(0\)/s.test(styles), "Hover and keyboard focus should reveal Room navigation");
+});
