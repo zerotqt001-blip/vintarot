@@ -24,7 +24,7 @@ function getViewport(element: HTMLDivElement | null) {
   const width = Math.max(1, element?.getBoundingClientRect().width || DEFAULT_VIEWPORT.width);
   return {
     width,
-    height: Math.max(320, Math.min(600, width * 0.46)),
+    height: Math.max(320, Math.min(520, width * 0.34)),
     mobile: width <= 760,
   };
 }
@@ -42,7 +42,7 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
       height: viewport.height,
       cardAspectRatio: 400 / 647,
       minCardWidth: viewport.mobile ? 108 : 118,
-      maxCardWidth: viewport.mobile ? 174 : 250,
+      maxCardWidth: viewport.mobile ? 154 : 190,
       mobile: viewport.mobile,
     }),
     [geometry, viewport],
