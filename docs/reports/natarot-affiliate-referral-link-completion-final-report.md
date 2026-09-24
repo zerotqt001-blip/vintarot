@@ -67,3 +67,5 @@ REMAINING ISSUES: Cần quyết định kinh doanh và thao tác activation riê
 - `0b0b656` — stable referral-link backend/API implementation.
 - `0b1a605` — Affiliate referral-link panel and tests.
 - `3405b75` — migration transaction hardening, inactive-policy panel rendering and accurate public-code security copy.
+- `78f2f95` — conversion-scoped Affiliate ledger idempotency and regression coverage.
+- `04e2d07` — conversion-scoped admin Affiliate audit idempotency and legacy-audit compatibility.

@@ -480,7 +480,7 @@ Production browser/API QA confirms `GET /api/affiliate/policy` returns `policy: 
 
 ## Affiliate Referral Completion PR Integration (2026-09-25)
 
-The verified branch `codex/natarot-affiliate-referral-completion` was pushed to `origin` and opened as [PR #1](https://github.com/zerotqt001-blip/vintarot/pull/1) against the exact integration base `codex/tooling-and-version-history` at `e5474d3e7503a5269327c3073b5e023155044084`. The base was fetched and confirmed to be an ancestor of the feature head, so no merge commit or rebase was required. The PR remains **OPEN / NOT MERGED**; no automatic merge was performed.
+The verified branch `codex/natarot-affiliate-referral-completion` was pushed to `origin` and opened as [PR #1](https://github.com/zerotqt001-blip/vintarot/pull/1) against the exact integration base `codex/tooling-and-version-history` at `e5474d3e7503a5269327c3073b5e023155044084`; the latest reviewed head is `04e2d07`. The base was fetched and confirmed to be an ancestor of the feature head, so no merge commit or rebase was required. The PR remains **OPEN / NOT MERGED**; no automatic merge was performed.
 
 The UI V2 branch `codex/natarot-final-ui-correction-v2` at `fc39e60a35f7a33dda765d12b742426ff1571013` was checked with a merge-tree preview. It has real conflicts with this Affiliate slice in `app/globals.css`, `docs/PROJECT_STATE.md` and `tests/member-affiliate-ui-v1.test.ts`; UI V2 was intentionally not merged or overwritten. A separate conflict-resolution and visual verification pass is required before combining those branches.
 
