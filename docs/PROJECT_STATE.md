@@ -3,6 +3,9 @@
 ## Room sidebar auto-hide (2026-09-24, source-only)
 In Room only, the shared sidebar now rests mostly beyond the left edge on desktop/fine-pointer devices, leaving a 14px hover strip; it slides open on pointer hover or keyboard focus. Touch navigation and every other route remain unchanged, and reduced-motion preferences disable the transition. This is a presentation-only CSS change with no API/backend edits and no VPS deployment. Validation: focused navigation tests 4/4, tracked test suite 617/617, and `npm run build` pass.
 
+## Create primary navigation parity (2026-09-25, UI-only)
+`/create` now renders the same five primary destinations, readable labels, active route state, and branded rail as Home. Desktop retains the Create page's personal shortcuts beneath the rail; on mobile the five links use the Home-style bottom bar and the duplicate commerce shortcut strip is hidden. Room and all backend/API behavior remain unchanged. Validation: the render-level navigation test passes; full suite 618/618, `npm run build`, and focused test-file ESLint pass. `app/vintarot.tsx` still reports 30 legacy anchor-rule ESLint findings, confirmed against the unchanged HEAD version; repository-wide lint was stopped while traversing generated `.worktrees` output. A local browser preview was blocked because the local D1 database lacks `auth_sessions`; no migration or backend change was made. No VPS deployment was performed.
+
 ## Product
 Moonlight-inspired tarot website. Preserve reference interactions and smooth motion. The visible product brand is now NaTarot; internal component and storage names retain their existing compatibility. User wants real production services but has not provisioned payment/video/email accounts.
 

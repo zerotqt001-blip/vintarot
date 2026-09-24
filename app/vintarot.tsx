@@ -285,7 +285,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       {renderCommerceAccessLinks()}
     </nav>}
     {isGuidebook ? <GuidebookTargetSidebar t={t} /> : <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-      {isHome ? <nav className="home-primary-nav" aria-label={t("nav.home")}>{renderHomePrimaryNav()}<span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span></nav> : isPractice ? <nav className="main-nav">{practiceNav.map(([key, Icon, href]) => {
+      {isHome || isCreate ? <nav className="home-primary-nav" aria-label={t("nav.home")}>{renderHomePrimaryNav()}<span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span></nav> : isPractice ? <nav className="main-nav">{practiceNav.map(([key, Icon, href]) => {
         const active = String(href) === String(path);
         const variant = href === "/" ? "home" : href === "/room" ? "cards" : "book";
         return <a className={active ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={active ? "page" : undefined}>

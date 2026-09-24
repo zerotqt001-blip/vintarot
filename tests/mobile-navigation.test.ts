@@ -1,9 +1,40 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+
+test("Create renders the same five labeled primary destinations as the Home rail", () => {
+  const markup = execFileSync(process.execPath, ["-e", [
+    "require('tsx/cjs');",
+    "const React = require('react');",
+    "const { renderToStaticMarkup } = require('react-dom/server');",
+    "const VinTarot = require('./app/vintarot.tsx').default;",
+    "process.stdout.write(renderToStaticMarkup(React.createElement(VinTarot, { user: null, path: '/create', children: React.createElement('p', null, 'Create page') })));",
+  ].join(" ")], { encoding: "utf8" });
+  const rail = markup.match(/<nav class="home-primary-nav"[\s\S]*?<\/nav>/)?.[0];
+
+  assert.ok(rail, "Create should render the Home primary navigation rail");
+  const links = [...rail.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(links.map(([, attributes]) => attributes.match(/href="([^"]+)"/)?.[1]), [
+    "/",
+    "/create",
+    "/packages",
+    "/affiliate",
+    "/auth?return_to=/account",
+  ]);
+  assert.deepEqual(links.map(([, , content]) => content.match(/class="home-nav-label">([^<]+)</)?.[1]), [
+    "Trang chủ",
+    "Rút Bài Ngay",
+    "Gói Thành Viên",
+    "Affiliate",
+    "Tài Khoản",
+  ]);
+  assert.match(links[1]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
+  assert.match(markup, /class="personal-nav"/);
+});
 
 test("mobile primary navigation exposes readable labels and preserves Room's dedicated controls", () => {
   assert.match(shell, /const isRoom = path === "\/room";/);
