@@ -6,8 +6,23 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
+import { applyMigration } from "../scripts/node-migrate.mjs";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
+
+test("Node migration bookkeeping is atomic when a migration statement fails", () => {
+  const sqlite = new DatabaseSync(":memory:");
+  sqlite.exec("CREATE TABLE natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL); CREATE TABLE migration_target (id INTEGER PRIMARY KEY)");
+
+  assert.throws(() => applyMigration(
+    sqlite,
+    "0009_affiliate_referral_links.sql",
+    "ALTER TABLE migration_target ADD COLUMN public_code text; CREATE UNIQUE INDEX broken_index ON migration_target(missing_column);",
+  ));
+  assert.deepEqual(sqlite.prepare("PRAGMA table_info(migration_target)").all().map((row) => row.name), ["id"]);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 0);
+  sqlite.close();
+});
 
 function createPreShareDatabase(dbPath: string): void {
   const sqlite = new DatabaseSync(dbPath);

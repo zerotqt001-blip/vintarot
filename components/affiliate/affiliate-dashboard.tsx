@@ -241,6 +241,6 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
       <section className="affiliate-kpi-grid" aria-label={t("affiliate.dashboardEyebrow")}>{kpis.map((item) => <StatCard key={item.label} {...item} />)}</section>
       <div className="affiliate-dashboard-grid"><div className="affiliate-dashboard-grid__main"><TierPanel dashboard={dashboard} policy={activePolicy} t={t} locale={locale} /><IncomePanel dashboard={dashboard} currency={currency} t={t} locale={locale} /></div><div className="affiliate-dashboard-grid__side"><ReferralLinkPanel dashboard={dashboard} t={t} /><ReferralHistoryPanel dashboard={dashboard} t={t} locale={locale} /></div></div>
       <div className="affiliate-lower-grid"><HowItWorks t={t} /><PolicyPanel policy={activePolicy!} t={t} locale={locale} /></div>
-    </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} /><HowItWorks t={t} /></div>}
+    </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} />{dashboard && <ReferralLinkPanel dashboard={dashboard} t={t} />}<HowItWorks t={t} /></div>}
   </div>;
 }

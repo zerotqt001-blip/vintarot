@@ -142,6 +142,8 @@ test("Affiliate target source preserves real-data boundaries and the approved sh
   assert.match(dashboard, /download=/);
   assert.match(dashboard, /link\.qrUrl/);
   assert.match(dashboard, /link\.reason/);
+  assert.equal((dashboard.match(/<ReferralLinkPanel/g) ?? []).length, 2);
+  assert.match(dashboard, /dashboard && <ReferralLinkPanel dashboard=\{dashboard\} t=\{t\} \/>/);
   assert.doesNotMatch(dashboard, /18 referred|1\.245\.000|320\.000|4\.860\.000|925\.000|THANH123/);
   assert.match(customer, /currentMonthMinor/);
   assert.match(customer, /confirmedMinor/);
@@ -153,4 +155,5 @@ test("Affiliate target source preserves real-data boundaries and the approved sh
   for (const key of ["affiliate.dashboardEyebrow", "affiliate.linkUnavailable", "affiliate.incomeTitle", "affiliate.policyPending", "affiliate.referralCode", "affiliate.shareLink", "affiliate.downloadQr"]) {
     assert.match(messages, new RegExp(`${key.split(".")[1]}:`));
   }
+  assert.doesNotMatch(messages, /stored one-way|lưu một chiều/);
 });
