@@ -103,6 +103,6 @@
 - Modify: `docs/PROJECT_STATE.md`
 
 - [x] Append the feature outcome, permission/data/image-storage decisions, verification actually completed, booking integration limitation, and deployment status.
-- [ ] Stage only this feature's hunks and files. Inspect `git diff --cached` for unrelated user changes or secrets before committing.
-- [ ] Commit the completed feature on the current `codex/` branch with a clear message.
-- [ ] Since `origin` is configured, push the feature commit and verify the remote ref; report any push failure. Do not deploy to production.
+- [x] Stage only this feature's files and inspect the staged diff for unrelated changes and common credential patterns.
+- [x] Commit the completed feature on the current `codex/` branch as `d9f1313` (`feat: add human reader booking directory`).
+- [x] Push the feature commit to `origin/codex/room-sidebar-autohide` and verify the remote ref. No production deployment was performed.
