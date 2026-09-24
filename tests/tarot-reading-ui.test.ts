@@ -190,24 +190,25 @@ test("reading components expose the accessible 44px interaction and celestial la
   assert.match(components, /prefers-reduced-motion|motion-reduce/);
 });
 
-test("Room reading surface gives the question and spread a full editorial stage", () => {
+test("Room Reading Result uses the current production overview and interpretation grids", () => {
   assert.match(room, /ReadingPanel/);
   assert.doesNotMatch(room, /InterpretationTab|room-interpretation-tabs|interpretationOverviewTab/);
   assert.match(css, /\.reading-panel/);
-  assert.ok(css.includes(".reading-result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,320px)"));
-  assert.ok(css.includes(".reading-result-header,.reading-result-spread{grid-column:1/-1"));
-  assert.ok(css.includes(".reading-result-follow-up{grid-column:2"));
-  assert.ok(css.includes(".reading-result-layout{grid-template-columns:minmax(0,1fr);row-gap:10px}"));
-  assert.match(css, /@media\(max-width:768px\)/);
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-overview{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(250px,.72fr)"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-content{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(276px,.76fr)"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-content__rail .reading-section--follow-up{position:sticky;top:10px"));
+  assert.match(css, /@media\(max-width:980px\)/);
+  assert.match(css, /@media\(max-width:680px\)/);
   assert.match(css, /safe-area-inset/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /reading-card-evidence/);
 });
 
 test("Reading Result owns the canvas under the shared header", () => {
-  assert.ok(css.includes(".room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:var(--nt-header-height);right:0;bottom:0;left:0"));
-  assert.ok(css.includes(".room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-height:0;overflow-y:auto"));
-  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom/);
+  assert.ok(css.includes(".room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:62px;right:0;bottom:0;left:0"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-toolbar{position:sticky;top:0"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-width:0"));
+  assert.match(css, /reading-result-overview[\s\S]*reading-result-meta/);
 });
 
 test("V1.1 makes the question subordinate and the takeaway editorial", () => {

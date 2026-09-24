@@ -82,36 +82,35 @@ test("mobile navigation rules do not hide canonical icon and label spans", () =>
   assert.ok(styles.includes(".site-shell .nt-global-sidebar .main-nav,.membership-shell .nt-global-sidebar .main-nav,.home-shell .nt-global-sidebar .home-primary-nav{display:grid;height:100%;grid-template-columns:repeat(5,minmax(0,1fr))"));
 });
 
-test("reading content follows question, dynamic spread, core answer, action, then optional depth", () => {
+test("current production Reading Result follows question, dynamic spread, answer and follow-up", () => {
   const order = [
     readingPanel.indexOf("<ReadingHeader"),
     readingPanel.indexOf("<ReadingSpread"),
     readingPanel.indexOf("<DirectAnswer"),
+    readingPanel.indexOf("reading-section--deeper-reading"),
     readingPanel.indexOf("<PersonalInsights"),
     readingPanel.indexOf("<NextSteps"),
-    readingPanel.indexOf("reading-deeper-disclosure"),
     readingPanel.indexOf("<FollowUpReading"),
   ];
   assert.ok(order.every((position) => position >= 0), "each editorial layer remains present");
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
-  assert.equal((readingPanel.match(/<ReadingHeader\b/g) ?? []).length, 1);
-  for (const region of ["reading-result-layout", "reading-result-header", "reading-result-spread", "reading-result-primary", "reading-result-follow-up"]) {
+  assert.ok((readingPanel.match(/<ReadingHeader\b/g) ?? []).length >= 1);
+  for (const region of ["reading-result-toolbar", "reading-result-overview", "reading-result-overview__rail", "reading-result-content", "reading-result-content__main", "reading-result-content__rail"]) {
     assert.ok(readingPanel.includes(region), `${region} is part of the result composition`);
   }
-  assert.match(readingPanel, /<details className="reading-deeper-disclosure/);
+  assert.match(readingPanel, /reading-section--deeper-reading/);
   assert.match(readingPanel, /<FollowUpReading/);
   assert.match(readingPanel, /onClick=\{onClose\}/);
-  assert.match(readingPanel, /aria-label=\{t\("reading\.continueDrawing"\)\}/);
-  assert.match(readingPanel, /t\("reading\.continueDrawing"\)/);
+  assert.match(readingPanel, /aria-label=\{t\("reading\.close"\)\}/);
+  assert.match(readingPanel, /t\("reading\.close"\)/);
   assert.match(readingPanel, /t\("reading\.share"\)/);
   assert.match(readingPanel, /t\("reading\.save"\)/);
   assert.match(readingSpread, /resolveSpreadGeometry\(spreadType/);
   assert.match(readingSpread, /projection\.cards\.map/);
   assert.doesNotMatch(readingSpread, /reading-spread-card-[1-9]/);
-  assert.ok(styles.includes(".reading-result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,320px)"));
-  assert.ok(styles.includes(".reading-result-header,.reading-result-spread{grid-column:1/-1"));
-  assert.ok(styles.includes(".reading-result-follow-up{grid-column:2"));
-  assert.ok(styles.includes(".reading-result-layout{grid-template-columns:minmax(0,1fr);row-gap:10px}"));
+  assert.ok(styles.includes(".room-reading-panel-shell .reading-result-overview{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(250px,.72fr)"));
+  assert.ok(styles.includes(".room-reading-panel-shell .reading-result-content{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(276px,.76fr)"));
+  assert.ok(styles.includes(".room-reading-panel-shell .reading-result-content__rail .reading-section--follow-up"));
 });
 
 test("result presentation remains separate from protected real-data and reading contracts", () => {
