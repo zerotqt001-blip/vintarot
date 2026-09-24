@@ -7,10 +7,6 @@ import type { ShellVariant, NaTarotUser, Translator } from "./types";
 
 type SidebarProps = { path: string; variant: ShellVariant; t: Translator; user: NaTarotUser; accountHref: string };
 
-function ArcLabel({ id, text }: { id: string; text: string }) {
-  return <svg className="arc-label" viewBox="0 0 150 110" aria-hidden="true" focusable="false"><defs><path id={id} d="M 20 82 A 55 55 0 0 1 130 82" /></defs><text><textPath href={`#${id}`} startOffset="50%" textAnchor="middle">{text}</textPath></text></svg>;
-}
-
 const navItems = [
   ["nav.home", Home, "/"],
   ["nav.drawNow", Layers, "/create"],
@@ -19,60 +15,51 @@ const navItems = [
   ["nav.account", UserRound, "/account"],
 ] as const;
 
-const siteNav = [
-  ["nav.home", Home, "/"],
-  ["nav.decks", Layers, "/guidebook"],
-  ["nav.practice", Sparkles, "/community"],
-  ["nav.book", CalendarDays, "/book"],
-] as const;
-
-const guidebookNavItems = [
-  ["nav.home", Home, "/"],
-  ["nav.drawNow", Sparkles, "/room?ritual=1"],
-  ["nav.targetMembership", Crown, "/packages"],
-  ["nav.affiliate", Share2, "/affiliate"],
-  ["nav.targetAccount", UserRound, "/account"],
-] as const;
-
-function activePath(path: string, href: string): boolean {
-  return href === path || (href === "/guidebook" && path === "/decks");
+function isCurrentPath(path: string, href: string): boolean {
+  return href === path;
 }
 
-function CanonicalNav({ path, t, accountHref, variant }: Pick<SidebarProps, "path" | "t" | "accountHref"> & { variant: ShellVariant }) {
-  return <nav className={variant === "home" ? "home-primary-nav" : "main-nav"} aria-label={t("nav.primary")}>
-    {navItems.map(([key, Icon, href]) => <Link className={activePath(path, href) ? "active" : ""} href={href === "/account" ? accountHref : href} key={href} aria-label={t(key)} aria-current={activePath(path, href) ? "page" : undefined}>
-      <span className="nav-orb"><Icon size={29} strokeWidth={1.3} aria-hidden="true" /></span>
-      <ArcLabel id={`nav-arc-${href.slice(1).replace(/[^a-z0-9]+/gi, "-") || "home"}`} text={t(key)} />
-      <span className="mobile-nav-label">{t(key)}</span>
+function isVisuallySelected(path: string, href: string): boolean {
+  return isCurrentPath(path, href) || (href === "/" && ["/guidebook", "/community"].includes(path));
+}
+
+function resolveNavHref(path: string, href: string, accountHref: string): string {
+  if (href === "/account") return accountHref;
+  if (path === "/guidebook" && href === "/create") return "/room?ritual=1";
+  return href;
+}
+
+function CanonicalNav({ path, t, accountHref, variant }: SidebarProps) {
+  return <nav className={variant === "home" ? "home-primary-nav" : "main-nav nt-global-nav-list"} aria-label={t("nav.primary")}>
+    {navItems.map(([key, Icon, href]) => <Link
+      className={isVisuallySelected(path, href) ? "active" : ""}
+      href={resolveNavHref(path, href, accountHref)}
+      key={href}
+      aria-label={t(key)}
+      aria-current={isCurrentPath(path, href) ? "page" : undefined}
+    >
+      <span className="nav-orb"><Icon size={26} strokeWidth={1.35} aria-hidden="true" /></span>
+      <span className="nav-label">{t(key)}</span>
     </Link>)}
   </nav>;
-}
-
-function SiteNav({ path, t }: Pick<SidebarProps, "path" | "t">) {
-  return <nav className="main-nav" aria-label={t("nav.primary")}>
-    {siteNav.map(([key, Icon, href]) => <Link className={activePath(path, href) ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={activePath(path, href) ? "page" : undefined}>
-      <span className="nav-orb"><Icon size={29} strokeWidth={1.3} aria-hidden="true" /></span>
-      <ArcLabel id={`site-nav-arc-${href.slice(1).replace(/[^a-z0-9]+/gi, "-") || "home"}`} text={t(key)} />
-      <span className="mobile-nav-label">{t(key)}</span>
-    </Link>)}
-  </nav>;
-}
-
-function GuidebookSidebar({ t }: { t: Translator }) {
-  return <>
-    <aside className="guidebook-target-sidebar" aria-label={t("nav.primary")}><nav className="guidebook-target-sidebar-nav">{guidebookNavItems.map(([key, Icon, href]) => <Link className={href === "/" ? "active" : ""} href={href} key={href}><span className="guidebook-target-sidebar-icon"><Icon size={24} strokeWidth={1.25} /></span><span>{t(key)}</span></Link>)}</nav><div className="guidebook-target-sidebar-signoff"><strong>NaTarot</strong><span>Find Your Inner Light</span></div></aside>
-    <nav className="guidebook-target-mobile-nav" aria-label={t("nav.primary")}>{guidebookNavItems.map(([key, Icon, href]) => <Link href={href} key={href}><span className="guidebook-target-sidebar-icon"><Icon size={24} strokeWidth={1.25} /></span><span>{t(key)}</span></Link>)}</nav>
-  </>;
 }
 
 export default function NaTarotSidebar({ path, variant, t, user, accountHref }: SidebarProps) {
   if (variant === "immersive" || variant === "reading") return null;
-  if (variant === "library") return <GuidebookSidebar t={t} />;
-  const canonical = variant === "home" || variant === "practice" || variant === "membership" || variant === "affiliate" || variant === "account";
-  return <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-    {canonical ? <><CanonicalNav path={path} t={t} accountHref={accountHref} variant={variant} />{variant === "home" && <span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>}</> : <SiteNav path={path} t={t} />}
-    {variant === "practice" && <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div>}
-    {variant !== "home" && variant !== "practice" && variant !== "membership" && variant !== "affiliate" && <nav className="personal-nav"><Link className="username" href={user ? "/profile" : "/auth?return_to=/profile"}>{user?.username || t("nav.yourSpace")}</Link><Link href="/daily-spread"><Sparkles size={17} strokeWidth={1.3} />{t("nav.spread")}</Link><Link href="/bookings"><CalendarDays size={17} strokeWidth={1.3} />{t("nav.bookings")}</Link></nav>}
-    {variant === "membership" && <div className="membership-sidebar-signoff"><span>NaTarot</span><small>Find Your Inner Light</small></div>}
-  </SidebarContent></Sidebar>;
+  const showPersonalNav = !["home", "library", "practice", "membership", "affiliate", "account"].includes(variant);
+  return <Sidebar collapsible="none" className="site-sidebar nt-global-sidebar">
+    <SidebarContent>
+      <CanonicalNav path={path} t={t} user={user} accountHref={accountHref} variant={variant} />
+      {variant === "home" ? (
+        <span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
+      ) : (
+        <span className="site-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
+      )}
+      {showPersonalNav && <nav className="personal-nav">
+        <Link className="username" href={user ? "/profile" : "/auth?return_to=/profile"}>{user?.username || t("nav.yourSpace")}</Link>
+        <Link href="/daily-spread"><Sparkles size={17} strokeWidth={1.3} />{t("nav.spread")}</Link>
+        <Link href="/bookings"><CalendarDays size={17} strokeWidth={1.3} />{t("nav.bookings")}</Link>
+      </nav>}
+    </SidebarContent>
+  </Sidebar>;
 }

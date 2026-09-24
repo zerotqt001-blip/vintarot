@@ -15,7 +15,8 @@ const backgroundByVariant: Partial<Record<ShellVariant, string>> = {
 
 export default function CelestialBackground({ variant }: { variant: ShellVariant }) {
   if (variant !== "home") {
-    return <div className="celestial-background" data-celestial-background={backgroundByVariant[variant] ?? "observatory"} aria-hidden="true" />;
+    const atmosphere = variant === "immersive" ? "reading" : backgroundByVariant[variant] ?? "observatory";
+    return <div className="celestial-background" data-celestial-background={atmosphere} aria-hidden="true" />;
   }
   return <div className="cosmic-scene" aria-hidden="true">
     <div className="cosmic-layer cosmic-sky" />

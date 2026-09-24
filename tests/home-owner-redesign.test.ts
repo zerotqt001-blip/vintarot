@@ -28,7 +28,7 @@ test("Home uses the approved single hierarchy and canonical member destinations"
 });
 
 test("Home header keeps only the target center navigation and exposes honest controls", () => {
-  assert.match(shell, /const simpleTopNav = \[\["nav\.home"[\s\S]*\["nav\.practice"[\s\S]*\["nav\.book"/);
+  assert.match(shell, /const topNav = \[\s*\["nav\.home", "\/"\][\s\S]*\["nav\.practice", "\/community"\][\s\S]*\["nav\.book", "\/book"\]/);
   assert.match(shell, /variant === "home"/);
   assert.match(shell, /Search/);
   assert.match(shell, /home-theme-toggle/);

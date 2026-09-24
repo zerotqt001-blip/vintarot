@@ -393,6 +393,7 @@ export const messages = {
       shareReady: "Share link ready",
       shareUnavailable: "Could not create a share link. Try again.",
       close: "Close reading",
+      continueDrawing: "Continue drawing",
       liveReading: "Reading status",
     },
     share: {
@@ -1218,6 +1219,7 @@ export const messages = {
       shareReady: "Liên kết chia sẻ đã sẵn sàng",
       shareUnavailable: "Không thể tạo liên kết chia sẻ. Hãy thử lại.",
       close: "Đóng lời đọc",
+      continueDrawing: "Tiếp tục rút bài",
       liveReading: "Trạng thái lời đọc",
     },
     share: {

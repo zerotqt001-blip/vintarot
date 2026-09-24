@@ -11,9 +11,8 @@ const pagesSource = readFileSync(new URL("../app/pages.tsx", import.meta.url), "
 const i18nSource = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
 test("the primary cards navigation opens the guidebook directly", () => {
-  assert.match(shellSource, /\["nav\.decks", Layers, "\/guidebook"\]/);
-  assert.match(shellSource, /\["nav\.decks", "\/guidebook"\]/);
-  assert.match(shellSource, /href="\/guidebook">\{t\("home\.explore"\)\}/);
+  assert.match(shellSource, /const topNav = \[[\s\S]*\["nav\.decks", "\/guidebook"\]/);
+  assert.match(shellSource, /href=\{href\}[\s\S]*key=\{href\}/);
   assert.doesNotMatch(shellSource, /\["nav\.decks"[^\n]*"\/decks"/);
 });
 

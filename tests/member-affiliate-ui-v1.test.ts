@@ -72,7 +72,8 @@ test("member destinations have separate shared desktop and mobile access regions
   assert.ok(desktopNavIndex >= 0 && desktopNavIndex < sidebarIndex, "desktop access must be outside the scrollable sidebar");
   assert.ok(mobileNavIndex >= 0 && mobileNavIndex < sidebarIndex, "mobile access must be outside the primary bottom navigation");
   assert.match(shell, /commerce-access-nav__link/);
-  assert.match(sidebar, /className="main-nav"/);
+  assert.match(sidebar, /"main-nav nt-global-nav-list"/);
+  assert.match(sidebar, /className="nav-label"/);
   assert.doesNotMatch(shell, /<nav className="commerce-nav"/);
   assert.match(styles, /\.commerce-access-nav--desktop/);
   assert.match(styles, /\.commerce-access-nav--mobile/);

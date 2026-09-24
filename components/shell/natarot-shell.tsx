@@ -67,7 +67,6 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
   const [modal, setModal] = useState<ShellModal>("");
   const [theme, setTheme] = useState<ShellTheme>("night");
   const shellRef = useRef<HTMLDivElement>(null);
-  const profileHref = user ? "/profile" : "/auth?return_to=/profile";
   const accountHref = user ? "/account" : "/auth?return_to=/account";
 
   useEffect(() => {
@@ -107,7 +106,7 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
 
   const toggleTheme = () => setTheme((current) => current === "night" ? "soft" : "night");
   const focusGuidebookSearch = () => window.dispatchEvent(new Event("guidebook:focus-search"));
-  const showCommerceAccess = !isHome && variant !== "immersive" && variant !== "library" && variant !== "practice" && variant !== "affiliate" && variant !== "membership";
+  const showCommerceAccess = variant === "standard" || variant === "create" || variant === "daily";
   const shellThemeClass = theme === "soft" && variant === "membership" ? " membership-shell-soft" : theme === "soft" && variant === "practice" ? " practice-shell-soft" : "";
   const shellClassName = variant === "membership"
     ? `membership-shell${shellThemeClass}`
@@ -134,9 +133,9 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
 
   return <SidebarProvider>
     <ReferralCapture enabled={Boolean(user)} />
-    <div ref={shellRef} data-home-atmosphere={isHome ? theme : undefined} data-guidebook-theme={variant === "library" ? theme : undefined} className={shellClassName}>
+    <div ref={shellRef} data-shell-variant={variant} data-home-atmosphere={isHome ? theme : undefined} data-guidebook-theme={variant === "library" ? theme : undefined} className={shellClassName}>
       <CelestialBackground variant={variant} />
-      <NaTarotHeader path={path} variant={variant} t={t} user={user} profileHref={profileHref} accountHref={accountHref} theme={theme} onTheme={toggleTheme} onModal={openModal} onSearch={focusGuidebookSearch} />
+      <NaTarotHeader path={path} variant={variant} t={t} accountHref={accountHref} theme={theme} onTheme={toggleTheme} onModal={openModal} onSearch={focusGuidebookSearch} />
       {showCommerceAccess && <>
         <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
           {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}

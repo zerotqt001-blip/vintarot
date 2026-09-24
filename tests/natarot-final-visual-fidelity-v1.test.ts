@@ -88,7 +88,7 @@ test("final desktop composition has the target visual weight and mobile safety h
   assert.match(styles, /@media\(min-width:1500px\)[\s\S]*\.practice-shell \.practice-v1-layout\{transform:translateX\(28px\)/);
   assert.match(styles, /@media\(min-width:1500px\)[\s\S]*\.practice-shell \.practice-v1-composition\{[^}]*grid-template-columns:minmax\(420px,44%\)/);
   assert.match(styles, /\.membership-package-grid\{[^}]*gap:16px/);
-  assert.match(styles, /\.membership-shell \.main\{[^}]*padding-top:16px/);
+  assert.ok(/\.membership-shell \.main\{padding-top:calc\(16px \+ var\(--nt-header-height\)\)/.test(styles), "Membership content offsets below the fixed header");
   assert.match(styles, /\.membership-page\{[^}]*gap:14px/);
   assert.match(styles, /\.membership-balance-row\{[^}]*height:0/);
   assert.match(styles, /\.membership-package-grid\{[^}]*max-width:920px/);

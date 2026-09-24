@@ -41,6 +41,7 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
 test("ReadingHeader makes the original question the reading title hierarchy", () => {
   assert.match(header, /session\.question/);
   assert.match(header, /reading-header__question/);
+  assert.match(header, /<h1 className="reading-header__question/);
   assert.match(header, /reading-header__meta/);
   assert.doesNotMatch(panel, /reading-question/);
 });
@@ -163,20 +164,23 @@ test("reading components expose the accessible 44px interaction and celestial la
   assert.match(components, /prefers-reduced-motion|motion-reduce/);
 });
 
-test("Room reading surface is a single responsive editorial column", () => {
+test("Room reading surface gives the question and spread a full editorial stage", () => {
   assert.match(room, /ReadingPanel/);
   assert.doesNotMatch(room, /InterpretationTab|room-interpretation-tabs|interpretationOverviewTab/);
   assert.match(css, /\.reading-panel/);
+  assert.ok(css.includes(".reading-result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,320px)"));
+  assert.ok(css.includes(".reading-result-header,.reading-result-spread{grid-column:1/-1"));
+  assert.ok(css.includes(".reading-result-follow-up{grid-column:2"));
+  assert.ok(css.includes(".reading-result-layout{grid-template-columns:minmax(0,1fr);row-gap:10px}"));
   assert.match(css, /@media\(max-width:768px\)/);
   assert.match(css, /safe-area-inset/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /reading-card-evidence/);
 });
 
-test("Room gives the completed reading the larger editorial share on desktop", () => {
-  assert.match(css, /\.room-reading-panel-shell\{[^}]*width:min\(62vw,1180px\)/);
-  assert.match(css, /\.room-page\.has-interpretation \.tabletop\{right:min\(62vw,1180px\)/);
-  assert.match(css, /\.room-page\.has-interpretation \.room-question\{left:4%;right:calc\(min\(62vw,1180px\)/);
+test("Reading Result owns the canvas under the shared header", () => {
+  assert.ok(css.includes(".room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:var(--nt-header-height);right:0;bottom:0;left:0"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-height:0;overflow-y:auto"));
   assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom/);
 });
 
