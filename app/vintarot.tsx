@@ -154,6 +154,12 @@ function GuidebookTargetFooter({ t }: { t: Translator }) {
         <a href="/privacy">{t("auth.footerPrivacy")}</a>
         <a href="/terms">{t("auth.footerTerms")}</a>
       </nav>
+      <div className="guidebook-target-footer-socials" aria-hidden="true">
+        <span><b>f</b></span>
+        <span><CirclePlay size={18} strokeWidth={1.35} /></span>
+        <span><Camera size={18} strokeWidth={1.35} /></span>
+        <span><Music2 size={18} strokeWidth={1.35} /></span>
+      </div>
     </footer>
   );
 }

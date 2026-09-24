@@ -23,6 +23,7 @@ test("the Guidebook shell exposes the Image 1 NaTarot chrome without replacing c
   assert.match(shell, /guidebookTargetNav/);
   assert.match(shell, /guidebook:focus-search/);
   assert.match(shell, /aria-pressed/);
+  assert.match(shell, /guidebook-target-footer-socials/);
 });
 
 test("the Guidebook worlds map keeps canonical five-family counts and target editorial composition", () => {
@@ -53,6 +54,10 @@ test("the Guidebook worlds map keeps canonical five-family counts and target edi
 test("the Guidebook target is responsive, observatory-backed, and motion-safe", () => {
   assert.match(styles, /\.guidebook-target-shell[^}]*celestial-observatory\.png/);
   assert.match(styles, /\.guidebook-target-sidebar/);
+  assert.match(styles, /--target-footer-height:74px/);
+  assert.match(styles, /bottom:calc\(var\(--target-footer-height\) \+ var\(--target-rail-gap\)\)/);
+  assert.match(styles, /\.guidebook-target-node\{[^}]*width:238px/);
+  assert.match(styles, /\.guidebook-target-footer-socials/);
   assert.match(styles, /\.guidebook-target-map[^}]*grid-template-areas/);
   assert.match(styles, /@media\(max-width:700px\)[\s\S]*guidebook-target-map/);
   assert.match(styles, /@media\(max-width:420px\)[\s\S]*guidebook-target-map/);
