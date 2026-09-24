@@ -121,7 +121,7 @@
 - [x] **Step 1: Run complete tests and protected contracts.** Run `npx tsx --test tests/*.test.ts`, `npx tsc --noEmit`, `npm run build`, ESLint over every changed TS/TSX file, `git diff --check`, and the existing production-data/auth/spread/payment contracts. Record exact output counts and inherited full-lint baseline without claiming unrelated debt was fixed.
 - [x] **Step 2: Perform a fresh code/data review.** Inspect the full diff for duplicate components, demo literals, changed business logic, secret-like strings, regressions in dynamic spread behavior, and unrelated files. Request an independent reviewer only if an agent-review tool becomes available; otherwise record self-review and its limits.
 - [x] **Step 3: Recompute tracked LOC and finalize evidence.** Record production TS/TSX, CSS, shared shell+brand LOC, added/removed/net lines, iteration count, exact screenshot paths, and all gates in the audit/report and `docs/PROJECT_STATE.md`.
-- [ ] **Step 4: Commit and push the dedicated branch normally.** Stage only intended paths; inspect `git diff --cached` and secret scans; use a descriptive non-force commit and push to `origin/codex/natarot-final-ui-correction-v2` if normal GitHub authentication is available.
+- [x] **Step 4: Commit and push the dedicated branch normally.** Scoped implementation/evidence commit `303a1d8` is pushed to `origin/codex/natarot-final-ui-correction-v2`; staged diff and credential-pattern scan were clean. No PR was created.
 - [x] **Step 5: Deploy only after fresh remote gates pass.** No V2 production deploy was made: SSH denied public-key/password authentication, so current-release/backup/rollback/browser gates cannot be freshly verified. Production screenshots and authenticated states remain blocked.
 
 ---
