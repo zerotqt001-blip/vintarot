@@ -82,6 +82,6 @@
 **Files:** `docs/PROJECT_STATE.md` plus the verified integration source/tests.
 
 - [x] Update `docs/PROJECT_STATE.md` with exact source baseline, integration commit, validation, browser captures available/missing, backup/deploy/rollback/retention evidence, and remaining blockers.
-- [ ] Inspect staged changes and secret scan, commit only related files, push normally, and verify local/remote SHA equality.
+- [x] Inspect staged changes and secret scan; commit only the two related docs files; push normally to the existing PR branch and verify local/remote SHA equality (`23676cc5ce34a8148ecfa71197cedc5af083ee60` at first push verification).
 - [x] Obtain fresh read-only review of the integration diff; no Critical/Important issues remained after the Daily mobile clearance regression fix and tests.
-- [ ] Report production commit, integration commit, test results, Affiliate regression, UI V2 verification, screenshot evidence/limitations, deployment/rollback/retention status, and blockers.
+- [x] Report production commit, integration commit, test results, Affiliate regression, UI V2 verification, screenshot evidence/limitations, deployment/rollback/retention status, and blockers in the final handoff.
