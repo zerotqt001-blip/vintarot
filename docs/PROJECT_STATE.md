@@ -1,5 +1,13 @@
 # VinTarot state
 
+## Reading Result approved reference follow-up (2026-09-25, source-only)
+
+The Reading Result now follows the owner-approved screenshot: the top action rail includes Share, Save to journal, Save image and Close; a gold “Tiếp tục rút bài” action sits centered below the result and scrolls to the existing clarification flow. “Lưu ảnh” uses the existing `POST /api/tarot/shares` response and `/r/[token]/image.svg` route to download the SVG. If a share link does not yet exist, saving creates one and the UI discloses this. The existing Moonlight/NaTarot theme, reading content, card evidence and clarification behavior remain in place; no API, schema, prompt, database or deployment changes were made.
+
+Known share-token limitation: raw share tokens are intentionally never persisted; storage keeps only their hashes, and each reading permits one active share. After a full page reload, the Room UI cannot recover an existing share URL, so a repeated Share or Save image request can receive HTTP 409. The UI now explains that the original share link must be opened to download that image. Changing token storage or share-link lifecycle was outside this UI pass.
+
+Validation: `npm run build` and `git diff --check` pass. No tests were run. This is a source-only change and is not deployed.
+
 ## Room sidebar auto-hide (2026-09-24, UI-only; production deployed 2026-09-25)
 In Room only, the shared sidebar now rests mostly beyond the left edge on desktop/fine-pointer devices, leaving a 14px hover strip; it slides open on pointer hover or keyboard focus. Touch navigation and every other route remain unchanged, and reduced-motion preferences disable the transition. This is a presentation-only CSS change with no API/backend edits. Validation: focused navigation tests 4/4, tracked test suite 617/617, and `npm run build` pass. Production release `create-nav-e326acd-20260924T223927Z` from source commit `e326acda1e2437642bdbc0a656990bf6ffc33508` includes this UI; the service is active, rollback references are preserved, and no database migration ran.
 
@@ -478,7 +486,7 @@ The owner corrected the result-page visual reference; this pass uses the replace
 
 Validation: fresh `npm run build` passes and `git diff --check` passes. Browser QA with a temporary local reading fixture covered desktop `1660×950` and mobile `390×844`; both had no horizontal overflow, with the right rail and reading sections in the intended order. The temporary preview route and fixture were removed. Scoped ESLint passes for the edited reading components and `lib/i18n.ts`; it still reports 25 errors and 6 warnings in the densely formatted `app/room/room.tsx`, including `any`, hook, unused-variable and anchor rules. No tests were run. This is a local/source branch change and is not deployed.
 
-Backend save-image status: journal save is implemented through authenticated `POST /api/tarot/saved-readings`, but it records a private saved-reading entry, not an image. Share creation through `POST /api/tarot/shares` returns a share URL and image URL; `/r/[token]/image.svg` dynamically renders an SVG/QR for an existing public share, and the public-share page can download that SVG. The result-room action currently creates/copies the share URL and does not invoke an image download or persist an image file. Therefore a dedicated direct “save result as image” action from the reading result is **not complete**; only the existing public-share SVG download is available. No backend route, schema, prompt, provider, database or deployment was changed in this visual pass.
+Backend save-image status at the V2.1 checkpoint: journal save records a private saved-reading entry, while the public-share route provides an SVG/QR download. The direct Reading Result image action was not present at that earlier checkpoint; this status is superseded by the approved reference follow-up at the start of this document. The share-token recovery limitation remains as recorded there.
 
 ## Dynamic Reading Result redesign (2026-09-23)
 

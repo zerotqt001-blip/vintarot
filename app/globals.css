@@ -2188,3 +2188,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-reduced-motion:reduce){
   .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none}
 }
+
+/* Match the approved reading-result reference: four compact actions and a centered next-draw action. */
+.room-reading-panel-shell .reading-result-toolbar .reading-panel__actions{grid-template-columns:repeat(3,minmax(0,1fr)) 42px}
+.room-reading-panel-shell .reading-result-toolbar .reading-action--image{border-color:rgba(227,201,143,.75);background:rgba(7,20,36,.92)}
+.room-reading-panel-shell .reading-image-note{grid-column:1/-1;margin:0;padding:1px 3px 0;color:rgba(237,221,177,.82);font-size:.68rem;line-height:1.45}
+.room-reading-panel-shell .reading-result-footer-action{display:flex;justify-content:center;padding:0 18px clamp(28px,4vh,52px)}
+.room-reading-panel-shell .reading-continue-drawing{display:inline-flex;width:min(100%,360px);min-height:58px;align-items:center;justify-content:center;gap:13px;border:1px solid rgba(255,231,169,.9);border-radius:999px;padding:12px 24px;background:linear-gradient(135deg,#f0cf7d,#dfb950);box-shadow:0 10px 26px rgba(3,9,21,.3),0 0 24px rgba(224,185,80,.18);color:#091a2d;font-family:var(--font-display,Georgia,serif);font-size:1.3rem;line-height:1.1;transition:transform .22s ease,box-shadow .22s ease,filter .22s ease}
+.room-reading-panel-shell .reading-continue-drawing svg{flex:none}
+.room-reading-panel-shell .reading-continue-drawing:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(3,9,21,.34),0 0 28px rgba(224,185,80,.24);filter:brightness(1.035)}
+.room-reading-panel-shell .reading-continue-drawing:focus-visible{outline:3px solid #fff0bf;outline-offset:3px}
+@media(max-width:680px){
+  .room-reading-panel-shell .reading-result-footer-action{padding:2px 0 max(22px,env(safe-area-inset-bottom))}
+  .room-reading-panel-shell .reading-continue-drawing{min-height:54px;gap:10px;padding-inline:16px;font-size:1.18rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .room-reading-panel-shell .reading-continue-drawing{transition:none}
+  .room-reading-panel-shell .reading-continue-drawing:hover{transform:none}
+}
