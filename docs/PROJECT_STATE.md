@@ -1,5 +1,13 @@
 # VinTarot state
 
+## Reading result PNG/JPG export to Google Drive (2026-09-25, production deployed)
+
+Reading results now offer PNG/JPG export to Google Drive. The client renders the approved reading artwork, the API validates and stores it in the signed-in member's Drive, and a repeat export of the same reading and format updates the same Drive file. The result shows a share URL and QR; public link access is enabled so the URL can be opened without signing in. The file and access remain available while it is kept in Drive and its sharing permission stays enabled. The app also downloads a local copy. OAuth uses the `drive.file` scope, with refresh tokens encrypted using the server's `NATAROT_PII_KEY_V2`; export records and OAuth state/connection use migration `0010_google_drive_exports.sql`.
+
+The source includes `/api/google-drive/connect`, `/api/google-drive/connection`, and `/api/tarot/drive-exports`. Production Google OAuth configuration is present. Migration `0010_google_drive_exports.sql` was applied; the database integrity check was `ok` with zero foreign-key violations. The feature was promoted with merged header actions and is active in release `google-drive-auth-redirect-9d0d246-20260925T140204Z`, from branch `codex/reading-result-actions-production`, source fix commit `9d0d246`. Earlier fixes in `c3a7d25` and `9d0d246` ensure the unauthenticated connect redirect has mutable headers and stays on the HTTPS site origin.
+
+Production smoke check: `/api/google-drive/connect?return_to=%2Froom` returns HTTP 303 to the NaTarot login page, preserving the Drive connection route as its return destination. The login page is open in Chrome for the user; OAuth/consent remains pending the user's sign-in and approval. Validation: `npx tsc --noEmit`, `npm run build`, and `git diff --check` passed for the deployment fixes. No test suite was run in this session. Share URLs are public to anyone holding the link and can stop working if the Drive file is deleted or its permission is revoked.
+
 ## Shared header actions VPS deployment (2026-09-25)
 
 The common site header and the standalone Room header now keep only the language selector and account link across Home, booking, Guidebook, Practice, Membership, Affiliate, Account, Create, Daily Spread, standard shells and Room. Header search, heart/collection and moon/theme controls are removed; Guidebook's in-page search remains. Room's invite action moved to its table toolbar, the home link remains on the brand, and mobile Room tools keep a separate launcher outside the header. This is a UI-only release with no API, schema, database, environment, payment or Nginx changes.
