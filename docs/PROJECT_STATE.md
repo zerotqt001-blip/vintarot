@@ -1,5 +1,15 @@
 # VinTarot state
 
+## NaTarot Affiliate production activation audit (2026-09-25)
+
+Production has one Affiliate policy (`affiliate-v1-default`, version 1) and it is `DRAFT`; no Affiliate policy approval audit event exists, and the Admin surface has no policy activation control. Its seeded terms are explicitly non-final: 30-day first-touch referral tracking, a 7-day commission review period, and 10% / 20% / 30% tiers from 0 / 10 / 30 qualifying orders. The policy remains unchanged and inactive. Existing attribution rules require an active policy and profile, a valid referral code, prevent self-referral, and create commission only after verified order fulfillment; no payout execution is available. The active VND package catalog remains 1 / 5 / 10 / 20 Credits at 15,000 / 69,000 / 129,000 / 229,000 VND.
+
+The signed-in Owner QA account is enabled with role `ADMIN` and Affiliate profile `ACTIVE`, but production has no referral code for it. This is not an account-status block: the active-policy gate prevents code generation while the program policy is `DRAFT`. The product contract is authenticated `GET /api/affiliate/dashboard`, which creates or reuses a stable code and returns its canonical link and QR only when the profile and policy are active; there is no dedicated `/api/affiliate/referral-code` route. Focused regression fixtures verify the enabled path, owner scoping, stable code, link, QR, and both inactive-policy and inactive-profile gates.
+
+The Affiliate page's English and Vietnamese messages now distinguish an unopened program, paused account access, and participation requirements without exposing internal service or data-store terms. The existing active dashboard continues to provide its code, link, QR, commission totals, tier progress, and referral activity. No commercial terms, production data, profile status, or schema changed.
+
+Source validation: full regression suite `657/657 PASS`, `npx tsc --noEmit` and `npm run build` pass. Targeted ESLint has zero errors and one existing QR `<img>` warning. Repository-wide `npm run lint` remains blocked by 76 existing errors and 135 warnings across unrelated files. The UI-only production release and Owner QA browser check are pending the managed backup, promotion, and browser gate.
+
 ## Room sidebar auto-hide (2026-09-24, UI-only; production deployed 2026-09-25)
 In Room only, the shared sidebar now rests mostly beyond the left edge on desktop/fine-pointer devices, leaving a 14px hover strip; it slides open on pointer hover or keyboard focus. Touch navigation and every other route remain unchanged, and reduced-motion preferences disable the transition. This is a presentation-only CSS change with no API/backend edits. Validation: focused navigation tests 4/4, tracked test suite 617/617, and `npm run build` pass. Production release `create-nav-e326acd-20260924T223927Z` from source commit `e326acda1e2437642bdbc0a656990bf6ffc33508` includes this UI; the service is active, rollback references are preserved, and no database migration ran.
 

@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/language";
+import { affiliateUnavailableMessageKey } from "@/lib/affiliate/presentation";
 import type { AffiliateReferralLink } from "@/lib/affiliate/types";
 
 type PublicAffiliateTier = { tierCode: string; minQualifiedConversions: number; rateBps: number };
@@ -137,18 +138,16 @@ function ReferralLinkPanel({ dashboard, t }: { dashboard: AffiliateDashboard; t:
       await copyValue(link.url, "link");
     }
   };
-  const unavailableDescription = !link.available
-    ? link.reason === "policy_inactive" ? t("affiliate.linkUnavailablePolicy") : link.reason === "profile_inactive" ? t("affiliate.linkUnavailableProfile") : t("affiliate.linkUnavailableEligibility")
-    : t("affiliate.linkReady");
+  const unavailableMessage = !link.available ? t(affiliateUnavailableMessageKey(link.reason)) : null;
   return <section className="affiliate-link-panel affiliate-panel" aria-labelledby="affiliate-link-title">
-    <PanelHeading icon={Link2} title={t("affiliate.referralLinkTitle")} description={unavailableDescription} />
+    <PanelHeading icon={Link2} title={t("affiliate.referralLinkTitle")} description={link.available ? t("affiliate.linkReady") : undefined} />
     {link.available ? <>
       <div className="affiliate-link-field affiliate-link-field--code" role="group" aria-label={t("affiliate.referralCode")}><div className="affiliate-link-field__value"><span className="affiliate-link-field__label">{t("affiliate.referralCode")}</span><code>{link.code}</code></div><button type="button" onClick={() => void copyValue(link.code, "code")} aria-label={feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}><Copy size={17} aria-hidden="true" />{feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}</button></div>
       <div className="affiliate-link-field" role="group" aria-label={t("affiliate.referralLinkTitle")}><div className="affiliate-link-field__value"><span className="affiliate-link-field__label">{t("affiliate.referralLinkTitle")}</span><span>{link.url}</span></div><div className="affiliate-link-field__actions"><button type="button" onClick={() => void copyValue(link.url, "link")} aria-label={feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={17} aria-hidden="true" />{feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}</button><button type="button" onClick={() => void share()} aria-label={feedback === "shared" ? t("affiliate.shared") : t("affiliate.shareLink")}><Share2 size={17} aria-hidden="true" />{feedback === "shared" ? t("affiliate.shared") : t("affiliate.shareLink")}</button></div></div>
       <div className="affiliate-qr"><img src={link.qrUrl} alt={t("affiliate.qrAlt")} /><a className="affiliate-link-download" href={link.qrUrl} download={link.downloadName}><Download size={15} aria-hidden="true" />{t("affiliate.downloadQr")}</a></div>
       {actionError && <p className="affiliate-panel-note affiliate-panel-note--error" role="status" aria-live="polite"><CircleAlert size={16} aria-hidden="true" />{t("affiliate.linkActionError")}</p>}
       <p className="affiliate-panel-note"><BadgeCheck size={16} aria-hidden="true" />{t("affiliate.linkSecurityText")}</p>
-    </> : <div className="affiliate-unavailable"><LockKeyhole size={24} aria-hidden="true" /><p>{t("affiliate.linkSecurityText")}</p><span>{t("affiliate.linkUnavailableAction")}</span></div>}
+    </> : <div className="affiliate-unavailable" role="status" aria-live="polite"><LockKeyhole size={24} aria-hidden="true" /><p>{unavailableMessage}</p></div>}
   </section>;
 }
 

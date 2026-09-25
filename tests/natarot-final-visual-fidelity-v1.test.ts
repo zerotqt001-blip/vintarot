@@ -115,8 +115,8 @@ test("final desktop composition has the target visual weight and mobile safety h
   assert.match(styles, /overflow-x:(?:clip|hidden)/);
 });
 
-test("final fidelity renders server values inside localized policy copy", () => {
-  assert.equal(messageFor("vi", "affiliate.policyText", { version: 1 }), "Phiên bản chính sách hiệu lực 1 được đọc từ cấu hình máy chủ đang hoạt động.");
-  assert.equal(messageFor("vi", "affiliate.tierFrom", { value: 10 }), "Từ 10 chuyển đổi");
-  assert.equal(messageFor("en", "affiliate.holdWindow", { value: 30 }), "Hold period: 30 days");
+test("final fidelity renders values in localized Affiliate terms", () => {
+  assert.equal(messageFor("vi", "affiliate.policyText", { version: 1 }), "Tỷ lệ hoa hồng và điều kiện hiện tại · phiên bản 1");
+  assert.equal(messageFor("vi", "affiliate.tierFrom", { value: 10 }), "Từ 10 đơn hàng đủ điều kiện");
+  assert.equal(messageFor("en", "affiliate.holdWindow", { value: 30 }), "Review period: 30 days");
 });
