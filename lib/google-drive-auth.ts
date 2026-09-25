@@ -53,7 +53,8 @@ export async function startGoogleDriveConnection(request: Request): Promise<Resp
       connectUrl.searchParams.set("return_to", returnPath);
       const authUrl = new URL("/auth", request.url);
       authUrl.searchParams.set("return_to", `${connectUrl.pathname}${connectUrl.search}`);
-      return attachIdentityCookie(Response.redirect(authUrl, 303), requestIdentity);
+      const response = new Response(null, { status: 303, headers: { Location: authUrl.toString(), "Cache-Control": "no-store" } });
+      return attachIdentityCookie(response, requestIdentity);
     }
     const config = getGoogleDriveConfig(request);
     if (!config) return Response.json({ error: "Google Drive connection is not configured." }, { status: 503, headers: { "Cache-Control": "no-store" } });
