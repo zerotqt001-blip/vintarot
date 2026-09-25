@@ -86,6 +86,7 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
         className="reading-spread__stage"
         data-layout-mode={projection.mode}
         data-spread-type={geometry.layoutKey}
+        data-card-count={items.length}
         style={{ height: `${stageHeight}px` }}
       >
         <div className="reading-spread__stage-light" aria-hidden="true" />

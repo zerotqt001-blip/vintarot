@@ -9,7 +9,7 @@ export function ReadingHeader({ session, t }: ReadingHeaderProps) {
   return (
     <header className="reading-header brand-reading-header reading-surface reading-surface--midnight-navy px-5 py-7 sm:px-9 sm:py-9">
       <p className="reading-header__title max-w-2xl text-balance text-2xl font-medium tracking-[-0.03em] text-ivory sm:text-3xl">
-        {t("reading.title")}
+        {t("reading.resultEyebrow")}
       </p>
       <h1 className="reading-header__question mt-4 max-w-[30ch] text-balance text-2xl leading-[1.18] text-ivory sm:text-[clamp(1.8rem,3.1vw,2.7rem)]">
         {session.question}
