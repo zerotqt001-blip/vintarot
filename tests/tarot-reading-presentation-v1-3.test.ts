@@ -11,11 +11,11 @@ const followUp = read("components/reading/follow-up-reading.tsx");
 const room = read("app/room/room.tsx");
 const css = read("app/globals.css");
 
-test("V1.3 groups supporting material without changing the follow-up path", () => {
+test("current Reading Result groups supporting material without changing the follow-up path", () => {
   assert.match(panel, /reading-supporting/);
-  assert.match(panel, /reading-supporting__title/);
+  assert.match(panel, /<section className="reading-supporting"[\s\S]*?reading\.supportingMaterial/);
+  assert.doesNotMatch(panel, /reading-result-support-disclosure/);
   assert.match(panel, /reading-supporting[\s\S]*ReflectionPrompts[\s\S]*TarotEvidence/);
-  assert.match(panel, /reading-supporting__title[\s\S]*supportingMaterial/);
   assert.match(followUp, /visibleSuggestions = suggestions\.slice\(0, 3\)/);
   assert.match(followUp, /reading-follow-up-input/);
   assert.match(room, /<ReadingPanel[\s\S]*onFollowUpSubmit=\{readingComplete\?submitFollowUp:undefined\}/);

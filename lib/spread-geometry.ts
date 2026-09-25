@@ -143,7 +143,7 @@ export function projectSpreadGeometry(
     ? estimatedBaseWidth * Math.min(...geometry.points.map((point) => point.scale))
     : estimatedBaseWidth;
   const shouldOrderCards = options.mobile
-    && (smallestScaledWidth < minCardWidth * 0.95 || geometry.points.length > 6);
+    && (smallestScaledWidth < minCardWidth * 0.95 || geometry.points.length > 2);
 
   if (shouldOrderCards) {
     const cardWidth = clamp(Math.min(maxCardWidth, width - 32), minCardWidth, maxCardWidth);

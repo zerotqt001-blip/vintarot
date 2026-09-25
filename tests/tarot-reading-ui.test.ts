@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { ReadingPanel } from "../components/reading/reading-panel";
 import { splitReadingParagraphs } from "../lib/reading-text";
 
 const panel = readFileSync(new URL("../components/reading/reading-panel.tsx", import.meta.url), "utf8");
@@ -30,8 +33,6 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
   assert.match(panel, /aria-live=["']polite["']/);
   assert.match(header, /<header/);
   assert.match(panel, /reading-panel__scroll/);
-  assert.match(panel, /\) : isLoading \?/);
-  assert.match(panel, /\) : error \?/);
   assert.match(panel, /deeperReading/);
   assert.match(panel, /reading\.personalInsights\.length > 0/);
   assert.match(panel, /reading\.reflectionPrompts\.length > 0/);
@@ -41,8 +42,34 @@ test("ReadingPanel keeps the personal reading hierarchy in a fixed order", () =>
 test("ReadingHeader makes the original question the reading title hierarchy", () => {
   assert.match(header, /session\.question/);
   assert.match(header, /reading-header__question/);
+  assert.match(header, /<h1 className="reading-header__question/);
   assert.match(header, /reading-header__meta/);
   assert.doesNotMatch(panel, /reading-question/);
+});
+
+test("ReadingPanel preserves the real question and spread context while loading, errored, or empty", () => {
+  const states = [
+    { isLoading: true, error: null },
+    { isLoading: false, error: "Reading could not be completed" },
+    { isLoading: false, error: null },
+  ];
+  for (const state of states) {
+    const markup = renderToStaticMarkup(createElement(ReadingPanel, {
+      reading: null,
+      locale: "vi",
+      session: { question: "Should I accept the new role?", spreadName: "Three-card spread", deckName: "Moonlight deck" },
+      artworkByReadingCardId: {},
+      t: (key) => key,
+      ...state,
+    }));
+    assert.match(markup, /reading-header__question/);
+    assert.match(markup, /Should I accept the new role\?/);
+    assert.match(markup, /Three-card spread/);
+    assert.match(markup, /Moonlight deck/);
+    if (state.isLoading) assert.match(markup, /reading\.loading/);
+    else if (state.error) assert.match(markup, /role="alert">Reading could not be completed/);
+    else assert.match(markup, /reading\.emptyTitle/);
+  }
 });
 
 test("DirectAnswer gives the first deterministic paragraph one editorial takeaway", () => {
@@ -163,21 +190,25 @@ test("reading components expose the accessible 44px interaction and celestial la
   assert.match(components, /prefers-reduced-motion|motion-reduce/);
 });
 
-test("Room reading surface is a single responsive editorial column", () => {
+test("Room Reading Result uses the current production overview and interpretation grids", () => {
   assert.match(room, /ReadingPanel/);
   assert.doesNotMatch(room, /InterpretationTab|room-interpretation-tabs|interpretationOverviewTab/);
   assert.match(css, /\.reading-panel/);
-  assert.match(css, /@media\(max-width:768px\)/);
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-overview{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(250px,.72fr)"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-content{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(276px,.76fr)"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-content__rail .reading-section--follow-up{position:sticky;top:10px"));
+  assert.match(css, /@media\(max-width:980px\)/);
+  assert.match(css, /@media\(max-width:680px\)/);
   assert.match(css, /safe-area-inset/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /reading-card-evidence/);
 });
 
-test("Room gives the completed reading the larger editorial share on desktop", () => {
-  assert.match(css, /\.room-reading-panel-shell\{[^}]*width:min\(62vw,1180px\)/);
-  assert.match(css, /\.room-page\.has-interpretation \.tabletop\{right:min\(62vw,1180px\)/);
-  assert.match(css, /\.room-page\.has-interpretation \.room-question\{left:4%;right:calc\(min\(62vw,1180px\)/);
-  assert.match(css, /\.room-reading-panel-shell \.reading-panel__scroll\{[^}]*padding-bottom/);
+test("Reading Result owns the canvas under the shared header", () => {
+  assert.ok(css.includes(".room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:62px;right:0;bottom:0;left:0"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-toolbar{position:sticky;top:0"));
+  assert.ok(css.includes(".room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-width:0"));
+  assert.match(css, /reading-result-overview[\s\S]*reading-result-meta/);
 });
 
 test("V1.1 makes the question subordinate and the takeaway editorial", () => {

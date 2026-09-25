@@ -6,15 +6,30 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
+import { applyMigration } from "../scripts/node-migrate.mjs";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
+
+test("Node migration bookkeeping is atomic when a migration statement fails", () => {
+  const sqlite = new DatabaseSync(":memory:");
+  sqlite.exec("CREATE TABLE natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL); CREATE TABLE migration_target (id INTEGER PRIMARY KEY)");
+
+  assert.throws(() => applyMigration(
+    sqlite,
+    "0009_affiliate_referral_links.sql",
+    "ALTER TABLE migration_target ADD COLUMN public_code text; CREATE UNIQUE INDEX broken_index ON migration_target(missing_column);",
+  ));
+  assert.deepEqual(sqlite.prepare("PRAGMA table_info(migration_target)").all().map((row) => row.name), ["id"]);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 0);
+  sqlite.close();
+});
 
 function createPreShareDatabase(dbPath: string): void {
   const sqlite = new DatabaseSync(dbPath);
   sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)");
   const migrationDirectory = join(repoRoot, "drizzle");
   const migrations = readdirSync(migrationDirectory)
-    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_") && !name.startsWith("0006_") && !name.startsWith("0007_") && !name.startsWith("0008_"))
+    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_") && !name.startsWith("0006_") && !name.startsWith("0007_") && !name.startsWith("0008_") && !name.startsWith("0009_"))
     .sort();
   for (const name of migrations) {
     sqlite.exec(readFileSync(join(migrationDirectory, name), "utf8"));
@@ -41,7 +56,7 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   const sqlite = new DatabaseSync(dbPath);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get() as { count: number }).count, 78);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get() as { count: number }).count, 312);
-  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 11);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 13);
   assert.deepEqual(
     sqlite.prepare("SELECT name FROM natarot_migrations ORDER BY name").all().map((row) => row.name),
     [
@@ -56,6 +71,8 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
       "0007_backend_completion.sql",
       "0007_sepay_commercial.sql",
       "0008_credit_fulfillment_timestamp.sql",
+      "0009_affiliate_referral_links.sql",
+      "0009_human_readers.sql",
     ],
   );
   const columns = sqlite.prepare("PRAGMA table_info(readings)").all() as Array<{ name: string }>;
@@ -104,6 +121,8 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
     "commercial_events",
     "commercial_payment_attempts",
     "commercial_payment_events",
+    "readers",
+    "reader_avatars",
   ]) {
     assert.equal(
       (sqlite.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name=?").get(table) as {
@@ -160,10 +179,13 @@ test("Node migration upgrades an existing pre-share database without losing memb
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0006_%'").get() as { count: number }).count, 1);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0007_%'").get() as { count: number }).count, 2);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0008_%'").get() as { count: number }).count, 1);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name LIKE '0009_%'").get() as { count: number }).count, 2);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM reading_shares").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM credit_accounts").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM audit_events").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM affiliate_policy_versions").get() as { count: number }).count, 1);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM readers").get() as { count: number }).count, 0);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM reader_avatars").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM commercial_payment_attempts").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM commercial_payment_events").get() as { count: number }).count, 0);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);

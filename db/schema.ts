@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { blob, integer, index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const records = sqliteTable(
   "records",
@@ -13,6 +13,35 @@ export const records = sqliteTable(
   },
   (table) => [index("idx_records_owner_kind").on(table.owner, table.kind)],
 );
+
+export const readers = sqliteTable(
+  "readers",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    bio: text("bio").notNull(),
+    timezone: text("timezone").notNull(),
+    language: text("language").notNull(),
+    duration: integer("duration").notNull(),
+    price: integer("price").notNull(),
+    slotsJson: text("slots_json").notNull().default("[]"),
+    driveImageUrl: text("drive_image_url"),
+    published: integer("published", { mode: "boolean" }).notNull().default(false),
+    createdBy: text("created_by").notNull(),
+    updatedBy: text("updated_by").notNull(),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [index("readers_published_updated_idx").on(table.published, table.updatedAt, table.id)],
+);
+
+export const readerAvatars = sqliteTable("reader_avatars", {
+  readerId: text("reader_id").primaryKey().references(() => readers.id, { onDelete: "cascade" }),
+  bytes: blob("bytes", { mode: "buffer" }).notNull(),
+  contentType: text("content_type").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
 export const rooms = sqliteTable(
   "rooms",
   {
@@ -612,6 +641,7 @@ export const referralCodes = sqliteTable(
     id: text("id").primaryKey(),
     affiliateProfileId: text("affiliate_profile_id").notNull().references(() => affiliateProfiles.id),
     codeHash: text("code_hash").notNull(),
+    publicCode: text("public_code"),
     status: text("status").notNull().default("ACTIVE"),
     source: text("source"),
     createdAt: integer("created_at").notNull(),
@@ -619,6 +649,8 @@ export const referralCodes = sqliteTable(
   },
   (table) => [
     uniqueIndex("referral_codes_hash_unique").on(table.codeHash),
+    uniqueIndex("referral_codes_public_code_unique").on(table.publicCode).where(sql`${table.publicCode} IS NOT NULL`),
+    uniqueIndex("referral_codes_dashboard_profile_unique").on(table.affiliateProfileId).where(sql`${table.status} = 'ACTIVE' AND ${table.source} = 'natarot-dashboard-v1'`),
     index("referral_codes_profile_status_idx").on(table.affiliateProfileId, table.status, table.expiresAt),
   ],
 );

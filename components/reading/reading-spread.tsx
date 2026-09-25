@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { projectSpreadGeometry, resolveSpreadGeometry, type SpreadProjection } from "@/lib/spread-geometry";
+import { resolveReadingSpreadCardWidth } from "@/lib/reading-spread-layout";
 import type { TarotLocale } from "@/lib/ai/types";
 import type { ReadingArtwork, ReadingEvidence, ReadingTranslator } from "./reading-types";
 
@@ -22,10 +23,11 @@ function cardName(item: ReadingEvidence, locale: TarotLocale) {
 
 function getViewport(element: HTMLDivElement | null) {
   const width = Math.max(1, element?.getBoundingClientRect().width || DEFAULT_VIEWPORT.width);
+  const mobile = width <= 760;
   return {
     width,
-    height: Math.max(320, Math.min(600, width * 0.46)),
-    mobile: width <= 760,
+    height: mobile ? Math.max(300, Math.min(380, width * 0.9)) : Math.max(260, Math.min(360, width * 0.2)),
+    mobile,
   };
 }
 
@@ -36,16 +38,19 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
     () => resolveSpreadGeometry(spreadType || undefined, items.map((item) => ({ key: item.position.key, order: item.position.order }))),
     [items, spreadType],
   );
+  const cardWidth = useMemo(
+    () => resolveReadingSpreadCardWidth(items.length, viewport.mobile),
+    [items.length, viewport.mobile],
+  );
   const projection: SpreadProjection = useMemo(
     () => projectSpreadGeometry(geometry, {
       width: viewport.width,
       height: viewport.height,
       cardAspectRatio: 400 / 647,
-      minCardWidth: viewport.mobile ? 108 : 118,
-      maxCardWidth: viewport.mobile ? 174 : 250,
+      ...cardWidth,
       mobile: viewport.mobile,
     }),
-    [geometry, viewport],
+    [cardWidth, geometry, viewport],
   );
 
   useEffect(() => {
@@ -63,7 +68,7 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
   }, []);
 
   const itemByPosition = new Map(items.map((item) => [item.position.order, item]));
-  const stageHeight = projection.height + (projection.mode === "ordered" ? 112 : 92);
+  const stageHeight = projection.height + (projection.mode === "ordered" ? 112 : 72);
 
   return (
     <section className="reading-spread reading-section" aria-labelledby="reading-spread-title">

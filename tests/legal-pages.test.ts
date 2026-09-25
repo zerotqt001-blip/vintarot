@@ -24,7 +24,7 @@ test("public privacy policy route discloses Google, member and reading data", ()
 
 test("public terms route exists and the homepage links both legal documents", () => {
   assert.equal(existsSync(new URL("../app/terms/page.tsx", import.meta.url)), true, "the public terms route must exist");
-  const homepage = source("app/vintarot.tsx");
+  const homepage = source("components/shell/natarot-footer.tsx");
   assert.match(homepage, /href="\/privacy"/);
   assert.match(homepage, /href="\/terms"/);
 });

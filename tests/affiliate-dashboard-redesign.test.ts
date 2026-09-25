@@ -33,6 +33,7 @@ function makeFixture() {
     "0007_backend_completion.sql",
     "0007_sepay_commercial.sql",
     "0008_credit_fulfillment_timestamp.sql",
+    "0009_affiliate_referral_links.sql",
   ]) sqlite.exec(readFileSync(join(repoRoot, "drizzle", migration), "utf8"));
   const database = createSqliteD1Database(sqlite);
   sqlite.prepare("UPDATE affiliate_policy_versions SET status='ACTIVE', starts_at=0 WHERE id='affiliate-v1-default'").run();
@@ -121,30 +122,38 @@ test("affiliate dashboard income buckets come from the verified commission ledge
   assert.equal(dashboard.summary.conversions, 3);
   assert.equal(dashboard.summary.netMinor, 3000);
   assert.equal(dashboard.history.length, 3);
-  assert.equal(dashboard.referralLink.available, false);
-  assert.equal(dashboard.referralLink.reason, "not_supported_by_current_backend");
+  assert.equal(dashboard.referralLink.available, true);
+  if (dashboard.referralLink.available) assert.equal(dashboard.referralLink.url.startsWith("https://natarot.com/affiliate?ref=NTR-"), true);
   fixture.sqlite.close();
 });
 
 test("Affiliate target source preserves real-data boundaries and the approved shell direction", () => {
   const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
   const customer = source("lib/affiliate/customer.ts");
-  const shell = source("app/vintarot.tsx");
+  const shell = ["components/shell/natarot-shell.tsx", "components/shell/natarot-sidebar.tsx"].map(source).join("\n");
   const messages = source("lib/i18n.ts");
 
   assert.match(dashboard, /affiliate-dashboard/);
   assert.match(dashboard, /income\.currentMonthMinor/);
-  assert.match(dashboard, /referralLink\.available/);
+  assert.match(dashboard, /link\.available/);
   assert.match(dashboard, /navigator\.clipboard/);
+  assert.match(dashboard, /link\.code/);
+  assert.match(dashboard, /navigator\.share/);
+  assert.match(dashboard, /download=/);
+  assert.match(dashboard, /link\.qrUrl/);
+  assert.match(dashboard, /link\.reason/);
+  assert.equal((dashboard.match(/<ReferralLinkPanel/g) ?? []).length, 2);
+  assert.match(dashboard, /dashboard && <ReferralLinkPanel dashboard=\{dashboard\} t=\{t\} \/>/);
   assert.doesNotMatch(dashboard, /18 referred|1\.245\.000|320\.000|4\.860\.000|925\.000|THANH123/);
   assert.match(customer, /currentMonthMinor/);
   assert.match(customer, /confirmedMinor/);
   assert.match(customer, /pendingMinor/);
-  assert.match(shell, /const isAffiliate = path === "\/affiliate";/);
+  assert.match(shell, /path === "\/affiliate"/);
   assert.match(shell, /affiliate-shell/);
   assert.match(shell, /nav\.drawNow/);
   assert.doesNotMatch(shell, /isAffiliate[\s\S]{0,600}\+ Phòng/);
-  for (const key of ["affiliate.dashboardEyebrow", "affiliate.linkUnavailable", "affiliate.incomeTitle", "affiliate.policyPending"]) {
+  for (const key of ["affiliate.dashboardEyebrow", "affiliate.linkUnavailable", "affiliate.incomeTitle", "affiliate.policyPending", "affiliate.referralCode", "affiliate.shareLink", "affiliate.downloadQr"]) {
     assert.match(messages, new RegExp(`${key.split(".")[1]}:`));
   }
+  assert.doesNotMatch(messages, /stored one-way|lưu một chiều/);
 });

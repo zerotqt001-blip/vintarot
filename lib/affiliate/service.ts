@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { encryptField, keyringFromEnvironment } from "../security/encryption";
 import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds } from "./policy";
 import { findReferralAttribution, findReferralCode, getAffiliateConversion, hashReferralCode, memberIdFromOwner, ownerKey } from "./repository";
+import { scopedAffiliateLedgerIdempotencyKeys } from "./idempotency";
 import type { AffiliateConversion, AffiliateHistoryItem, AffiliateOwner, AffiliateProfileStatus, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
 
 export type { AffiliateConversion, AffiliateHistoryItem, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
@@ -26,6 +27,18 @@ function safeMinor(value: number): number {
 
 async function loadConversion(database: D1Database, id: string): Promise<AffiliateConversion | null> {
   return getAffiliateConversion(database, { id }) as Promise<AffiliateConversion | null>;
+}
+
+function scopedLedgerKey(entryType: "eligibility" | "reversal" | "adjustment", conversionId: string, rawKey: string): { key: string; previousScopedKey: string; legacyKey: string } {
+  const normalized = requireBounded(rawKey, 200, `Invalid ${entryType} key`);
+  return scopedAffiliateLedgerIdempotencyKeys(entryType, conversionId, normalized);
+}
+
+async function hasLedgerEntry(database: D1Database, conversionId: string, entryType: "ELIGIBILITY" | "REVERSAL" | "ADJUSTMENT", keys: { key: string; previousScopedKey: string; legacyKey: string }): Promise<boolean> {
+  const row = await database.prepare("SELECT 1 AS present FROM affiliate_commission_ledger WHERE conversion_id=? AND entry_type=? AND idempotency_key IN (?, ?, ?) LIMIT 1")
+    .bind(conversionId, entryType, keys.key, keys.previousScopedKey, keys.legacyKey)
+    .first<{ present: number }>();
+  return Boolean(row);
 }
 
 export async function createAffiliateProfile(input: { database: D1Database; memberOwnerId: string; profileId?: string; status?: AffiliateProfileStatus; fraudNote?: string; now?: number; keyring?: ReturnType<typeof keyringFromEnvironment> }): Promise<{ id: string; memberId: string; status: AffiliateProfileStatus }> {
@@ -136,13 +149,14 @@ export async function markCommissionEligible(input: { database: D1Database; conv
   if (!conversion) throw new AffiliateError("Affiliate conversion not found", "not_found");
   if (conversion.status === "REVERSED" || conversion.status === "ELIGIBLE") return conversion;
   const reason = requireBounded(input.reason, 500, "Invalid eligibility reason");
-  const key = `affiliate:eligibility:${requireBounded(input.idempotencyKey, 200, "Invalid eligibility key")}`;
+  const keys = scopedLedgerKey("eligibility", conversion.id, input.idempotencyKey);
   const snapshot = await ledgerSnapshot(input.database, conversion.id);
   if (!snapshot) throw new AffiliateError("Affiliate ledger snapshot missing", "ledger_missing");
+  if (await hasLedgerEntry(input.database, conversion.id, "ELIGIBILITY", keys)) return conversion;
   const timestamp = input.now ?? Date.now();
   await input.database.batch([
     input.database.prepare("UPDATE affiliate_conversions SET status='ELIGIBLE', eligible_at=?, updated_at=? WHERE id=? AND status='HELD'").bind(timestamp, timestamp, conversion.id),
-    input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'ELIGIBILITY', 'CREDIT', 0, ?, ?, NULL, 'system', 'system', ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${key}`, conversion.id, conversion.currency, key, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp),
+    input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'ELIGIBILITY', 'CREDIT', 0, ?, ?, NULL, 'system', 'system', ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${keys.key}`, conversion.id, conversion.currency, keys.key, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp),
   ]);
   return (await loadConversion(input.database, conversion.id))!;
 }
@@ -153,14 +167,15 @@ export async function reverseAffiliateCommission(input: { database: D1Database; 
   if (conversion.status === "REVERSED") return conversion;
   const reason = requireBounded(input.reason, 500, "Invalid reversal reason");
   const actorId = requireBounded(input.actorId, 160, "Invalid reversal actor");
-  const key = `affiliate:reversal:${requireBounded(input.idempotencyKey, 200, "Invalid reversal key")}`;
+  const keys = scopedLedgerKey("reversal", conversion.id, input.idempotencyKey);
   const snapshot = await ledgerSnapshot(input.database, conversion.id);
   const original = await input.database.prepare("SELECT id FROM affiliate_commission_ledger WHERE conversion_id=? AND entry_type='COMMISSION' ORDER BY created_at ASC, id ASC LIMIT 1").bind(conversion.id).first<{ id: string }>();
   if (!snapshot || !original) throw new AffiliateError("Affiliate ledger snapshot missing", "ledger_missing");
+  if (await hasLedgerEntry(input.database, conversion.id, "REVERSAL", keys)) return conversion;
   const timestamp = input.now ?? Date.now();
   await input.database.batch([
     input.database.prepare("UPDATE affiliate_conversions SET status='REVERSED', reversed_at=?, updated_at=? WHERE id=? AND status <> 'REVERSED'").bind(timestamp, timestamp, conversion.id),
-    input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'REVERSAL', 'DEBIT', ?, ?, ?, ?, 'system', ?, ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${key}`, conversion.id, conversion.commissionMinor, conversion.currency, key, original.id, actorId, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp),
+    input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'REVERSAL', 'DEBIT', ?, ?, ?, ?, 'system', ?, ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${keys.key}`, conversion.id, conversion.commissionMinor, conversion.currency, keys.key, original.id, actorId, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp),
   ]);
   return (await loadConversion(input.database, conversion.id))!;
 }
@@ -171,11 +186,12 @@ export async function adjustAffiliateCommission(input: { database: D1Database; c
   const amountMinor = safeMinor(input.amountMinor);
   const reason = requireBounded(input.reason, 500, "Invalid adjustment reason");
   const actorId = requireBounded(input.actorId, 160, "Invalid adjustment actor");
-  const key = `affiliate:adjustment:${requireBounded(input.idempotencyKey, 200, "Invalid adjustment key")}`;
+  const keys = scopedLedgerKey("adjustment", conversion.id, input.idempotencyKey);
   const snapshot = await ledgerSnapshot(input.database, conversion.id);
   if (!snapshot) throw new AffiliateError("Affiliate ledger snapshot missing", "ledger_missing");
+  if (await hasLedgerEntry(input.database, conversion.id, "ADJUSTMENT", keys)) return conversion;
   const timestamp = input.now ?? Date.now();
-  await input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'ADJUSTMENT', ?, ?, ?, ?, NULL, 'admin', ?, ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${key}`, conversion.id, input.direction, amountMinor, conversion.currency, key, actorId, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp).run();
+  await input.database.prepare("INSERT OR IGNORE INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency, idempotency_key, reversal_of_id, actor_kind, actor_id, reason, policy_snapshot, tier_snapshot, package_snapshot, fraud_note_ciphertext, created_at) VALUES (?, ?, 'ADJUSTMENT', ?, ?, ?, ?, NULL, 'admin', ?, ?, ?, ?, ?, NULL, ?)").bind(`affiliate-ledger:${keys.key}`, conversion.id, input.direction, amountMinor, conversion.currency, keys.key, actorId, reason, snapshot.policySnapshot, snapshot.tierSnapshot, snapshot.packageSnapshot, timestamp).run();
   return conversion;
 }
 

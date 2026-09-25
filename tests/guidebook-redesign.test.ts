@@ -3,24 +3,27 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { guidebookGroups } from "../lib/tarot";
 
-const shell = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/natarot-header.tsx",
+  "../components/shell/natarot-sidebar.tsx",
+  "../components/shell/natarot-footer.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
 const pages = readFileSync(new URL("../app/pages.tsx", import.meta.url), "utf8");
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 const translations = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
-test("the Guidebook shell exposes the Image 1 NaTarot chrome without replacing commerce routes", () => {
-  for (const className of [
-    "guidebook-target-shell",
-    "guidebook-target-header",
-    "guidebook-target-sidebar",
-    "guidebook-target-footer",
-    "guidebook-target-mobile-nav",
-  ]) assert.match(shell, new RegExp(className));
+test("the Guidebook composes canonical NaTarot chrome without replacing commerce routes", () => {
+  assert.match(shell, /"site-shell guidebook-shell guidebook-target-shell"/);
+  assert.match(shell, /<NaTarotHeader\b/);
+  assert.match(shell, /<NaTarotSidebar\b/);
+  assert.match(shell, /<NaTarotFooter\b/);
+  assert.match(shell, /const topNav = \[[\s\S]*\["nav\.decks", "\/guidebook"\]/);
 
-  for (const route of ["/", "/room?ritual=1", "/packages", "/affiliate", "/account"]) {
+  for (const route of ["/packages", "/affiliate", "/account"]) {
     assert.ok(shell.includes(route), `missing canonical route ${route}`);
   }
-  assert.match(shell, /guidebookTargetNav/);
+  assert.match(shell, /path === "\/guidebook" && href === "\/create"\) return "\/room\?ritual=1"/);
   assert.match(shell, /guidebook:focus-search/);
   assert.match(shell, /aria-pressed/);
 });

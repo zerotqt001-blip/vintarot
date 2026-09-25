@@ -3,7 +3,8 @@ import type { CreditOwner } from "../credits/types";
 import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds, type AffiliatePolicy, type AffiliatePolicyTier } from "./policy";
 import { getAffiliateOwnerSummary, listAffiliateOwnerHistory } from "./service";
 import { memberIdFromOwner } from "./repository";
-import type { AffiliateProfileStatus } from "./types";
+import { ensureAffiliateReferralLink } from "./referral-link";
+import type { AffiliateProfileStatus, AffiliateReferralLink } from "./types";
 
 export type PublicAffiliateTier = {
   tierCode: string;
@@ -49,7 +50,7 @@ export type AffiliateCustomerDashboard = {
   profile: { status: "ACTIVE" | "INACTIVE" | "SUSPENDED" } | null;
   policy: PublicAffiliatePolicy | null;
   progress: AffiliateTierProgress | null;
-  referralLink: { available: false; reason: "not_supported_by_current_backend" };
+  referralLink: AffiliateReferralLink;
   summary: Awaited<ReturnType<typeof getAffiliateOwnerSummary>>;
   income: AffiliateIncomeSummary;
   history: CustomerAffiliateHistoryItem[];
@@ -124,7 +125,7 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
     }))
     : [];
   if (!memberId) {
-    return { profile: null, policy: null, progress: null, referralLink: { available: false, reason: "not_supported_by_current_backend" }, summary, income, history };
+    return { profile: null, policy: null, progress: null, referralLink: { available: false, reason: "not_eligible" }, summary, income, history };
   }
 
   const profile = await database.prepare("SELECT id, status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
@@ -135,7 +136,7 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
       profile: profile && ["ACTIVE", "INACTIVE", "SUSPENDED"].includes(profile.status) ? { status: profile.status as AffiliateProfileStatus } : null,
       policy: publicPolicy,
       progress: null,
-      referralLink: { available: false, reason: "not_supported_by_current_backend" },
+      referralLink: { available: false, reason: !profile ? "not_eligible" : profile.status !== "ACTIVE" ? "profile_inactive" : "policy_inactive" },
       summary,
       income,
       history,
@@ -151,7 +152,7 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
     profile: { status: "ACTIVE" },
     policy: publicPolicy,
     progress: { qualifiedConversions, currentTier: current ? publicTier(current) : null, nextTier: next ? publicTier(next) : null },
-    referralLink: { available: false, reason: "not_supported_by_current_backend" },
+    referralLink: await ensureAffiliateReferralLink(database, owner, undefined, now),
     summary,
     income,
     history,

@@ -2,12 +2,12 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const shellSource = readFileSync(new URL("../app/vintarot.tsx", import.meta.url), "utf8");
+const shellSource = readFileSync(new URL("../components/shell/natarot-shell.tsx", import.meta.url), "utf8");
 const pageSource = readFileSync(new URL("../app/pages.tsx", import.meta.url), "utf8");
 const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("daily spread uses the celestial shell while preserving its card back", () => {
-  assert.match(shellSource, /isDaily/);
+  assert.match(shellSource, /path === "\/daily-spread"/);
   assert.match(shellSource, /daily-shell/);
   assert.match(pageSource, /daily-cosmic-page/);
   assert.match(pageSource, /daily-stage/);

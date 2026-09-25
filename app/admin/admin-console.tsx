@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Ban, BookOpen, Check, Eye, Receipt, RefreshCw, Search, Shield, Sparkles, UserRound, Users, WalletCards } from "lucide-react";
+import { useLanguage } from "@/components/language";
 
 /* FUNCTIONAL UI — NOT FINAL DESIGN */
 type UserRow = {
@@ -83,7 +84,8 @@ function opaqueLabel(value: string): string {
   return value.length > 12 ? `${value.slice(0, 8)}…` : value;
 }
 
-export default function AdminConsole({ authenticated }: { authenticated: boolean }) {
+export default function AdminConsole({ authenticated, canManageReaders = false }: { authenticated: boolean; canManageReaders?: boolean }) {
+  const { t } = useLanguage();
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -208,7 +210,7 @@ export default function AdminConsole({ authenticated }: { authenticated: boolean
 
   return (
     <div className="functional-page admin-functional-page">
-      <header className="page-head functional-page-head"><h1>Admin control center</h1><p>Internal operations for users, Credits, VIP, orders, affiliate review, readings metadata and audit evidence.</p></header>
+      <header className="page-head functional-page-head"><h1>Admin control center</h1><p>Internal operations for users, Credits, VIP, orders, affiliate review, readings metadata and audit evidence.</p>{canManageReaders && <Link className="button" href="/admin/readers">{t("humanReaders.adminLink")}</Link>}</header>
       <div className="functional-toolbar"><button className="button" type="button" onClick={() => void loadAll(searchQuery)} disabled={busy}><RefreshCw size={15} aria-hidden="true" />{busy ? "Working…" : "Refresh"}</button><span>Every financial or entitlement mutation requires a reason and idempotency key.</span></div>
       {message && <p className="functional-status functional-status--error" role="status" aria-live="polite">{message}</p>}
 

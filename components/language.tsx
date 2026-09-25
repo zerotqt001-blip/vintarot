@@ -2,13 +2,13 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "@/lib/client";
-import { messageFor, messages, normalizeLocale, type Locale } from "@/lib/i18n";
+import { messageFor, messages, normalizeLocale, type Locale, type MessageValues } from "@/lib/i18n";
 
 type User = { name: string; email: string } | null;
 type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, values?: MessageValues) => string;
 };
 
 const STORAGE_KEY = "vintarot-locale";
@@ -25,6 +25,7 @@ export function LanguageProvider({ children, user, initialLocale }: { children: 
     setLocaleState(initialLocale);
   }, [initialLocale]);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- restore the browser preference after hydration. */
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -43,6 +44,7 @@ export function LanguageProvider({ children, user, initialLocale }: { children: 
       active = false;
     };
   }, [user]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -73,7 +75,7 @@ export function LanguageProvider({ children, user, initialLocale }: { children: 
       .catch(() => undefined);
   }, [user]);
 
-  const value = useMemo<LanguageContextValue>(() => ({ locale, setLocale, t: (key) => messageFor(locale, key) }), [locale, setLocale]);
+  const value = useMemo<LanguageContextValue>(() => ({ locale, setLocale, t: (key, values) => messageFor(locale, key, values) }), [locale, setLocale]);
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 

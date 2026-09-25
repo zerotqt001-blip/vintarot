@@ -30,18 +30,27 @@ test("member UI renders server catalog data without submitting authoritative pri
 });
 
 test("Affiliate UI uses dynamic policy/dashboard data and has no fake payout action", () => {
-  const commerce = source("app/commerce/commerce-pages.tsx");
-  assert.match(commerce, new RegExp("/api/affiliate/policy"));
-  assert.match(commerce, new RegExp("/api/affiliate/dashboard"));
-  assert.match(commerce, /referralLink/);
-  assert.match(commerce, /currentTier/);
-  assert.match(commerce, /commissionMinor/);
-  assert.match(commerce, /not_supported_by_current_backend/);
-  assert.doesNotMatch(commerce, /withdraw|payout.*POST|requestPayout/i);
+  const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
+  assert.match(dashboard, new RegExp("/api/affiliate/policy"));
+  assert.match(dashboard, new RegExp("/api/affiliate/dashboard"));
+  assert.match(dashboard, /referralLink/);
+  assert.match(dashboard, /currentTier/);
+  assert.match(dashboard, /commissionMinor/);
+  assert.match(dashboard, /link\.code/);
+  assert.match(dashboard, /navigator\.clipboard/);
+  assert.match(dashboard, /navigator\.share/);
+  assert.match(dashboard, /download=/);
+  assert.match(dashboard, /link\.qrUrl/);
+  assert.doesNotMatch(dashboard, /\/api\/affiliate\/payout|withdraw|payout.*POST|requestPayout/i);
 });
 
 test("shared shell and account expose member destinations while preserving existing paths", () => {
-  const shell = source("app/vintarot.tsx");
+  const shell = [
+    "components/shell/natarot-shell.tsx",
+    "components/shell/natarot-header.tsx",
+    "components/shell/natarot-sidebar.tsx",
+    "components/shell/natarot-footer.tsx",
+  ].map(source).join("\n");
   const account = source("components/account/account-history.tsx");
   const styles = source("app/globals.css");
   for (const destination of ["/packages", "/affiliate", "/account", "/guidebook", "/create", "/daily-spread"]) {
@@ -55,9 +64,10 @@ test("shared shell and account expose member destinations while preserving exist
 });
 
 test("member destinations have separate shared desktop and mobile access regions", () => {
-  const shell = source("app/vintarot.tsx");
+  const shell = source("components/shell/natarot-shell.tsx");
+  const sidebar = source("components/shell/natarot-sidebar.tsx");
   const styles = source("app/globals.css");
-  const sidebarIndex = shell.indexOf("<Sidebar collapsible");
+  const sidebarIndex = shell.indexOf("<NaTarotSidebar");
   const desktopNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--desktop');
   const mobileNavIndex = shell.indexOf('commerce-access-nav commerce-access-nav--mobile');
 
@@ -65,7 +75,8 @@ test("member destinations have separate shared desktop and mobile access regions
   assert.ok(desktopNavIndex >= 0 && desktopNavIndex < sidebarIndex, "desktop access must be outside the scrollable sidebar");
   assert.ok(mobileNavIndex >= 0 && mobileNavIndex < sidebarIndex, "mobile access must be outside the primary bottom navigation");
   assert.match(shell, /commerce-access-nav__link/);
-  assert.match(shell, /className="main-nav"/);
+  assert.match(sidebar, /"main-nav nt-global-nav-list"/);
+  assert.match(sidebar, /className="nav-label"/);
   assert.doesNotMatch(shell, /<nav className="commerce-nav"/);
   assert.match(styles, /\.commerce-access-nav--desktop/);
   assert.match(styles, /\.commerce-access-nav--mobile/);

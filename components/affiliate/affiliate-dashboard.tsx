@@ -9,6 +9,7 @@ import {
   CircleDollarSign,
   Clock3,
   Copy,
+  Download,
   Gift,
   Link2,
   LoaderCircle,
@@ -22,14 +23,12 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/language";
+import type { AffiliateReferralLink } from "@/lib/affiliate/types";
 
 type PublicAffiliateTier = { tierCode: string; minQualifiedConversions: number; rateBps: number };
 type PublicAffiliatePolicy = { version: number; currency: string; attributionWindowDays: number; holdDays: number; tiers: PublicAffiliateTier[] };
 type AffiliateIncome = { currency: string | null; currentMonthMinor: number; confirmedMinor: number; pendingMinor: number; totalMinor: number };
 type AffiliateHistoryItem = { id: string; amountMinor: number; currency: string; commissionMinor: number; status: string; fulfilledAt: number; eligibleAt: number | null; reversedAt: number | null; createdAt: number };
-type AffiliateReferralLink =
-  | { available: false; reason: string }
-  | { available: true; url: string; qrUrl?: string | null };
 type AffiliateDashboard = {
   profile: { status: "ACTIVE" | "INACTIVE" | "SUSPENDED" } | null;
   policy: PublicAffiliatePolicy | null;
@@ -107,23 +106,47 @@ function PolicyPanel({ policy, t, locale }: { policy: PublicAffiliatePolicy; t: 
 }
 
 function ReferralLinkPanel({ dashboard, t }: { dashboard: AffiliateDashboard; t: (key: string) => string }) {
-  const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<"code" | "link" | "shared" | null>(null);
+  const [actionError, setActionError] = useState(false);
   const link = dashboard.referralLink;
-  const copy = async () => {
-    if (!link.available || !dashboard.referralLink.available) return;
+  const showFeedback = (value: "code" | "link" | "shared") => {
+    setFeedback(value);
+    window.setTimeout(() => setFeedback((current) => current === value ? null : current), 1800);
+  };
+  const copyValue = async (value: string, kind: "code" | "link") => {
     try {
-      await navigator.clipboard.writeText(link.url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      await navigator.clipboard.writeText(value);
+      setActionError(false);
+      showFeedback(kind);
     } catch {
-      setCopied(false);
+      setActionError(true);
     }
   };
+  const share = async () => {
+    if (!link.available) return;
+    setActionError(false);
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share({ title: t("affiliate.referralLinkTitle"), text: t("affiliate.shareText"), url: link.url });
+        showFeedback("shared");
+        return;
+      }
+      await copyValue(link.url, "link");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      await copyValue(link.url, "link");
+    }
+  };
+  const unavailableDescription = !link.available
+    ? link.reason === "policy_inactive" ? t("affiliate.linkUnavailablePolicy") : link.reason === "profile_inactive" ? t("affiliate.linkUnavailableProfile") : t("affiliate.linkUnavailableEligibility")
+    : t("affiliate.linkReady");
   return <section className="affiliate-link-panel affiliate-panel" aria-labelledby="affiliate-link-title">
-    <PanelHeading icon={Link2} title={t("affiliate.referralLinkTitle")} description={link.available ? t("affiliate.linkReady") : t("affiliate.linkUnavailable")} />
+    <PanelHeading icon={Link2} title={t("affiliate.referralLinkTitle")} description={unavailableDescription} />
     {link.available ? <>
-      <div className="affiliate-link-field"><span>{link.url}</span><button type="button" onClick={copy} aria-label={copied ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={17} aria-hidden="true" />{copied ? t("affiliate.copied") : t("affiliate.copyLink")}</button></div>
-      {link.qrUrl && <div className="affiliate-qr"><img src={link.qrUrl} alt={t("affiliate.qrAlt")} /></div>}
+      <div className="affiliate-link-field affiliate-link-field--code" role="group" aria-label={t("affiliate.referralCode")}><div className="affiliate-link-field__value"><span className="affiliate-link-field__label">{t("affiliate.referralCode")}</span><code>{link.code}</code></div><button type="button" onClick={() => void copyValue(link.code, "code")} aria-label={feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}><Copy size={17} aria-hidden="true" />{feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}</button></div>
+      <div className="affiliate-link-field" role="group" aria-label={t("affiliate.referralLinkTitle")}><div className="affiliate-link-field__value"><span className="affiliate-link-field__label">{t("affiliate.referralLinkTitle")}</span><span>{link.url}</span></div><div className="affiliate-link-field__actions"><button type="button" onClick={() => void copyValue(link.url, "link")} aria-label={feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={17} aria-hidden="true" />{feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}</button><button type="button" onClick={() => void share()} aria-label={feedback === "shared" ? t("affiliate.shared") : t("affiliate.shareLink")}><Share2 size={17} aria-hidden="true" />{feedback === "shared" ? t("affiliate.shared") : t("affiliate.shareLink")}</button></div></div>
+      <div className="affiliate-qr"><img src={link.qrUrl} alt={t("affiliate.qrAlt")} /><a className="affiliate-link-download" href={link.qrUrl} download={link.downloadName}><Download size={15} aria-hidden="true" />{t("affiliate.downloadQr")}</a></div>
+      {actionError && <p className="affiliate-panel-note affiliate-panel-note--error" role="status" aria-live="polite"><CircleAlert size={16} aria-hidden="true" />{t("affiliate.linkActionError")}</p>}
       <p className="affiliate-panel-note"><BadgeCheck size={16} aria-hidden="true" />{t("affiliate.linkSecurityText")}</p>
     </> : <div className="affiliate-unavailable"><LockKeyhole size={24} aria-hidden="true" /><p>{t("affiliate.linkSecurityText")}</p><span>{t("affiliate.linkUnavailableAction")}</span></div>}
   </section>;
@@ -218,6 +241,6 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
       <section className="affiliate-kpi-grid" aria-label={t("affiliate.dashboardEyebrow")}>{kpis.map((item) => <StatCard key={item.label} {...item} />)}</section>
       <div className="affiliate-dashboard-grid"><div className="affiliate-dashboard-grid__main"><TierPanel dashboard={dashboard} policy={activePolicy} t={t} locale={locale} /><IncomePanel dashboard={dashboard} currency={currency} t={t} locale={locale} /></div><div className="affiliate-dashboard-grid__side"><ReferralLinkPanel dashboard={dashboard} t={t} /><ReferralHistoryPanel dashboard={dashboard} t={t} locale={locale} /></div></div>
       <div className="affiliate-lower-grid"><HowItWorks t={t} /><PolicyPanel policy={activePolicy!} t={t} locale={locale} /></div>
-    </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} /><HowItWorks t={t} /></div>}
+    </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} />{dashboard && <ReferralLinkPanel dashboard={dashboard} t={t} />}<HowItWorks t={t} /></div>}
   </div>;
 }

@@ -4,7 +4,6 @@ import { getPageMember, toMemberShellUser } from "@/lib/member-page";
 
 export const dynamic = "force-dynamic";
 
-/* FUNCTIONAL UI — NOT FINAL DESIGN */
 export default async function AccountPage({ searchParams }: { searchParams?: Promise<{ activity?: string | string[] }> }) {
   const member = await getPageMember();
   const params = await searchParams;

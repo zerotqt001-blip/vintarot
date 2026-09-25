@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { resolveReadingSpreadCardWidth } from "../lib/reading-spread-layout";
 import { currentSpreadCatalog } from "../lib/tarot-catalog";
 import { projectSpreadGeometry, resolveSpreadGeometry, type SpreadPositionInput } from "../lib/spread-geometry";
 
@@ -107,4 +108,39 @@ test("recomposes a scaled four-card geometry when mobile cards would become too 
 
   assert.equal(projection.mode, "ordered");
   assert.deepEqual(projection.cards.map((card) => card.order), [0, 1, 2, 3]);
+});
+
+test("keeps one-, three-, four-, five-, and ten-card readings legible without losing their positions", () => {
+  const cases = [
+    { type: "single", count: 1 },
+    { type: "row-3", count: 3 },
+    { type: "row-4", count: 4 },
+    { type: "row-5", count: 5 },
+    { type: "celtic-cross", count: 10 },
+  ];
+
+  for (const { type, count } of cases) {
+    const evidence = positions(...Array.from({ length: count }, (_, index) => `position-${index}`));
+    const geometry = resolveSpreadGeometry(type, evidence);
+    const cardWidth = resolveReadingSpreadCardWidth(count, true);
+    const projection = projectSpreadGeometry(geometry, {
+      width: 342,
+      height: 480,
+      cardAspectRatio: 400 / 647,
+      ...cardWidth,
+      mobile: true,
+    });
+
+    assert.deepEqual(projection.cards.map((card) => card.order), Array.from({ length: count }, (_, index) => index), type);
+    assert.ok(projection.cards.every((card) => card.width >= cardWidth.minCardWidth), type);
+    assert.ok(projection.cards.every((card) => card.left >= 0 && card.left + card.width <= projection.width + 0.01), type);
+    if (count > 2) assert.equal(projection.mode, "ordered", type);
+  }
+});
+
+test("scales display card width to the number of visible positions", () => {
+  assert.ok(resolveReadingSpreadCardWidth(1, false).maxCardWidth > resolveReadingSpreadCardWidth(4, false).maxCardWidth);
+  assert.ok(resolveReadingSpreadCardWidth(4, false).maxCardWidth > resolveReadingSpreadCardWidth(10, false).maxCardWidth);
+  assert.equal(resolveReadingSpreadCardWidth(1, true).maxCardWidth, 140);
+  assert.equal(resolveReadingSpreadCardWidth(10, true).maxCardWidth, 140);
 });

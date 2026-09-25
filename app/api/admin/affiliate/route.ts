@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createAuditService } from "@/lib/audit/service";
 import { requirePermission } from "@/lib/admin/context";
 import { adjustAffiliateCommission, listAdminAffiliateReadModel, setAffiliateProfileStatus } from "@/lib/affiliate/service";
+import { affiliateAdjustmentAuditIdempotencyKey } from "@/lib/affiliate/idempotency";
 import { boundary, db, json, originCheck } from "@/lib/server";
 import { noStoreResponse } from "@/lib/request-identity";
 
@@ -37,7 +38,12 @@ export async function POST(request: Request) {
       return noStoreResponse(Response.json({ ok: true }));
     }
     const conversion = await adjustAffiliateCommission({ database, conversionId: parsed.data.conversion_id, direction: parsed.data.direction, amountMinor: parsed.data.amount_minor, reason: parsed.data.reason, idempotencyKey: parsed.data.idempotency_key, actorId: actor.memberId });
-    await createAuditService(database).append({ actorKind: "member", actorId: actor.memberId, action: "affiliate.commission.adjusted", targetType: "affiliate_conversion", targetId: conversion.id, reason: parsed.data.reason, idempotencyKey: `admin.affiliate.adjust:${parsed.data.idempotency_key}`, metadata: { direction: parsed.data.direction, amountMinor: parsed.data.amount_minor } });
+    const legacyAuditKey = `admin.affiliate.adjust:${parsed.data.idempotency_key}`;
+    const auditKey = await affiliateAdjustmentAuditIdempotencyKey(conversion.id, parsed.data.idempotency_key);
+    const legacyAudit = await database.prepare("SELECT target_id FROM audit_events WHERE idempotency_key=? LIMIT 1").bind(legacyAuditKey).first<{ target_id: string | null }>();
+    if (!legacyAudit || String(legacyAudit.target_id) !== conversion.id) {
+      await createAuditService(database).append({ actorKind: "member", actorId: actor.memberId, action: "affiliate.commission.adjusted", targetType: "affiliate_conversion", targetId: conversion.id, reason: parsed.data.reason, idempotencyKey: auditKey, metadata: { direction: parsed.data.direction, amountMinor: parsed.data.amount_minor } });
+    }
     return noStoreResponse(Response.json({ conversion: { id: conversion.id, status: conversion.status } }));
   });
 }

@@ -2,13 +2,15 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-const root = "/Users/tranquangthanh/Documents/ChatGPT/test astra";
-const shell = readFileSync(`${root}/app/vintarot.tsx`, "utf8");
-const styles = readFileSync(`${root}/app/globals.css`, "utf8");
-const i18n = readFileSync(`${root}/lib/i18n.ts`, "utf8");
+const shell = [
+  "../components/shell/natarot-shell.tsx",
+  "../components/shell/celestial-background.tsx",
+].map((path) => readFileSync(new URL(path, import.meta.url), "utf8")).join("\n");
+const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+const i18n = readFileSync(new URL("../lib/i18n.ts", import.meta.url), "utf8");
 
 test("homepage renders the NaTarot celestial scene and approved hero hierarchy", () => {
-  assert.match(shell, /const shellClassName = isMembership \? .*isHome \? "home-shell"/);
+  assert.match(shell, /const shellClassName = variant === "membership"[\s\S]*"home-shell"/);
   assert.match(shell, /className=\{shellClassName\}/);
   for (const layer of ["sky", "nebula", "planets", "architecture", "floor", "foreground"]) {
     assert.match(shell, new RegExp(`cosmic-layer cosmic-${layer}`));
