@@ -25,8 +25,8 @@
 
 **Files:** No application files.
 
-- [x] Recheck the live release before deployment: current is `human-reader-booking-2f2dee8`, `previous-1` is `secondary-nav-95e7eb4-20260924235312Z`, and `previous-2` is `account-nav-7d21a30-20260924T232615Z`; service and public health are healthy, policy API is `null`/DRAFT, and all three references are distinct.
-- [x] Confirm exact live source `2f2dee8ecafbac6c0ff91109b96aae51f5375b3a` (with Human Reader implementation `d9f1313` and Reading Result baseline `d26ce8d`), Affiliate branch `f95e207`, and UI V2 branch `fc39e60`; production account-nav correction `7d21a30` is separately integrated because it is not an ancestor of the active production source.
+- [x] Recheck the live release before deployment: current is `human-reader-account-8263b50`, `previous-1` is `human-reader-booking-2f2dee8`, and `previous-2` is `secondary-nav-95e7eb4-20260924235312Z`; service and public health are healthy, policy API is `null`/DRAFT, and all three references are distinct.
+- [x] Confirm exact live source `8263b50b19d22eebbd73bdf9cc2510da4e58ab17` (merge of current Human Reader source `2f2dee8` and Account/Daily navigation branch `df6fcde`, itself containing `7d21a30`/`95e7eb4`), Affiliate branch `f95e207`, and UI V2 branch `fc39e60`.
 - [x] Inspect production SQLite read-only: integrity is `ok`, FK violations are zero, both additive migrations `0009_affiliate_referral_links.sql` and `0009_human_readers.sql` are applied, referral/attribution/conversion/commission rows are zero, there are two ACTIVE Affiliate profiles, and policy v1 remains DRAFT with its existing 30-day attribution / 7-day hold / VND values unchanged.
 - [x] Audit active navigation/UI branches. Port the Account/Daily secondary-sidebar correction from `95e7eb4`; do not merge `origin/codex/room-sidebar-autohide` wholesale because its `9e4a6c8` tree deletes the deployed Human Reader API/Admin/migration and contains a separate, non-production Reading Result redesign.
 - [x] Confirm the original Affiliate/UI V2 conflict set (`app/globals.css`, `docs/PROJECT_STATE.md`, `tests/member-affiliate-ui-v1.test.ts`) plus the later live-production conflict (`app/vintarot.tsx`); inspect localization, dashboard tests, production Room/Create navigation changes, and the canonical V2 shell.
@@ -40,7 +40,7 @@
 - Modify: `tests/member-affiliate-ui-v1.test.ts`
 - Review: `lib/i18n.ts`, `tests/affiliate-dashboard-redesign.test.ts`, and the complete UI V2 diff.
 
-- [x] Merge `origin/codex/natarot-final-ui-correction-v2`, production navigation commits `e326acda1e2437642bdbc0a656990bf6ffc33508` and `7d21a30712541ab3c0d371054ea89d5ae1ec5141`, the exact production Reading Result commit `d26ce8d67e0a2efc9200290b9ebeafee38e89079`, and current production source `2f2dee8ecafbac6c0ff91109b96aae51f5375b3a` into the Affiliate-based integration branch.
+- [x] Merge `origin/codex/natarot-final-ui-correction-v2`, production navigation commits `e326acda1e2437642bdbc0a656990bf6ffc33508`, `7d21a30712541ab3c0d371054ea89d5ae1ec5141`, and `8263b50b19d22eebbd73bdf9cc2510da4e58ab17`, the exact production Reading Result commit `d26ce8d67e0a2efc9200290b9ebeafee38e89079`, and current Human Reader source `2f2dee8ecafbac6c0ff91109b96aae51f5375b3a` into the Affiliate-based integration branch.
 - [x] Keep the V2 shared shell/style refactor intact and retain the Affiliate referral styles exactly once in the same stylesheet.
 - [x] Combine the V2 shell/account assertions with the Affiliate owner-scoped referral/policy-gate assertions in the member/Affiliate regression test.
 - [x] Preserve both branch histories in `docs/PROJECT_STATE.md`, with production claims tied to the verified release and V2 verification clearly marked as pending until measured.
