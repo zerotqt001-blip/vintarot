@@ -2188,3 +2188,49 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-reduced-motion:reduce){
   .room-page.has-interpretation .room-reading-panel-shell,.room-reading-panel-shell .reading-spread__card{animation:none;transition:none}
 }
+
+/* Keep vertical primary rails on the same compact rhythm; bottom bars and Room's
+   desktop hover-to-reveal behavior remain governed by their existing breakpoints. */
+@media (min-width: 701px) {
+  .home-shell .home-primary-nav,
+  .site-shell:not(.affiliate-shell):not(.membership-shell) .home-primary-nav,
+  .site-shell:not(.affiliate-shell):not(.membership-shell) .main-nav,
+  .guidebook-target-sidebar-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 8px;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .home-shell .home-primary-nav > a,
+  .site-shell:not(.affiliate-shell):not(.membership-shell) .home-primary-nav > a,
+  .site-shell:not(.affiliate-shell):not(.membership-shell) .main-nav > a,
+  .guidebook-target-sidebar-nav > a {
+    height: auto;
+    min-height: 104px;
+    margin: 0;
+  }
+}
+
+@media (min-width: 821px) {
+  .affiliate-shell .main-nav,
+  .membership-shell .main-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 8px;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .affiliate-shell .main-nav > a,
+  .membership-shell .main-nav > a {
+    height: auto;
+    min-height: 104px;
+    margin: 0;
+  }
+}
