@@ -60,28 +60,28 @@
 
 ### Task 4: Production QA and screenshot evidence
 
-**Files:** No production data changes; save requested screenshots as task-local evidence, not as public source artifacts.
+**Files:** No production data changes; browser captures were emitted inline in the task (the browser tool did not provide exportable screenshot file paths).
 
-- [x] Capture the deployed current production Affiliate UI at desktop as the before-state; the available browser is an isolated guest session.
-- [ ] After deployment, capture public/guest Affiliate and Account surfaces at desktop/mobile and verify policy-inactive behavior.
-- [ ] Capture logged-in Affiliate, logged-in Account, and an existing real Reading Result only if a valid, already-authorized production session is available; do not invent credentials, seed a customer, or create a paid/provider-backed transaction.
-- [ ] Record unavailable authenticated screenshots as explicit blockers; never represent guest/local fixtures as authenticated production evidence.
+- [x] Capture the deployed production Affiliate UI at desktop for current-state verification; the existing IAB session was already authenticated to the production QA account.
+- [x] After deployment, capture production Affiliate and Account surfaces at desktop/mobile and verify policy-inactive behavior; Affiliate and Account were captured in the existing authenticated production QA session.
+- [x] Capture logged-in Affiliate and Account. The Affiliate panel accurately shows no code/link/QR while policy is DRAFT; no customer or fake data was used.
+- [x] Check for an existing real Reading Result without creating one. None exists in the authorized production QA account/database, so this screenshot is explicitly unavailable; captures remain inline in tool output rather than exported files.
 
 ### Task 5: Backup, compatibility gate, deploy, rollback, and retention
 
 **Files:** No tracked deployment changes unless the current deployment tooling requires a scoped, tested fix.
 
-- [ ] Re-audit release pointers, storage, service, database integrity/migrations, backup and restore-test status immediately before deployment.
-- [ ] Verify the existing Affiliate migration is additive and already-compatible with production data; do not alter referral hashes/history or commission/attribution records.
-- [ ] Run the installed release manager backup verification and take/verify its fresh production backup.
-- [ ] Package the exact integration commit without secrets, databases, or user data; deploy through the installed release manager and check health/policy/security boundaries.
-- [ ] Run the manager's rollback test against `previous-1`, verify it restores the intended current release, then clean up only through the guarded manager after browser QA; retain current, previous-1, and previous-2.
+- [x] Re-audit release pointers, storage, service, database integrity/migrations, backup and restore-test status immediately before deployment.
+- [x] Verify the existing Affiliate migration is additive and already-compatible with production data; preserve referral hashes/history, attribution and commission records. Existing migrations were applied and production counts/digests remained unchanged.
+- [x] Run the installed release manager backup verification and take/verify a fresh production backup (`natarot-production-20260925-011115`, SHA-256 `2abd7b0fcf95c79d044162dd5622341b2b2b196aada2cf06a9e5ea9e5865d6aa`).
+- [x] Package exact integration source `a2615d1` without secrets/databases/user data, deploy through the release manager, and verify service/API health plus unchanged DRAFT policy.
+- [x] Rollback-test `previous-1`; the manager passed both health checks and restored `natarot-final-ui-v2-a2615d1-20260925T010940Z`. Guarded cleanup retained exactly current + two rollback releases and removed one obsolete successful release. Final storage audit passed.
 
 ### Task 6: Review, commit, push, and report
 
 **Files:** `docs/PROJECT_STATE.md` plus the verified integration source/tests.
 
-- [ ] Update `docs/PROJECT_STATE.md` with exact source baseline, integration commit, validation, screenshots available/missing, backup/deploy/rollback/retention evidence, and remaining blockers.
+- [x] Update `docs/PROJECT_STATE.md` with exact source baseline, integration commit, validation, browser captures available/missing, backup/deploy/rollback/retention evidence, and remaining blockers.
 - [ ] Inspect staged changes and secret scan, commit only related files, push normally, and verify local/remote SHA equality.
-- [ ] Obtain a fresh read-only code review of the integration diff; fix any critical or important finding and rerun affected tests.
-- [ ] Report production commit, integration commit, test results, Affiliate regression, UI V2 verification, screenshot paths, deployment/rollback/retention status, and blockers.
+- [x] Obtain fresh read-only review of the integration diff; no Critical/Important issues remained after the Daily mobile clearance regression fix and tests.
+- [ ] Report production commit, integration commit, test results, Affiliate regression, UI V2 verification, screenshot evidence/limitations, deployment/rollback/retention status, and blockers.
