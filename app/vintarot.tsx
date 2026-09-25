@@ -5,7 +5,7 @@ import ReferralCapture from "@/components/affiliate/referral-capture";
 import { LanguageProvider, LanguageSelect, useLanguage } from "@/components/language";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CalendarDays, Camera, CirclePlay, CircleUserRound, Gift, Globe2, Heart, HelpCircle, Home, Layers, Moon, Music2, Play, Search, Share2, ShoppingBag, Sparkles, Star, UserRound, Crown } from "lucide-react";
+import { ArrowRight, CalendarDays, Camera, CirclePlay, CircleUserRound, Gift, Globe2, Heart, HelpCircle, Home, Layers, Moon, Music2, Play, Share2, ShoppingBag, Sparkles, Star, UserRound, Crown } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -32,7 +32,6 @@ function ArcLabel({ id, text, className = "", curve = "top" }: ArcLabelProps) {
 }
 
 type Translator = (key: string) => string;
-type GuidebookTargetTheme = "night" | "soft";
 
 const guidebookTargetHeaderNav = [
   ["nav.decks", "/guidebook"],
@@ -51,19 +50,11 @@ const guidebookTargetNav = [
 function GuidebookTargetHeader({
   path,
   t,
-  theme,
   profileHref,
-  onSearch,
-  onCollection,
-  onTheme,
 }: {
   path: string;
   t: Translator;
-  theme: GuidebookTargetTheme;
   profileHref: string;
-  onSearch: () => void;
-  onCollection: () => void;
-  onTheme: () => void;
 }) {
   return (
     <header className="guidebook-target-header">
@@ -79,16 +70,7 @@ function GuidebookTargetHeader({
         ))}
       </nav>
       <div className="guidebook-target-header-actions">
-        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.search")} onClick={onSearch}>
-          <Search size={18} strokeWidth={1.35} />
-        </button>
-        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.collection")} onClick={onCollection}>
-          <Heart size={18} strokeWidth={1.35} />
-        </button>
         <LanguageSelect />
-        <button type="button" className="guidebook-target-icon-button" aria-label={t("header.theme")} aria-pressed={theme === "soft"} onClick={onTheme}>
-          <Moon size={18} strokeWidth={1.35} />
-        </button>
         <a className="guidebook-target-account" href={profileHref} aria-label={t("nav.targetAccount")}>
           <UserRound size={17} strokeWidth={1.35} />
           <span>{t("nav.targetAccount")}</span>
@@ -135,10 +117,7 @@ export default function VinTarot({ user, children, path = "/" }: { user: User; c
 
 function VinTarotShell({ user, children, path }: { user: User; children?: React.ReactNode; path: string }) {
   const { t } = useLanguage();
-  const [modal, setModal] = useState<"" | "collection" | "notifications" | "help">("");
-  const [practiceTheme, setPracticeTheme] = useState<"night" | "soft">("night");
-  const [guidebookTheme, setGuidebookTheme] = useState<GuidebookTargetTheme>("night");
-  const [homeAtmosphere, setHomeAtmosphere] = useState<"night" | "soft">("night");
+  const [modal, setModal] = useState<"" | "help">("");
   const isHome = path === "/" && !children;
   const isBook = path === "/book";
   const isGuidebook = path === "/guidebook" || path === "/decks";
@@ -151,7 +130,6 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const isMembership = path === "/packages";
   const profileHref = user ? "/profile" : "/auth?return_to=/profile";
   const accountHref = user ? "/account" : "/auth?return_to=/account";
-  const [membershipTheme, setMembershipTheme] = useState<"night" | "soft">("night");
   const shellRef = useRef<HTMLDivElement>(null);
   const siteNav = [["nav.home", Home, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const homeNav = [["nav.home", Home, "/"], ["nav.drawNow", Layers, "/create"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", CircleUserRound, accountHref]] as const;
@@ -167,8 +145,8 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const personal = [["nav.journal", Layers, "/journal"], ["nav.game", Layers, "/game"], ["nav.spread", Sparkles, "/daily-spread"], ["nav.bookings", CalendarDays, "/bookings"], ["nav.invites", Gift, "/invites"]] as const;
   const commerceNav = [["nav.membership", ShoppingBag, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", UserRound, "/account"]] as const;
   const renderCommerceAccessLinks = () => commerceNav.map(([key, Icon, href]) => <a className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></a>);
-  const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
-  const modalDescription = modal === "notifications" ? t("header.caughtUp") : modal === "collection" ? t("header.collectionText") : t("header.helpText");
+  const modalTitle = t("header.help");
+  const modalDescription = t("header.helpText");
 
   useEffect(() => {
     const shell = shellRef.current;
@@ -204,7 +182,6 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       window.removeEventListener("resize", onResize);
     };
   }, [isHome]);
-  const focusGuidebookSearch = () => window.dispatchEvent(new Event("guidebook:focus-search"));
   const renderHomePrimaryNav = () => homeNav.map(([key, Icon, href]) => {
     const active = href === String(path) || (key === "nav.account" && path === "/account");
     return <a className={active ? "active" : ""} href={href} key={href} aria-current={active ? "page" : undefined}>
@@ -239,10 +216,10 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     </a>;
   });
 
-  const shellClassName = isMembership ? `membership-shell${membershipTheme === "soft" ? " membership-shell-soft" : ""}` : isHome ? "home-shell" : isBook ? "home-shell booking-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell guidebook-target-shell" : isCreate ? "site-shell create-shell" : isAccount ? "site-shell account-shell" : isPractice ? `site-shell practice-shell${practiceTheme === "soft" ? " practice-shell-soft" : ""}` : isDaily ? "site-shell daily-shell" : isAffiliate ? "site-shell affiliate-shell" : "site-shell";
-  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} data-guidebook-theme={isGuidebook ? guidebookTheme : undefined} className={shellClassName}>
+  const shellClassName = isMembership ? "membership-shell" : isHome ? "home-shell" : isBook ? "home-shell booking-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell guidebook-target-shell" : isCreate ? "site-shell create-shell" : isAccount ? "site-shell account-shell" : isPractice ? "site-shell practice-shell" : isDaily ? "site-shell daily-shell" : isAffiliate ? "site-shell affiliate-shell" : "site-shell";
+  return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} className={shellClassName}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
-    {isGuidebook && <GuidebookTargetHeader path={path} t={t} theme={guidebookTheme} profileHref="/account" onSearch={focusGuidebookSearch} onCollection={() => setModal("collection")} onTheme={() => setGuidebookTheme((current) => current === "night" ? "soft" : "night")} />}
+    {isGuidebook && <GuidebookTargetHeader path={path} t={t} profileHref="/account" />}
     {!isGuidebook && (
       <header className="topbar">
       <div className="brand-lockup">
@@ -257,35 +234,20 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
         {(isAffiliate ? affiliateTopNav : isMembership ? membershipTopNav : topNav).map(([key, href]) => <a className={(href === path || (href === "/guidebook" && path === "/decks")) ? "active" : ""} href={href} key={href}>{t(key)}</a>)}
       </nav>}
       {isPractice ? <div className="top-actions">
-        <a className="practice-v1-icon-button" href="/guidebook" aria-label={t("header.search")}><Search size={18} strokeWidth={1.4} /></a>
-        <button className="practice-v1-icon-button" type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={18} strokeWidth={1.4} /></button>
         <LanguageSelect />
-        <button className="practice-v1-icon-button" type="button" aria-label={t("header.theme")} aria-pressed={practiceTheme === "soft"} onClick={() => setPracticeTheme((value) => value === "night" ? "soft" : "night")}><Moon size={18} strokeWidth={1.4} /></button>
         <a className="practice-v1-account" href={profileHref}><UserRound size={18} strokeWidth={1.4} /><span>{t("nav.account")}</span></a>
       </div> : isHome || isBook ? <div className="top-actions home-header-actions">
-        <a className="home-icon-link" href="/guidebook" aria-label={t("header.search")}><Search size={20} strokeWidth={1.45} /></a>
-        <button className="home-icon-link" type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={20} strokeWidth={1.45} /></button>
         <LanguageSelect />
-        <button className="home-icon-link home-theme-toggle" type="button" aria-label={t("header.theme")} onClick={() => setHomeAtmosphere((value) => value === "night" ? "soft" : "night")}><Moon size={20} strokeWidth={1.35} /></button>
         <a className="home-account-link" href={accountHref}><UserRound size={18} strokeWidth={1.45} /><span>{t("nav.account")}</span></a>
       </div> : isAffiliate ? <div className="top-actions">
-        <a className="affiliate-top-icon" href="/guidebook" aria-label={t("header.search")}><Search size={18} /></a>
-        <button type="button" aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
         <LanguageSelect />
-        <span className="affiliate-theme-mark" aria-hidden="true"><Moon size={19} /></span>
-        <a className="avatar" href={profileHref} aria-label={t("header.profile")}><UserRound size={18} /></a>
+        <a className="avatar" href={profileHref} aria-label={t("nav.account")}><UserRound size={18} /></a>
       </div> : isMembership ? <div className="top-actions">
-        <Link className="membership-icon-button" href="/guidebook" aria-label={t("header.search")}><Search size={17} strokeWidth={1.4} /></Link>
-        <button className="membership-icon-button" type="button" aria-label={t("header.collection")} onClick={() => setModal("collection")}><Heart size={17} strokeWidth={1.4} /></button>
         <LanguageSelect />
-        <button className="membership-icon-button" type="button" aria-label={t("header.theme")} aria-pressed={membershipTheme === "soft"} onClick={() => setMembershipTheme((value) => value === "night" ? "soft" : "night")}><Moon size={17} strokeWidth={1.4} /></button>
         <Link className="membership-account-link" href={accountHref}><UserRound size={17} strokeWidth={1.4} /><span>{t("nav.account")}</span></Link>
       </div> : <div className="top-actions">
         <LanguageSelect />
-        <button aria-label={t("header.shopping")} onClick={() => setModal("collection")}><ShoppingBag size={17} /></button>
-        <button aria-label={t("header.notifications")} onClick={() => setModal("notifications")}><Heart size={17} /></button>
-        <a className="black button" href="/create">{t("header.room")}</a>
-        <a className="avatar" href={profileHref} aria-label={t("header.profile")}><Moon size={20} /></a>
+        <a className="avatar" href={profileHref} aria-label={t("nav.account")}><UserRound size={18} /></a>
       </div>}
       </header>
     )}

@@ -1,5 +1,11 @@
 # VinTarot state
 
+## Header actions reduced to language and account (2026-09-25, source-only)
+
+The shared top-right header action groups now show only the language selector and account link on every shell variant, including Home, booking, Practice, Affiliate, Membership, Guidebook and fallback pages. The search, heart, theme, shopping and room shortcuts were removed from those header groups; the generic account avatar now uses the user icon. The Guidebook's in-page card search remains available, while its former header shortcut event was removed. Moonlight/NaTarot styling and all side, bottom and in-page navigation/content remain unchanged.
+
+Validation: `npm run build`, Impeccable detector (`[]`) and `git diff --check` pass. No tests were run. Local browser rendering was blocked because the development D1 database lacks the `auth_sessions` table. This is a source-only change and is not deployed.
+
 ## Reading Result approved reference follow-up (2026-09-25, source-only)
 
 The Reading Result now follows the owner-approved screenshot: the top action rail includes Share, Save to journal, Save image and Close; a gold “Tiếp tục rút bài” action sits centered below the result and scrolls to the existing clarification flow. “Lưu ảnh” uses the existing `POST /api/tarot/shares` response and `/r/[token]/image.svg` route to download the SVG. If a share link does not yet exist, saving creates one and the UI discloses this. The existing Moonlight/NaTarot theme, reading content, card evidence and clarification behavior remain in place; no API, schema, prompt, database or deployment changes were made.
