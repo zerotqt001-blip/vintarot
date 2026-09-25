@@ -293,7 +293,6 @@ function GuidebookLibrary() {
   const [query, setQuery] = useState("");
   const [orientation, setOrientation] = useState<"all" | "upright" | "reversed">("all");
   const [sort, setSort] = useState<"classic" | "alphabetical">("classic");
-  const guidebookSearchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const syncFromUrl = () => {
@@ -310,17 +309,6 @@ function GuidebookLibrary() {
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
     return () => window.removeEventListener("popstate", syncFromUrl);
-  }, []);
-
-  useEffect(() => {
-    const focusSearch = () => {
-      setSelectedSuit(null);
-      setView("library");
-      window.history.pushState({}, "", "/guidebook?group=all");
-      window.setTimeout(() => guidebookSearchRef.current?.focus(), 0);
-    };
-    window.addEventListener("guidebook:focus-search", focusSearch);
-    return () => window.removeEventListener("guidebook:focus-search", focusSearch);
   }, []);
 
   const selectGroup = (group: GuidebookGroup | null) => {
@@ -370,7 +358,7 @@ function GuidebookLibrary() {
             <div className="guidebook-toolbar">
               <label className="guidebook-search">
                 <Search size={16} />
-                <input ref={guidebookSearchRef} aria-label={t("pages.searchCards")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("pages.searchGuidebook")} />
+                <input aria-label={t("pages.searchCards")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("pages.searchGuidebook")} />
               </label>
               <div className="guidebook-filters" role="group" aria-label={t("pages.readingFilter")}>
                 {(["all", "upright", "reversed"] as const).map((value) => (

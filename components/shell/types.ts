@@ -15,9 +15,8 @@ export type ShellVariant =
   | "create"
   | "daily";
 
-export type ShellTheme = "night" | "soft";
 export type Translator = (key: string) => string;
-export type ShellModal = "" | "collection" | "notifications" | "help";
+export type ShellModal = "" | "help";
 
 export type NaTarotShellProps = {
   user: NaTarotUser;

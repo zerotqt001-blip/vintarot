@@ -11,7 +11,7 @@ import CelestialBackground from "./celestial-background";
 import NaTarotFooter from "./natarot-footer";
 import NaTarotHeader from "./natarot-header";
 import NaTarotSidebar from "./natarot-sidebar";
-import type { NaTarotShellProps, ShellModal, ShellTheme, ShellVariant, Translator } from "./types";
+import type { NaTarotShellProps, ShellModal, ShellVariant, Translator } from "./types";
 
 function ArcLabel({ id, text, className = "", curve = "top" }: { id: string; text: string; className?: string; curve?: "top" | "bottom" | "left" }) {
   const path = curve === "bottom"
@@ -65,9 +65,9 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
   const variant = resolveVariant(path, hasChildren);
   const isHome = variant === "home";
   const [modal, setModal] = useState<ShellModal>("");
-  const [theme, setTheme] = useState<ShellTheme>("night");
   const shellRef = useRef<HTMLDivElement>(null);
   const accountHref = user ? "/account" : "/auth?return_to=/account";
+  const theme = "night";
 
   useEffect(() => {
     const shell = shellRef.current;
@@ -104,12 +104,9 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
     };
   }, [isHome]);
 
-  const toggleTheme = () => setTheme((current) => current === "night" ? "soft" : "night");
-  const focusGuidebookSearch = () => window.dispatchEvent(new Event("guidebook:focus-search"));
   const showCommerceAccess = variant === "standard" || variant === "create" || variant === "daily";
-  const shellThemeClass = theme === "soft" && variant === "membership" ? " membership-shell-soft" : theme === "soft" && variant === "practice" ? " practice-shell-soft" : "";
   const shellClassName = variant === "membership"
-    ? `membership-shell${shellThemeClass}`
+    ? "membership-shell"
     : variant === "home"
       ? "home-shell"
       : variant === "immersive"
@@ -119,7 +116,7 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
           : variant === "create"
             ? "site-shell create-shell"
             : variant === "practice"
-              ? `site-shell practice-shell${shellThemeClass}`
+              ? "site-shell practice-shell"
               : variant === "daily"
                 ? "site-shell daily-shell"
                 : variant === "affiliate"
@@ -127,15 +124,15 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
                   : variant === "account"
                     ? "site-shell account-shell"
                     : "site-shell";
-  const modalTitle = modal === "collection" ? t("header.collection") : modal === "notifications" ? t("header.notifications") : t("header.help");
-  const modalDescription = modal === "notifications" ? t("header.caughtUp") : modal === "collection" ? t("header.collectionText") : t("header.helpText");
+  const modalTitle = t("header.help");
+  const modalDescription = t("header.helpText");
   const openModal = (next: Exclude<ShellModal, "">) => setModal(next);
 
   return <SidebarProvider>
     <ReferralCapture enabled={Boolean(user)} />
     <div ref={shellRef} data-shell-variant={variant} data-home-atmosphere={isHome ? theme : undefined} data-guidebook-theme={variant === "library" ? theme : undefined} className={shellClassName}>
       <CelestialBackground variant={variant} />
-      <NaTarotHeader path={path} variant={variant} t={t} accountHref={accountHref} theme={theme} onTheme={toggleTheme} onModal={openModal} onSearch={focusGuidebookSearch} />
+      <NaTarotHeader path={path} variant={variant} t={t} accountHref={accountHref} />
       {showCommerceAccess && <>
         <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
           {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}

@@ -1,5 +1,17 @@
 # VinTarot state
 
+## Shared header actions VPS deployment (2026-09-25)
+
+The common site header and the standalone Room header now keep only the language selector and account link across Home, booking, Guidebook, Practice, Membership, Affiliate, Account, Create, Daily Spread, standard shells and Room. Header search, heart/collection and moon/theme controls are removed; Guidebook's in-page search remains. Room's invite action moved to its table toolbar, the home link remains on the brand, and mobile Room tools keep a separate launcher outside the header. This is a UI-only release with no API, schema, database, environment, payment or Nginx changes.
+
+The shared-shell header was initially promoted as `header-actions-faf9e7d-20260925125504` from commit `faf9e7de41742f2946ac781d172f3c7de5f0fa4b` at `2026-09-25T12:56:29Z` (candidate SHA-256 `e9b8004b9a16f6762dd52e68f0ecf9feb4b8e5b9fa9b9ac767e99fafe2ada7fe`). The Room follow-up is the active release: source branch `codex/header-actions-production`, commit `a0851ef876d3deee21734b0ec2fff0142beb3dde`, release `header-actions-a0851ef-20260925130952`, promoted atomically at `2026-09-25T13:10:29Z` (candidate SHA-256 `2ebe8bd2c5ef85121d6dba0e77ebba94268db77a7fd70b0a101de226b9796cff`).
+
+Fresh backup `natarot-production-20260925-131022` passed checksum and restore verification; archive SHA-256 is `b582a3cf6aa78c0373c8640f89ebdf2bd0d2c9d1f04e0efad8dd780482e7f4ba`. Restore status is `success`, SQLite integrity `ok`, migration and application checks `pass`. No migration ran. The service is active; rollback references are `header-actions-faf9e7d-20260925125504` and `reading-result-actions-3bdb3fc-20260925T110004Z`.
+
+Public HTTPS checks returned HTTP 200 for `/`, `/book`, `/account`, `/guidebook`, `/community`, `/packages`, `/affiliate`, `/create`, `/daily-spread`, `/room`, `/api/health` and `/api/tarot/catalog?locale=vi`. Server-rendered checks confirmed two actions on all nine shared-shell routes and both desktop/mobile Room header groups. A live browser accessibility inspection of Room confirmed the language and account links in its header and the Room tools outside it.
+
+Validation: fresh `npm run build` and `git diff --check` pass. No tests were run. Screenshot-based visual QA and release cleanup remain deferred; rollback releases are retained.
+
 ## NaTarot Affiliate production activation audit (2026-09-25)
 
 Production has one Affiliate policy (`affiliate-v1-default`, version 1) and it is `DRAFT`; no Affiliate policy approval audit event exists, and the Admin surface has no policy activation control. Its seeded terms are explicitly non-final: 30-day first-touch referral tracking, a 7-day commission review period, and 10% / 20% / 30% tiers from 0 / 10 / 30 qualifying orders. The policy remains unchanged and inactive. Existing attribution rules require an active policy and profile, a valid referral code, prevent self-referral, and create commission only after verified order fulfillment; no payout execution is available. The active VND package catalog remains 1 / 5 / 10 / 20 Credits at 15,000 / 69,000 / 129,000 / 229,000 VND.
