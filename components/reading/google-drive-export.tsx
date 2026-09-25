@@ -27,8 +27,10 @@ export function GoogleDriveExport({
   const [status, setStatus] = useState<ConnectionStatus>("loading");
   const [email, setEmail] = useState("");
   const [format, setFormat] = useState<ReadingImageFormat>("png");
+  const [downloading, setDownloading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [downloadNotice, setDownloadNotice] = useState("");
   const [connectionNotice, setConnectionNotice] = useState("");
   const [driveUrl, setDriveUrl] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState("");
@@ -73,11 +75,11 @@ export function GoogleDriveExport({
     window.location.assign(`/api/google-drive/connect?return_to=${encodeURIComponent("/room")}`);
   }
 
-  async function saveImage() {
-    if (status !== "connected" || saving || isPreparing) return;
-    setSaving(true);
+  async function downloadImage() {
+    if (downloading || saving || isPreparing) return;
+    setDownloading(true);
     setError("");
-    setCopied(false);
+    setDownloadNotice("");
     try {
       const blob = await prepareImage(format);
       const downloadUrl = URL.createObjectURL(blob);
@@ -89,7 +91,22 @@ export function GoogleDriveExport({
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 30_000);
+      setDownloadNotice(t("reading.imageDownloadStarted"));
+    } catch {
+      setError(t("reading.saveImageUnavailable"));
+    } finally {
+      setDownloading(false);
+    }
+  }
 
+  async function saveImageToDrive() {
+    if (status !== "connected" || downloading || saving || isPreparing) return;
+    setSaving(true);
+    setError("");
+    setDownloadNotice("");
+    setCopied(false);
+    try {
+      const blob = await prepareImage(format);
       const form = new FormData();
       form.set("reading_id", readingId);
       form.set("session_id", sessionId);
@@ -143,31 +160,36 @@ export function GoogleDriveExport({
     }
   }
 
-  const busy = saving || isPreparing;
+  const busy = downloading || saving || isPreparing;
   const connectLabel = status === "auth-required" ? t("reading.driveSignIn") : t("reading.driveConnect");
 
-  return <section className="reading-drive-export" aria-label={t("reading.driveExportLabel")}>
+  return <section className="reading-drive-export" aria-label={t("reading.imageExportLabel")}>
     <div className="reading-drive-export__row">
       <label className="reading-drive-export__format">
         <span>{t("reading.driveFormat")}</span>
-        <select value={format} onChange={(event) => { setFormat(event.target.value as ReadingImageFormat); setDriveUrl(""); }} disabled={busy}>
+        <select value={format} onChange={(event) => { setFormat(event.target.value as ReadingImageFormat); setDriveUrl(""); setError(""); setDownloadNotice(""); }} disabled={busy}>
           <option value="png">PNG</option>
           <option value="jpg">JPG</option>
         </select>
       </label>
+      <button className="reading-action reading-action--image reading-drive-export__download min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={() => void downloadImage()} disabled={busy} aria-busy={downloading}>
+        {downloading ? <LoaderCircle size={15} className="animate-spin" aria-hidden="true" /> : <Download size={15} strokeWidth={1.6} aria-hidden="true" />}
+        {downloading ? t("reading.imageDownloading") : t("reading.imageDownloadToDevice")}
+      </button>
       {status === "connected" ? (
-        <button className="reading-action reading-action--image min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={() => void saveImage()} disabled={busy} aria-busy={busy}>
-          {busy ? <LoaderCircle size={15} className="animate-spin" aria-hidden="true" /> : <Download size={15} strokeWidth={1.6} aria-hidden="true" />}
-          {busy ? t("reading.driveSaving") : t("reading.driveSaveToDrive")}
+        <button className="reading-action reading-action--image reading-drive-export__drive-button min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={() => void saveImageToDrive()} disabled={busy} aria-busy={saving}>
+          {saving ? <LoaderCircle size={15} className="animate-spin" aria-hidden="true" /> : <HardDrive size={15} strokeWidth={1.6} aria-hidden="true" />}
+          {saving ? t("reading.driveSaving") : t("reading.driveSaveToDrive")}
         </button>
       ) : (
-        <button className="reading-action reading-action--image min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={connectDrive} disabled={status === "loading" || status === "unavailable" || busy}>
+        <button className="reading-action reading-action--image reading-drive-export__drive-button min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={connectDrive} disabled={status === "loading" || status === "unavailable" || busy}>
           {status === "loading" ? <LoaderCircle size={15} className="animate-spin" aria-hidden="true" /> : <Cloud size={15} strokeWidth={1.6} aria-hidden="true" />}
           {status === "loading" ? t("reading.driveChecking") : status === "unavailable" ? t("reading.driveUnavailable") : connectLabel}
         </button>
       )}
     </div>
     <p className="reading-drive-export__note" role="note" aria-live="polite">
+      {downloadNotice && <span className="reading-drive-export__download-notice">{downloadNotice}</span>}
       {status === "connected" && <><HardDrive size={13} aria-hidden="true" /> {t("reading.driveConnectedAs").replace("{email}", email)}</>}
       {t("reading.drivePublicLinkNotice")}
       {status === "connected" && <button type="button" className="reading-drive-export__disconnect" onClick={() => void disconnect()} disabled={busy}><Unplug size={13} aria-hidden="true" />{t("reading.driveDisconnect")}</button>}
