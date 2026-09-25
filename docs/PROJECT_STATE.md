@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Guidebook primary-navigation icon parity (2026-09-25, UI-only; not deployed)
+All primary navigation rails now use the Guidebook gold icon treatment: the same Lucide glyph size/stroke, thin ring, dark fill, gold color, and quiet active-ring state. Desktop icons are 44px; bottom-rail icons are 31px, including Packages at its earlier 820px mobile breakpoint. Labels, destinations, active links, compact 104px desktop row rhythm, and Room's auto-hide behavior are unchanged. Booking's local icon-size overrides were removed. No backend/API, auth, data, database, or migration behavior changed.
+
+Validation: navigation icon parity regression passes; focused navigation/layout tests pass `14/14`; tracked suite passes `656/656`; `npx tsc --noEmit`, production `npm run build`, targeted ESLint, and `git diff --check` pass. The local browser preview could not render because the worktree's local D1 has no `auth_sessions` table; no migration was run. Impeccable reported only existing project-wide styling warnings, with no finding on the new icon rules. This change has not been deployed.
+
 ## Compact primary navigation spacing (2026-09-25, UI-only; production deployed)
 Desktop primary navigation rails now align their five destinations from the top with an 8px gap and 104px minimum row height, replacing the previous large, viewport-stretched spacing. Affiliate's desktop-specific grid and taller rows are explicitly brought into the same rhythm. The existing five-item mobile bottom bars remain unchanged. The source change is limited to `app/globals.css` plus a CSS-cascade regression test; no backend/API, account, database, migration, or credential behavior changed.
 

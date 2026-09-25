@@ -56,12 +56,11 @@
 :global(.booking-shell .main){width:100%;margin:0;padding:110px 0 112px;min-height:100svh}
 .directory{width:min(1140px,calc(100vw - 222px));margin-left:max(222px,calc(50vw - 459px))}
 :global(.booking-shell .home-primary-nav .home-nav-label){line-height:1.2;white-space:nowrap}
-:global(.booking-shell .home-primary-nav .nav-orb){width:58px;height:58px}
 :global(.booking-shell[data-home-atmosphere="soft"] .main)::before{background:radial-gradient(ellipse at 51% 25%,rgba(37,56,71,.15),rgba(8,23,37,.1) 42%,rgba(3,12,24,.22) 78%,rgba(3,12,24,.52) 100%)}
 :global(.booking-shell[data-home-atmosphere="soft"]) .hero{background:radial-gradient(ellipse at 91% 10%,rgba(239,205,146,.22),transparent 28%),linear-gradient(130deg,rgba(22,48,67,.96),rgba(10,28,43,.93) 68%,rgba(27,49,64,.91))}
 :global(.booking-shell[data-home-atmosphere="soft"]) .readerCard{background:linear-gradient(165deg,rgba(18,44,62,.95),rgba(10,26,41,.95))}
 
-@media(max-height:800px) and (min-width:701px){:global(.booking-shell .home-primary-nav a){min-height:88px;gap:8px}:global(.booking-shell .home-primary-nav .nav-orb){width:49px;height:49px}:global(.booking-shell .home-rail-signature){display:none}}
+@media(max-height:800px) and (min-width:701px){:global(.booking-shell .home-primary-nav a){min-height:88px;gap:8px}:global(.booking-shell .home-rail-signature){display:none}}
 
 @media(max-width:1080px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:768px){:global(.booking-shell .main){width:100%;margin:0;padding:86px 12px calc(100px + env(safe-area-inset-bottom));min-height:100svh}.directory{width:100%;margin:0;padding:20px 0 42px}.hero{margin-bottom:18px;padding:24px 19px;border-radius:18px}.hero h1{max-width:15ch;font-size:2.55rem}.intro{max-width:44ch;padding-right:16px;font-size:.81rem}.heroMark{right:18px;bottom:18px;width:44px;height:44px;opacity:.62}.heroMark svg:first-child{width:21px}.heroMark svg+svg{width:13px}.grid{grid-template-columns:minmax(0,1fr);gap:11px}.readerCard{padding:15px}.bio{min-height:0;margin:12px 0}.statePanel{min-height:210px}.detailDialog{width:calc(100% - 18px)!important;max-height:calc(100dvh - 32px)!important;padding:19px!important}}
