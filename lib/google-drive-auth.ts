@@ -53,7 +53,7 @@ export async function startGoogleDriveConnection(request: Request): Promise<Resp
       connectUrl.searchParams.set("return_to", returnPath);
       const authUrl = new URL("/auth", request.url);
       authUrl.searchParams.set("return_to", `${connectUrl.pathname}${connectUrl.search}`);
-      const response = new Response(null, { status: 303, headers: { Location: authUrl.toString(), "Cache-Control": "no-store" } });
+      const response = new Response(null, { status: 303, headers: { Location: `${authUrl.pathname}${authUrl.search}${authUrl.hash}`, "Cache-Control": "no-store" } });
       return attachIdentityCookie(response, requestIdentity);
     }
     const config = getGoogleDriveConfig(request);
