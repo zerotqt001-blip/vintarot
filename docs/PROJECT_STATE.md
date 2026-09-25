@@ -1,5 +1,15 @@
 # VinTarot state
 
+## Shared header actions VPS deployment (2026-09-25)
+
+The shared site header now keeps only the language selector and account link across Home, booking, Guidebook, Practice, Membership, Affiliate, Account, Create, Daily Spread and standard shell variants. The header search, heart/collection and moon/theme controls and their triggers are removed; Guidebook's in-page search remains available. This is a UI-only release with no API, schema, database, environment, payment or Nginx changes.
+
+Source branch `codex/header-actions-production`, commit `faf9e7de41742f2946ac781d172f3c7de5f0fa4b`; production release `header-actions-faf9e7d-20260925125504`, promoted atomically at `2026-09-25T12:56:29Z`. Candidate archive SHA-256: `e9b8004b9a16f6762dd52e68f0ecf9feb4b8e5b9fa9b9ac767e99fafe2ada7fe`. Fresh backup `natarot-production-20260925-125622` passed checksum and restore verification; archive SHA-256: `bb5426ddeb002b226aa417a75dbddb50416326df8c38244b3632c33f52071eeb`. Restore status is `success`, SQLite integrity `ok`, migration and application checks `pass`. No migration ran during this UI release.
+
+The service is active and the current release is the new header release. Rollback references remain `reading-result-actions-3bdb3fc-20260925T110004Z` and `affiliate-status-8ccaabf-20260925T102201Z`. Public HTTPS checks returned HTTP 200 for `/`, `/book`, `/account`, `/guidebook`, `/community`, `/packages`, `/affiliate`, `/create`, `/daily-spread`, `/room`, `/api/health` and `/api/tarot/catalog?locale=vi`. Server-rendered header checks on the nine shared-shell routes confirmed exactly two actions: language and account, with search, heart and theme actions absent.
+
+Validation: fresh `npm run build` and `git diff --check` pass. No tests were run. Browser visual QA and release cleanup remain deferred; the manager requires real-browser verification before cleanup, and the existing rollback releases are retained.
+
 ## NaTarot Affiliate production activation audit (2026-09-25)
 
 Production has one Affiliate policy (`affiliate-v1-default`, version 1) and it is `DRAFT`; no Affiliate policy approval audit event exists, and the Admin surface has no policy activation control. Its seeded terms are explicitly non-final: 30-day first-touch referral tracking, a 7-day commission review period, and 10% / 20% / 30% tiers from 0 / 10 / 30 qualifying orders. The policy remains unchanged and inactive. Existing attribution rules require an active policy and profile, a valid referral code, prevent self-referral, and create commission only after verified order fulfillment; no payout execution is available. The active VND package catalog remains 1 / 5 / 10 / 20 Credits at 15,000 / 69,000 / 129,000 / 229,000 VND.
