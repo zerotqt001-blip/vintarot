@@ -2478,3 +2478,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .site-shell.affiliate-shell .main{width:100%!important;margin:58px 0 0!important;padding-bottom:calc(111px + env(safe-area-inset-bottom))!important}
   .site-shell.affiliate-shell .help{bottom:calc(96px + env(safe-area-inset-bottom))!important}
 }
+
+/* Keep desktop primary navigation rows compact and consistent across routes. */
+@media(min-width:701px){
+  .nt-global-sidebar .main-nav,.nt-global-sidebar .home-primary-nav{height:auto;flex:0 0 auto;align-content:flex-start;justify-content:flex-start;gap:8px}
+  .nt-global-sidebar .main-nav > a,.nt-global-sidebar .home-primary-nav > a{height:auto;min-height:104px;margin:0}
+  .site-shell.affiliate-shell .nt-global-sidebar .home-primary-nav{display:flex;align-content:flex-start;justify-content:flex-start;gap:8px}
+  .site-shell.affiliate-shell .nt-global-sidebar .home-primary-nav > a{height:auto;min-height:104px;margin:0}
+}
