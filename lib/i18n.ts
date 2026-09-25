@@ -348,6 +348,10 @@ export const messages = {
     reading: {
       panelLabel: "Personal Tarot reading",
       title: "Your reading",
+      resultEyebrow: "TAROT READING",
+      sessionInfo: "Reading details",
+      topicLabel: "Topic",
+      sessionId: "Reading ID",
       forReader: "A reflection for {name}",
       forYou: "A reflection shaped around your question",
       spreadLabel: "Spread",
@@ -1243,6 +1247,10 @@ export const messages = {
     reading: {
       panelLabel: "Lời đọc Tarot dành cho bạn",
       title: "Lời đọc của bạn",
+      resultEyebrow: "KẾT QUẢ TRẢ BÀI",
+      sessionInfo: "Thông tin phiên đọc",
+      topicLabel: "Chủ đề",
+      sessionId: "ID phiên đọc",
       forReader: "Một khoảng suy ngẫm dành cho {name}",
       forYou: "Một lời đọc bắt đầu từ câu hỏi của bạn",
       spreadLabel: "Trải bài",

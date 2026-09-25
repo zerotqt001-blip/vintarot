@@ -41,11 +41,11 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
       width: viewport.width,
       height: viewport.height,
       cardAspectRatio: 400 / 647,
-      minCardWidth: viewport.mobile ? 108 : 118,
-      maxCardWidth: viewport.mobile ? 154 : 190,
+      minCardWidth: viewport.mobile ? 108 : items.length >= 8 ? 80 : 118,
+      maxCardWidth: viewport.mobile ? 154 : items.length >= 8 ? 130 : 190,
       mobile: viewport.mobile,
     }),
-    [geometry, viewport],
+    [geometry, items.length, viewport],
   );
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
   }, []);
 
   const itemByPosition = new Map(items.map((item) => [item.position.order, item]));
-  const stageHeight = projection.height + (projection.mode === "ordered" ? 112 : 92);
+  const stageHeight = projection.height + (projection.mode === "ordered" ? 112 : 20);
 
   return (
     <section className="reading-spread reading-section" aria-labelledby="reading-spread-title">
@@ -81,6 +81,7 @@ export function ReadingSpread({ items, artwork, locale, spreadType, spreadName, 
         className="reading-spread__stage"
         data-layout-mode={projection.mode}
         data-spread-type={geometry.layoutKey}
+        data-card-count={items.length}
         style={{ height: `${stageHeight}px` }}
       >
         <div className="reading-spread__stage-light" aria-hidden="true" />
