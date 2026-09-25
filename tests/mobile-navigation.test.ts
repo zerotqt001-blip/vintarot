@@ -39,8 +39,42 @@ test("Create renders the same five labeled primary destinations as the Home rail
   ]);
   assert.match(links[1]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
   assert.match(markup, /class="personal-nav"/);
-  assert.match(styles, /\.site-shell\.create-shell \.home-primary-nav\{display:grid/);
-  assert.match(styles, /\.site-shell\.create-shell \.nt-global-sidebar~\.main\{[^}]*padding-bottom:calc\(111px/);
+  assert.match(styles, /\.site-shell:is\(\.create-shell,\.account-shell\) \.home-primary-nav\{display:grid/);
+  assert.match(styles, /\.site-shell:is\(\.create-shell,\.account-shell\) \.main\{[^}]*padding-bottom:calc\(111px/);
+});
+
+test("Account renders readable Home links and keeps its active state with the login return path", () => {
+  const markup = execFileSync(process.execPath, ["-e", [
+    "require('tsx/cjs');",
+    "const React = require('react');",
+    "const { renderToStaticMarkup } = require('react-dom/server');",
+    "const VinTarot = require('./app/vintarot.tsx').default;",
+    "process.stdout.write(renderToStaticMarkup(React.createElement(VinTarot, { user: null, path: '/account', children: React.createElement('p', null, 'Account page content') })));",
+  ].join(" ")], { encoding: "utf8" });
+  const rail = markup.match(/<nav class="home-primary-nav"[\s\S]*?<\/nav>/)?.[0];
+
+  assert.ok(rail, "Account should render the Home primary navigation rail");
+  const links = [...rail.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(links.map(([, attributes]) => attributes.match(/href="([^"]+)"/)?.[1]), [
+    "/",
+    "/create",
+    "/packages",
+    "/affiliate",
+    "/auth?return_to=/account",
+  ]);
+  assert.match(markup, /class="site-shell account-shell"/);
+  assert.deepEqual(links.map(([, , content]) => content.match(/class="nav-label">([^<]+)</)?.[1]), [
+    "Trang chủ",
+    "Rút Bài Ngay",
+    "Gói Thành Viên",
+    "Affiliate",
+    "Tài Khoản",
+  ]);
+  assert.match(links[4]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
+  assert.match(markup, /class="personal-nav"/);
+  assert.match(styles, /\.site-shell:is\(\.create-shell,\.account-shell\) \.site-sidebar/);
+  assert.doesNotMatch(styles, /\.site-shell\.account-shell \.nt-global-sidebar\{/);
+  assert.match(markup, /Account page content/);
 });
 
 test("mobile primary navigation exposes readable labels and preserves Room's dedicated controls", () => {

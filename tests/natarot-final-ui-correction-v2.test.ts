@@ -41,7 +41,8 @@ test("target routes use one readable canonical five-link sidebar", () => {
   assert.ok(!/ArcLabel|GuidebookSidebar|function SiteNav/.test(sidebar), "all target pages use the same label treatment");
   assert.match(sidebar, /className="nav-label"/);
   assert.match(sidebar, /path === "\/guidebook" && href === "\/create"\) return "\/room\?ritual=1"/);
-  assert.ok(/aria-current=\{isCurrentPath\(path, href\) \? "page" : undefined\}/.test(sidebar), "only the current route is announced as current");
+  assert.ok(/const active = isVisuallySelected\(path, href\) \|\| \(key === "nav\.account" && path === "\/account"\)/.test(sidebar), "the canonical destination or its account return path stays active");
+  assert.ok(/aria-current=\{active \? "page" : undefined\}/.test(sidebar), "the selected primary route is announced as current");
   assert.equal((shell.match(/<NaTarotSidebar\b/g) ?? []).length, 1);
 });
 
@@ -71,7 +72,8 @@ test("the shared desktop rail respects its viewport bounds and the footer stays 
   assert.ok(/\.membership-shell \.main\{padding-top:calc\(16px \+ var\(--nt-header-height\)\)/.test(styles), "Packages clears the fixed header");
   assert.ok(/\.membership-shell,\.site-shell\.affiliate-shell\{--nt-sidebar-width:170px/.test(styles), "compact data-page rails use target width");
   assert.ok(/\.site-shell\.affiliate-shell\{--nt-sidebar-bottom:220px\}/.test(styles), "Affiliate rail leaves target footer clearance");
-  assert.ok(/\.site-shell\.account-shell \.nt-global-sidebar\{[^}]*width:170px!important/.test(styles), "Account rail uses target width");
+  assert.ok(/\.site-shell:is\(\.create-shell,\.account-shell\) \.site-sidebar\{top:110px;bottom:82px;left:20px;width:202px!important\}/.test(styles), "Account and Create share the canonical Home rail dimensions");
+  assert.ok(/\.site-shell\.account-shell[^{}]*\.main\{[^}]*width:calc\(100% - 238px\)[^}]*margin:64px 0 50px 238px/.test(styles), "Account content clears the shared rail");
   assert.ok(!/\.guidebook-shell footer\{position:relative/.test(styles), "legacy footer cannot override shared fixed footer");
   assert.ok(/\.site-footer\{position:fixed/.test(styles), "one fixed shared footer is used");
 });

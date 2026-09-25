@@ -30,28 +30,31 @@ function resolveNavHref(path: string, href: string, accountHref: string): string
 }
 
 function CanonicalNav({ path, t, accountHref, variant }: SidebarProps) {
-  const usesHomeRail = variant === "home" || variant === "create";
+  const usesHomeRail = variant === "home" || variant === "create" || variant === "account";
   return <nav className={usesHomeRail ? "home-primary-nav" : "main-nav nt-global-nav-list"} aria-label={t("nav.primary")}>
-    {navItems.map(([key, Icon, href]) => <Link
-      className={isVisuallySelected(path, href) ? "active" : ""}
-      href={resolveNavHref(path, href, accountHref)}
-      key={href}
-      aria-label={t(key)}
-      aria-current={isCurrentPath(path, href) ? "page" : undefined}
-    >
-      <span className="nav-orb"><Icon size={26} strokeWidth={1.35} aria-hidden="true" /></span>
-      <span className="nav-label">{t(key)}</span>
-    </Link>)}
+    {navItems.map(([key, Icon, href]) => {
+      const active = isVisuallySelected(path, href) || (key === "nav.account" && path === "/account");
+      return <Link
+        className={active ? "active" : ""}
+        href={resolveNavHref(path, href, accountHref)}
+        key={href}
+        aria-label={t(key)}
+        aria-current={active ? "page" : undefined}
+      >
+        <span className="nav-orb"><Icon size={26} strokeWidth={1.35} aria-hidden="true" /></span>
+        <span className="nav-label">{t(key)}</span>
+      </Link>;
+    })}
   </nav>;
 }
 
 export default function NaTarotSidebar({ path, variant, t, user, accountHref }: SidebarProps) {
   if (variant === "immersive" || variant === "reading") return null;
-  const showPersonalNav = !["home", "library", "practice", "membership", "affiliate", "account"].includes(variant);
+  const showPersonalNav = !["home", "library", "practice", "membership", "affiliate"].includes(variant);
   return <Sidebar collapsible="none" className="site-sidebar nt-global-sidebar">
     <SidebarContent>
       <CanonicalNav path={path} t={t} user={user} accountHref={accountHref} variant={variant} />
-      {variant === "home" || variant === "create" ? (
+      {variant === "home" || variant === "create" || variant === "account" ? (
         <span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
       ) : (
         <span className="site-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>

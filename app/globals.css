@@ -1807,44 +1807,45 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 }
 
 /* The Create route keeps the same labeled five-link rail as the Home route. */
-.site-shell.create-shell .site-sidebar{top:110px;bottom:82px;left:20px;width:202px!important}
-.site-shell.create-shell .site-sidebar [data-slot=sidebar-content]{gap:14px;overflow-y:auto;scrollbar-width:none}
-.site-shell.create-shell .site-sidebar [data-slot=sidebar-content]::-webkit-scrollbar{display:none}
-.site-shell.create-shell .home-primary-nav{display:grid;gap:4px;padding:18px 9px;border:1px solid rgba(231,199,125,.38);border-radius:20px;background:linear-gradient(180deg,rgba(7,25,46,.91),rgba(3,14,28,.84));box-shadow:0 20px 45px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.035);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.site-shell.create-shell .home-primary-nav a{display:grid;min-height:112px;place-items:center;align-content:center;gap:13px;border-radius:16px;color:var(--color-ivory);font-size:14px;text-align:center;transition:background .2s ease,color .2s ease,transform .2s ease}
-.site-shell.create-shell .home-primary-nav a:hover,.site-shell.create-shell .home-primary-nav a.active{background:linear-gradient(135deg,rgba(216,174,104,.16),rgba(16,40,59,.62));color:var(--color-gold-bright)}
-.site-shell.create-shell .home-primary-nav a:hover{transform:translateY(-1px)}
-.site-shell.create-shell .home-primary-nav .nav-orb{display:grid;width:58px;height:58px;place-items:center;border:1px solid rgba(231,199,125,.78);border-radius:50%;background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.14),rgba(4,17,32,.92));color:var(--color-gold-bright);box-shadow:0 0 18px rgba(215,179,106,.1)}
-.site-shell.create-shell .home-primary-nav a.active .nav-orb{background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.23),rgba(4,17,32,.88));box-shadow:0 0 25px rgba(215,179,106,.18)}
-.site-shell.create-shell .nav-label{line-height:1.2;white-space:nowrap}
-.site-shell.create-shell .home-rail-signature{display:grid;gap:5px;margin:10px 18px 2px;padding-top:17px;border-top:1px solid rgba(231,199,125,.3);text-align:center}
-.site-shell.create-shell .home-rail-signature strong{color:var(--color-ivory);font:400 16px/1 'Instrument Serif','Times New Roman',serif}
-.site-shell.create-shell .home-rail-signature small{color:rgba(218,222,224,.62);font-size:10px;letter-spacing:.04em;line-height:1.2}
-.site-shell.create-shell .main{margin:74px 0 50px 238px;width:calc(100% - 238px)}
+.site-shell:is(.create-shell,.account-shell) .site-sidebar{top:110px;bottom:82px;left:20px;width:202px!important}
+.site-shell:is(.create-shell,.account-shell) .site-sidebar [data-slot=sidebar-content]{gap:14px;overflow-y:auto;scrollbar-width:none}
+.site-shell:is(.create-shell,.account-shell) .site-sidebar [data-slot=sidebar-content]::-webkit-scrollbar{display:none}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav{display:grid;gap:4px;padding:18px 9px;border:1px solid rgba(231,199,125,.38);border-radius:20px;background:linear-gradient(180deg,rgba(7,25,46,.91),rgba(3,14,28,.84));box-shadow:0 20px 45px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.035);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav a{display:grid;min-height:112px;place-items:center;align-content:center;gap:13px;border-radius:16px;color:var(--color-ivory);font-size:14px;text-align:center;transition:background .2s ease,color .2s ease,transform .2s ease}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav a:hover,.site-shell:is(.create-shell,.account-shell) .home-primary-nav a.active{background:linear-gradient(135deg,rgba(216,174,104,.16),rgba(16,40,59,.62));color:var(--color-gold-bright)}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav a:hover{transform:translateY(-1px)}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav .nav-orb{display:grid;width:58px;height:58px;place-items:center;border:1px solid rgba(231,199,125,.78);border-radius:50%;background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.14),rgba(4,17,32,.92));color:var(--color-gold-bright);box-shadow:0 0 18px rgba(215,179,106,.1)}
+.site-shell:is(.create-shell,.account-shell) .home-primary-nav a.active .nav-orb{background:radial-gradient(circle at 35% 25%,rgba(229,203,152,.23),rgba(4,17,32,.88));box-shadow:0 0 25px rgba(215,179,106,.18)}
+.site-shell:is(.create-shell,.account-shell) .nav-label{line-height:1.2;white-space:nowrap}
+.site-shell:is(.create-shell,.account-shell) .home-rail-signature{display:grid;gap:5px;margin:10px 18px 2px;padding-top:17px;border-top:1px solid rgba(231,199,125,.3);text-align:center}
+.site-shell:is(.create-shell,.account-shell) .home-rail-signature strong{color:var(--color-ivory);font:400 16px/1 'Instrument Serif','Times New Roman',serif}
+.site-shell:is(.create-shell,.account-shell) .home-rail-signature small{color:rgba(218,222,224,.62);font-size:10px;letter-spacing:.04em;line-height:1.2}
+.site-shell:is(.create-shell,.account-shell) .main{margin:74px 0 50px 238px;width:calc(100% - 238px)}
 @media(max-width:1100px) and (min-width:701px){
-  .site-shell.create-shell .site-sidebar{top:92px;bottom:84px;left:14px;width:176px!important}
-  .site-shell.create-shell .home-primary-nav a{min-height:100px}
-  .site-shell.create-shell .main{margin-left:202px;width:calc(100% - 202px);padding-inline:3%}
+  .site-shell:is(.create-shell,.account-shell) .site-sidebar{top:92px;bottom:84px;left:14px;width:176px!important}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav a{min-height:100px}
+  .site-shell:is(.create-shell,.account-shell) .main{margin-left:202px;width:calc(100% - 202px);padding-inline:3%}
 }
 @media(max-width:920px) and (min-width:701px){
-  .site-shell.create-shell .home-primary-nav{padding-block:12px}
-  .site-shell.create-shell .home-primary-nav a{min-height:84px}
-  .site-shell.create-shell .home-rail-signature{margin-top:6px;padding-top:10px}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav{padding-block:12px}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav a{min-height:84px}
+  .site-shell:is(.create-shell,.account-shell) .home-rail-signature{margin-top:6px;padding-top:10px}
 }
 @media(max-width:700px){
-  .site-shell.create-shell .site-sidebar{top:auto!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:86px!important;padding:0!important;z-index:60;background:transparent!important}
-  .site-shell.create-shell .site-sidebar [data-slot=sidebar-content]{display:block;height:100%;min-height:0;overflow:visible}
-  .site-shell.create-shell .home-primary-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;height:100%;padding:4px 2px max(4px,env(safe-area-inset-bottom));border-width:1px 0 0;border-radius:0;background:rgba(3,14,28,.96);box-shadow:0 -12px 26px rgba(0,0,0,.3);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-  .site-shell.create-shell .home-primary-nav a{min-height:0;gap:5px;border-radius:10px;font-size:9px;line-height:1.1}
-  .site-shell.create-shell .home-primary-nav .nav-orb{width:34px;height:34px}
-  .site-shell.create-shell .home-primary-nav .nav-orb svg{width:18px;height:18px}
-  .site-shell.create-shell .nav-label{max-width:70px;overflow:hidden;text-overflow:ellipsis}
-  .site-shell.create-shell .home-rail-signature,.site-shell.create-shell .personal-nav,.site-shell.create-shell .commerce-access-nav{display:none!important}
-  .site-shell.create-shell .nt-global-sidebar~.main{width:100%!important;margin:58px 0 0!important;padding-bottom:calc(111px + env(safe-area-inset-bottom))!important}
-  .site-shell.create-shell footer{display:none}
-  .site-shell.create-shell .help{bottom:calc(96px + env(safe-area-inset-bottom))!important}
+  .site-shell:is(.create-shell,.account-shell) .site-sidebar{top:auto!important;right:0!important;bottom:0!important;left:0!important;width:100%!important;height:86px!important;padding:0!important;z-index:60;background:transparent!important}
+  .site-shell:is(.create-shell,.account-shell) .site-sidebar [data-slot=sidebar-content]{display:block;height:100%;min-height:0;overflow:visible}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;height:100%;padding:4px 2px max(4px,env(safe-area-inset-bottom));border-width:1px 0 0;border-radius:0;background:rgba(3,14,28,.96);box-shadow:0 -12px 26px rgba(0,0,0,.3);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav a{min-height:0;gap:5px;border-radius:10px;font-size:9px;line-height:1.1}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav .nav-orb{width:34px;height:34px}
+  .site-shell:is(.create-shell,.account-shell) .home-primary-nav .nav-orb svg{width:18px;height:18px}
+  .site-shell:is(.create-shell,.account-shell) .nav-label{max-width:70px;overflow:hidden;text-overflow:ellipsis}
+  .site-shell:is(.create-shell,.account-shell) .home-rail-signature,.site-shell:is(.create-shell,.account-shell) .personal-nav,.site-shell:is(.create-shell,.account-shell) .commerce-access-nav{display:none!important}
+  .site-shell:is(.create-shell,.account-shell) .main{width:100%!important;margin:58px 0 0!important;padding-bottom:calc(111px + env(safe-area-inset-bottom))!important}
+  .site-shell:is(.create-shell,.account-shell) footer{display:none}
+  .site-shell:is(.create-shell,.account-shell) .help{bottom:calc(96px + env(safe-area-inset-bottom))!important}
 }
-@media(prefers-reduced-motion:reduce){.create-shell .home-primary-nav a{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){.site-shell:is(.create-shell,.account-shell) .home-primary-nav a{animation:none!important;transition:none!important}}
+
 
 /* Membership/packages redesign V1. The route has its own shell so the approved
    Moonlight reading surfaces and the existing checkout/account flows stay intact. */
@@ -2072,10 +2073,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(min-width:1181px){
   .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .topbar,
   .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .topbar{height:64px}
-  .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .site-sidebar,
   .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .site-sidebar{top:80px;bottom:66px}
   .site-shell.account-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .main{
-    width:calc(100% - 190px);max-width:none;margin:64px 0 50px 190px;padding:16px 18px 82px
+    width:calc(100% - 238px);max-width:none;margin:64px 0 50px 238px;padding:16px 18px 82px
   }
   .site-shell.affiliate-shell:not(.guidebook-shell):not(.create-shell):not(.practice-shell):not(.daily-shell):not(.room-shell) .main{
     width:calc(100% - 190px);max-width:none;margin:64px 0 50px 190px;padding:16px clamp(22px,3.2vw,52px) 88px
@@ -2245,7 +2245,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .site-shell.guidebook-target-shell,.site-shell.practice-shell{--nt-sidebar-top:90px;--nt-sidebar-bottom:106px}
 .membership-shell,.site-shell.affiliate-shell{--nt-sidebar-width:170px;--nt-sidebar-bottom:178px}
 .site-shell.affiliate-shell{--nt-sidebar-bottom:220px}
-.site-shell.account-shell .nt-global-sidebar{top:72px!important;right:auto!important;bottom:auto!important;width:170px!important;min-width:170px!important;height:620px!important}
 .guidebook-shell .nt-global-sidebar{display:flex!important}
 .nt-global-sidebar [data-slot="sidebar-content"]{display:flex;height:100%;flex-direction:column;gap:9px;padding:12px 8px;border:1px solid rgba(215,179,106,.2);border-radius:19px;background:var(--nt-surface-secondary);box-shadow:0 12px 28px rgba(0,0,0,.25);overflow:hidden}
 .nt-global-sidebar .main-nav,.nt-global-sidebar .home-primary-nav{display:flex;width:100%;flex:1;flex-direction:column;align-content:initial;justify-content:space-between;gap:4px;padding:0;border:0;background:transparent;overflow:visible}

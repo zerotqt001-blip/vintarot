@@ -25,8 +25,8 @@
 
 **Files:** No application files.
 
-- [x] Recheck the live release before deployment: current is `reading-result-v2-d26ce8d-20260924T225446Z`, `previous-1` is `create-nav-e326acd-20260924T223927Z`, and `previous-2` is `affiliate-referral-3405b75-20260924T113918Z`; service and public health are healthy, policy API is `null`/DRAFT, and all three references are distinct.
-- [x] Confirm exact live source `d26ce8d67e0a2efc9200290b9ebeafee38e89079` (including its `e326acda` production ancestor), Affiliate branch `f95e207`, and UI V2 branch `fc39e60` share integration base `e5474d3`; both exact production commits are included in the integration history.
+- [x] Recheck the live release before deployment: current is `account-nav-7d21a30-20260924T232615Z`, `previous-1` is `reading-result-v2-d26ce8d-20260924T225446Z`, and `previous-2` is `create-nav-e326acd-20260924T223927Z`; service and public health are healthy, policy API is `null`/DRAFT, and all three references are distinct.
+- [x] Confirm exact live source `7d21a30712541ab3c0d371054ea89d5ae1ec5141` (including its `d26ce8d` and `e326acda` production ancestors), Affiliate branch `f95e207`, and UI V2 branch `fc39e60` share integration base `e5474d3`; all exact production commits are included in the integration history.
 - [x] Inspect live source and production SQLite read-only: the current source tree omitted the public-referral-link module/migration file, while migration `0009_affiliate_referral_links.sql` remains applied exactly once; integrity is `ok`, FK violations are zero, referral/attribution/conversion/commission rows are zero, there are two Affiliate profiles, and policy version 1 remains `DRAFT` with its existing values unchanged.
 - [x] Confirm the original Affiliate/UI V2 conflict set (`app/globals.css`, `docs/PROJECT_STATE.md`, `tests/member-affiliate-ui-v1.test.ts`) plus the later live-production conflict (`app/vintarot.tsx`); inspect localization, dashboard tests, production Room/Create navigation changes, and the canonical V2 shell.
 - [x] Install locked dependencies in this isolated worktree and capture the Affiliate baseline full-suite result (`624/624`).
@@ -44,7 +44,7 @@
 - [x] Combine the V2 shell/account assertions with the Affiliate owner-scoped referral/policy-gate assertions in the member/Affiliate regression test.
 - [x] Preserve both branch histories in `docs/PROJECT_STATE.md`, with production claims tied to the verified release and V2 verification clearly marked as pending until measured.
 - [x] Review all changed-file and CSS selector diffs for duplicate shell components, duplicated rules, lost referral behavior, or unrequested policy changes.
-- [x] Port live `/create` Home-rail parity into the existing V2 canonical sidebar instead of restoring the obsolete monolithic shell; retain live Room auto-hide and responsive rail styles with V2 label classes and sufficient cascade priority.
+- [x] Port live `/create` and `/account` Home-rail parity into the existing V2 canonical sidebar instead of restoring the obsolete monolithic shell; retain live Room auto-hide and responsive rail styles with V2 label classes and sufficient cascade priority. Account/Create styling shares one rule group and uses the same stable `nav-label` class.
 - [x] Preserve the active production Reading Result composition and semantics while retaining UI V2's adaptive spread geometry and the real-question context in loading/error/empty states; remove the superseded duplicate Reading Result V2 CSS block.
 
 ### Task 3: Verify integrated behavior
