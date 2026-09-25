@@ -67,6 +67,45 @@ test("Account renders readable Home links and keeps its active state with the lo
   assert.match(markup, /Account page content/);
 });
 
+test("Affiliate renders the same five labeled icon links as Home with Affiliate active", () => {
+  const markup = execFileSync(process.execPath, ["-e", [
+    "require('tsx/cjs');",
+    "const React = require('react');",
+    "const { renderToStaticMarkup } = require('react-dom/server');",
+    "const VinTarot = require('./app/vintarot.tsx').default;",
+    "process.stdout.write(renderToStaticMarkup(React.createElement(VinTarot, { user: null, path: '/affiliate', children: React.createElement('p', null, 'Affiliate page content') })));",
+  ].join(" ")], { encoding: "utf8" });
+  const rail = markup.match(/<nav class="home-primary-nav"[\s\S]*?<\/nav>/)?.[0];
+
+  assert.ok(rail, "Affiliate should render the Home primary navigation rail");
+  const links = [...rail.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(links.map(([, attributes]) => attributes.match(/href="([^"]+)"/)?.[1]), [
+    "/",
+    "/create",
+    "/packages",
+    "/affiliate",
+    "/auth?return_to=/account",
+  ]);
+  assert.deepEqual(links.map(([, , content]) => content.match(/class="home-nav-label">([^<]+)</)?.[1]), [
+    "Trang chủ",
+    "Rút Bài Ngay",
+    "Gói Thành Viên",
+    "Affiliate",
+    "Tài Khoản",
+  ]);
+  assert.ok(links.every(([, , content]) => /class="nav-orb"[^>]*>\s*<svg\b/.test(content)), "Every Home destination should retain its icon");
+  assert.match(links[3]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
+  assert.doesNotMatch(rail, /affiliate-nav-arc|arc-label/);
+  assert.match(markup, /Affiliate page content/);
+});
+
+test("Affiliate Home rail keeps five readable icon labels in the mobile bottom bar", () => {
+  assert.ok(styles.includes(".affiliate-shell .home-primary-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))"), "Affiliate should keep five Home destinations across the mobile rail");
+  assert.ok(styles.includes(".affiliate-shell .home-primary-nav .nav-orb svg{width:18px;height:18px}"), "Affiliate icons should use the compact Home mobile size");
+  assert.ok(styles.includes(".affiliate-shell .home-nav-label{max-width:70px;overflow:hidden;text-overflow:ellipsis}"), "Affiliate labels should remain readable without overflowing their mobile items");
+  assert.ok(styles.includes(".site-shell.affiliate-shell .site-sidebar{height:calc(86px + env(safe-area-inset-bottom))!important}"), "The Affiliate mobile rail should keep Home height despite the shared shell rule");
+});
+
 test("Daily spread keeps the primary navigation and page content without the secondary personal shortcuts", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",
