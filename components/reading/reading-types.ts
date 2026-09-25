@@ -37,9 +37,11 @@ export type ReadingPanelProps = {
   t: ReadingTranslator;
   isLoading?: boolean;
   isSaving?: boolean;
+  isSavingImage?: boolean;
   error?: string | null;
   onClose?: () => void;
   onSave?: () => void;
+  onSaveImage?: () => void | Promise<void>;
   onShare?: () => void | Promise<void>;
   isSharing?: boolean;
   shareUrl?: string | null;

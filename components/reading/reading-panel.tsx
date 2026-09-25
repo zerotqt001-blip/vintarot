@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from "react";
-import { BookMarked, Link2, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { BookMarked, Download, Layers, Link2, X } from "lucide-react";
 import { splitReadingParagraphs } from "@/lib/reading-text";
 import { DirectAnswer } from "./direct-answer";
 import { FollowUpReading } from "./follow-up-reading";
@@ -21,9 +21,11 @@ export function ReadingPanel({
   t,
   isLoading = false,
   isSaving = false,
+  isSavingImage = false,
   error = null,
   onClose,
   onSave,
+  onSaveImage,
   onShare,
   isSharing = false,
   shareUrl = null,
@@ -33,6 +35,7 @@ export function ReadingPanel({
   followUpResetKey = 0,
 }: ReadingPanelProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState("");
+  const followUpSectionRef = useRef<HTMLDivElement>(null);
   const hasFollowUp = Boolean(onFollowUpSubmit);
   const featuredEvidence = reading?.cardEvidence.find((item) =>
     /(?:^|[-_ ])(?:current|present|now|center|central)(?:$|[-_ ])/i.test(`${item.position.key} ${item.position.name}`),
@@ -43,29 +46,47 @@ export function ReadingPanel({
     orientation: t(`reading.${featuredEvidence.orientation}Label`),
     artwork: artworkByReadingCardId[featuredEvidence.readingCardId],
   } : undefined;
+  function continueDrawing() {
+    const followUpSection = followUpSectionRef.current;
+    if (!followUpSection) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    followUpSection.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+  }
   const actions = (
     <div className="reading-panel__actions flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-9">
-      {onSave && (
-        <button
-          className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
-          type="button"
-          onClick={onSave}
-          disabled={!reading || isSaving}
-        >
-          <BookMarked size={15} strokeWidth={1.6} aria-hidden="true" />
-          {isSaving ? t("common.saving") : t("reading.save")}
-        </button>
-      )}
       {onShare && (
         <button
           className="reading-action min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
           type="button"
           onClick={() => { void onShare(); }}
-          disabled={!reading || isSaving || isSharing}
+          disabled={!reading || isSaving || isSavingImage || isSharing}
           aria-busy={isSharing}
         >
           <Link2 size={15} strokeWidth={1.6} aria-hidden="true" />
           {isSharing ? t("reading.sharing") : t("reading.share")}
+        </button>
+      )}
+      {onSave && (
+        <button
+          className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
+          type="button"
+          onClick={onSave}
+          disabled={!reading || isSaving || isSavingImage}
+        >
+          <BookMarked size={15} strokeWidth={1.6} aria-hidden="true" />
+          {isSaving ? t("common.saving") : t("reading.save")}
+        </button>
+      )}
+      {onSaveImage && (
+        <button
+          className="reading-action reading-action--image min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
+          type="button"
+          onClick={() => { void onSaveImage(); }}
+          disabled={!reading || isSaving || isSavingImage || isSharing}
+          aria-busy={isSavingImage}
+        >
+          <Download size={15} strokeWidth={1.6} aria-hidden="true" />
+          {isSavingImage ? t("share.savePreparing") : t("reading.saveImage")}
         </button>
       )}
       {onClose && (
@@ -78,6 +99,9 @@ export function ReadingPanel({
           <X size={15} strokeWidth={1.6} aria-hidden="true" />
           {t("reading.close")}
         </button>
+      )}
+      {onSaveImage && !shareUrl && !shareError && (
+        <p className="reading-image-note" role="note">{t("reading.saveImageHint")}</p>
       )}
       {(shareUrl || shareError) && (
         <div className="min-w-0 basis-full pt-1" aria-live="polite">
@@ -104,7 +128,8 @@ export function ReadingPanel({
     <aside className="reading-panel brand-panel brand-reading-panel reading-surface reading-panel--midnight-navy reading-panel--editorial relative flex max-h-full min-h-0 flex-col overflow-hidden bg-midnight-navy text-ivory shadow-[0_20px_70px_rgba(4,10,30,0.36)]" aria-label={t("reading.panelLabel")}>
       <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {reading ? (
-          <div className="reading-result-layout">
+          <>
+            <div className="reading-result-layout">
             <div className="reading-result-primary">
               <section className="reading-result-overview" aria-label={t("reading.panelLabel")}>
                 <ReadingHeader session={session} t={t} />
@@ -171,7 +196,7 @@ export function ReadingPanel({
                 </dl>
               </section>
               {hasFollowUp && (
-                <div className="reading-result-content__rail">
+                <div id="reading-result-follow-up" className="reading-result-content__rail" ref={followUpSectionRef}>
                   <FollowUpReading
                     key={followUpResetKey}
                     suggestions={reading.followUpSuggestions}
@@ -187,7 +212,21 @@ export function ReadingPanel({
                 </div>
               )}
             </div>
-          </div>
+            </div>
+            {onClarificationSubmit && (
+              <div className="reading-result-footer-action">
+                <button
+                  className="reading-continue-drawing"
+                  type="button"
+                  onClick={continueDrawing}
+                  aria-controls="reading-result-follow-up"
+                >
+                  <Layers size={20} strokeWidth={1.6} aria-hidden="true" />
+                  <span>{t("reading.continueDrawing")}</span>
+                </button>
+              </div>
+            )}
+          </>
         ) : isLoading ? (
           <>
             <ReadingHeader session={session} t={t} />
