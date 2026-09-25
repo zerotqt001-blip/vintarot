@@ -1,4 +1,5 @@
 import type { TarotLocale, TarotReadingPayload, TarotSupplementaryDraw } from "@/lib/ai/types";
+import type { ReadingImageFormat } from "@/lib/reading-image-export";
 
 export type ReadingArtwork = {
   src: string;
@@ -41,7 +42,8 @@ export type ReadingPanelProps = {
   error?: string | null;
   onClose?: () => void;
   onSave?: () => void;
-  onSaveImage?: () => void | Promise<void>;
+  readingId?: string;
+  onPrepareImage?: (format: ReadingImageFormat) => Promise<Blob>;
   onShare?: () => void | Promise<void>;
   isSharing?: boolean;
   shareUrl?: string | null;

@@ -1,8 +1,9 @@
 'use client';
 
 import { useRef, useState } from "react";
-import { BookMarked, Download, Layers, Link2, X } from "lucide-react";
+import { BookMarked, Layers, Link2, X } from "lucide-react";
 import { splitReadingParagraphs } from "@/lib/reading-text";
+import { GoogleDriveExport } from "./google-drive-export";
 import { DirectAnswer } from "./direct-answer";
 import { FollowUpReading } from "./follow-up-reading";
 import { NextSteps } from "./next-steps";
@@ -25,7 +26,8 @@ export function ReadingPanel({
   error = null,
   onClose,
   onSave,
-  onSaveImage,
+  readingId,
+  onPrepareImage,
   onShare,
   isSharing = false,
   shareUrl = null,
@@ -77,17 +79,14 @@ export function ReadingPanel({
           {isSaving ? t("common.saving") : t("reading.save")}
         </button>
       )}
-      {onSaveImage && (
-        <button
-          className="reading-action reading-action--image min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
-          type="button"
-          onClick={() => { void onSaveImage(); }}
-          disabled={!reading || isSaving || isSavingImage || isSharing}
-          aria-busy={isSavingImage}
-        >
-          <Download size={15} strokeWidth={1.6} aria-hidden="true" />
-          {isSavingImage ? t("share.savePreparing") : t("reading.saveImage")}
-        </button>
+      {reading && readingId && session.sessionId && onPrepareImage && (
+        <GoogleDriveExport
+          readingId={readingId}
+          sessionId={session.sessionId}
+          isPreparing={isSavingImage || isSharing}
+          t={t}
+          prepareImage={onPrepareImage}
+        />
       )}
       {onClose && (
         <button
@@ -99,9 +98,6 @@ export function ReadingPanel({
           <X size={15} strokeWidth={1.6} aria-hidden="true" />
           {t("reading.close")}
         </button>
-      )}
-      {onSaveImage && !shareUrl && !shareError && (
-        <p className="reading-image-note" role="note">{t("reading.saveImageHint")}</p>
       )}
       {(shareUrl || shareError) && (
         <div className="min-w-0 basis-full pt-1" aria-live="polite">
