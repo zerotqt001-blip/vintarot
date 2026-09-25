@@ -122,6 +122,16 @@ test("mobile bottom navigation clears the old fixed footer and keeps the page co
   assert.match(styles, /(?:\.site-shell:not\(\.room-shell\) \.main,\.home-shell \.main|\.home-shell \.main,\.site-shell:not\(\.room-shell\) \.main)\{[^}]*padding-bottom:calc\(/);
 });
 
+test("Daily mobile content clears both fixed navigation bars after shared shell overrides", () => {
+  const sharedMobileOverrideIndex = styles.lastIndexOf(".site-shell:not(.room-shell) .main,.membership-shell .main{");
+  const dailyClearanceIndex = styles.lastIndexOf(".site-shell.daily-shell .main{");
+
+  assert.ok(dailyClearanceIndex > sharedMobileOverrideIndex, "Daily should declare its final clearance after the shared mobile shell override");
+  const dailyClearanceEnd = styles.indexOf("}", dailyClearanceIndex);
+  const dailyClearanceRule = styles.slice(dailyClearanceIndex, dailyClearanceEnd + 1);
+  assert.match(dailyClearanceRule, /padding-bottom:calc\(152px \+ env\(safe-area-inset-bottom\)\)!important/);
+});
+
 test("Room navigation tucks to the left edge on desktop pointers and opens on hover or keyboard focus", () => {
   assert.ok(/@media\s*\(hover:\s*hover\)\s*and\s*\(pointer:\s*fine\)\s*and\s*\(min-width:\s*821px\)/.test(styles), "Room auto-hide should only target desktop pointer devices");
   assert.ok(/\.room-shell \.site-sidebar\s*\{[^}]*transform:\s*translateX\(calc\(-100% \+ 14px\)\)/.test(styles), "Room navigation should leave a 14px edge trigger");

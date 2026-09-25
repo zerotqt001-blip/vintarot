@@ -2314,6 +2314,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .site-shell .nt-global-sidebar .main-nav a>.nav-label,.membership-shell .nt-global-sidebar .main-nav a>.nav-label,.home-shell .nt-global-sidebar .home-primary-nav a>.nav-label{display:block}
   .site-rail-signature,.home-rail-signature,.nt-global-sidebar .personal-nav{display:none}
   .site-shell:not(.room-shell) .main,.membership-shell .main{width:100%!important;margin-left:0!important;padding:16px 14px 88px!important}
+  .site-shell.daily-shell .main{padding-bottom:calc(152px + env(safe-area-inset-bottom))!important}
   .site-footer{display:none}
 }
 
