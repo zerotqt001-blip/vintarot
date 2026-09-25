@@ -3,18 +3,14 @@
 import Logo from "@/components/brand/logo";
 import { LanguageSelect } from "@/components/language";
 import Link from "next/link";
-import { Heart, Moon, Search, UserRound } from "lucide-react";
-import type { ShellModal, ShellTheme, ShellVariant, Translator } from "./types";
+import { UserRound } from "lucide-react";
+import type { ShellVariant, Translator } from "./types";
 
 type HeaderProps = {
   path: string;
   variant: ShellVariant;
   t: Translator;
   accountHref: string;
-  theme: ShellTheme;
-  onTheme: () => void;
-  onModal: (modal: Exclude<ShellModal, "">) => void;
-  onSearch: () => void;
 };
 
 const topNav = [
@@ -40,26 +36,10 @@ function HeaderNav({ path, t, variant }: Pick<HeaderProps, "path" | "t" | "varia
   </nav>;
 }
 
-function HeaderActions({ variant, t, accountHref, theme, onTheme, onModal, onSearch }: Pick<HeaderProps, "variant" | "t" | "accountHref" | "theme" | "onTheme" | "onModal" | "onSearch">) {
+function HeaderActions({ variant, t, accountHref }: Pick<HeaderProps, "variant" | "t" | "accountHref">) {
   const isHome = variant === "home";
-  const iconClass = isHome ? "home-icon-link" : "nt-global-icon";
   return <div className={isHome ? "top-actions home-header-actions" : "nt-global-actions"}>
-    <Link className={iconClass} href="/guidebook" aria-label={t("header.search")} onClick={onSearch}>
-      <Search size={18} strokeWidth={1.4} />
-    </Link>
-    <button className={iconClass} type="button" aria-label={t("header.collection")} onClick={() => onModal("collection")}>
-      <Heart size={18} strokeWidth={1.4} />
-    </button>
     <LanguageSelect />
-    <button
-      className={`${iconClass}${isHome ? " home-theme-toggle" : ""}`}
-      type="button"
-      aria-label={t("header.theme")}
-      aria-pressed={theme === "soft"}
-      onClick={onTheme}
-    >
-      <Moon size={19} strokeWidth={1.4} />
-    </button>
     <Link className={isHome ? "home-account-link" : "nt-global-account"} href={accountHref}>
       <UserRound size={18} strokeWidth={1.4} />
       <span>{t("nav.account")}</span>
@@ -79,10 +59,6 @@ export default function NaTarotHeader(props: HeaderProps) {
       variant={props.variant}
       t={props.t}
       accountHref={props.accountHref}
-      theme={props.theme}
-      onTheme={props.onTheme}
-      onModal={props.onModal}
-      onSearch={props.onSearch}
     />
   </header>;
 }
