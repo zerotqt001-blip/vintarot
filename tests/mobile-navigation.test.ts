@@ -77,6 +77,41 @@ test("Account renders readable Home links and keeps its active state with the lo
   assert.match(markup, /Account page content/);
 });
 
+test("Affiliate uses the Home navigation rail with five labeled icons and Affiliate active", () => {
+  const markup = execFileSync(process.execPath, ["-e", [
+    "require('tsx/cjs');",
+    "const React = require('react');",
+    "const { renderToStaticMarkup } = require('react-dom/server');",
+    "const VinTarot = require('./app/vintarot.tsx').default;",
+    "process.stdout.write(renderToStaticMarkup(React.createElement(VinTarot, { user: null, path: '/affiliate', children: React.createElement('p', null, 'Affiliate page content') })));",
+  ].join(" ")], { encoding: "utf8" });
+  const rail = markup.match(/<nav class="home-primary-nav"[\s\S]*?<\/nav>/)?.[0];
+
+  assert.ok(rail, "Affiliate should render the Home primary navigation rail");
+  assert.match(markup, /class="site-shell affiliate-shell"/);
+  const links = [...rail.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(links.map(([, attributes]) => attributes.match(/href="([^"]+)"/)?.[1]), [
+    "/",
+    "/create",
+    "/packages",
+    "/affiliate",
+    "/auth?return_to=/account",
+  ]);
+  assert.deepEqual(links.map(([, , content]) => content.match(/class="nav-label">([^<]+)</)?.[1]), [
+    "Trang chủ",
+    "Rút Bài Ngay",
+    "Gói Thành Viên",
+    "Affiliate",
+    "Tài Khoản",
+  ]);
+  assert.ok(links.every(([, , content]) => /class="nav-orb"[^>]*>\s*<svg\b/.test(content)), "All five Home destinations should retain their icons");
+  assert.match(links[3]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
+  assert.match(markup, /class="home-rail-signature"/);
+  assert.ok(/\.site-shell\.affiliate-shell \.home-primary-nav\{\s*display:grid;\s*gap:4px;\s*padding:18px 9px/.test(styles), "Affiliate should receive the desktop Home rail styling");
+  assert.ok(/@media\s*\(max-width:700px\)\s*\{[\s\S]*?\.site-shell\.affiliate-shell \.home-primary-nav\{\s*display:grid;\s*grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(styles), "Affiliate should keep all five labeled destinations in the Home mobile bar");
+  assert.match(markup, /Affiliate page content/);
+});
+
 test("Daily spread keeps its primary navigation without secondary personal shortcuts", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",

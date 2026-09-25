@@ -30,7 +30,7 @@ function resolveNavHref(path: string, href: string, accountHref: string): string
 }
 
 function CanonicalNav({ path, t, accountHref, variant }: SidebarProps) {
-  const usesHomeRail = variant === "home" || variant === "create" || variant === "account";
+  const usesHomeRail = variant === "home" || variant === "create" || variant === "account" || variant === "affiliate";
   return <nav className={usesHomeRail ? "home-primary-nav" : "main-nav nt-global-nav-list"} aria-label={t("nav.primary")}>
     {navItems.map(([key, Icon, href]) => {
       const active = isVisuallySelected(path, href) || (key === "nav.account" && path === "/account");
@@ -54,7 +54,7 @@ export default function NaTarotSidebar({ path, variant, t, user, accountHref }: 
   return <Sidebar collapsible="none" className="site-sidebar nt-global-sidebar">
     <SidebarContent>
       <CanonicalNav path={path} t={t} user={user} accountHref={accountHref} variant={variant} />
-      {variant === "home" || variant === "create" || variant === "account" ? (
+      {variant === "home" || variant === "create" || variant === "account" || variant === "affiliate" ? (
         <span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
       ) : (
         <span className="site-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span>
