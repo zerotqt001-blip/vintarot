@@ -71,10 +71,32 @@ test("Account renders readable Home links and keeps its active state with the lo
     "Tài Khoản",
   ]);
   assert.match(links[4]?.[0] ?? "", /class="active"[^>]*aria-current="page"/);
-  assert.match(markup, /class="personal-nav"/);
+  assert.doesNotMatch(markup, /class="personal-nav"/);
   assert.match(styles, /\.site-shell:is\(\.create-shell,\.account-shell\) \.site-sidebar/);
   assert.doesNotMatch(styles, /\.site-shell\.account-shell \.nt-global-sidebar\{/);
   assert.match(markup, /Account page content/);
+});
+
+test("Daily spread keeps its primary navigation without secondary personal shortcuts", () => {
+  const markup = execFileSync(process.execPath, ["-e", [
+    "require('tsx/cjs');",
+    "const React = require('react');",
+    "const { renderToStaticMarkup } = require('react-dom/server');",
+    "const VinTarot = require('./app/vintarot.tsx').default;",
+    "process.stdout.write(renderToStaticMarkup(React.createElement(VinTarot, { user: null, path: '/daily-spread', children: React.createElement('p', null, 'Daily spread page content') })));",
+  ].join(" ")], { encoding: "utf8" });
+  const rail = markup.match(/<nav class="main-nav nt-global-nav-list"[\s\S]*?<\/nav>/)?.[0];
+
+  assert.ok(rail, "Daily spread should retain its primary navigation");
+  assert.deepEqual([...rail.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map(([, href]) => href), [
+    "/",
+    "/create",
+    "/packages",
+    "/affiliate",
+    "/auth?return_to=/account",
+  ]);
+  assert.doesNotMatch(markup, /class="personal-nav"/);
+  assert.match(markup, /Daily spread page content/);
 });
 
 test("mobile primary navigation exposes readable labels and preserves Room's dedicated controls", () => {

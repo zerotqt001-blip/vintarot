@@ -50,7 +50,7 @@ function CanonicalNav({ path, t, accountHref, variant }: SidebarProps) {
 
 export default function NaTarotSidebar({ path, variant, t, user, accountHref }: SidebarProps) {
   if (variant === "immersive" || variant === "reading") return null;
-  const showPersonalNav = !["home", "library", "practice", "membership", "affiliate"].includes(variant);
+  const showPersonalNav = !["home", "library", "practice", "membership", "affiliate", "account", "daily"].includes(variant);
   return <Sidebar collapsible="none" className="site-sidebar nt-global-sidebar">
     <SidebarContent>
       <CanonicalNav path={path} t={t} user={user} accountHref={accountHref} variant={variant} />

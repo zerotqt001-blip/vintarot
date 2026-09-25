@@ -3,7 +3,7 @@
 import CardMark from "@/components/card-mark";
 import { useLanguage } from "@/components/language";
 import { Panel } from "@/components/ui/panel";
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { cardMeaning, cardNarrative, cardSlug, cards, guidebookGroups, guidebookMapLayout, shuffleDeck, type Card, type GuidebookGroup } from "@/lib/tarot";
 import { api } from "@/lib/client";
 import { SavedReadingJournal } from "@/components/reading/saved-reading-journal";
@@ -14,7 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
+import bookingStyles from "@/app/booking.module.css";
 import {
   Search,
   ArrowLeft,
@@ -25,7 +25,6 @@ import {
   Moon,
   Check,
   CalendarDays,
-  Video,
   User,
   RotateCcw,
   Sparkles,
@@ -1058,43 +1057,86 @@ function Profile({ user }: { user: any }) {
 
 function Book() {
   const { t, locale } = useLanguage();
-  const [date, setDate] = useState<Date | undefined>();
-  const [open, setOpen] = useState(false);
-  const sessions = [
-    [t("pages.sessionFresh"), t("pages.minutes30")],
-    [t("pages.sessionDeep"), t("pages.minutes60")],
-    [t("pages.sessionLearn"), t("pages.minutes60")],
-  ];
+  const [readers, setReaders] = useState<Array<{ id: string; name: string; bio: string; timezone: string; language: string; duration: number; price: number; slots: string[]; avatarUrl: string | null }>>([]);
+  const [selectedReader, setSelectedReader] = useState<typeof readers[number] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [failedAvatars, setFailedAvatars] = useState<string[]>([]);
+  const loadReaders = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await fetch("/api/readers", { cache: "no-store" });
+      if (!response.ok) throw new Error("Reader directory unavailable");
+      const data = await response.json() as { items?: typeof readers };
+      setReaders(Array.isArray(data.items) ? data.items : []);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  useEffect(() => { void loadReaders(); }, [loadReaders]);
+  const formatPrice = (price: number) => new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(price);
+  const formatSlot = (value: string, timezone: string) => {
+    try { return new Intl.DateTimeFormat(locale === "vi" ? "vi-VN" : "en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: timezone }).format(new Date(value)); }
+    catch { return new Date(value).toLocaleString(locale === "vi" ? "vi-VN" : "en-GB", { dateStyle: "medium", timeStyle: "short" }); }
+  };
   return (
     <>
-      <section className="booking-hero">
-        <div>
-          <h1>{t("pages.bookingHero")}<br />{t("pages.bookingHeroLine")}</h1>
-          <p>{t("pages.bookingIntro")}</p>
-          <button className="button black" onClick={() => setOpen(true)}>{t("pages.exploreSessions")}</button>
-        </div>
-        <div className="booking-illustration">
-          <div className="tiny-top">NaTarot <span>{t("pages.yourTarotRoom")}</span></div>
-          <div className="tiny-avatars"><Moon /><User /></div>
-          <div className="tiny-spread">{[2, 17, 19].map((id) => <CardFace key={id} card={cards[id]} />)}</div>
-        </div>
+      <section className={bookingStyles.directory}>
+        <header className={bookingStyles.hero}>
+          <p className={bookingStyles.eyebrow}>{t("humanReaders.eyebrow")}</p>
+          <h1>{t("humanReaders.title")}</h1>
+          <p className={bookingStyles.intro}>{t("humanReaders.intro")}</p>
+          <span className={bookingStyles.heroMark} aria-hidden="true"><Moon size={30} /><Sparkles size={17} /></span>
+        </header>
+        {loading ? <div className={bookingStyles.statePanel} role="status"><span className={bookingStyles.loader} /><p>{t("humanReaders.loading")}</p></div>
+          : error ? <div className={bookingStyles.statePanel} role="alert"><h2>{t("humanReaders.loadError")}</h2><button type="button" className="button" onClick={() => void loadReaders()}>{t("humanReaders.retry")}</button></div>
+            : readers.length === 0 ? <div className={bookingStyles.statePanel}><span className={bookingStyles.emptyMoon}><Moon size={23} /></span><h2>{t("humanReaders.emptyTitle")}</h2><p>{t("humanReaders.emptyText")}</p></div>
+              : <div className={bookingStyles.grid}>
+                {readers.map((reader) => <article className={bookingStyles.readerCard} key={reader.id}>
+                  <div className={bookingStyles.cardTop}>
+                    <div className={bookingStyles.readerPhoto}>
+                      {reader.avatarUrl && !failedAvatars.includes(reader.id)
+                        ? <img src={reader.avatarUrl} alt={reader.name} loading="lazy" onError={() => setFailedAvatars((values) => values.includes(reader.id) ? values : [...values, reader.id])} />
+                        : <span aria-label={t("humanReaders.photoUnavailable")}>{reader.name.slice(0, 1).toLocaleUpperCase()}</span>}
+                    </div>
+                    <div className={bookingStyles.cardIntro}><span className={bookingStyles.readerEyebrow}>{t("humanReaders.profile")}</span><h2>{reader.name}</h2><p><span><User size={13} />{reader.language}</span><span><CalendarDays size={13} />{reader.duration} {locale === "vi" ? "phút" : "min"}</span></p></div>
+                  </div>
+                  <p className={bookingStyles.bio}>{reader.bio}</p>
+                  <div className={bookingStyles.cardMeta}>
+                    <span><small>{t("humanReaders.timezone")}</small><strong>{reader.timezone}</strong></span>
+                    <span><small>{t("humanReaders.price")}</small><strong>{formatPrice(reader.price)}</strong></span>
+                  </div>
+                  <div className={bookingStyles.times}>
+                    <span className={bookingStyles.timesLabel}>{t("humanReaders.availability")}</span>
+                    {reader.slots.length ? <div>{reader.slots.slice(0, 2).map((slot) => <span className={bookingStyles.timeChip} key={slot}>{formatSlot(slot, reader.timezone)}</span>)}{reader.slots.length > 2 && <span className={bookingStyles.moreTimes}>+{reader.slots.length - 2}</span>}</div> : <small>{t("humanReaders.noSlots")}</small>}
+                  </div>
+                  <button type="button" className={bookingStyles.profileButton} onClick={() => setSelectedReader(reader)}>{t("humanReaders.viewProfile")}<ArrowRight size={16} /></button>
+                </article>)}
+              </div>}
       </section>
-      <div className="empty">
-        <h2>{t("pages.readingRoomReady")}</h2>
-        <p>{t("pages.bookingClosedText")}</p>
-        <a className="button" href="/room">{t("pages.startOwnRoom")}</a>
-      </div>
-      <div className="session-options">
-        {sessions.map(([name, duration]) => <button key={name} onClick={() => setOpen(true)}><Video size={22} /><h2>{name}</h2><p>{duration}</p><span>{t("pages.exploreSession")}</span></button>)}
-      </div>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="booking-dialog">
-          <DialogTitle>{t("pages.planReading")}</DialogTitle>
-          <DialogDescription>{t("pages.calendarPreview")}</DialogDescription>
-          <Calendar mode="single" selected={date} onSelect={setDate} disabled={(day) => day < new Date(new Date().setHours(0, 0, 0, 0))} />
-          <p>{date ? date.toLocaleDateString(locale === "vi" ? "vi-VN" : "en-GB", { dateStyle: "full" }) : t("pages.chooseDay")}</p>
-          <p className="notice">{t("pages.bookingNotice")}</p>
-          <button disabled className="button black">{t("pages.bookingNotOpen")}</button>
+      <Dialog open={Boolean(selectedReader)} onOpenChange={(open) => { if (!open) setSelectedReader(null); }}>
+        <DialogContent className={bookingStyles.detailDialog}>
+          {selectedReader && <>
+            <DialogTitle className={bookingStyles.dialogTitle}>{t("humanReaders.profile")}</DialogTitle>
+            <DialogDescription className={bookingStyles.dialogDescription}>{selectedReader.name}</DialogDescription>
+            <div className={bookingStyles.profileDetails}>
+              <div className={bookingStyles.detailPhoto}>{selectedReader.avatarUrl && !failedAvatars.includes(selectedReader.id) ? <img src={selectedReader.avatarUrl} alt={selectedReader.name} onError={() => setFailedAvatars((values) => values.includes(selectedReader.id) ? values : [...values, selectedReader.id])} /> : <span>{selectedReader.name.slice(0, 1).toLocaleUpperCase()}</span>}</div>
+              <h2>{selectedReader.name}</h2>
+              <p>{selectedReader.bio}</p>
+              <dl className={bookingStyles.detailMeta}>
+                <div><dt>{t("humanReaders.language")}</dt><dd>{selectedReader.language}</dd></div>
+                <div><dt>{t("humanReaders.timezone")}</dt><dd>{selectedReader.timezone}</dd></div>
+                <div><dt>{t("humanReaders.duration")}</dt><dd>{selectedReader.duration} {locale === "vi" ? "phút" : "minutes"}</dd></div>
+                <div><dt>{t("humanReaders.price")}</dt><dd>{formatPrice(selectedReader.price)}</dd></div>
+              </dl>
+              <div className={bookingStyles.detailTimes}><h3>{t("humanReaders.availability")}</h3>{selectedReader.slots.length ? selectedReader.slots.map((slot) => <span className={bookingStyles.timeChip} key={slot}>{formatSlot(slot, selectedReader.timezone)}</span>) : <p>{t("humanReaders.noSlots")}</p>}</div>
+              <p className={bookingStyles.bookingNotice}>{t("humanReaders.bookingNotice")}</p>
+              <button type="button" disabled className={bookingStyles.disabledBooking}><CalendarDays size={16} />{t("humanReaders.bookingClosed")}</button>
+            </div>
+          </>}
         </DialogContent>
       </Dialog>
     </>
