@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { BookMarked, Link2, X } from "lucide-react";
 import { splitReadingParagraphs } from "@/lib/reading-text";
 import { DirectAnswer } from "./direct-answer";
 import { FollowUpReading } from "./follow-up-reading";
@@ -33,8 +34,28 @@ export function ReadingPanel({
 }: ReadingPanelProps) {
   const [followUpQuestion, setFollowUpQuestion] = useState("");
   const hasFollowUp = Boolean(onFollowUpSubmit);
+  const featuredEvidence = reading?.cardEvidence.find((item) =>
+    /(?:^|[-_ ])(?:current|present|now|center|central)(?:$|[-_ ])/i.test(`${item.position.key} ${item.position.name}`),
+  ) || reading?.cardEvidence[0];
+  const featuredCard = featuredEvidence ? {
+    name: locale === "vi" ? featuredEvidence.card.nameVi : featuredEvidence.card.nameEn,
+    position: featuredEvidence.position.name,
+    orientation: t(`reading.${featuredEvidence.orientation}Label`),
+    artwork: artworkByReadingCardId[featuredEvidence.readingCardId],
+  } : undefined;
   const actions = (
     <div className="reading-panel__actions flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-antique-gold/20 bg-midnight-navy/90 px-5 py-4 sm:px-9">
+      {onSave && (
+        <button
+          className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
+          type="button"
+          onClick={onSave}
+          disabled={!reading || isSaving}
+        >
+          <BookMarked size={15} strokeWidth={1.6} aria-hidden="true" />
+          {isSaving ? t("common.saving") : t("reading.save")}
+        </button>
+      )}
       {onShare && (
         <button
           className="reading-action min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
@@ -43,17 +64,8 @@ export function ReadingPanel({
           disabled={!reading || isSaving || isSharing}
           aria-busy={isSharing}
         >
+          <Link2 size={15} strokeWidth={1.6} aria-hidden="true" />
           {isSharing ? t("reading.sharing") : t("reading.share")}
-        </button>
-      )}
-      {onSave && (
-        <button
-          className="reading-action reading-action--primary min-h-11 rounded-full border border-antique-gold/45 px-5 text-sm text-ivory hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45 motion-reduce:transition-none"
-          type="button"
-          onClick={onSave}
-          disabled={!reading || isSaving}
-        >
-          {isSaving ? t("common.saving") : t("reading.save")}
         </button>
       )}
       {onClose && (
@@ -63,6 +75,7 @@ export function ReadingPanel({
           onClick={onClose}
           aria-label={t("reading.close")}
         >
+          <X size={15} strokeWidth={1.6} aria-hidden="true" />
           {t("reading.close")}
         </button>
       )}
@@ -91,74 +104,72 @@ export function ReadingPanel({
     <aside className="reading-panel brand-panel brand-reading-panel reading-surface reading-panel--midnight-navy reading-panel--editorial relative flex max-h-full min-h-0 flex-col overflow-hidden bg-midnight-navy text-ivory shadow-[0_20px_70px_rgba(4,10,30,0.36)]" aria-label={t("reading.panelLabel")}>
       <div className="reading-panel__scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {reading ? (
-          <>
-            <div className="reading-result-toolbar">{actions}</div>
-            <section className="reading-result-overview" aria-label={t("reading.panelLabel")}>
-              <ReadingHeader session={session} t={t} />
-              <div className="reading-result-overview__rail">
-                <dl className="reading-header__meta reading-result-meta">
-                  {session.spreadName && (
-                    <div className="reading-result-meta__item">
-                      <dt>{t("reading.spreadLabel")}</dt>
-                      <dd>{session.spreadName}</dd>
-                    </div>
-                  )}
-                  {session.deckName && (
-                    <div className="reading-result-meta__item">
-                      <dt>{t("reading.deckLabel")}</dt>
-                      <dd>{session.deckName}</dd>
-                    </div>
-                  )}
-                  <div className="reading-result-meta__item">
-                    <dt>{t("common.cards")}</dt>
-                    <dd>{reading.cardEvidence.length}</dd>
-                  </div>
-                </dl>
-              </div>
+          <div className="reading-result-layout">
+            <div className="reading-result-primary">
+              <section className="reading-result-overview" aria-label={t("reading.panelLabel")}>
+                <ReadingHeader session={session} t={t} />
+              </section>
               {reading.cardEvidence.length > 0 && (
-                <ReadingSpread
-                  items={reading.cardEvidence}
-                  artwork={artworkByReadingCardId}
-                  locale={locale}
-                  spreadType={session.spreadType}
-                  spreadName={session.spreadName}
-                  t={t}
-                />
+                <section className="reading-result-spread" aria-label={t("reading.spreadLabel")}>
+                  <ReadingSpread
+                    items={reading.cardEvidence}
+                    artwork={artworkByReadingCardId}
+                    locale={locale}
+                    spreadType={session.spreadType}
+                    spreadName={session.spreadName}
+                    t={t}
+                  />
+                </section>
               )}
-            </section>
-            {(isLoading || error) && (
-              <div className="reading-status px-5 pt-5 sm:px-7" aria-live="polite" aria-busy={isLoading}>
-                {isLoading && <p className="text-sm text-antique-gold">{t("reading.loading")}</p>}
-                {error && <p className="mt-2 text-sm leading-6 text-rose-200" role="alert">{error}</p>}
-              </div>
-            )}
-            <div className={`reading-result-content${hasFollowUp ? " reading-result-content--with-follow-up" : ""}`}>
-              <div className="reading-result-content__main">
-                <div className={`reading-result-reading-grid${reading.deeperReading ? " reading-result-reading-grid--with-depth" : " reading-result-reading-grid--single"}`}>
-                  <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} t={t} />
-                  {reading.deeperReading && (
-                    <section className="reading-section reading-section--deeper-reading brand-reading-section" aria-labelledby="reading-deeper-reading">
-                      <h3 id="reading-deeper-reading" className="text-lg font-medium tracking-[-0.02em] text-ivory">
-                        {t("reading.deeperReading")}
-                      </h3>
-                      <p className="mt-4 max-w-[70ch] whitespace-pre-line text-sm leading-7 text-ivory/75">{reading.deeperReading}</p>
+              <div className="reading-result-content">
+                {(isLoading || error) && (
+                  <div className="reading-status reading-result-status" aria-live="polite" aria-busy={isLoading}>
+                    {isLoading && <p className="text-sm text-antique-gold">{t("reading.loading")}</p>}
+                    {error && <p className="mt-2 text-sm leading-6 text-rose-200" role="alert">{error}</p>}
+                  </div>
+                )}
+                <div className="reading-result-content__main">
+                  <div className={`reading-result-reading-grid${reading.personalInsights.length ? " reading-result-reading-grid--with-insights" : " reading-result-reading-grid--single"}`}>
+                    <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} featuredCard={featuredCard} t={t} />
+                    {reading.personalInsights.length > 0 && <PersonalInsights items={reading.personalInsights} t={t} />}
+                  </div>
+                  {(reading.deeperReading || reading.nextSteps.length > 0) && (
+                    <div className="reading-result-points-grid">
+                      {reading.deeperReading && (
+                        <section className="reading-section reading-section--deeper-reading brand-reading-section" aria-labelledby="reading-deeper-reading">
+                          <h3 id="reading-deeper-reading" className="text-lg font-medium tracking-[-0.02em] text-ivory">{t("reading.deeperReading")}</h3>
+                          <p className="mt-4 max-w-[70ch] whitespace-pre-line text-sm leading-7 text-ivory/75">{reading.deeperReading}</p>
+                        </section>
+                      )}
+                      {reading.nextSteps.length > 0 && <NextSteps items={reading.nextSteps} t={t} />}
+                    </div>
+                  )}
+                  {(reading.reflectionPrompts.length > 0 || reading.cardEvidence.length > 0) && (
+                    <section className="reading-supporting" aria-labelledby="reading-supporting-title">
+                      <h3 id="reading-supporting-title" className="reading-supporting__title">{t("reading.supportingMaterial")}</h3>
+                      {reading.reflectionPrompts.length > 0 && <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />}
+                      {reading.cardEvidence.length > 0 && <TarotEvidence items={reading.cardEvidence} artwork={artworkByReadingCardId} locale={locale} t={t} />}
                     </section>
                   )}
                 </div>
-                {(reading.personalInsights.length > 0 || reading.nextSteps.length > 0) && (
-                  <div className="reading-result-points-grid">
-                    {reading.personalInsights.length > 0 && <PersonalInsights items={reading.personalInsights} t={t} />}
-                    {reading.nextSteps.length > 0 && <NextSteps items={reading.nextSteps} t={t} />}
-                  </div>
-                )}
-                {(reading.reflectionPrompts.length > 0 || reading.cardEvidence.length > 0) && (
-                  <section className="reading-supporting" aria-labelledby="reading-supporting-title">
-                    <h3 id="reading-supporting-title" className="reading-supporting__title">{t("reading.supportingMaterial")}</h3>
-                    {reading.reflectionPrompts.length > 0 && <ReflectionPrompts prompts={reading.reflectionPrompts} onSelect={setFollowUpQuestion} t={t} />}
-                    {reading.cardEvidence.length > 0 && <TarotEvidence items={reading.cardEvidence} artwork={artworkByReadingCardId} locale={locale} t={t} />}
-                  </section>
-                )}
               </div>
+            </div>
+            <div className="reading-result-sidebar">
+              <div className="reading-result-toolbar">{actions}</div>
+              <section className="reading-result-meta-panel" aria-labelledby="reading-result-meta-title">
+                <h3 id="reading-result-meta-title">{t("reading.sessionInfo")}</h3>
+                <dl className="reading-header__meta reading-result-meta">
+                  <div className="reading-result-meta__item">
+                    <dt>{t("reading.questionLabel")}</dt>
+                    <dd>{session.question}</dd>
+                  </div>
+                  {session.spreadName && <div className="reading-result-meta__item"><dt>{t("reading.spreadLabel")}</dt><dd>{session.spreadName}</dd></div>}
+                  {session.deckName && <div className="reading-result-meta__item"><dt>{t("reading.deckLabel")}</dt><dd>{session.deckName}</dd></div>}
+                  {session.topicLabel && <div className="reading-result-meta__item"><dt>{t("reading.topicLabel")}</dt><dd>{session.topicLabel}</dd></div>}
+                  <div className="reading-result-meta__item"><dt>{t("common.cards")}</dt><dd>{reading.cardEvidence.length}</dd></div>
+                  {session.sessionId && <div className="reading-result-meta__item"><dt>{t("reading.sessionId")}</dt><dd>{session.sessionId}</dd></div>}
+                </dl>
+              </section>
               {hasFollowUp && (
                 <div className="reading-result-content__rail">
                   <FollowUpReading
@@ -176,7 +187,7 @@ export function ReadingPanel({
                 </div>
               )}
             </div>
-          </>
+          </div>
         ) : isLoading ? (
           <>
             <ReadingHeader session={session} t={t} />

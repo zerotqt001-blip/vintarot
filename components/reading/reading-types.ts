@@ -25,6 +25,8 @@ export type ReadingSessionMetadata = {
   spreadName?: string | null;
   spreadType?: string | null;
   deckName?: string | null;
+  topicLabel?: string | null;
+  sessionId?: string | null;
 };
 
 export type ReadingPanelProps = {
