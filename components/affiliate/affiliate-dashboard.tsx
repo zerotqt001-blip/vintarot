@@ -23,7 +23,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/language";
-import { affiliateUnavailableMessageKey } from "@/lib/affiliate/presentation";
+import { affiliateDashboardIsActive, affiliateUnavailableMessageKey } from "@/lib/affiliate/presentation";
 import type { AffiliateReferralLink } from "@/lib/affiliate/types";
 
 type PublicAffiliateTier = { tierCode: string; minQualifiedConversions: number; rateBps: number };
@@ -221,7 +221,7 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   }, [authenticated]);
 
   const activePolicy = dashboard?.policy ?? policy;
-  const isReady = Boolean(dashboard?.profile?.status === "ACTIVE" && activePolicy);
+  const isReady = affiliateDashboardIsActive(dashboard?.profile?.status ?? null, Boolean(activePolicy));
   const currency = dashboard?.income.currency ?? activePolicy?.currency ?? null;
   const kpis = useMemo(() => dashboard ? [
     { icon: Sparkles, label: t("affiliate.currentCommission"), value: rateLabel(dashboard.progress?.currentTier?.rateBps ?? null, locale), note: dashboard.progress?.currentTier ? t("affiliate.serverPolicyRate") : t("affiliate.notAvailable") },
@@ -233,7 +233,7 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   if (loading) return <LoadingState label={t("affiliate.loading")} />;
   return <div className="affiliate-dashboard">
     <section className="affiliate-dashboard__hero">
-      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{dashboard?.profile?.status === "ACTIVE" && <div className="affiliate-hero-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.active")} · {t("affiliate.serverScoped")}</div>}{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
+      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{isReady && <div className="affiliate-hero-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.active")} · {t("affiliate.serverScoped")}</div>}{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
       <div className="affiliate-hero-orbit" aria-hidden="true"><div className="affiliate-orbit-ring affiliate-orbit-ring--outer" /><div className="affiliate-orbit-ring affiliate-orbit-ring--inner" /><Sparkles size={42} strokeWidth={1} /><span>✦</span><span>✧</span></div>
     </section>
     {dashboard && isReady ? <>

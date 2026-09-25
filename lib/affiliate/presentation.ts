@@ -1,9 +1,16 @@
-import type { AffiliateReferralLinkUnavailableReason } from "./types";
+import type { AffiliateProfileStatus, AffiliateReferralLinkUnavailableReason } from "./types";
 
 export type AffiliateUnavailableMessageKey =
   | "affiliate.programUnavailable"
   | "affiliate.accessPaused"
   | "affiliate.eligibilityRequirements";
+
+export function affiliateDashboardIsActive(
+  profileStatus: AffiliateProfileStatus | null,
+  hasActivePolicy: boolean,
+): boolean {
+  return profileStatus === "ACTIVE" && hasActivePolicy;
+}
 
 export function affiliateUnavailableMessageKey(
   reason: AffiliateReferralLinkUnavailableReason,

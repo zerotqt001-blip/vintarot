@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { AffiliateReferralLinkUnavailableReason } from "../lib/affiliate/types";
 import { messageFor } from "../lib/i18n";
-import { affiliateUnavailableMessageKey } from "../lib/affiliate/presentation";
+import { affiliateDashboardIsActive, affiliateUnavailableMessageKey } from "../lib/affiliate/presentation";
 
 function includesEvery(text: string, phrases: string[], label: string): void {
   const missing = phrases.filter((phrase) => !text.toLocaleLowerCase().includes(phrase.toLocaleLowerCase()));
@@ -40,4 +40,10 @@ test("Affiliate unavailable reasons map to the right customer-facing state", () 
     ["affiliate.programUnavailable", "affiliate.accessPaused", "affiliate.eligibilityRequirements"],
     "each unavailable reason should have its own customer message",
   );
+});
+
+test("Affiliate is shown as active only when both access and the program are active", () => {
+  assert.equal(affiliateDashboardIsActive("ACTIVE", true), true, "active access and program should show dashboard data");
+  assert.equal(affiliateDashboardIsActive("ACTIVE", false), false, "active profile must not imply an open program");
+  assert.equal(affiliateDashboardIsActive("INACTIVE", true), false, "inactive access must stay unavailable");
 });
