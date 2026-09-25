@@ -156,7 +156,6 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
   const siteNav = [["nav.home", Home, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.book", CalendarDays, "/book"]] as const;
   const homeNav = [["nav.home", Home, "/"], ["nav.drawNow", Layers, "/create"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Gift, "/affiliate"], ["nav.account", CircleUserRound, accountHref]] as const;
   const bookingHomeNav = [["nav.home", Home, "/"], ["nav.decks", Layers, "/guidebook"], ["nav.practice", Sparkles, "/community"], ["nav.spread", Star, "/daily-spread"], ["nav.book", CalendarDays, "/book"]] as const;
-  const affiliateNav = [["nav.home", Home, "/"], ["nav.drawNow", Layers, "/room"], ["nav.membership", Crown, "/packages"], ["nav.affiliate", Share2, "/affiliate"], ["nav.account", UserRound, "/account"]] as const;
   const homeTopNav = [["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
   const topNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.spread", "/daily-spread"], ["nav.book", "/book"]] as const;
   const affiliateTopNav = [["nav.home", "/"], ["nav.decks", "/guidebook"], ["nav.practice", "/community"], ["nav.book", "/book"]] as const;
@@ -230,15 +229,6 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
     </a>;
   });
 
-  const renderAffiliatePrimaryNav = () => affiliateNav.map(([key, Icon, href]) => {
-    const active = href === path;
-    return <a className={active ? "active" : ""} href={href} key={href} aria-current={active ? "page" : undefined} aria-label={t(key)}>
-      <span className="nav-orb"><Icon size={29} strokeWidth={1.3} /></span>
-      <ArcLabel id={`affiliate-nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
-      <span className="mobile-nav-label">{t(key)}</span>
-    </a>;
-  });
-
   const shellClassName = isMembership ? `membership-shell${membershipTheme === "soft" ? " membership-shell-soft" : ""}` : isHome ? "home-shell" : isBook ? "home-shell booking-shell" : isRoom ? "site-shell room-shell" : isGuidebook ? "site-shell guidebook-shell guidebook-target-shell" : isCreate ? "site-shell create-shell" : isAccount ? "site-shell account-shell" : isPractice ? `site-shell practice-shell${practiceTheme === "soft" ? " practice-shell-soft" : ""}` : isDaily ? "site-shell daily-shell" : isAffiliate ? "site-shell affiliate-shell" : "site-shell";
   return <SidebarProvider><ReferralCapture enabled={Boolean(user)} /><div ref={shellRef} data-home-atmosphere={homeAtmosphere} data-guidebook-theme={isGuidebook ? guidebookTheme : undefined} className={shellClassName}>
     {isHome && <div className="cosmic-scene" aria-hidden="true"><div className="cosmic-layer cosmic-sky" /><div className="cosmic-layer cosmic-nebula" /><div className="cosmic-layer cosmic-planets" /><div className="cosmic-layer cosmic-architecture" /><div className="cosmic-layer cosmic-floor" /><div className="cosmic-layer cosmic-foreground" /></div>}
@@ -296,7 +286,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
       {renderCommerceAccessLinks()}
     </nav>}
     {isGuidebook ? <GuidebookTargetSidebar t={t} /> : <Sidebar collapsible="none" className="site-sidebar"><SidebarContent>
-      {isHome || isCreate || isBook || isAccount ? <nav className="home-primary-nav" aria-label={t("nav.primary")}>{isBook ? renderBookingPrimaryNav() : renderHomePrimaryNav()}<span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span></nav> : isPractice ? <nav className="main-nav">{practiceNav.map(([key, Icon, href]) => {
+      {isHome || isCreate || isBook || isAccount || isAffiliate ? <nav className="home-primary-nav" aria-label={t("nav.primary")}>{isBook ? renderBookingPrimaryNav() : renderHomePrimaryNav()}<span className="home-rail-signature"><strong>NaTarot</strong><small>Find Your Inner Light</small></span></nav> : isPractice ? <nav className="main-nav">{practiceNav.map(([key, Icon, href]) => {
         const active = String(href) === String(path);
         const variant = href === "/" ? "home" : href === "/room" ? "cards" : "book";
         return <a className={active ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={active ? "page" : undefined}>
@@ -304,7 +294,7 @@ function VinTarotShell({ user, children, path }: { user: User; children?: React.
           <ArcLabel id={`nav-arc-practice-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} />
           <span className="mobile-nav-label">{t(key)}</span>
         </a>;
-      })}</nav> : isAffiliate ? <nav className="main-nav">{renderAffiliatePrimaryNav()}</nav> : isMembership ? <nav className="main-nav" aria-label={t("nav.membership")}>{membershipNav.map(([key, Icon, href]) => <a className={href === path ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={href === path ? "page" : undefined}><span className="nav-orb"><Icon size={29} strokeWidth={1.3} /></span><ArcLabel id={`membership-nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav> : <nav className="main-nav">{renderSitePrimaryNav()}</nav>}
+      })}</nav> : isMembership ? <nav className="main-nav" aria-label={t("nav.membership")}>{membershipNav.map(([key, Icon, href]) => <a className={href === path ? "active" : ""} href={href} key={href} aria-label={t(key)} aria-current={href === path ? "page" : undefined}><span className="nav-orb"><Icon size={29} strokeWidth={1.3} /></span><ArcLabel id={`membership-nav-arc-${href.replace(/[^a-z0-9]+/gi, "-")}`} text={t(key)} /><span className="mobile-nav-label">{t(key)}</span></a>)}</nav> : <nav className="main-nav">{renderSitePrimaryNav()}</nav>}
       {isPractice ? <div className="practice-v1-sidebar-signoff"><span>NaTarot</span><small>{t("nav.innerLight")}</small></div> : !isHome && !isBook && !isAffiliate && !isMembership && !isAccount && !isDaily && <nav className="personal-nav"><a className="username" href={profileHref}>{user?.username || t("nav.yourSpace")}</a>{personal.map(([key, Icon, href]) => <a key={href} href={href}><Icon size={17} strokeWidth={1.3} />{t(key)}</a>)}</nav>}
       {isMembership && <div className="membership-sidebar-signoff"><span>NaTarot</span><small>Find Your Inner Light</small></div>}
     </SidebarContent></Sidebar>}
