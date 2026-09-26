@@ -1,5 +1,11 @@
 # VinTarot state
 
+## Reading result layout and PNG-only export controls (2026-09-26, production deployed)
+
+The result page no longer repeats the session information panel in the right rail. The main answer is text-only because the spread already displays the drawn cards. The image export block is more compact, displays PNG as the only format in the UI, and keeps device download separate from Google Drive save/link/QR. Both UI actions now explicitly create PNG files. The existing export API and rasterizer still accept JPG for compatibility; no API, schema, database, OAuth or Drive-sharing behavior changed.
+
+Source commit `6fd3e08` on `codex/reading-result-actions-production` is active in release `reading-result-png-6fd3e08-20260926T062718Z`. The managed release gate verified a fresh backup and promoted the candidate; post-deploy checks report `natarot.service` active, local health `{"status":"ok"}`, and public `/room` HTTP 200. The active built assets contain no result-session metadata panel CSS, repeated-card feature markup or JPG selector. Validation: `npx tsc --noEmit`, `npm run build`, and `git diff --check` pass; no tests were run. The browser QA route returned “Room not found or you need an invitation” without the member's authenticated reading, so session-specific visual verification and managed cleanup remain deferred. Rollback references and staged artifacts were retained.
+
 ## Reading image download and Drive save split (2026-09-26, production deployed)
 
 The result panel now separates device downloads from Drive uploads. The PNG/JPG format selector feeds **Tải ảnh về thiết bị**, which starts a browser download and works without a Drive connection. **Lưu ảnh vào Drive** is a separate action; it uploads the selected image, creates or reuses the stable file for the same reading and format, and returns the Drive link and QR. Drive sharing remains available to anyone with the link while the file and permission exist. This follow-up changes only the result UI and copy; no API, schema, or database migration changed.
