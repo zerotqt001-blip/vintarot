@@ -17,6 +17,10 @@ type OperatorInput = {
   };
 };
 type ReadOperatorInput = (env: Record<string, string | undefined>, uid: number | null, nodeEnv: string | undefined) => OperatorInput;
+type ConfirmOwnerEvidence = (
+  input: OperatorInput["input"],
+  ask: (prompt: string) => Promise<string>,
+) => Promise<void>;
 
 async function loadReader(): Promise<ReadOperatorInput> {
   const importFile = new Function("specifier", "return import(specifier)") as (specifier: string) => Promise<Record<string, unknown>>;
@@ -25,6 +29,15 @@ async function loadReader(): Promise<ReadOperatorInput> {
   const reader = loaded?.readFirstOwnerOperatorInput;
   assert.equal(typeof reader, "function", "the root-only first-owner operator input reader should exist");
   return reader as ReadOperatorInput;
+}
+
+async function loadConfirmation(): Promise<ConfirmOwnerEvidence> {
+  const importFile = new Function("specifier", "return import(specifier)") as (specifier: string) => Promise<Record<string, unknown>>;
+  const moduleUrl = new URL("../lib/owner-bootstrap/operator.ts", import.meta.url).href;
+  const loaded = await importFile(moduleUrl).catch(() => null);
+  const confirm = loaded?.confirmFirstOwnerEvidence;
+  assert.equal(typeof confirm, "function", "the interactive human-review gate should exist");
+  return confirm as ConfirmOwnerEvidence;
 }
 
 function validEnvironment(): Record<string, string> {
@@ -78,6 +91,69 @@ test("first-owner operator always uses the fixed production database path", asyn
   assert.equal(result.input.memberId, "8ac513f2-46d3-4f2b-8a2a-dff811fbc123");
   assert.equal(result.input.email, "new-owner@example.test");
   assert.equal(result.input.backupSha256, "a".repeat(64));
+});
+
+test("first-owner confirmation binds a human review to the exact account and separate evidence references", async () => {
+  const confirmFirstOwnerEvidence = await loadConfirmation();
+  const input = {
+    memberId: "8ac513f2-46d3-4f2b-8a2a-dff811fbc123",
+    email: "new-owner@example.test",
+    identityVerificationRef: "registry-record-20420927",
+    ownerAuthorizationRef: "owner-authorization-20420927",
+    operatorRef: "operator-case-20420927",
+    backupId: "natarot-production-20420927",
+    backupSha256: "a".repeat(64),
+    restoreVerificationRef: "restore-check-20420927",
+  };
+  const prompts: string[] = [];
+  const answers = [
+    "NEW-OWNER@example.test",
+    input.memberId,
+    input.identityVerificationRef,
+    input.ownerAuthorizationRef,
+    `${input.backupId}:${input.backupSha256}`,
+    input.restoreVerificationRef,
+    "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT",
+  ];
+
+  await confirmFirstOwnerEvidence(input, async (prompt) => {
+    prompts.push(prompt);
+    return answers.shift() ?? "";
+  });
+
+  assert.equal(prompts.length, 7);
+  assert.match(prompts.join(" "), /member id/i);
+  assert.match(prompts.join(" "), /authorization/i);
+  assert.match(prompts.join(" "), /backup/i);
+  assert.match(prompts.join(" "), /restore/i);
+  assert.deepEqual(answers, []);
+});
+
+test("first-owner confirmation rejects mismatched identity, authorization, or final operator attestation", async () => {
+  const confirmFirstOwnerEvidence = await loadConfirmation();
+  const input = {
+    memberId: "8ac513f2-46d3-4f2b-8a2a-dff811fbc123",
+    email: "new-owner@example.test",
+    identityVerificationRef: "registry-record-20420927",
+    ownerAuthorizationRef: "owner-authorization-20420927",
+    operatorRef: "operator-case-20420927",
+    backupId: "natarot-production-20420927",
+    backupSha256: "a".repeat(64),
+    restoreVerificationRef: "restore-check-20420927",
+  };
+
+  for (const answers of [
+    ["other-owner@example.test", input.memberId, input.identityVerificationRef, input.ownerAuthorizationRef, `${input.backupId}:${input.backupSha256}`, input.restoreVerificationRef, "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, "different-member-id", input.identityVerificationRef, input.ownerAuthorizationRef, `${input.backupId}:${input.backupSha256}`, input.restoreVerificationRef, "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, input.memberId, "another-record-20420927", input.ownerAuthorizationRef, `${input.backupId}:${input.backupSha256}`, input.restoreVerificationRef, "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, input.memberId, input.identityVerificationRef, "other-authorization-20420927", `${input.backupId}:${input.backupSha256}`, input.restoreVerificationRef, "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, input.memberId, input.identityVerificationRef, input.ownerAuthorizationRef, `${input.backupId}:wrong`, input.restoreVerificationRef, "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, input.memberId, input.identityVerificationRef, input.ownerAuthorizationRef, `${input.backupId}:${input.backupSha256}`, "stale-restore-ref", "OWNER IDENTITY AND AUTHORIZATION VERIFIED FOR THIS ACCOUNT"],
+    [input.email, input.memberId, input.identityVerificationRef, input.ownerAuthorizationRef, `${input.backupId}:${input.backupSha256}`, input.restoreVerificationRef, ""],
+  ]) {
+    let index = 0;
+    await assert.rejects(confirmFirstOwnerEvidence(input, async () => answers[index++] ?? ""), Error);
+  }
 });
 
 test("first-owner CLI fails closed before opening production data without the one-time opt-in", () => {

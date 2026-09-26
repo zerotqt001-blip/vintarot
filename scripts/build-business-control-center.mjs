@@ -5,6 +5,7 @@ import { build } from "esbuild";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const outfile = resolve(root, "dist/business-control-center.mjs");
+const firstOwnerOutfile = resolve(root, "dist/provision-first-owner.mjs");
 mkdirSync(dirname(outfile), { recursive: true });
 
 await build({
@@ -15,6 +16,18 @@ await build({
   target: "node22",
   format: "esm",
   external: ["cloudflare:workers"],
+  legalComments: "none",
+  sourcemap: false,
+  minify: true,
+});
+
+await build({
+  entryPoints: [resolve(root, "scripts/provision-first-owner.ts")],
+  outfile: firstOwnerOutfile,
+  bundle: true,
+  platform: "node",
+  target: "node22",
+  format: "esm",
   legalComments: "none",
   sourcemap: false,
   minify: true,

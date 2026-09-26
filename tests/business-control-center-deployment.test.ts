@@ -191,6 +191,8 @@ test("release build bundles the standalone Node runner without requiring tsx at 
   const builder = readFileSync(join(projectRoot, "scripts/build-business-control-center.mjs"), "utf8");
   assert.match(packageConfig.scripts.build ?? "", /build-project\.mjs/);
   assert.match(builder, /dist\/business-control-center\.mjs/);
+  assert.match(builder, /dist\/provision-first-owner\.mjs/);
+  assert.match(builder, /scripts\/provision-first-owner\.ts/);
   assert.match(builder, /platform: "node"/);
   assert.match(builder, /bundle: true/);
 });
