@@ -279,9 +279,40 @@ async function driveRequest(input: {
   headers?: HeadersInit;
   body?: BodyInit | null;
 }): Promise<Response> {
+  const headers = new Headers(input.headers);
+  headers.set("authorization", "Bearer " + input.accessToken);
   return (input.config.fetchImpl ?? fetch)(input.url, {
     method: input.method ?? "GET",
-    headers: { authorization: `Bearer ${input.accessToken}`, ...Object.fromEntries(new Headers(input.headers).entries()) },
+    headers,
+    body: input.body,
+  });
+}
+
+export async function authenticatedGoogleRequest(input: {
+  database: D1Database;
+  config: DriveRuntimeConfig;
+  memberId: string;
+  url: string;
+  method?: string;
+  headers?: HeadersInit;
+  body?: BodyInit | null;
+}): Promise<Response> {
+  let url: URL;
+  try {
+    url = new URL(input.url);
+  } catch {
+    throw new GoogleDriveError("unavailable");
+  }
+  if (url.protocol !== "https:" || url.port || url.username || url.password || !["www.googleapis.com", "sheets.googleapis.com"].includes(url.hostname)) {
+    throw new GoogleDriveError("unavailable");
+  }
+  const accessToken = await driveAccessToken(input);
+  return driveRequest({
+    config: input.config,
+    accessToken,
+    url: url.toString(),
+    method: input.method,
+    headers: input.headers,
     body: input.body,
   });
 }

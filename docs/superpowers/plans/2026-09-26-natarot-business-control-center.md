@@ -59,12 +59,12 @@
 - `syncBusinessReport(database, { now, forceReconcile, fetchImpl, sleep })` takes an atomic lease, writes changed keyed rows in bounded batches, updates dashboard/system status, and advances the checkpoint only after successful API confirmation.
 - `googleFetchWithRetry(request, { fetchImpl, sleep, random, maxAttempts })` retries only rate-limit/transient API responses and never logs response bodies or authorization headers.
 
-- [ ] Add synthetic tests for no owner, multiple owners, workbook-create retry, exact tabs, unchanged-row no-op, changed-row upsert, duplicate retry, same-day reconciliation, failure checkpoint preservation, lock overlap, 429 `Retry-After`, 5xx backoff, and sanitized errors.
-- [ ] Run the two focused test files and confirm the new APIs are absent before implementation.
-- [ ] Implement exact-name workbook creation using Sheets API and the existing `drive.file` access token; do not use Codex MCP or create sharing permissions.
-- [ ] Implement stable-key lookup, fingerprint comparison, changed-row batches, one full local-day reconciliation, retention pruning, bounded retries, checkpoint/lease/audit updates, and a concise System status projection.
-- [ ] Verify the generated write contract contains no personal/private source fields and exactly the eight requested tabs.
-- [ ] Run focused Google/reporting tests plus `npx tsx --test tests/google-oauth.test.ts tests/google-drive.test.ts`; commit as `feat: sync business reports to private Google Sheets`.
+- [x] Add synthetic tests for no owner, multiple owners, workbook-create retry, exact tabs, unchanged-row no-op, changed-row upsert, duplicate retry, same-day reconciliation, failure checkpoint preservation, lock overlap, 429 `Retry-After`, 5xx backoff, and sanitized errors.
+- [x] Run the two focused test files and confirm the new APIs are absent before implementation.
+- [x] Implement exact-name private workbook creation through Drive/Sheets APIs and the existing `drive.file` access token; do not use Codex MCP or create sharing permissions.
+- [x] Implement stable-key lookup, fingerprint comparison, changed-row batches, one full local-day reconciliation, row retention pruning, bounded retries, checkpoint/lease/audit updates, and the System status projection.
+- [x] Verify with synthetic tests that the generated write contract contains no personal/private source fields and exactly the eight requested tabs.
+- [x] Run focused Google/reporting tests, `npx tsc --noEmit`, and `npx tsx --test tests/google-oauth.test.ts tests/google-drive.test.ts` (40/40 focused tests passed); commit as `feat: sync business reports to private Google Sheets`.
 
 ### Task 3: Encrypted offsite Drive backups and restore verification
 
