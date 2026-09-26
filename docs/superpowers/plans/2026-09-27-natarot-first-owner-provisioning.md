@@ -92,7 +92,7 @@
 - [x] Record the production audit, Owner evidence blocker, implementation state, missing MFA support, Google callback URI, and BCC timer state without recording emails, credentials, backup secrets, or verification documents.
 - [x] Run the full suite (`753/753`), `npx tsc --noEmit`, `npm run build`, changed-file ESLint, and `git diff --check`; build/check the standalone first-owner bundle and scan changed source/docs for secret-like values.
 - [x] Verify the production route inventory has no first-owner HTTP endpoint and that the existing Admin/QA accounts are not modified by the code path.
-- [ ] Incorporate the final read-only code review, stage only related source, tests, operational/spec/plan docs, and project-state update, inspect the staged diff for secrets, commit, push the branch, and confirm remote equality.
+- [x] Incorporate the final read-only code review, stage only related source, tests, operational/spec/plan docs, and project-state update, inspect the staged diff for secrets, commit only related files, push the branch, and confirm remote equality.
 
 ### Task 6: Execute production gates when Owner evidence is available
 
