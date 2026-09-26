@@ -65,3 +65,16 @@ test("account and admin links are reachable from the existing shell without chan
   assert.match(shell, /\/profile/);
   assert.match(shell, /\/guidebook/);
 });
+
+test("Admin Affiliate view shows bounded attribution metadata without anonymous keys or referral secrets", () => {
+  const admin = source("app/admin/admin-console.tsx");
+  const service = source("lib/affiliate/service.ts");
+  const route = source("app/api/admin/affiliate/route.ts");
+  assert.match(route, /requirePermission\(request, "admin\.affiliate\.read"/);
+  assert.match(service, /attributions: Array/);
+  assert.match(admin, /affiliate\?\.attributions/);
+  assert.match(admin, /referrerMemberId/);
+  assert.match(admin, /referredMemberId/);
+  assert.match(admin, /attributedAt/);
+  assert.doesNotMatch(admin, /code_hash|public_code|referral_code_id|owner_key/);
+});

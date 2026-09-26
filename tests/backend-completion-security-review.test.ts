@@ -19,7 +19,7 @@ const routePaths = [
   "app/api/admin/vip/route.ts",
   "app/api/admin/affiliate/route.ts",
 ];
-const authenticatedBoundaryRoutes = ["app/api/affiliate/attribute/route.ts"];
+const guestCaptureRoutes = ["app/api/affiliate/attribute/route.ts"];
 const ownerReadRoutes = ["app/api/affiliate/dashboard/route.ts"];
 
 function source(relativePath: string): string {
@@ -60,13 +60,14 @@ test("all privileged mutation routes enforce origin, server permission, strict i
     assert.match(route, /idempotency_key/, routePath);
     assert.doesNotMatch(route, /x-role|oai-authenticated-user|body\.owner|body\.role|body\.member_id/, routePath);
   }
-  for (const routePath of authenticatedBoundaryRoutes) {
+  for (const routePath of guestCaptureRoutes) {
     const route = source(routePath);
     assert.match(route, /originCheck\(request\)/, routePath);
-    assert.match(route, /requireMemberCreditOwner\(/, routePath);
+    assert.match(route, /readOptionalOwner\(/, routePath);
     assert.match(route, /noStoreResponse/, routePath);
     assert.match(route, /\.strict\(\)/, routePath);
-    assert.doesNotMatch(route, /x-role|oai-authenticated-user|body\.owner/, routePath);
+    assert.match(route, /captureAttribution\(/, routePath);
+    assert.doesNotMatch(route, /x-role|oai-authenticated-user|body\.(owner|member|profile)|localStorage|sessionStorage/, routePath);
   }
   for (const routePath of ownerReadRoutes) {
     const route = source(routePath);

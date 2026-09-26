@@ -44,6 +44,26 @@ test("Affiliate UI uses dynamic policy/dashboard data and has no fake payout act
   assert.doesNotMatch(dashboard, /\/api\/affiliate\/payout|withdraw|payout.*POST|requestPayout/i);
 });
 
+test("enrolled member links remain visible while terms are pending and Account exposes copy actions", () => {
+  const affiliateRoute = source("app/api/affiliate/dashboard/route.ts");
+  const dashboard = source("components/affiliate/affiliate-dashboard.tsx");
+  const account = source("components/account/account-history.tsx");
+  const customer = source("lib/affiliate/customer.ts");
+  const messages = source("lib/i18n.ts");
+
+  assert.match(affiliateRoute, /ensureAffiliateEnrollment/);
+  assert.match(dashboard, /dashboard\.referrals/);
+  assert.match(dashboard, /hasActiveProfile/);
+  assert.match(account, /api\/affiliate\/dashboard/);
+  assert.match(account, /navigator\.clipboard/);
+  assert.match(account, /link\.code/);
+  assert.match(customer, /email_verified_at IS NOT NULL/);
+  assert.match(customer, /disabled_at IS NULL/);
+  assert.match(customer, /signupAt/);
+  assert.match(messages, /pendingTerms/);
+  assert.match(messages, /referralSignups/);
+});
+
 test("shared shell and account expose member destinations while preserving existing paths", () => {
   const shell = [
     "components/shell/natarot-shell.tsx",

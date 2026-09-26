@@ -33,8 +33,8 @@ function applyMigrations(sqlite: DatabaseSync, includeReferralLinkMigration = fa
 }
 
 function insertMember(sqlite: DatabaseSync, id: string, timestamp = now): void {
-  sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, 0, 'USER')")
-    .run(id, id, `${id}@example.test`, "+84900000000", timestamp, timestamp);
+  sqlite.prepare("INSERT INTO members (id, username, email, phone, email_verified_at, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'USER')")
+    .run(id, id, `${id}@example.test`, "+84900000000", timestamp - 1, timestamp, timestamp);
 }
 
 function expectAvailable(result: AffiliateReferralLink): Extract<AffiliateReferralLink, { available: true }> {
@@ -173,7 +173,7 @@ test("existing hash-only codes and attribution rows remain untouched when the da
   fixture.sqlite.close();
 });
 
-test("inactive profiles and inactive policies stay unavailable without generating a link", async () => {
+test("inactive profiles stay unavailable while policy-pending active profiles receive a referral link", async () => {
   const fixture = makeLinkFixture();
   const inactive = await ensureAffiliateReferralLink(fixture.database, { kind: "member", ownerId: "member:inactive-affiliate" }, "https://natarot.com", now);
   assert.deepEqual(inactive, { available: false, reason: "profile_inactive" });
@@ -183,7 +183,7 @@ test("inactive profiles and inactive policies stay unavailable without generatin
   fixture.sqlite.prepare("INSERT INTO affiliate_profiles (id, member_id, status, fraud_note_ciphertext, created_at, updated_at) VALUES (?, ?, 'ACTIVE', NULL, ?, ?)").run("profile-no-policy", "no-policy-affiliate", now, now);
   fixture.sqlite.prepare("UPDATE affiliate_policy_versions SET status='DRAFT' WHERE id='affiliate-v1-default'").run();
   const noPolicy = await ensureAffiliateReferralLink(fixture.database, { kind: "member", ownerId: "member:no-policy-affiliate" }, "https://natarot.com", now);
-  assert.deepEqual(noPolicy, { available: false, reason: "policy_inactive" });
-  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id='profile-no-policy'").get() as { count: number }).count, 0);
+  assert.equal(noPolicy.available, true);
+  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id='profile-no-policy'").get() as { count: number }).count, 1);
   fixture.sqlite.close();
 });

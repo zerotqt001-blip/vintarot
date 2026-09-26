@@ -1,7 +1,6 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import QRCode from "qrcode";
 import { resolvePublicOrigin } from "../tarot-share-config";
-import { getActiveAffiliatePolicy } from "./policy";
 import { hashReferralCode, memberIdFromOwner } from "./repository";
 import type { AffiliateOwner, AffiliateReferralLink } from "./types";
 
@@ -78,10 +77,9 @@ export async function ensureAffiliateReferralLink(database: D1Database, owner: A
   const memberId = memberIdFromOwner(owner.ownerId);
   if (!memberId || owner.kind !== "member") return unavailable("not_eligible");
 
-  const profile = await database.prepare("SELECT id, status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
+  const profile = await database.prepare("SELECT p.id, p.status FROM affiliate_profiles p JOIN members m ON m.id=p.member_id WHERE p.member_id=? AND m.email_verified_at IS NOT NULL AND m.disabled=0 AND m.disabled_at IS NULL LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
   if (!profile) return unavailable("not_eligible");
   if (profile.status !== "ACTIVE") return unavailable("profile_inactive");
-  if (!(await getActiveAffiliatePolicy(database, now))) return unavailable("policy_inactive");
 
   const existing = await loadCanonicalCode(database, String(profile.id));
   if (existing) return projectLink(existing.code, origin);

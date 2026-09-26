@@ -38,8 +38,8 @@ function makeFixture() {
   const database = createSqliteD1Database(sqlite);
   sqlite.prepare("UPDATE affiliate_policy_versions SET status='ACTIVE', starts_at=0 WHERE id='affiliate-v1-default'").run();
   for (const id of ["affiliate-owner", "buyer"]) {
-    sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, 0, 'USER')")
-      .run(id, id, `${id}@example.test`, `+8491234${id === "buyer" ? "0001" : "0002"}`, now, now);
+    sqlite.prepare("INSERT INTO members (id, username, email, phone, email_verified_at, created_at, updated_at, disabled, role) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'USER')")
+      .run(id, id, `${id}@example.test`, `+8491234${id === "buyer" ? "0001" : "0002"}`, now - 1, now, now);
   }
   sqlite.prepare("INSERT INTO affiliate_profiles (id, member_id, status, fraud_note_ciphertext, created_at, updated_at) VALUES ('profile-owner', 'affiliate-owner', 'ACTIVE', NULL, ?, ?)").run(now, now);
   const benefit = JSON.stringify({ credits: { units: 10 }, vip: { durationSeconds: 86_400, benefitVersion: "vip-v1", benefits: {} } });
@@ -142,12 +142,14 @@ test("Affiliate target source preserves real-data boundaries and the approved sh
   assert.match(dashboard, /download=/);
   assert.match(dashboard, /link\.qrUrl/);
   assert.match(dashboard, /link\.reason/);
-  assert.equal((dashboard.match(/<ReferralLinkPanel/g) ?? []).length, 2);
+  assert.equal((dashboard.match(/<ReferralLinkPanel/g) ?? []).length, 3);
   assert.match(dashboard, /dashboard && <ReferralLinkPanel dashboard=\{dashboard\} t=\{t\} \/>/);
   assert.doesNotMatch(dashboard, /18 referred|1\.245\.000|320\.000|4\.860\.000|925\.000|THANH123/);
   assert.match(customer, /currentMonthMinor/);
   assert.match(customer, /confirmedMinor/);
   assert.match(customer, /pendingMinor/);
+  assert.match(customer, /referrals/);
+  assert.match(dashboard, /dashboard\.referrals/);
   assert.match(shell, /path === "\/affiliate"/);
   assert.match(shell, /affiliate-shell/);
   assert.match(shell, /nav\.drawNow/);

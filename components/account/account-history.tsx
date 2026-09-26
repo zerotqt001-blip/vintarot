@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowUpRight, BookOpen, Globe2, KeyRound, LogOut, Moon, ReceiptText, Settings2, Share2, Sparkles, UserRound, WalletCards } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, Copy, Globe2, KeyRound, LogOut, Moon, ReceiptText, Settings2, Share2, Sparkles, UserRound, WalletCards } from "lucide-react";
 import { useLanguage } from "@/components/language";
+import type { AffiliateReferralLink } from "@/lib/affiliate/types";
 
 type Summary = {
   member: { displayName: string | null; username: string; email: string };
@@ -31,6 +32,7 @@ type HistoryItem = {
 };
 
 type HistoryResponse = { items: HistoryItem[]; nextCursor: string | null };
+type AffiliateDashboardResponse = { referralLink: AffiliateReferralLink; referrals: { count: number; history: Array<{ id: string; signupAt: number; state: "VERIFIED" }> } };
 type AccountHistoryKind = "readings" | "shares" | "orders" | "credits" | "affiliate" | "all";
 type Translator = (key: string) => string;
 
@@ -87,10 +89,41 @@ function AccountStatCard({ icon: Icon, value, label, caption, action, href }: { 
   </Link>;
 }
 
+function AccountAffiliateCard({ dashboard, loading, error, t }: { dashboard: AffiliateDashboardResponse | null; loading: boolean; error: boolean; t: Translator }) {
+  const [feedback, setFeedback] = useState<"code" | "link" | null>(null);
+  const [actionError, setActionError] = useState(false);
+  const link = dashboard?.referralLink;
+  async function copy(value: string, kind: "code" | "link") {
+    try {
+      await navigator.clipboard.writeText(value);
+      setFeedback(kind);
+      setActionError(false);
+      window.setTimeout(() => setFeedback((current) => current === kind ? null : current), 1800);
+    } catch {
+      setActionError(true);
+    }
+  }
+  return <section className="account-panel account-affiliate-panel" aria-labelledby="account-affiliate-title">
+    <div className="account-panel-heading"><div><span className="account-dashboard-eyebrow">{t("member.quickAccess")}</span><h2 id="account-affiliate-title">{t("member.openAffiliate")}</h2></div><Link className="account-affiliate-open" href="/affiliate">{t("affiliate.openDashboard")} <ArrowRight size={14} aria-hidden="true" /></Link></div>
+    {loading && <p className="account-affiliate-state" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}
+    {!loading && error && <p className="account-affiliate-state account-affiliate-state--error" role="status" aria-live="polite">{t("affiliate.dashboardError")}</p>}
+    {!loading && !error && link?.available && <>
+      <div className="account-affiliate-referrals"><span>{t("affiliate.referralSignups")}</span><strong>{dashboard?.referrals.count.toLocaleString() ?? "0"}</strong></div>
+      <div className="account-affiliate-field"><span>{t("affiliate.referralCode")}</span><code>{link.code}</code><button type="button" onClick={() => void copy(link.code, "code")} aria-label={feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}><Copy size={16} aria-hidden="true" />{feedback === "code" ? t("affiliate.copied") : t("affiliate.copyCode")}</button></div>
+      <div className="account-affiliate-field"><span>{t("affiliate.referralLinkTitle")}</span><code>{link.url}</code><button type="button" onClick={() => void copy(link.url, "link")} aria-label={feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}><Copy size={16} aria-hidden="true" />{feedback === "link" ? t("affiliate.copied") : t("affiliate.copyLink")}</button></div>
+    </>}
+    {!loading && !error && !link?.available && <p className="account-affiliate-state">{t("affiliate.linkUnavailable")}</p>}
+    {actionError && <p className="account-affiliate-state account-affiliate-state--error" role="status" aria-live="polite">{t("affiliate.linkActionError")}</p>}
+  </section>;
+}
+
 export default function AccountHistory({ authenticated, initialKind = "all" }: { authenticated: boolean; initialKind?: AccountHistoryKind }) {
   const { locale, t } = useLanguage();
   const router = useRouter();
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [affiliateDashboard, setAffiliateDashboard] = useState<AffiliateDashboardResponse | null>(null);
+  const [affiliateLoading, setAffiliateLoading] = useState(authenticated);
+  const [affiliateError, setAffiliateError] = useState(false);
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [recentItems, setRecentItems] = useState<HistoryItem[]>([]);
   const [kind, setKind] = useState<AccountHistoryKind>(initialKind);
@@ -116,6 +149,22 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
     })();
     return () => { active = false; };
   }, [authenticated, initialKind, kind]);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    let active = true;
+    void readJson<AffiliateDashboardResponse>("/api/affiliate/dashboard").then((dashboard) => {
+      if (active) {
+        setAffiliateDashboard(dashboard);
+        setAffiliateError(false);
+      }
+    }).catch(() => {
+      if (active) setAffiliateError(true);
+    }).finally(() => {
+      if (active) setAffiliateLoading(false);
+    });
+    return () => { active = false; };
+  }, [authenticated]);
 
   async function loadMore() {
     if (!nextCursor || loadingMore) return;
@@ -170,6 +219,8 @@ export default function AccountHistory({ authenticated, initialKind = "all" }: {
       <AccountStatCard icon={BookOpen} value={summary?.counts.readings ?? "—"} label={t("member.readingHistory")} caption={t("member.activityText")} action={t("member.openHistory")} href="/journal?tab=saved" />
       <AccountStatCard icon={Share2} value={summary?.affiliate.conversions ?? "—"} label={t("member.openAffiliate")} caption={t("member.shareCount").replace("{value}", String(summary?.affiliate.conversions ?? 0))} action={t("member.openAffiliate")} href="/affiliate" />
     </section>
+
+    <AccountAffiliateCard dashboard={affiliateDashboard} loading={affiliateLoading} error={affiliateError} t={t} />
 
     <div className="account-dashboard-grid">
       <section className="account-panel account-recent-panel" aria-labelledby="account-recent-title"><div className="account-panel-heading"><div><span className="account-dashboard-eyebrow">{t("member.accountTitle")}</span><h2 id="account-recent-title">{t("member.recentReadings")}</h2></div><Link href="/journal?tab=saved">{t("member.readingHistory")} <ArrowRight size={14} aria-hidden="true" /></Link></div>{loading && <p className="functional-status" role="status" aria-live="polite">{t("member.catalogLoading")}</p>}{!loading && !message && recentItems.length === 0 && <p className="functional-status">{t("member.activityEmpty")}</p>}{!loading && !message && recentItems.length > 0 && <div className="functional-history-list account-recent-list">{recentItems.map((item) => <HistoryRow item={item} locale={locale} t={t} compact key={item.id} />)}</div>}</section>
