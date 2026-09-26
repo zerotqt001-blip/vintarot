@@ -75,3 +75,31 @@ test("authenticated Google requests use the stored app token and permit only Goo
   }));
   assert.equal(requests.length, 2);
 });
+
+test("authenticated Google requests preserve Node's streaming fetch duplex setting", async (context) => {
+  let receivedDuplex: string | undefined;
+  const fetchImpl: typeof fetch = async (input, init) => {
+    if (String(input) === tokenUrl) return Response.json({ access_token: "synthetic-access-token" });
+    receivedDuplex = (init as RequestInit & { duplex?: string }).duplex;
+    return Response.json({ ok: true });
+  };
+  const fixture = await makeFixture(context, fetchImpl);
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array([1, 2, 3]));
+      controller.close();
+    },
+  });
+
+  await authenticatedGoogleRequest({
+    ...fixture,
+    memberId: "admin",
+    url: "https://www.googleapis.com/upload/drive/v3/files/file-id?uploadType=media",
+    method: "PATCH",
+    headers: { "content-type": "application/octet-stream" },
+    body,
+    duplex: "half",
+  });
+
+  assert.equal(receivedDuplex, "half");
+});

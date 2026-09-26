@@ -23,6 +23,7 @@ export type ReportingRequestInput = {
   method?: string;
   headers?: HeadersInit;
   body?: BodyInit | null;
+  duplex?: "half";
 };
 
 export type ReportingRequest = (input: ReportingRequestInput) => Promise<Response>;

@@ -278,14 +278,17 @@ async function driveRequest(input: {
   method?: string;
   headers?: HeadersInit;
   body?: BodyInit | null;
+  duplex?: "half";
 }): Promise<Response> {
   const headers = new Headers(input.headers);
   headers.set("authorization", "Bearer " + input.accessToken);
-  return (input.config.fetchImpl ?? fetch)(input.url, {
+  const requestInit = {
     method: input.method ?? "GET",
     headers,
     body: input.body,
-  });
+    duplex: input.duplex,
+  } as RequestInit & { duplex?: "half" };
+  return (input.config.fetchImpl ?? fetch)(input.url, requestInit);
 }
 
 export async function authenticatedGoogleRequest(input: {
@@ -296,6 +299,7 @@ export async function authenticatedGoogleRequest(input: {
   method?: string;
   headers?: HeadersInit;
   body?: BodyInit | null;
+  duplex?: "half";
 }): Promise<Response> {
   let url: URL;
   try {
@@ -314,6 +318,7 @@ export async function authenticatedGoogleRequest(input: {
     method: input.method,
     headers: input.headers,
     body: input.body,
+    duplex: input.duplex,
   });
 }
 

@@ -45,7 +45,7 @@ ssh -o BatchMode=yes natarot-vps '/usr/local/sbin/natarot-release-manager verify
 ssh -o BatchMode=yes natarot-vps 'systemctl show natarot-backup.timer -p ActiveState -p Unit --no-pager'
 ~~~
 
-The verifier requires a successful status, matching archive/checksum sidecar, recent backup timestamp, successful restore-test status, and archive counts within the existing 7 daily / 4 weekly / 3 monthly policy. Release cleanup never traverses `/var/backups/natarot`.
+The verifier requires a successful status, matching archive/checksum sidecar, recent backup timestamp, successful restore-test status, and archive counts within the existing 7 daily / 4 weekly / 3 monthly retention limits. A recent audit found 7 daily, 1 weekly, and 1 monthly archives currently populated. Release cleanup never traverses `/var/backups/natarot`.
 ## Install the reviewed release tooling
 
 Run these commands only after the read-only audit and backup gate pass. The source files contain no secrets. During the flat migration, keep the existing flat production unit in place; the migration command installs the reviewed `current`-based unit only after the files and `current` reference are ready, and restores the recorded flat unit automatically on failure.

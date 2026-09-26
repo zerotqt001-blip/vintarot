@@ -40,8 +40,9 @@ sets.
 
 Database backups remain a separate retention domain. The manager verifies the
 installed policy and current `latest-success`/restore-test records; it does not
-apply the three-release application rule to backup archives. The observed
-canonical policy is seven daily, one weekly, and one monthly archive. Log
+apply the three-release application rule to backup archives. The canonical
+limits are seven daily, four weekly, and three monthly archives; the latest
+audit found seven daily, one weekly, and one monthly archive currently populated. Log
 growth remains under the host's canonical `logrotate`/journald policy.
 
 The first migration from the historical flat tree must be run once with the
