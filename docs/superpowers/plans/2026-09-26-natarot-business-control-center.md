@@ -116,9 +116,9 @@
 - Modify: `docs/PROJECT_STATE.md` with final validation, deployment, auth gate, and exact remaining owner action.
 - Production mutation: managed release deployment and additive schema migration only; do not enable the new timer.
 
-- [ ] Run `npx tsx --test tests/*.test.ts`, TypeScript, production build, and diff checks; fix and rerun any failures.
-- [ ] Run focused synthetic comparisons for verified payment/revenue, Affiliate ledger, customer/activity aggregates, row retention, encryption, and restore readiness. Do not export or print production rows.
-- [ ] Recheck latest production baseline, disk/storage guard, `current` and both rollback references, then create and verify a fresh existing-format local backup before deploy.
-- [ ] Build and stage only tracked release files; use the managed release manager so the new migration and units follow the existing backup/candidate/health/promotion gates.
-- [ ] Confirm production health, migration version, latest backup retention and restore state, and that the new timer remains disabled and no production Google API call was attempted.
-- [ ] Compare only aggregate canonical counts and record evidence in `docs/PROJECT_STATE.md`; commit and push completed source changes. Report the production owner’s Google connection as the activation gate.
+- [x] Run `npx tsx --test tests/*.test.ts`, TypeScript, production build, and diff checks; fix and rerun any failures.
+- [x] Run focused synthetic comparisons for verified payment/revenue, Affiliate ledger, customer/activity aggregates, row retention, encryption, and restore readiness. Do not export or print production rows.
+- [x] Recheck latest production baseline, disk/storage guard, `current` and both rollback references, then create and verify a fresh existing-format local backup before deploy.
+- [x] Build and stage only tracked release files; use the managed release manager so the new migration and units follow the existing backup/candidate/health/promotion gates.
+- [x] Confirm production health, migration version, latest backup retention and restore state, and that the new timer remains disabled and no production Google API call was attempted.
+- [ ] Compare production workbook aggregates with canonical database aggregates after the owner grants Google authorization; production reporting remains paused until that connection exists. Record the reconciliation in `docs/PROJECT_STATE.md`.

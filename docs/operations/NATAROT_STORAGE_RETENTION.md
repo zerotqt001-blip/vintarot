@@ -87,6 +87,8 @@ If migration or health checks fail, stop and use the recorded service-unit backu
 
 Place a reviewed build at an explicit, manager-owned incoming path and ensure it contains the built server entrypoint and runtime dependencies. The manager rejects environment files, SQLite/WAL/SHM files, private-key material, persistent-state directories, outside-root symlinks, and existing release IDs.
 
+When the candidate unit uses the shared runtime pool, include `node_modules` as a symlink to `/opt/natarot-deps/node_modules`. The validator permits that exact shared dependency root, and the candidate unit starts Vinext from the release's `node_modules` path.
+
 ~~~bash
 ssh -o BatchMode=yes natarot-vps '/usr/local/sbin/natarot-release-manager deploy --source-dir /opt/natarot/.incoming/RELEASE_ID --release-id RELEASE_ID'
 ~~~
