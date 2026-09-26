@@ -28,7 +28,7 @@ function tableExists(sqlite: DatabaseSync, table: string): boolean {
 
 test("the two historical 0007 migrations are additive and preserve backend/commercial tables", () => {
   const names = migrationNames();
-  assert.deepEqual(names.slice(-6), ["0006_credits_vip.sql", "0007_backend_completion.sql", "0007_sepay_commercial.sql", "0008_credit_fulfillment_timestamp.sql", "0009_affiliate_referral_links.sql", "0009_human_readers.sql"]);
+  assert.deepEqual(names.filter((name) => /^(0006|0007|0008|0009)_/.test(name)), ["0006_credits_vip.sql", "0007_backend_completion.sql", "0007_sepay_commercial.sql", "0008_credit_fulfillment_timestamp.sql", "0009_affiliate_referral_links.sql", "0009_human_readers.sql"]);
 
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec("PRAGMA foreign_keys = ON");

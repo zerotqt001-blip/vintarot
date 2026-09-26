@@ -204,11 +204,11 @@ test("Room Reading Result uses the current production overview and interpretatio
   assert.match(css, /reading-card-evidence/);
 });
 
-test("Reading Result owns the canvas under the shared header", () => {
+test("Reading Result keeps the canvas below the shared header without repeating session metadata", () => {
   assert.ok(css.includes(".room-page.has-interpretation .room-reading-panel-shell{position:fixed;top:62px;right:0;bottom:0;left:0"));
   assert.ok(css.includes(".room-reading-panel-shell .reading-result-toolbar{position:sticky;top:0"));
   assert.ok(css.includes(".room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-width:0"));
-  assert.match(css, /reading-result-overview[\s\S]*reading-result-meta/);
+  assert.ok(css.includes(".room-reading-panel-shell .reading-result-overview > .brand-reading-header > .reading-header__meta{display:none}"));
 });
 
 test("V1.1 makes the question subordinate and the takeaway editorial", () => {

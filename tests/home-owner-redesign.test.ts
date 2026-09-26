@@ -30,9 +30,11 @@ test("Home uses the approved single hierarchy and canonical member destinations"
 test("Home header keeps only the target center navigation and exposes honest controls", () => {
   assert.match(shell, /const topNav = \[\s*\["nav\.home", "\/"\][\s\S]*\["nav\.practice", "\/community"\][\s\S]*\["nav\.book", "\/book"\]/);
   assert.match(shell, /variant === "home"/);
-  assert.match(shell, /Search/);
-  assert.match(shell, /home-theme-toggle/);
-  assert.match(shell, /href="\/guidebook"[\s\S]*Search/);
+  const actions = shell.match(/function HeaderActions\([\s\S]*?\n\}/)?.[0] ?? "";
+  assert.match(actions, /<LanguageSelect\s*\/>/);
+  assert.match(actions, /home-account-link/);
+  assert.doesNotMatch(actions, /Search|theme|Heart/);
+  assert.match(shell, /href="\/guidebook"/);
   assert.match(shell, /className="home-footer-socials" aria-hidden="true"/);
 });
 

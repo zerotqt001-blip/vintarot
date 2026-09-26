@@ -63,9 +63,9 @@ test("Room exposes the canonical reading hierarchy in source order", () => {
   const orderedMarkers = [
     "<ReadingSpread",
     "<DirectAnswer",
-    "reading.personalInsights",
-    "reading.nextSteps",
-    "reading.reflectionPrompts",
+    "<PersonalInsights",
+    "<NextSteps",
+    "<ReflectionPrompts",
     "<TarotEvidence",
   ];
   const offsets = orderedMarkers.map((marker) => readingPanelSource.indexOf(marker));

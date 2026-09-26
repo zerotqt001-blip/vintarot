@@ -9,7 +9,8 @@ test("Room provides a compact mobile header without removing existing navigation
   assert.match(source, /className="room-mobile-actions"/);
   assert.match(source, /className="room-mobile-menu-trigger"/);
   assert.match(source, /setModal\('mobile-menu'\)/);
-  assert.match(source, /className="room-mobile-theme"/);
+  assert.doesNotMatch(source, /className="room-mobile-theme"/);
+  assert.match(source, /className="room-mobile-menu-trigger" aria-label=\{t\('room\.mobileMenu'\)\}/);
   assert.match(source, /className="top-actions room-desktop-actions"/);
 });
 

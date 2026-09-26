@@ -27,8 +27,8 @@ test("six target surfaces share one four-destination global header", () => {
   const actions = header.match(/function HeaderActions\([\s\S]*?\n\}/)?.[0] ?? "";
   assert.ok(!/if\s*\(variant\s*===/.test(actions), "utility controls share one order");
   assert.match(actions, /<LanguageSelect\s*\/>/);
-  assert.match(actions, /onTheme/);
-  assert.match(actions, /accountHref/);
+  assert.match(actions, /nt-global-account/);
+  assert.doesNotMatch(actions, /onTheme|Search|theme/);
 });
 
 test("target routes use one readable canonical five-link sidebar", () => {
@@ -89,15 +89,17 @@ test("current production Reading Result follows question, dynamic spread, answer
     readingPanel.indexOf("<ReadingHeader"),
     readingPanel.indexOf("<ReadingSpread"),
     readingPanel.indexOf("<DirectAnswer"),
-    readingPanel.indexOf("reading-section--deeper-reading"),
     readingPanel.indexOf("<PersonalInsights"),
+    readingPanel.indexOf("reading-section--deeper-reading"),
     readingPanel.indexOf("<NextSteps"),
+    readingPanel.indexOf("<ReflectionPrompts"),
+    readingPanel.indexOf("<TarotEvidence"),
     readingPanel.indexOf("<FollowUpReading"),
   ];
   assert.ok(order.every((position) => position >= 0), "each editorial layer remains present");
   assert.deepEqual(order, [...order].sort((left, right) => left - right));
   assert.ok((readingPanel.match(/<ReadingHeader\b/g) ?? []).length >= 1);
-  for (const region of ["reading-result-toolbar", "reading-result-overview", "reading-result-overview__rail", "reading-result-content", "reading-result-content__main", "reading-result-content__rail"]) {
+  for (const region of ["reading-result-layout", "reading-result-primary", "reading-result-overview", "reading-result-spread", "reading-result-content", "reading-result-content__main", "reading-result-sidebar", "reading-result-toolbar", "reading-result-content__rail", "reading-result-footer-action"]) {
     assert.ok(readingPanel.includes(region), `${region} is part of the result composition`);
   }
   assert.match(readingPanel, /reading-section--deeper-reading/);

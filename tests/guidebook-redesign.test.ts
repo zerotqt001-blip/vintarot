@@ -24,8 +24,9 @@ test("the Guidebook composes canonical NaTarot chrome without replacing commerce
     assert.ok(shell.includes(route), `missing canonical route ${route}`);
   }
   assert.match(shell, /path === "\/guidebook" && href === "\/create"\) return "\/room\?ritual=1"/);
-  assert.match(shell, /guidebook:focus-search/);
-  assert.match(shell, /aria-pressed/);
+  assert.match(shell, /aria-current/);
+  assert.match(pages, /className="guidebook-search"/);
+  assert.match(translations, /searchCards:/);
 });
 
 test("the Guidebook worlds map keeps canonical five-family counts and target editorial composition", () => {
@@ -50,7 +51,8 @@ test("the Guidebook worlds map keeps canonical five-family counts and target edi
   ]) assert.match(pages, new RegExp(className));
   assert.match(pages, /<strong>78<\/strong>/);
   assert.match(pages, /pages\.exploreGroup/);
-  assert.match(pages, /guidebookSearchRef/);
+  assert.match(pages, /value=\{query\} onChange=\{\(event\) => setQuery\(event\.target\.value\)\}/);
+  assert.match(pages, /card\.name\.toLowerCase\(\)\.includes\(query\.trim\(\)\.toLowerCase\(\)\)/);
 });
 
 test("the Guidebook target is responsive, observatory-backed, and motion-safe", () => {

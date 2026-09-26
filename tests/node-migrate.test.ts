@@ -9,6 +9,11 @@ import test from "node:test";
 import { applyMigration } from "../scripts/node-migrate.mjs";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
+const migrationDirectory = join(repoRoot, "drizzle");
+
+function migrationNames(): string[] {
+  return readdirSync(migrationDirectory).filter((name) => /^\d{4}_.+\.sql$/.test(name)).sort();
+}
 
 test("Node migration bookkeeping is atomic when a migration statement fails", () => {
   const sqlite = new DatabaseSync(":memory:");
@@ -27,9 +32,8 @@ test("Node migration bookkeeping is atomic when a migration statement fails", ()
 function createPreShareDatabase(dbPath: string): void {
   const sqlite = new DatabaseSync(dbPath);
   sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)");
-  const migrationDirectory = join(repoRoot, "drizzle");
-  const migrations = readdirSync(migrationDirectory)
-    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && !name.startsWith("0005_") && !name.startsWith("0006_") && !name.startsWith("0007_") && !name.startsWith("0008_") && !name.startsWith("0009_"))
+  const migrations = migrationNames()
+    .filter((name) => Number(name.slice(0, 4)) < 5)
     .sort();
   for (const name of migrations) {
     sqlite.exec(readFileSync(join(migrationDirectory, name), "utf8"));
@@ -56,24 +60,10 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   const sqlite = new DatabaseSync(dbPath);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM tarot_cards").get() as { count: number }).count, 78);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM card_meanings").get() as { count: number }).count, 312);
-  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, 13);
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations").get() as { count: number }).count, migrationNames().length);
   assert.deepEqual(
     sqlite.prepare("SELECT name FROM natarot_migrations ORDER BY name").all().map((row) => row.name),
-    [
-      "0000_vengeful_ben_urich.sql",
-      "0001_dynamic_tarot.sql",
-      "0002_tarot_seed.sql",
-      "0003_moonlight_spread_catalog.sql",
-      "0004_member_auth.sql",
-      "0004_reading_payload.sql",
-      "0005_natarot_share_persistence.sql",
-      "0006_credits_vip.sql",
-      "0007_backend_completion.sql",
-      "0007_sepay_commercial.sql",
-      "0008_credit_fulfillment_timestamp.sql",
-      "0009_affiliate_referral_links.sql",
-      "0009_human_readers.sql",
-    ],
+    migrationNames(),
   );
   const columns = sqlite.prepare("PRAGMA table_info(readings)").all() as Array<{ name: string }>;
   assert.ok(columns.some((column) => column.name === "reading_payload"));

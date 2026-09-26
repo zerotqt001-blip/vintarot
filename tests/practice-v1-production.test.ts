@@ -22,9 +22,12 @@ test("Practice V1 keeps the target shell and existing interaction contracts", ()
   ]) assert.match(pages + shell + styles, new RegExp(marker));
 
   for (const marker of [
-    "nt-global-icon",
-    "header.search",
-    "header.theme",
+    "nt-global-header",
+    "nt-global-nav",
+    "nt-global-actions",
+    "nt-global-account",
+    "nav-orb",
+    "nav-label",
     "nav.drawNow",
     "nav.membership",
     "nav.affiliate",
