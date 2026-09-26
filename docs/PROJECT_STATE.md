@@ -1,5 +1,15 @@
 # VinTarot state
 
+## NaTarot Affiliate automatic enrollment (2026-09-26, production deployed)
+
+Eligible verified members now receive an idempotent Affiliate profile and stable referral code through the existing auth lifecycle and production backfill. Suspended profiles remain suspended. Anonymous/member referral capture is first-touch and uses an opaque first-party cookie; it records no commission-bearing attribution while the only policy is still `DRAFT`. Customer balances and rates stay hidden while approval is pending. No schema migration, policy activation, commission, payout, email, or payment action was performed.
+
+Source commit `59ecfdc` on `codex/affiliate-auto-enrollment` is pushed to `origin` and active in managed release `affiliate-auto-enroll-59ecfdc-20260926T1218Z`. The manager verified a fresh backup/restore policy, passed disk preflight, promoted atomically, and retained the prior rollback references `reading-result-png-6fd3e08-20260926T062718Z` and `reading-download-split-4721bfb-20260925T171112Z`. `natarot.service` is active. Post-deploy checks returned health `200`, policy `null`, Affiliate and referral-query pages `200`, and guest dashboard, auth-me, Account summary, and Admin Affiliate boundaries `401`. A synthetic referral POST returned `{accepted:false, reason:"no_policy"}`. The live Affiliate page rendered the code/link/QR controls and pending-policy copy; no production referral code was copied into this record.
+
+The gated production backfill reported totals only: 7 eligible and enrolled members, 5 profiles created, 7 links ensured, 0 suspended profiles changed. No existing-attribution rows or ledger values were read or altered. Regression: the full suite remained at 663 pass / 11 fail, with the same 11 source-baseline failures captured before this feature; `npx tsc --noEmit`, `npm run build`, targeted ESLint, and `git diff --check` passed. Targeted ESLint reported one existing `<img>` warning.
+
+Browser QA confirmed the deployed Affiliate page at desktop width; the earlier 390px layout check also passed without horizontal overflow. Managed post-success cleanup remains deferred: the storage audit still has unclassified incoming and historical paths, so preserve those paths and the rollback releases. The policy remains inactive until complete terms and an approval audit exist; attribution and commission capture stay off until then.
+
 ## Reading result layout and PNG-only export controls (2026-09-26, production deployed)
 
 The result page no longer repeats the session information panel in the right rail. The main answer is text-only because the spread already displays the drawn cards. The image export block is more compact, displays PNG as the only format in the UI, and keeps device download separate from Google Drive save/link/QR. Both UI actions now explicitly create PNG files. The existing export API and rasterizer still accept JPG for compatibility; no API, schema, database, OAuth or Drive-sharing behavior changed.

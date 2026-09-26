@@ -125,12 +125,12 @@ While the policy is DRAFT, clicks are not persisted as attributions. A separate 
 - [x] Capture the pre-edit full-suite state: baseline was 647 pass and 11 older UI/migration failures; compare the exact failure names after implementation.
 - [x] Run the full suite, `npx tsc --noEmit`, `npm run build`, targeted ESLint for changed files, `git diff --check`, and confirm no schema migration is required.
 - [x] Verify commission-boundary tests for pending/failed/redirect/duplicate/refunded events still pass; do not run a bank transaction.
-- [ ] Push the verified `codex/affiliate-auto-enrollment` branch.
-- [ ] Run production storage and backup/restore verification immediately before mutation. If any unknown path blocks cleanup, preserve it and report the runbook gate instead of deleting it.
-- [ ] Deploy with the managed atomic release manager, apply no schema migration unless a schema audit proves one is required, then run the production-only idempotent backfill and verify aggregate profile/code counts.
-- [ ] Verify public health, policy remains `null`, guest dashboard stays `401`, registration/login route availability, referral link resolves on `natarot.com`, QR response, Account route, Admin guest boundary, and production commission boundary. Do not create a real payment or send a test email to an unapproved recipient.
-- [ ] Retain `current`, `previous-1`, and `previous-2`; run only the approved release-manager cleanup after successful promotion and classification of all reported unknown paths.
-- [ ] Record production policy as `INACTIVE` unless an existing approval audit and complete approved policy terms are verified; report that owner decision as the final activation gate.
+- [x] Push the verified `codex/affiliate-auto-enrollment` branch.
+- [x] Run production storage and backup/restore verification immediately before mutation. Preserve unclassified paths and report the cleanup gate instead of deleting them.
+- [x] Deploy with the managed atomic release manager, apply no schema migration, then run the production-only idempotent backfill and verify aggregate profile/code counts.
+- [x] Verify health, policy `null`, guest dashboard `401`, login/register/account routes, referral URL route, visible QR control, Admin guest boundary `401`, and commission boundary (`no_policy`). Do not create a real payment or send a test email to an unapproved recipient.
+- [x] Retain `current`, `previous-1`, and `previous-2`; release-manager cleanup remains deferred while storage-audit paths remain unclassified.
+- [x] Record the production policy as inactive; attribution and commission capture remain gated on approved terms and an approval audit.
 
 ---
 
