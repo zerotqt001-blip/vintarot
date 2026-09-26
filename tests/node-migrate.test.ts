@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
@@ -141,6 +141,27 @@ test("Node migration bootstrap applies and repeats the full schema and seed", (t
   const orderColumns = sqlite.prepare("PRAGMA table_info('orders')").all() as Array<{ name: string }>;
   assert.ok(orderColumns.some((column) => column.name === "fulfillment_started_at"));
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
+  sqlite.close();
+});
+
+test("Node migration bootstrap runs when invoked through a symlinked current release path", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "natarot-migrate-symlink-"));
+  const linkedProject = join(directory, "current");
+  const dbPath = join(directory, "natarot.sqlite");
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  symlinkSync(repoRoot, linkedProject, "dir");
+
+  execFileSync(process.execPath, [join(linkedProject, "scripts/node-migrate.mjs")], {
+    cwd: linkedProject,
+    env: { ...process.env, NATAROT_DB_PATH: dbPath },
+    stdio: "pipe",
+  });
+
+  const sqlite = new DatabaseSync(dbPath);
+  assert.equal(
+    (sqlite.prepare("SELECT COUNT(*) AS count FROM natarot_migrations WHERE name='0011_business_reporting.sql'").get() as { count: number }).count,
+    1,
+  );
   sqlite.close();
 });
 
