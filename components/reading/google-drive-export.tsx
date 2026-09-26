@@ -26,7 +26,6 @@ export function GoogleDriveExport({
 }) {
   const [status, setStatus] = useState<ConnectionStatus>("loading");
   const [email, setEmail] = useState("");
-  const [format, setFormat] = useState<ReadingImageFormat>("png");
   const [downloading, setDownloading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -81,11 +80,11 @@ export function GoogleDriveExport({
     setError("");
     setDownloadNotice("");
     try {
-      const blob = await prepareImage(format);
+      const blob = await prepareImage("png");
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = `natarot-reading.${format}`;
+      link.download = "natarot-reading.png";
       link.style.display = "none";
       document.body.appendChild(link);
       link.click();
@@ -106,12 +105,12 @@ export function GoogleDriveExport({
     setDownloadNotice("");
     setCopied(false);
     try {
-      const blob = await prepareImage(format);
+      const blob = await prepareImage("png");
       const form = new FormData();
       form.set("reading_id", readingId);
       form.set("session_id", sessionId);
-      form.set("format", format);
-      form.set("file", new File([blob], `natarot-reading.${format}`, { type: format === "png" ? "image/png" : "image/jpeg" }));
+      form.set("format", "png");
+      form.set("file", new File([blob], "natarot-reading.png", { type: "image/png" }));
       const response = await fetch("/api/tarot/drive-exports", { method: "POST", credentials: "same-origin", body: form });
       const body = await response.json() as ExportResponse;
       if (response.status === 401) {
@@ -165,13 +164,7 @@ export function GoogleDriveExport({
 
   return <section className="reading-drive-export" aria-label={t("reading.imageExportLabel")}>
     <div className="reading-drive-export__row">
-      <label className="reading-drive-export__format">
-        <span>{t("reading.driveFormat")}</span>
-        <select value={format} onChange={(event) => { setFormat(event.target.value as ReadingImageFormat); setDriveUrl(""); setError(""); setDownloadNotice(""); }} disabled={busy}>
-          <option value="png">PNG</option>
-          <option value="jpg">JPG</option>
-        </select>
-      </label>
+      <span className="reading-drive-export__format"><span className="sr-only">{t("reading.driveFormat")}: </span>PNG</span>
       <button className="reading-action reading-action--image reading-drive-export__download min-h-11 rounded-full border border-antique-gold/55 px-4 text-sm hover:border-antique-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-antique-gold focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-navy disabled:cursor-not-allowed disabled:opacity-45" type="button" onClick={() => void downloadImage()} disabled={busy} aria-busy={downloading}>
         {downloading ? <LoaderCircle size={15} className="animate-spin" aria-hidden="true" /> : <Download size={15} strokeWidth={1.6} aria-hidden="true" />}
         {downloading ? t("reading.imageDownloading") : t("reading.imageDownloadToDevice")}

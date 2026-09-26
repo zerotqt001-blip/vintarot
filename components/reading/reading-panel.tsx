@@ -39,15 +39,6 @@ export function ReadingPanel({
   const [followUpQuestion, setFollowUpQuestion] = useState("");
   const followUpSectionRef = useRef<HTMLDivElement>(null);
   const hasFollowUp = Boolean(onFollowUpSubmit);
-  const featuredEvidence = reading?.cardEvidence.find((item) =>
-    /(?:^|[-_ ])(?:current|present|now|center|central)(?:$|[-_ ])/i.test(`${item.position.key} ${item.position.name}`),
-  ) || reading?.cardEvidence[0];
-  const featuredCard = featuredEvidence ? {
-    name: locale === "vi" ? featuredEvidence.card.nameVi : featuredEvidence.card.nameEn,
-    position: featuredEvidence.position.name,
-    orientation: t(`reading.${featuredEvidence.orientation}Label`),
-    artwork: artworkByReadingCardId[featuredEvidence.readingCardId],
-  } : undefined;
   function continueDrawing() {
     const followUpSection = followUpSectionRef.current;
     if (!followUpSection) return;
@@ -151,7 +142,7 @@ export function ReadingPanel({
                 )}
                 <div className="reading-result-content__main">
                   <div className={`reading-result-reading-grid${reading.personalInsights.length ? " reading-result-reading-grid--with-insights" : " reading-result-reading-grid--single"}`}>
-                    <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} featuredCard={featuredCard} t={t} />
+                    <DirectAnswer paragraphs={splitReadingParagraphs(reading.directAnswer)} t={t} />
                     {reading.personalInsights.length > 0 && <PersonalInsights items={reading.personalInsights} t={t} />}
                   </div>
                   {(reading.deeperReading || reading.nextSteps.length > 0) && (
@@ -177,20 +168,6 @@ export function ReadingPanel({
             </div>
             <div className="reading-result-sidebar">
               <div className="reading-result-toolbar">{actions}</div>
-              <section className="reading-result-meta-panel" aria-labelledby="reading-result-meta-title">
-                <h3 id="reading-result-meta-title">{t("reading.sessionInfo")}</h3>
-                <dl className="reading-header__meta reading-result-meta">
-                  <div className="reading-result-meta__item">
-                    <dt>{t("reading.questionLabel")}</dt>
-                    <dd>{session.question}</dd>
-                  </div>
-                  {session.spreadName && <div className="reading-result-meta__item"><dt>{t("reading.spreadLabel")}</dt><dd>{session.spreadName}</dd></div>}
-                  {session.deckName && <div className="reading-result-meta__item"><dt>{t("reading.deckLabel")}</dt><dd>{session.deckName}</dd></div>}
-                  {session.topicLabel && <div className="reading-result-meta__item"><dt>{t("reading.topicLabel")}</dt><dd>{session.topicLabel}</dd></div>}
-                  <div className="reading-result-meta__item"><dt>{t("common.cards")}</dt><dd>{reading.cardEvidence.length}</dd></div>
-                  {session.sessionId && <div className="reading-result-meta__item"><dt>{t("reading.sessionId")}</dt><dd>{session.sessionId}</dd></div>}
-                </dl>
-              </section>
               {hasFollowUp && (
                 <div id="reading-result-follow-up" className="reading-result-content__rail" ref={followUpSectionRef}>
                   <FollowUpReading
