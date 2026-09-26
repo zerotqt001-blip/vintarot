@@ -168,7 +168,7 @@ Expected: desktop/mobile Room preserves its NaTarot composition; guests can draw
 
 - [x] **Step 3: Inspect the full release diff and secret scan.** Confirm no `.env*`, token, database, log, credential, or generated build file is staged. Confirm no migration, Credit schema, payment, Affiliate, public-share, or production environment change.
 
-- [ ] **Step 4a: Push the verified source branch after commit.** This records the fix on the configured GitHub origin; it does not authorize production promotion while the regression gate is red.
+- [x] **Step 4a: Push the verified source branch after commit.** Commit `aadcfe6` is pushed to `origin/codex/natarot-auth-access-security`, and the remote commit ID matched locally.
 
 - [ ] **Step 4b: Prepare a secret-free release archive only after all required gates pass.** Use the existing `scripts/build-verified.sh` and installed `/usr/local/sbin/natarot-release-manager`; verify candidate inventory, hash, disk headroom, current/rollback targets, and no-op migration state before promotion.
 
@@ -182,7 +182,7 @@ Expected: desktop/mobile Room preserves its NaTarot composition; guests can draw
 
 - [ ] **Step 9: Run manager cleanup only after browser verification.** Use `/usr/local/sbin/natarot-release-manager cleanup` with `NATAROT_BROWSER_VERIFIED=1`; confirm exactly three distinct successful application releases remain and backup hashes/inventory are unchanged.
 
-- [ ] **Step 10: Record the exact final status in `docs/PROJECT_STATE.md`, commit only related files, push and verify remote equality, and report each requested PASS/FAIL plus any inherited gate.**
+- [x] **Step 10: Record the exact final status in `docs/PROJECT_STATE.md`, commit only related files, push and verify remote equality, and report each requested PASS/FAIL plus any inherited gate.** The final project-state note is part of this source branch; production promotion remains held behind the inherited full-suite failures.
 
 ### Gate outcome (2026-09-26)
 

@@ -12,6 +12,8 @@ Validation: focused auth, identity, credit, API, Room-resume and UI regressions 
 
 **Release status: NOT DEPLOYED.** The full regression gate is not green, so no fresh production backup, release archive, promotion, clean-profile Chrome QA, Owner QA, or release cleanup was performed. Production remains on `reading-result-png-6fd3e08-20260926T062718Z`; existing backups, rollback pointers, and incoming files were left untouched. Deployment must wait until the inherited full-suite failures are resolved or explicitly accepted as a release gate, followed by the clean-profile and Owner QA checks.
 
+Source commit `aadcfe6` is pushed to `origin/codex/natarot-auth-access-security`; its commit ID matched the remote branch after push. No pull request was created.
+
 ## Reading result layout and PNG-only export controls (2026-09-26, production deployed)
 
 The result page no longer repeats the session information panel in the right rail. The main answer is text-only because the spread already displays the drawn cards. The image export block is more compact, displays PNG as the only format in the UI, and keeps device download separate from Google Drive save/link/QR. Both UI actions now explicitly create PNG files. The existing export API and rasterizer still accept JPG for compatibility; no API, schema, database, OAuth or Drive-sharing behavior changed.
