@@ -40,12 +40,12 @@ function makeFixture(context: TestContext) {
 }
 
 function addMember(sqlite: DatabaseSync, input: {
-  id: string; role?: string; emailVerifiedAt?: number | null; disabled?: number; connected?: boolean;
+  id: string; role?: string; emailVerifiedAt?: number | null; disabled?: number; connected?: boolean; scope?: string;
 }) {
   sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, email_verified_at, disabled, role) VALUES (?, ?, ?, ?, 100, 100, ?, ?, ?)")
     .run(input.id, input.id, input.id + "@example.test", "synthetic-phone", input.emailVerifiedAt === undefined ? 1 : input.emailVerifiedAt, input.disabled ?? 0, input.role ?? "SUPER_ADMIN");
   if (input.connected) sqlite.prepare("INSERT INTO google_drive_connections (member_id, google_subject, google_email, refresh_token_ciphertext, granted_scope, connected_at, updated_at) VALUES (?, ?, ?, ?, ?, 100, 100)")
-    .run(input.id, "subject-" + input.id, input.id + "@example.test", "synthetic-encrypted-token", "https://www.googleapis.com/auth/drive.file");
+    .run(input.id, "subject-" + input.id, input.id + "@example.test", "synthetic-encrypted-token", input.scope ?? "https://www.googleapis.com/auth/drive.file");
 }
 
 test("reporting owner resolution fails closed for none or multiple connected verified enabled SUPER_ADMINs", async (context) => {
@@ -73,6 +73,20 @@ test("reporting owner exposes one verified account identity without returning cr
     blockedReason: null,
   });
   assert.doesNotMatch(JSON.stringify(result), /synthetic-encrypted-token|refresh_token_ciphertext/);
+});
+
+test("reporting owner blocks a connected SUPER_ADMIN without the exact drive.file grant", async (context) => {
+  const { database, sqlite } = makeFixture(context);
+  addMember(sqlite, { id: "admin-narrow-scope", connected: true, scope: "openid email profile" });
+
+  assert.deepEqual(await resolveReportingOwner(database), { owner: null, blockedReason: "drive_scope_missing" });
+});
+
+test("reporting owner blocks a connected SUPER_ADMIN with an unnecessarily broad Drive grant", async (context) => {
+  const { database, sqlite } = makeFixture(context);
+  addMember(sqlite, { id: "admin-broad-scope", connected: true, scope: "openid email profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive" });
+
+  assert.deepEqual(await resolveReportingOwner(database), { owner: null, blockedReason: "drive_scope_inappropriate" });
 });
 
 test("Google API retry honors Retry-After and sanitizes provider response bodies", async () => {

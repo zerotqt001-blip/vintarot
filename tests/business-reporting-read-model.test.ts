@@ -269,6 +269,29 @@ test("Affiliate rows preserve held, eligible, adjustment, and reversal ledger to
   assert.ok(!privateFields.includes("private fraud note"));
 });
 
+test("lifetime affiliate dashboard totals retain verified commissions for dormant profiles", async (context) => {
+  const { database, sqlite } = makeFixture(context);
+  const dormantAt = now - 120 * 86_400_000;
+  addMember(sqlite, { id: "member-dormant-referrer", createdAt: dormantAt, verifiedAt: dormantAt });
+  sqlite.prepare("INSERT INTO affiliate_profiles (id, member_id, status, created_at, updated_at) VALUES ('profile-dormant', 'member-dormant-referrer', 'ACTIVE', ?, ?)")
+    .run(dormantAt, dormantAt);
+  sqlite.prepare(`INSERT INTO referral_codes (id, affiliate_profile_id, code_hash, status, source, created_at, expires_at)
+    VALUES ('code-dormant', 'profile-dormant', 'synthetic-dormant-code-hash', 'ACTIVE', 'test', ?, NULL)`).run(dormantAt);
+  addMember(sqlite, { id: "member-dormant-customer", createdAt: dormantAt, verifiedAt: dormantAt });
+  const order = addVerifiedOrder(sqlite, { suffix: "affiliate-dormant", memberId: "member-dormant-customer", status: "FULFILLED", amountMinor: 40_000, fulfilledAt: dormantAt });
+  sqlite.prepare(`INSERT INTO referral_attributions (id, owner_key, member_id, affiliate_profile_id, referral_code_id, source, attributed_at, expires_at, created_at)
+    VALUES ('attribution-dormant', 'owner-dormant', 'member-dormant-customer', 'profile-dormant', 'code-dormant', 'test', ?, ?, ?)`)
+    .run(dormantAt, dormantAt + 30 * 86_400_000, dormantAt);
+  addAffiliateConversion(sqlite, { suffix: "dormant", memberId: "member-dormant-customer", profileId: "profile-dormant", attributionId: "attribution-dormant",
+    orderId: order.orderId, fulfillmentId: order.fulfillmentId, orderAmountMinor: 40_000, commissionMinor: 5_000, status: "HELD", now: dormantAt });
+
+  const report = await loadBusinessReport(database, { now, timeZone: "Asia/Ho_Chi_Minh" });
+
+  assert.equal(report.dashboard.affiliateCommissionsMinor, 5_000);
+  assert.equal(report.dashboard.pendingCommissionsMinor, 5_000);
+  assert.equal(report.affiliate.length, 0);
+});
+
 test("daily activity counts returning readers but never exports Tarot questions or interpretations", async (context) => {
   const { database, sqlite } = makeFixture(context);
   addMember(sqlite, { id: "member-reader", createdAt: now - 3 * 86_400_000, verifiedAt: now - 3 * 86_400_000, lastSeenAt: now - 5 * 60_000 });

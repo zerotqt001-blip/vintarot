@@ -269,6 +269,8 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
     const conversion = conversionById.get(ledger.conversionId);
     if (!conversion || !verifiedOrderIds.has(conversion.orderId)) continue;
     const signed = ledger.direction === "CREDIT" ? Number(ledger.amountMinor) : -Number(ledger.amountMinor);
+    affiliateCommissionsMinor += signed;
+    if (conversion.status === "HELD") pendingCommissionsMinor += signed;
     const currencies = profileLedger.get(conversion.profileId) ?? new Map<string, { total: number; pending: number; eligible: number; reversed: number }>();
     const totals = currencies.get(ledger.currency) ?? { total: 0, pending: 0, eligible: 0, reversed: 0 };
     totals.total += signed;
@@ -293,8 +295,6 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
     }
     for (const [currency, totals] of currencies) {
       affiliate.push({ affiliateId: opaqueReportId("affiliate", profile.id), referralCount: referralCountByProfile.get(profile.id) ?? 0, verifiedConversions: profileConversions.length, commissionTier: tier, currency, eligibleCommissionMinor: totals.eligible, pendingCommissionMinor: totals.pending, reversedCommissionMinor: totals.reversed });
-      affiliateCommissionsMinor += totals.total;
-      pendingCommissionsMinor += totals.pending;
     }
   }
 

@@ -19,10 +19,11 @@ const LEASE_DURATION_MS = 20 * 60 * 1000;
 const RETRY_BASE_DELAY_MS = 15 * 60 * 1000;
 const RETRY_MAX_DELAY_MS = 6 * 60 * 60 * 1000;
 const DATABASE_BATCH_STATEMENTS = 100;
+const DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 
 type OwnerResolution =
   | { owner: ReportingOwner; blockedReason: null }
-  | { owner: null; blockedReason: "no_connected_owner" | "multiple_connected_owners" };
+  | { owner: null; blockedReason: "no_connected_owner" | "multiple_connected_owners" | "drive_scope_missing" | "drive_scope_inappropriate" };
 
 type SyncOptions = {
   now?: number;
@@ -53,12 +54,17 @@ type SheetPlan = {
 };
 
 export async function resolveReportingOwner(database: D1Database): Promise<OwnerResolution> {
-  const owners = await database.prepare("SELECT m.id AS memberId, c.google_subject AS googleSubject, c.google_email AS googleEmail FROM members m JOIN google_drive_connections c ON c.member_id=m.id WHERE m.role='SUPER_ADMIN' AND m.disabled=0 AND m.disabled_at IS NULL AND m.email_verified_at IS NOT NULL ORDER BY m.id").all<ReportingOwner>();
+  const owners = await database.prepare("SELECT m.id AS memberId, c.google_subject AS googleSubject, c.google_email AS googleEmail, c.granted_scope AS grantedScope FROM members m JOIN google_drive_connections c ON c.member_id=m.id WHERE m.role='SUPER_ADMIN' AND m.disabled=0 AND m.disabled_at IS NULL AND m.email_verified_at IS NOT NULL ORDER BY m.id").all<ReportingOwner & { grantedScope: string | null }>();
   if (!owners.results.length) return { owner: null, blockedReason: "no_connected_owner" };
   if (owners.results.length !== 1) return { owner: null, blockedReason: "multiple_connected_owners" };
   const owner = owners.results[0];
   if (!owner?.memberId || !owner.googleSubject || !owner.googleEmail) return { owner: null, blockedReason: "no_connected_owner" };
-  return { owner, blockedReason: null };
+  const scopes = owner.grantedScope?.split(/\s+/).filter(Boolean) ?? [];
+  if (!scopes.includes(DRIVE_FILE_SCOPE)) return { owner: null, blockedReason: "drive_scope_missing" };
+  if (scopes.some((scope) => scope.startsWith("https://www.googleapis.com/auth/drive") && scope !== DRIVE_FILE_SCOPE)) {
+    return { owner: null, blockedReason: "drive_scope_inappropriate" };
+  }
+  return { owner: { memberId: owner.memberId, googleSubject: owner.googleSubject, googleEmail: owner.googleEmail }, blockedReason: null };
 }
 
 function isoAt(timestamp: number): string {
@@ -282,7 +288,7 @@ export async function syncBusinessReport(database: D1Database, options: SyncOpti
 
   const retryState = await database.prepare("SELECT next_retry_at AS nextRetryAt, retry_attempt AS retryAttempt, last_error_code AS lastErrorCode FROM business_reporting_sync_state WHERE id='primary'")
     .first<{ nextRetryAt: number | null; retryAttempt: number; lastErrorCode: string | null }>();
-  if (retryState?.lastErrorCode === "no_connected_owner" || retryState?.lastErrorCode === "multiple_connected_owners") {
+  if (retryState?.lastErrorCode === "no_connected_owner" || retryState?.lastErrorCode === "multiple_connected_owners" || retryState?.lastErrorCode === "drive_scope_missing" || retryState?.lastErrorCode === "drive_scope_inappropriate") {
     await database.prepare("UPDATE business_reporting_sync_state SET retry_attempt=0, next_retry_at=NULL, last_error_code=NULL WHERE id='primary'").run();
   } else if (retryState?.nextRetryAt != null && Number(retryState.nextRetryAt) > now) {
     await database.prepare("UPDATE business_reporting_sync_state SET last_attempt_at=?, updated_at=? WHERE id='primary'").bind(now, now).run();
