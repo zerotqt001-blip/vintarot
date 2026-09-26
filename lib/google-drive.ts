@@ -129,7 +129,7 @@ export async function createGoogleDriveAuthorizationUrl(input: {
     client_id: input.config.clientId,
     redirect_uri: input.config.redirectUri,
     response_type: "code",
-    scope: `openid email profile ${DRIVE_SCOPE}`,
+    scope: `openid email ${DRIVE_SCOPE}`,
     state: rawState,
     code_challenge: await pkceChallenge(verifier),
     code_challenge_method: "S256",

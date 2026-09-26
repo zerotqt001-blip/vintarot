@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test, { type TestContext } from "node:test";
-import { authenticatedGoogleRequest, type DriveRuntimeConfig } from "../lib/google-drive";
+import { authenticatedGoogleRequest, createGoogleDriveAuthorizationUrl, type DriveRuntimeConfig } from "../lib/google-drive";
 import { encryptField } from "../lib/security/encryption";
 import { createSqliteD1Database, type SqliteConnection } from "../lib/sqlite-d1";
 
@@ -74,6 +74,28 @@ test("authenticated Google requests use the stored app token and permit only Goo
     url: "https://sheets.googleapis.com:8443/v4/spreadsheets",
   }));
   assert.equal(requests.length, 2);
+});
+
+test("Google Drive consent requests only identity email and per-file Drive access", async (context) => {
+  const fixture = await makeFixture(context, async () => Response.json({ ok: true }));
+  const authorization = await createGoogleDriveAuthorizationUrl({
+    ...fixture,
+    memberId: "admin",
+    returnPath: "/account",
+    now: 1_790_000_000_000,
+  });
+  const url = new URL(authorization.url);
+
+  assert.equal(url.origin + url.pathname, "https://accounts.google.com/o/oauth2/v2/auth");
+  assert.equal(url.searchParams.get("redirect_uri"), "https://natarot.test/api/auth/google/callback");
+  assert.deepEqual((url.searchParams.get("scope") ?? "").split(" ").sort(), [
+    "https://www.googleapis.com/auth/drive.file",
+    "email",
+    "openid",
+  ].sort());
+  assert.equal(url.searchParams.get("include_granted_scopes"), "true");
+  assert.equal(url.searchParams.get("code_challenge_method"), "S256");
+  assert.ok(authorization.rawState);
 });
 
 test("authenticated Google requests preserve Node's streaming fetch duplex setting", async (context) => {
