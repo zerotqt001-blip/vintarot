@@ -30,6 +30,7 @@ type PublicAffiliateTier = { tierCode: string; minQualifiedConversions: number; 
 type PublicAffiliatePolicy = { version: number; currency: string; attributionWindowDays: number; holdDays: number; tiers: PublicAffiliateTier[] };
 type AffiliateIncome = { currency: string | null; currentMonthMinor: number; confirmedMinor: number; pendingMinor: number; totalMinor: number };
 type AffiliateHistoryItem = { id: string; amountMinor: number; currency: string; commissionMinor: number; status: string; fulfilledAt: number; eligibleAt: number | null; reversedAt: number | null; createdAt: number };
+type AffiliateReferral = { id: string; signupAt: number; state: "VERIFIED" };
 type AffiliateDashboard = {
   profile: { status: "ACTIVE" | "INACTIVE" | "SUSPENDED" } | null;
   policy: PublicAffiliatePolicy | null;
@@ -38,12 +39,13 @@ type AffiliateDashboard = {
   summary: { conversions: number; held: number; eligible: number; reversed: number; creditedMinor: number; debitedMinor: number; netMinor: number };
   income: AffiliateIncome;
   history: AffiliateHistoryItem[];
+  referrals: { count: number; history: AffiliateReferral[] };
 };
 
 type PolicyResponse = { policy: PublicAffiliatePolicy | null };
 
 function moneyLabel(value: number, currency: string | null, locale: string): string {
-  if (!currency) return "—";
+  if (!currency) return value === 0 ? new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US").format(0) : "—";
   try {
     return new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
   } catch {
@@ -179,7 +181,9 @@ function IncomePanel({ dashboard, currency, t, locale }: { dashboard: AffiliateD
 function ReferralHistoryPanel({ dashboard, t, locale }: { dashboard: AffiliateDashboard; t: (key: string) => string; locale: string }) {
   return <section className="affiliate-referrals-panel affiliate-panel" aria-labelledby="affiliate-referrals-title">
     <PanelHeading icon={UsersRound} title={t("affiliate.recentTitle")} description={t("affiliate.recentText")} action={<Link className="affiliate-panel-link" href="/account?tab=activity">{t("affiliate.viewAll")} <ChevronRight size={14} aria-hidden="true" /></Link>} />
-    {dashboard.history.length === 0 ? <div className="affiliate-empty-list"><UsersRound size={25} aria-hidden="true" /><p>{t("affiliate.historyEmpty")}</p></div> : <div className="affiliate-history-list">{dashboard.history.slice(0, 5).map((item) => <div className="affiliate-history-row" key={item.id}><div className="affiliate-history-avatar" aria-hidden="true"><UsersRound size={17} /></div><div className="affiliate-history-copy"><strong>{t("affiliate.qualifiedMember")}</strong><span>{dateLabel(item.fulfilledAt, locale)}</span></div><div className="affiliate-history-status"><span className={`affiliate-status-dot affiliate-status-dot--${statusKey(item.status)}`} aria-hidden="true" />{t(`affiliate.status.${statusKey(item.status)}`)}</div><strong className="affiliate-history-amount">{item.currency ? moneyLabel(item.commissionMinor, item.currency, locale) : t("affiliate.notAvailable")}</strong></div>)}</div>}
+    <div className="affiliate-referral-total"><span>{t("affiliate.referralSignups")}</span><strong>{dashboard.referrals.count.toLocaleString(locale === "vi" ? "vi-VN" : "en-US")}</strong></div>
+    {dashboard.referrals.history.length === 0 ? <div className="affiliate-empty-list"><UsersRound size={25} aria-hidden="true" /><p>{t("affiliate.referralsEmpty")}</p></div> : <div className="affiliate-history-list">{dashboard.referrals.history.slice(0, 5).map((item) => <div className="affiliate-history-row affiliate-signup-row" key={item.id}><div className="affiliate-history-avatar" aria-hidden="true"><UsersRound size={17} /></div><div className="affiliate-history-copy"><strong>{t("affiliate.verifiedReferral")}</strong><span>{dateLabel(item.signupAt, locale)}</span></div><div className="affiliate-history-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.verified")}</div></div>)}</div>}
+    {dashboard.history.length > 0 && <div className="affiliate-commission-activity"><h3>{t("affiliate.commissionActivity")}</h3><div className="affiliate-history-list">{dashboard.history.slice(0, 3).map((item) => <div className="affiliate-history-row" key={item.id}><div className="affiliate-history-avatar" aria-hidden="true"><ReceiptText size={16} /></div><div className="affiliate-history-copy"><strong>{t("affiliate.qualifiedMember")}</strong><span>{dateLabel(item.fulfilledAt, locale)}</span></div><div className="affiliate-history-status"><span className={`affiliate-status-dot affiliate-status-dot--${statusKey(item.status)}`} aria-hidden="true" />{t(`affiliate.status.${statusKey(item.status)}`)}</div><strong className="affiliate-history-amount">{item.currency ? moneyLabel(item.commissionMinor, item.currency, locale) : t("affiliate.notAvailable")}</strong></div>)}</div></div>}
   </section>;
 }
 
@@ -193,6 +197,13 @@ function PublicAffiliateIntro({ policy, t, authenticated, locale }: { policy: Pu
         <section className="affiliate-public-panel affiliate-panel"><PanelHeading icon={BadgeCheck} title={t("affiliate.publicProofTitle")} description={t("affiliate.publicProofText")} /><div className="affiliate-public-points"><span><Check size={15} aria-hidden="true" />{t("affiliate.publicPointOne")}</span><span><Check size={15} aria-hidden="true" />{t("affiliate.publicPointTwo")}</span><span><Check size={15} aria-hidden="true" />{t("affiliate.publicPointThree")}</span></div>{!authenticated && <div className="affiliate-action-row"><Link className="button black" href="/auth?return_to=/affiliate">{t("affiliate.signIn")} <ArrowRight size={15} aria-hidden="true" /></Link><Link className="button" href="/auth?mode=register&return_to=/affiliate">{t("affiliate.register")}</Link></div>}</section>
     {policy ? <PolicyPanel policy={policy} t={t} locale={locale} /> : <EmptyPolicyPanel t={t} />}
   </>;
+}
+
+function PendingAffiliateDashboard({ dashboard, currency, t, locale }: { dashboard: AffiliateDashboard; currency: string | null; t: (key: string, values?: Record<string, string | number>) => string; locale: string }) {
+  return <div className="affiliate-pending-dashboard">
+    <div className="affiliate-dashboard-grid"><div className="affiliate-dashboard-grid__main"><IncomePanel dashboard={dashboard} currency={currency} t={t} locale={locale} /><ReferralHistoryPanel dashboard={dashboard} t={t} locale={locale} /></div><div className="affiliate-dashboard-grid__side"><ReferralLinkPanel dashboard={dashboard} t={t} /><EmptyPolicyPanel t={t} /></div></div>
+    <HowItWorks t={t} />
+  </div>;
 }
 
 export default function AffiliateDashboardPage({ authenticated }: { authenticated: boolean }) {
@@ -221,6 +232,7 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   }, [authenticated]);
 
   const activePolicy = dashboard?.policy ?? policy;
+  const hasActiveProfile = dashboard?.profile?.status === "ACTIVE";
   const isReady = affiliateDashboardIsActive(dashboard?.profile?.status ?? null, Boolean(activePolicy));
   const currency = dashboard?.income.currency ?? activePolicy?.currency ?? null;
   const kpis = useMemo(() => dashboard ? [
@@ -233,13 +245,13 @@ export default function AffiliateDashboardPage({ authenticated }: { authenticate
   if (loading) return <LoadingState label={t("affiliate.loading")} />;
   return <div className="affiliate-dashboard">
     <section className="affiliate-dashboard__hero">
-      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{isReady && <div className="affiliate-hero-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.active")} · {t("affiliate.serverScoped")}</div>}{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
+      <div className="affiliate-hero-copy"><span className="affiliate-hero-kicker">{t("affiliate.heroKicker")}</span><h1>{t("affiliate.heroTitle")}</h1><p>{t("affiliate.heroText")}</p>{isReady && <div className="affiliate-hero-status"><span className="affiliate-status-dot affiliate-status-dot--active" aria-hidden="true" />{t("affiliate.status.active")} · {t("affiliate.serverScoped")}</div>}{hasActiveProfile && !activePolicy && <div className="affiliate-hero-status affiliate-hero-status--pending"><span className="affiliate-status-dot affiliate-status-dot--inactive" aria-hidden="true" />{t("affiliate.pendingTerms")}</div>}{error && <p className="affiliate-error"><CircleAlert size={15} aria-hidden="true" />{t(authenticated ? "affiliate.dashboardError" : "affiliate.policyError")}</p>}</div>
       <div className="affiliate-hero-orbit" aria-hidden="true"><div className="affiliate-orbit-ring affiliate-orbit-ring--outer" /><div className="affiliate-orbit-ring affiliate-orbit-ring--inner" /><Sparkles size={42} strokeWidth={1} /><span>✦</span><span>✧</span></div>
     </section>
     {dashboard && isReady ? <>
       <section className="affiliate-kpi-grid" aria-label={t("affiliate.dashboardEyebrow")}>{kpis.map((item) => <StatCard key={item.label} {...item} />)}</section>
       <div className="affiliate-dashboard-grid"><div className="affiliate-dashboard-grid__main"><TierPanel dashboard={dashboard} policy={activePolicy} t={t} locale={locale} /><IncomePanel dashboard={dashboard} currency={currency} t={t} locale={locale} /></div><div className="affiliate-dashboard-grid__side"><ReferralLinkPanel dashboard={dashboard} t={t} /><ReferralHistoryPanel dashboard={dashboard} t={t} locale={locale} /></div></div>
       <div className="affiliate-lower-grid"><HowItWorks t={t} /><PolicyPanel policy={activePolicy!} t={t} locale={locale} /></div>
-    </> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} />{dashboard && <ReferralLinkPanel dashboard={dashboard} t={t} />}<HowItWorks t={t} /></div>}
+    </> : dashboard && hasActiveProfile ? <PendingAffiliateDashboard dashboard={dashboard} currency={currency} t={t} locale={locale} /> : <div className="affiliate-public-grid"><PublicAffiliateIntro policy={activePolicy} t={t} authenticated={authenticated} locale={locale} />{dashboard && <ReferralLinkPanel dashboard={dashboard} t={t} />}<HowItWorks t={t} /></div>}
   </div>;
 }

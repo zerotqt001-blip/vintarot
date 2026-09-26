@@ -1,5 +1,8 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import type { GoogleOAuthClient } from "./google-oauth";
+import { clearAffiliateGuestCookie, readAffiliateGuestId } from "./affiliate/anonymous-attribution";
+import { ensureAffiliateEnrollment } from "./affiliate/enrollment";
+import { claimGuestReferralAttribution } from "./affiliate/service";
 import {
   MemberConflictError,
   type MemberRow,
@@ -173,6 +176,13 @@ function withGoogleTransactionCleared(response: Response, request: Request, trus
   return response;
 }
 
+function withAffiliateGuestCookieCleared(response: Response, request: Request, trustForwardedFor: boolean): Response {
+  if (readAffiliateGuestId(request)) {
+    response.headers.append("Set-Cookie", clearAffiliateGuestCookie(requestUsesHttps(request, trustForwardedFor)));
+  }
+  return response;
+}
+
 function redirect(location: URL | string): Response {
   return new Response(null, { status: 303, headers: { Location: String(location) } });
 }
@@ -245,6 +255,14 @@ export function createAuthHandlers({
   scheduleBackground = (task) => { void task; },
 }: AuthHandlersDependencies) {
   const store = createMemberAuthStore(database, now);
+  async function claimAffiliateGuest(memberId: string, request: Request): Promise<void> {
+    const guestId = readAffiliateGuestId(request);
+    if (guestId) await claimGuestReferralAttribution({ database, memberId, guestId, now: now() });
+  }
+  async function enrollAndClaimAffiliate(memberId: string, request: Request): Promise<void> {
+    await claimAffiliateGuest(memberId, request);
+    await ensureAffiliateEnrollment({ database, memberId, now: now() });
+  }
 
   return {
     async googleStart(request: Request): Promise<Response> {
@@ -278,7 +296,8 @@ export function createAuthHandlers({
         if (linked) {
           if (linked.disabled !== 0 || linked.email_verified_at === null) return googleErrorRedirect(request, true, trustForwardedFor);
           await store.markLastLogin(linked.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw, true, trustForwardedFor);
+          await enrollAndClaimAffiliate(linked.id, request);
+          return withAffiliateGuestCookieCleared(localRedirect(request, statePayload.returnPath, (await store.createSession(linked.id, true)).raw, true, trustForwardedFor), request, trustForwardedFor);
         }
 
         const byEmail = await store.findByEmail(identity.email);
@@ -292,7 +311,8 @@ export function createAuthHandlers({
             if (!racedLink || racedLink.id !== byEmail.id || racedLink.disabled !== 0 || racedLink.email_verified_at === null) return googleErrorRedirect(request, true, trustForwardedFor);
           }
           await store.markLastLogin(byEmail.id);
-          return localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw, true, trustForwardedFor);
+          await enrollAndClaimAffiliate(byEmail.id, request);
+          return withAffiliateGuestCookieCleared(localRedirect(request, statePayload.returnPath, (await store.createSession(byEmail.id, true)).raw, true, trustForwardedFor), request, trustForwardedFor);
         }
 
         const completion = await store.createToken({
@@ -334,7 +354,8 @@ export function createAuthHandlers({
         });
         if (!member) return invalidToken();
         await store.markLastLogin(member.id);
-        return localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw, false, trustForwardedFor);
+        await enrollAndClaimAffiliate(member.id, request);
+        return withAffiliateGuestCookieCleared(localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw, false, trustForwardedFor), request, trustForwardedFor);
       } catch (error) {
         if (error instanceof MemberConflictError) return invalidInput();
         throw error;
@@ -376,7 +397,8 @@ export function createAuthHandlers({
         }
         return Response.json({ ok: true, next: "verify-email" });
       }
-      return Response.json({ ok: true, next: "verify-email" });
+      await claimAffiliateGuest(member.id, request);
+      return withAffiliateGuestCookieCleared(Response.json({ ok: true, next: "verify-email" }), request, trustForwardedFor);
     },
 
     async verify(request: Request): Promise<Response> {
@@ -385,7 +407,8 @@ export function createAuthHandlers({
       const consumed = await store.consumeToken("email-verification", token);
       if (!consumed?.memberId) return verificationRedirect(request, false);
       await store.markVerified(consumed.memberId);
-      return verificationRedirect(request, true);
+      await enrollAndClaimAffiliate(consumed.memberId, request);
+      return withAffiliateGuestCookieCleared(verificationRedirect(request, true), request, trustForwardedFor);
     },
 
     async login(request: Request): Promise<Response> {
@@ -404,10 +427,11 @@ export function createAuthHandlers({
       const session = await store.createSessionIfPasswordMatches(member.id, member.password_hash, true);
       if (!session) return invalidCredentials();
       await store.markLastLogin(member.id);
-      return Response.json(
+      await enrollAndClaimAffiliate(member.id, request);
+      return withAffiliateGuestCookieCleared(Response.json(
         { ok: true, member: { id: member.id, username: member.username, email: member.email, displayName: member.display_name } },
         { headers: { "Set-Cookie": buildSessionCookie(session.raw, requestUsesHttps(request, trustForwardedFor)) } },
-      );
+      ), request, trustForwardedFor);
     },
 
     async logout(request: Request): Promise<Response> {

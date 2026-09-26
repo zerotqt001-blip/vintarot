@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { createAuditService } from "../lib/audit/service";
-import { adjustAffiliateCommission, captureAttribution, createAffiliateConversion, getAffiliateSummary, listAffiliateHistory, markCommissionEligible, reverseAffiliateCommission, type VerifiedFulfillmentEvent } from "../lib/affiliate/service";
+import { adjustAffiliateCommission, captureAttribution, createAffiliateConversion, getAffiliateSummary, listAdminAffiliateReadModel, listAffiliateHistory, markCommissionEligible, reverseAffiliateCommission, type VerifiedFulfillmentEvent } from "../lib/affiliate/service";
 import { affiliateAdjustmentAuditIdempotencyKey } from "../lib/affiliate/idempotency";
 import { hashReferralCode } from "../lib/affiliate/repository";
 import { createPendingOrder, recordVerifiedPayment } from "../lib/orders";
@@ -149,7 +149,12 @@ test("conversion requires a fulfilled member order, matching attribution window,
   assert.equal(await createAffiliateConversion({ database: fixture.database, event }), null);
   fixture.sqlite.prepare("UPDATE referral_attributions SET expires_at=? WHERE owner_key=?").run(fixture.now.value + 1, "member:buyer");
   fixture.sqlite.prepare("UPDATE affiliate_profiles SET status='SUSPENDED' WHERE id='profile-a'").run();
+  const suspendedCapture = await captureAttribution({ database: fixture.database, owner: { kind: "member", ownerId: "member:affiliate-b" }, rawCode: "MOON-A", source: "query", now: fixture.now.value + 1 });
+  assert.equal(suspendedCapture.accepted, false);
+  assert.equal(suspendedCapture.reason, "inactive_affiliate");
   assert.equal(await createAffiliateConversion({ database: fixture.database, event: { ...event, eventKey: `${event.eventKey}:suspended` } }), null);
+  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM affiliate_conversions").get() as { count: number }).count, 0);
+  assert.equal((fixture.sqlite.prepare("SELECT COUNT(*) AS count FROM affiliate_commission_ledger").get() as { count: number }).count, 0);
   fixture.sqlite.prepare("UPDATE affiliate_profiles SET status='ACTIVE' WHERE id='profile-a'").run();
   assert.equal(await createAffiliateConversion({ database: fixture.database, event: { ...event, orderStatus: "PAYMENT_CONFIRMED", eventKey: `${event.eventKey}:unfulfilled` } }), null);
   const foreign = await listAffiliateHistory(fixture.database, "member:other");
@@ -231,6 +236,25 @@ test("commission mutation keys remain distinct when conversion IDs and keys cont
   }
   assert.equal((await loadConversionForTest(fixture, first!.id))?.status, "REVERSED");
   assert.equal((await loadConversionForTest(fixture, second!.id))?.status, "REVERSED");
+  fixture.sqlite.close();
+});
+
+test("Admin Affiliate attribution rows are bounded and omit anonymous keys and referral secrets", async () => {
+  const fixture = makeFixture();
+  const windowMs = 30 * 86_400_000;
+  await seedAffiliate(fixture.sqlite, "profile-a", "affiliate-a", "NTR-ADMIN-SECRET-CODE");
+  const attribution = fixture.sqlite.prepare("INSERT INTO referral_attributions (id, owner_key, member_id, affiliate_profile_id, referral_code_id, source, attributed_at, expires_at, created_at) VALUES (?, ?, ?, ?, ?, 'test', ?, ?, ?)");
+  attribution.run("admin-member-attribution", "member:buyer", "buyer", "profile-a", "profile-a-code", fixture.now.value, fixture.now.value + windowMs, fixture.now.value);
+  attribution.run("admin-anonymous-attribution", "guest:affiliate:11111111-1111-4111-8111-111111111111", null, "profile-a", "profile-a-code", fixture.now.value + 1, fixture.now.value + windowMs, fixture.now.value + 1);
+
+  const model = await listAdminAffiliateReadModel(fixture.database, 10);
+  const limited = await listAdminAffiliateReadModel(fixture.database, 1);
+  assert.deepEqual(model.attributions, [
+    { id: "admin-anonymous-attribution", referrerMemberId: "affiliate-a", referredMemberId: null, attributedAt: fixture.now.value + 1, expiresAt: fixture.now.value + windowMs },
+    { id: "admin-member-attribution", referrerMemberId: "affiliate-a", referredMemberId: "buyer", attributedAt: fixture.now.value, expiresAt: fixture.now.value + windowMs },
+  ]);
+  assert.equal(limited.attributions.length, 1);
+  assert.doesNotMatch(JSON.stringify(model.attributions), /guest:affiliate|NTR-ADMIN-SECRET-CODE|code_hash|referral_code_id|@example/);
   fixture.sqlite.close();
 });
 

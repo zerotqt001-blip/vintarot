@@ -38,6 +38,12 @@ export type CustomerAffiliateHistoryItem = {
   createdAt: number;
 };
 
+export type CustomerAffiliateReferral = {
+  id: string;
+  signupAt: number;
+  state: "VERIFIED";
+};
+
 export type AffiliateIncomeSummary = {
   currency: string | null;
   currentMonthMinor: number;
@@ -54,6 +60,7 @@ export type AffiliateCustomerDashboard = {
   summary: Awaited<ReturnType<typeof getAffiliateOwnerSummary>>;
   income: AffiliateIncomeSummary;
   history: CustomerAffiliateHistoryItem[];
+  referrals: { count: number; history: CustomerAffiliateReferral[] };
 };
 
 function publicTier(tier: AffiliatePolicyTier): PublicAffiliateTier {
@@ -85,6 +92,24 @@ function emptyIncome(): AffiliateIncomeSummary {
   return { currency: null, currentMonthMinor: 0, confirmedMinor: 0, pendingMinor: 0, totalMinor: 0 };
 }
 
+async function getAffiliateReferrals(database: D1Database, memberId: string): Promise<AffiliateCustomerDashboard["referrals"]> {
+  const profile = await database.prepare("SELECT id FROM affiliate_profiles WHERE member_id=? LIMIT 1")
+    .bind(memberId)
+    .first<{ id: string }>();
+  if (!profile) return { count: 0, history: [] };
+  const eligible = "a.affiliate_profile_id=? AND a.member_id IS NOT NULL AND a.member_id<>? AND m.email_verified_at IS NOT NULL AND m.disabled=0 AND m.disabled_at IS NULL";
+  const countRow = await database.prepare(`SELECT COUNT(*) AS count FROM referral_attributions a JOIN members m ON m.id=a.member_id WHERE ${eligible}`)
+    .bind(profile.id, memberId)
+    .first<{ count: number }>();
+  const rows = await database.prepare(`SELECT a.id, m.created_at AS signup_at FROM referral_attributions a JOIN members m ON m.id=a.member_id WHERE ${eligible} ORDER BY m.created_at DESC, a.id DESC LIMIT 20`)
+    .bind(profile.id, memberId)
+    .all<{ id: string; signup_at: number }>();
+  return {
+    count: Number(countRow?.count ?? 0),
+    history: rows.results.map((row) => ({ id: String(row.id), signupAt: Number(row.signup_at), state: "VERIFIED" })),
+  };
+}
+
 async function getAffiliateIncome(database: D1Database, memberId: string, now: number): Promise<AffiliateIncomeSummary> {
   const bounds = utcMonthBounds(now);
   const row = await database.prepare(`SELECT
@@ -109,9 +134,21 @@ async function getAffiliateIncome(database: D1Database, memberId: string, now: n
 
 export async function getAffiliateCustomerDashboard(database: D1Database, owner: CreditOwner, now = Date.now()): Promise<AffiliateCustomerDashboard> {
   const memberId = memberIdFromOwner(owner.ownerId);
-  const summary = await getAffiliateOwnerSummary(database, owner.ownerId);
-  const income = memberId ? await getAffiliateIncome(database, memberId, now) : emptyIncome();
-  const history = memberId
+  const rawSummary = await getAffiliateOwnerSummary(database, owner.ownerId);
+  const referrals = memberId ? await getAffiliateReferrals(database, memberId) : { count: 0, history: [] };
+  if (!memberId) {
+    return { profile: null, policy: null, progress: null, referralLink: { available: false, reason: "not_eligible" }, summary: rawSummary, income: emptyIncome(), history: [], referrals };
+  }
+
+  const profile = await database.prepare("SELECT id, status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
+  const policy = await getActiveAffiliatePolicy(database, now);
+  const publicPolicy = projectAffiliatePolicy(policy);
+  const dashboardReady = Boolean(profile?.status === "ACTIVE" && policy && publicPolicy);
+  const summary = dashboardReady
+    ? rawSummary
+    : { ...rawSummary, creditedMinor: 0, debitedMinor: 0, netMinor: 0 };
+  const income = dashboardReady ? await getAffiliateIncome(database, memberId, now) : emptyIncome();
+  const history = dashboardReady
     ? (await listAffiliateOwnerHistory(database, owner.ownerId)).map((item) => ({
       id: item.id,
       amountMinor: item.amountMinor,
@@ -124,22 +161,19 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
       createdAt: item.createdAt,
     }))
     : [];
-  if (!memberId) {
-    return { profile: null, policy: null, progress: null, referralLink: { available: false, reason: "not_eligible" }, summary, income, history };
-  }
-
-  const profile = await database.prepare("SELECT id, status FROM affiliate_profiles WHERE member_id=? LIMIT 1").bind(memberId).first<{ id: string; status: string }>();
-  const policy = await getActiveAffiliatePolicy(database, now);
-  const publicPolicy = projectAffiliatePolicy(policy);
-  if (!profile || profile.status !== "ACTIVE" || !policy || !publicPolicy) {
+  if (!dashboardReady || !profile || !policy || !publicPolicy) {
+    const referralLink = profile?.status === "ACTIVE"
+      ? await ensureAffiliateReferralLink(database, owner, undefined, now)
+      : { available: false as const, reason: !profile ? "not_eligible" as const : "profile_inactive" as const };
     return {
       profile: profile && ["ACTIVE", "INACTIVE", "SUSPENDED"].includes(profile.status) ? { status: profile.status as AffiliateProfileStatus } : null,
       policy: publicPolicy,
       progress: null,
-      referralLink: { available: false, reason: !profile ? "not_eligible" : profile.status !== "ACTIVE" ? "profile_inactive" : "policy_inactive" },
+      referralLink,
       summary,
       income,
       history,
+      referrals,
     };
   }
 
@@ -156,5 +190,6 @@ export async function getAffiliateCustomerDashboard(database: D1Database, owner:
     summary,
     income,
     history,
+    referrals,
   };
 }

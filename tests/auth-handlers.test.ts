@@ -5,9 +5,25 @@ import test from "node:test";
 import { createAuthHandlers } from "../lib/auth-handlers";
 import { createAuthRateLimiter } from "../lib/auth-rate-limit";
 import { SESSION_COOKIE_NAME, createMemberAuthStore, parseCookie, verifyPassword } from "../lib/member-auth";
+import { captureAttribution } from "../lib/affiliate/service";
+import { hashReferralCode } from "../lib/affiliate/repository";
+import { AFFILIATE_GUEST_COOKIE_NAME } from "../lib/affiliate/anonymous-attribution";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
 
-const migrationSql = readFileSync(new URL("../drizzle/0004_member_auth.sql", import.meta.url), "utf8");
+const migrationFiles = [
+  "0000_vengeful_ben_urich.sql",
+  "0001_dynamic_tarot.sql",
+  "0002_tarot_seed.sql",
+  "0003_moonlight_spread_catalog.sql",
+  "0004_member_auth.sql",
+  "0004_reading_payload.sql",
+  "0005_natarot_share_persistence.sql",
+  "0006_credits_vip.sql",
+  "0007_backend_completion.sql",
+  "0007_sepay_commercial.sql",
+  "0008_credit_fulfillment_timestamp.sql",
+  "0009_affiliate_referral_links.sql",
+];
 const validRegistration = {
   email: "Reader@Example.test",
   username: "Moon_Rider",
@@ -32,7 +48,7 @@ function createHarness(options: {
 } = {}) {
   let clock = 1_700_000_000_000;
   const sqlite = new DatabaseSync(":memory:");
-  sqlite.exec(migrationSql);
+  for (const migration of migrationFiles) sqlite.exec(readFileSync(new URL(`../drizzle/${migration}`, import.meta.url), "utf8"));
   const database = createSqliteD1Database(sqlite);
   const verificationMail: SentMail[] = [];
   const resetMail: SentMail[] = [];
@@ -82,6 +98,39 @@ test("registration creates one unverified member, mails once, and hides duplicat
   assert.equal(harness.verificationMail[0].to, "reader@example.test");
   assert.equal((await harness.store.findByIdentifier("moon_rider"))?.email_verified_at, null);
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 1);
+});
+
+test("registration claims an anonymous referral only after mail delivery and verification enrolls the member", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  const guestId = "8ac513f2-46d3-4f2b-8a2a-dff811fbc58c";
+  const cookie = `${AFFILIATE_GUEST_COOKIE_NAME}=${guestId}`;
+  const timestamp = 1_700_000_000_000;
+  harness.sqlite.prepare("UPDATE affiliate_policy_versions SET status='ACTIVE', starts_at=? WHERE id='affiliate-v1-default'").run(timestamp - 1);
+  harness.sqlite.prepare("INSERT INTO members (id, username, email, phone, email_verified_at, created_at, updated_at, disabled, role) VALUES ('referrer', 'referrer', 'referrer@example.test', '+84900000000', ?, ?, ?, 0, 'USER')").run(timestamp, timestamp, timestamp);
+  harness.sqlite.prepare("INSERT INTO affiliate_profiles (id, member_id, status, fraud_note_ciphertext, created_at, updated_at) VALUES ('referrer-profile', 'referrer', 'ACTIVE', NULL, ?, ?)").run(timestamp, timestamp);
+  const rawCode = "NTR-TEST-REFERRAL";
+  harness.sqlite.prepare("INSERT INTO referral_codes (id, affiliate_profile_id, code_hash, status, source, created_at, expires_at) VALUES ('referrer-code', 'referrer-profile', ?, 'ACTIVE', 'test', ?, NULL)").run(await hashReferralCode(rawCode), timestamp);
+  const captured = await captureAttribution({ database: harness.database, owner: { kind: "guest", ownerId: `affiliate:${guestId}` }, rawCode, now: timestamp });
+  assert.equal(captured.accepted, true);
+
+  const registration = await harness.handlers.register(jsonRequest("/api/auth/register", validRegistration, { cookie }));
+  const newMember = await harness.store.findByIdentifier("moon_rider");
+  assert.ok(newMember);
+  assert.equal(newMember.email_verified_at, null);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM affiliate_profiles WHERE member_id=?").bind(newMember.id).first<{ count: number }>())?.count, 0);
+  assert.match(registration.headers.get("set-cookie") ?? "", new RegExp(`${AFFILIATE_GUEST_COOKIE_NAME}=; Path=/; Max-Age=0`));
+  const registeredAttribution = await harness.database.prepare("SELECT owner_key, member_id FROM referral_attributions").first<{ owner_key: string; member_id: string }>();
+  assert.deepEqual({ owner_key: registeredAttribution?.owner_key, member_id: registeredAttribution?.member_id }, { owner_key: `member:${newMember.id}`, member_id: newMember.id });
+
+  const token = harness.verificationMail.at(-1)?.token;
+  assert.ok(token);
+  const verified = await harness.handlers.verify(new Request(`https://natarot.test/api/auth/verify?token=${token}`, { headers: { cookie } }));
+  assert.equal(verified.status, 303);
+  assert.match(verified.headers.get("set-cookie") ?? "", new RegExp(`${AFFILIATE_GUEST_COOKIE_NAME}=; Path=/; Max-Age=0`));
+  assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(newMember.id).first<{ status: string }>())?.status, "ACTIVE");
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?) AND public_code IS NOT NULL").bind(newMember.id).first<{ count: number }>())?.count, 1);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_attributions WHERE owner_key=? AND member_id=?").bind(`member:${newMember.id}`, newMember.id).first<{ count: number }>())?.count, 1);
 });
 
 test("registration rejects invalid local credentials without creating a member", async (t) => {

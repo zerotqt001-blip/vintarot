@@ -43,6 +43,15 @@ export async function getActiveAffiliatePolicy(database: D1Database, at: number,
   };
 }
 
+/** Return the active policy's attribution window; drafts cannot govern commission-bearing attribution. */
+export async function getAffiliateAttributionWindow(database: D1Database, at: number): Promise<number | null> {
+  const active = await database.prepare("SELECT attribution_window_days FROM affiliate_policy_versions WHERE status='ACTIVE' AND starts_at <= ? AND (ends_at IS NULL OR ends_at > ?) ORDER BY version DESC LIMIT 1")
+    .bind(at, at)
+    .first<{ attribution_window_days: number }>();
+  const windowDays = Number(active?.attribution_window_days);
+  return Number.isInteger(windowDays) && windowDays >= 1 && windowDays <= 365 ? windowDays : null;
+}
+
 export function selectAffiliateTier(policy: AffiliatePolicy, qualifiedConversionsIncludingCurrent: number): AffiliatePolicyTier | null {
   return [...policy.tiers]
     .sort((left, right) => right.minQualifiedConversions - left.minQualifiedConversions || left.id.localeCompare(right.id))

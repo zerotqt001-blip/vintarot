@@ -7,7 +7,20 @@ import { createGoogleOAuthClient } from "../lib/google-oauth";
 import { SESSION_COOKIE_NAME, createMemberAuthStore, digestToken, parseCookie } from "../lib/member-auth";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
 
-const migrationSql = readFileSync(new URL("../drizzle/0004_member_auth.sql", import.meta.url), "utf8");
+const migrationFiles = [
+  "0000_vengeful_ben_urich.sql",
+  "0001_dynamic_tarot.sql",
+  "0002_tarot_seed.sql",
+  "0003_moonlight_spread_catalog.sql",
+  "0004_member_auth.sql",
+  "0004_reading_payload.sql",
+  "0005_natarot_share_persistence.sql",
+  "0006_credits_vip.sql",
+  "0007_backend_completion.sql",
+  "0007_sepay_commercial.sql",
+  "0008_credit_fulfillment_timestamp.sql",
+  "0009_affiliate_referral_links.sql",
+];
 const tokenUrl = "https://oauth2.googleapis.com/token";
 const userInfoUrl = "https://openidconnect.googleapis.com/v1/userinfo";
 
@@ -29,7 +42,7 @@ function count(database: ReturnType<typeof createSqliteD1Database>, table: "memb
 function createHarness(response: GoogleResponse = {}) {
   let clock = 1_700_000_000_000;
   const sqlite = new DatabaseSync(":memory:");
-  sqlite.exec(migrationSql);
+  for (const migration of migrationFiles) sqlite.exec(readFileSync(new URL(`../drizzle/${migration}`, import.meta.url), "utf8"));
   const database = createSqliteD1Database(sqlite);
   const requests: Array<{ url: string; body: string; authorization: string | null }> = [];
   const fetchImpl: typeof fetch = async (input, init) => {
@@ -240,6 +253,8 @@ test("Google callback links a verified member by normalized email and starts a m
   assert.ok(session);
   assert.equal((await harness.store.readSession(session))?.id, existing.id);
   assert.equal((await harness.store.findByGoogleSubject("linked-google-subject"))?.id, existing.id);
+  assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(existing.id).first<{ status: string }>())?.status, "ACTIVE");
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?) AND public_code IS NOT NULL").bind(existing.id).first<{ count: number }>())?.count, 1);
 });
 
 test("Google callback does not replace a different Google subject already linked to an email match", async (t) => {
@@ -280,6 +295,7 @@ test("Google callback signs in an active member already linked to the Google sub
   assert.ok(session);
   assert.equal((await harness.store.readSession(session))?.id, existing.id);
   assert.equal(await count(harness.database, "members"), 1);
+  assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(existing.id).first<{ status: string }>())?.status, "ACTIVE");
 });
 
 test("Google first login creates a completion token with no provider tokens and completion creates a passwordless verified member once", async (t) => {
@@ -313,6 +329,8 @@ test("Google first login creates a completion token with no provider tokens and 
   assert.equal(member?.password_hash, null);
   assert.ok(member?.email_verified_at);
   assert.ok(parseCookie(complete.headers.get("set-cookie"), SESSION_COOKIE_NAME));
+  assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(member?.id).first<{ status: string }>())?.status, "ACTIVE");
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?) AND public_code IS NOT NULL").bind(member?.id).first<{ count: number }>())?.count, 1);
 
   const replay = await harness.handlers.googleComplete(jsonRequest("/api/auth/google/complete", { token: completionToken, username: "other_reader", phone: "+84987654321" }));
   assert.equal(replay.status, 400);
@@ -388,7 +406,7 @@ test("Google OAuth rejects a non-HTTPS redirect URI in production", () => {
 
 test("Google routes are safely unavailable when no client is configured", async (t) => {
   const sqlite = new DatabaseSync(":memory:");
-  sqlite.exec(migrationSql);
+  for (const migration of migrationFiles) sqlite.exec(readFileSync(new URL(`../drizzle/${migration}`, import.meta.url), "utf8"));
   t.after(() => sqlite.close());
   const handlers = createAuthHandlers({
     database: createSqliteD1Database(sqlite),

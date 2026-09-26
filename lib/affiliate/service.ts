@@ -1,6 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { encryptField, keyringFromEnvironment } from "../security/encryption";
-import { getActiveAffiliatePolicy, selectAffiliateTier, utcMonthBounds } from "./policy";
+import { getActiveAffiliatePolicy, getAffiliateAttributionWindow, selectAffiliateTier, utcMonthBounds } from "./policy";
+import { isAffiliateGuestId } from "./anonymous-attribution";
 import { findReferralAttribution, findReferralCode, getAffiliateConversion, hashReferralCode, memberIdFromOwner, ownerKey } from "./repository";
 import { scopedAffiliateLedgerIdempotencyKeys } from "./idempotency";
 import type { AffiliateConversion, AffiliateHistoryItem, AffiliateOwner, AffiliateProfileStatus, AffiliateSummary, AttributionResult, VerifiedFulfillmentEvent } from "./types";
@@ -75,21 +76,69 @@ export async function captureAttribution(input: { database: D1Database; owner: A
   const now = input.now ?? Date.now();
   const existing = await findReferralAttribution(input.database, input.owner);
   if (existing) return { accepted: true, reason: "already_attributed", attributionId: String(existing.id), expiresAt: Number(existing.expires_at) };
-  const policy = await getActiveAffiliatePolicy(input.database, now);
-  if (!policy) return { accepted: false, reason: "no_policy" };
+  const attributionWindowDays = await getAffiliateAttributionWindow(input.database, now);
+  if (!attributionWindowDays) return { accepted: false, reason: "no_policy" };
   const code = await findReferralCode(input.database, await hashReferralCode(rawCode), now);
   if (!code) return { accepted: false, reason: "invalid_code" };
   if (String(code.profile_status) !== "ACTIVE") return { accepted: false, reason: "inactive_affiliate" };
   const memberId = memberIdFromOwner(ownerKey(input.owner));
   if (memberId && memberId === String(code.affiliate_member_id)) return { accepted: false, reason: "self_referral" };
   const attributionId = `affiliate-attribution:${globalThis.crypto.randomUUID()}`;
-  const expiresAt = now + policy.attributionWindowDays * 86_400_000;
-  await input.database.prepare("INSERT OR IGNORE INTO referral_attributions (id, owner_key, member_id, affiliate_profile_id, referral_code_id, source, attributed_at, expires_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .bind(attributionId, ownerKey(input.owner), memberId, code.affiliate_profile_id, code.id, input.source?.trim().slice(0, 120) || null, now, expiresAt, now).run();
+  const expiresAt = now + attributionWindowDays * 86_400_000;
+  await input.database.prepare(`INSERT OR IGNORE INTO referral_attributions (id, owner_key, member_id, affiliate_profile_id, referral_code_id, source, attributed_at, expires_at, created_at)
+    SELECT ?, ?, ?, p.id, r.id, ?, ?, ?, ?
+    FROM affiliate_profiles p JOIN referral_codes r ON r.affiliate_profile_id=p.id
+    WHERE p.id=? AND p.status='ACTIVE' AND r.id=? AND r.status='ACTIVE' AND (r.expires_at IS NULL OR r.expires_at>?)
+      AND EXISTS (SELECT 1 FROM affiliate_policy_versions pol WHERE pol.status='ACTIVE' AND pol.starts_at<=? AND (pol.ends_at IS NULL OR pol.ends_at>?) AND pol.attribution_window_days=?)
+      AND NOT EXISTS (SELECT 1 FROM referral_attributions a WHERE a.owner_key=?)`)
+    .bind(attributionId, ownerKey(input.owner), memberId, input.source?.trim().slice(0, 120) || null, now, expiresAt, now, code.affiliate_profile_id, code.id, now, now, now, attributionWindowDays, ownerKey(input.owner))
+    .run();
   const persisted = await findReferralAttribution(input.database, input.owner);
   return persisted
     ? { accepted: true, reason: persisted.id === attributionId ? "attributed" : "already_attributed", attributionId: String(persisted.id), expiresAt: Number(persisted.expires_at) }
     : { accepted: false, reason: "invalid_code" };
+}
+
+export type GuestAttributionClaimResult =
+  | { claimed: true; reason: "claimed" }
+  | { claimed: false; reason: "invalid_guest" | "member_not_found" | "no_guest_attribution" | "member_already_attributed" | "self_referral" | "expired" };
+
+export async function claimGuestReferralAttribution(input: { database: D1Database; memberId: string; guestId: string; now?: number }): Promise<GuestAttributionClaimResult> {
+  const memberId = input.memberId.trim();
+  if (!isAffiliateGuestId(input.guestId)) return { claimed: false, reason: "invalid_guest" };
+  if (!memberId || memberId.length > 160) return { claimed: false, reason: "member_not_found" };
+  const member = await input.database.prepare("SELECT id FROM members WHERE id=? LIMIT 1").bind(memberId).first<{ id: string }>();
+  if (!member) return { claimed: false, reason: "member_not_found" };
+
+  const guestOwnerKey = `guest:affiliate:${input.guestId}`;
+  const memberOwnerKey = `member:${memberId}`;
+  const attribution = await input.database.prepare("SELECT id, affiliate_profile_id, member_id, expires_at FROM referral_attributions WHERE owner_key=? LIMIT 1")
+    .bind(guestOwnerKey)
+    .first<{ id: string; affiliate_profile_id: string; member_id: string | null; expires_at: number }>();
+  if (!attribution || attribution.member_id !== null) return { claimed: false, reason: "no_guest_attribution" };
+
+  const now = input.now ?? Date.now();
+  if (Number(attribution.expires_at) <= now) return { claimed: false, reason: "expired" };
+  const existing = await input.database.prepare("SELECT 1 AS present FROM referral_attributions WHERE owner_key=? LIMIT 1")
+    .bind(memberOwnerKey)
+    .first<{ present: number }>();
+  if (existing) return { claimed: false, reason: "member_already_attributed" };
+
+  const referrer = await input.database.prepare("SELECT member_id FROM affiliate_profiles WHERE id=? LIMIT 1")
+    .bind(attribution.affiliate_profile_id)
+    .first<{ member_id: string }>();
+  if (referrer?.member_id === memberId) return { claimed: false, reason: "self_referral" };
+
+  const moved = await input.database.prepare("UPDATE referral_attributions SET owner_key=?, member_id=? WHERE id=? AND owner_key=? AND member_id IS NULL AND expires_at>? AND NOT EXISTS (SELECT 1 FROM referral_attributions WHERE owner_key=?)")
+    .bind(memberOwnerKey, memberId, attribution.id, guestOwnerKey, now, memberOwnerKey)
+    .run();
+  if (Number(moved.meta.changes) === 1) return { claimed: true, reason: "claimed" };
+
+  const racedMemberAttribution = await input.database.prepare("SELECT 1 AS present FROM referral_attributions WHERE owner_key=? LIMIT 1")
+    .bind(memberOwnerKey)
+    .first<{ present: number }>();
+  if (racedMemberAttribution) return { claimed: false, reason: "member_already_attributed" };
+  return { claimed: false, reason: "expired" };
 }
 
 async function storedFulfillment(database: D1Database, event: VerifiedFulfillmentEvent): Promise<Record<string, unknown>> {
@@ -237,12 +286,14 @@ export async function getAffiliateOwnerSummary(database: D1Database, memberOwner
 
 export async function listAdminAffiliateReadModel(database: D1Database, limit = 50): Promise<{
   profiles: Array<{ id: string; memberId: string; status: AffiliateProfileStatus; codeStatuses: string[]; createdAt: number; updatedAt: number }>;
+  attributions: Array<{ id: string; referrerMemberId: string; referredMemberId: string | null; attributedAt: number; expiresAt: number }>;
   conversions: Array<Pick<AffiliateConversion, "id" | "orderId" | "memberId" | "affiliateProfileId" | "amountMinor" | "currency" | "commissionMinor" | "status" | "fulfilledAt" | "eligibleAt" | "reversedAt">>;
   ledger: Array<{ id: string; conversionId: string; entryType: string; direction: string; amountMinor: number; currency: string; reason: string; createdAt: number }>;
   policies: Array<{ id: string; version: number; status: string; attributionWindowDays: number; holdDays: number; currency: string; tiers: Array<{ tierCode: string; minQualifiedConversions: number; rateBps: number }> }>;
 }> {
   const boundedLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
   const profiles = await database.prepare("SELECT p.id, p.member_id, p.status, p.created_at, p.updated_at, GROUP_CONCAT(r.status) AS code_statuses FROM affiliate_profiles p LEFT JOIN referral_codes r ON r.affiliate_profile_id=p.id GROUP BY p.id ORDER BY p.created_at DESC, p.id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
+  const attributions = await database.prepare("SELECT a.id, p.member_id AS referrer_member_id, a.member_id AS referred_member_id, a.attributed_at, a.expires_at FROM referral_attributions a JOIN affiliate_profiles p ON p.id=a.affiliate_profile_id ORDER BY a.attributed_at DESC, a.id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
   const conversions = await database.prepare("SELECT id, order_id, member_id, affiliate_profile_id, amount_minor, currency, commission_minor, status, fulfilled_at, eligible_at, reversed_at FROM affiliate_conversions ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
   const ledger = await database.prepare("SELECT id, conversion_id, entry_type, direction, amount_minor, currency, reason, created_at FROM affiliate_commission_ledger ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
   const policies = await database.prepare("SELECT id, version, status, attribution_window_days, hold_days, currency FROM affiliate_policy_versions ORDER BY version DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
@@ -252,6 +303,7 @@ export async function listAdminAffiliateReadModel(database: D1Database, limit = 
   }));
   return {
     profiles: profiles.results.map((profile) => ({ id: String(profile.id), memberId: String(profile.member_id), status: String(profile.status) as AffiliateProfileStatus, codeStatuses: profile.code_statuses ? String(profile.code_statuses).split(",") : [], createdAt: Number(profile.created_at), updatedAt: Number(profile.updated_at) })),
+    attributions: attributions.results.map((row) => ({ id: String(row.id), referrerMemberId: String(row.referrer_member_id), referredMemberId: row.referred_member_id == null ? null : String(row.referred_member_id), attributedAt: Number(row.attributed_at), expiresAt: Number(row.expires_at) })),
     conversions: conversions.results.map((row) => ({ id: String(row.id), orderId: String(row.order_id), memberId: String(row.member_id), affiliateProfileId: String(row.affiliate_profile_id), amountMinor: Number(row.amount_minor), currency: String(row.currency), commissionMinor: Number(row.commission_minor), status: String(row.status) as AffiliateConversion["status"], fulfilledAt: Number(row.fulfilled_at), eligibleAt: row.eligible_at == null ? null : Number(row.eligible_at), reversedAt: row.reversed_at == null ? null : Number(row.reversed_at) })),
     ledger: ledger.results.map((row) => ({ id: String(row.id), conversionId: String(row.conversion_id), entryType: String(row.entry_type), direction: String(row.direction), amountMinor: Number(row.amount_minor), currency: String(row.currency), reason: String(row.reason), createdAt: Number(row.created_at) })),
     policies: policyValues,
