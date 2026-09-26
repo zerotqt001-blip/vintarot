@@ -59,6 +59,8 @@ export function classifyTarotServiceFailure(code: string): TarotAIFailureCategor
 }
 
 export function classifyTarotCreditFailure(code: string): TarotAIFailureCategory {
+  if (code === "unauthenticated") return "TAROT_AI_REQUEST_REJECTED";
+  if (code === "reading_required") return "TAROT_AI_CREDITS_INSUFFICIENT";
   if (code === "insufficient") return "TAROT_AI_CREDITS_INSUFFICIENT";
   if (code === "conflict" || code === "in_progress") return "TAROT_AI_CREDITS_CONFLICT";
   return "TAROT_AI_CREDITS_UNAVAILABLE";

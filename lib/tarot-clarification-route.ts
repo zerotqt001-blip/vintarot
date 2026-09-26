@@ -3,6 +3,8 @@ import { MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH, TAROT_CLARIFICATION_PROMPT_VERSION
 import { TarotAIError } from "./ai/provider";
 import type { GeneratedTarotClarification } from "./tarot-clarification-service";
 import { TarotClarificationServiceError } from "./tarot-clarification-service";
+import { noStoreResponse } from "./request-identity";
+import { TarotCreditAuthorizationError } from "./tarot-credit-authorization";
 
 const requestSchema = z.object({
   session_id: z.string().min(1).max(100),
@@ -48,6 +50,12 @@ function serviceError(error: TarotClarificationServiceError): Response {
   if (error.code === "limit") return Response.json({ error: "This reading has reached its clarification limit." }, { status: 409 });
   if (error.code === "persistence") return Response.json({ error: "The Tarot clarification could not be saved. Please try again." }, { status: 503 });
   return Response.json({ error: "This reading is not ready for clarification." }, { status: 409 });
+}
+
+function authorizationError(error: TarotCreditAuthorizationError): Response {
+  if (error.code === "unauthenticated") return noStoreResponse(Response.json({ error: "Sign in to continue this Tarot reading." }, { status: 401 }));
+  if (error.code === "reading_required") return noStoreResponse(Response.json({ error: "A completed Credit-backed Tarot reading is required for clarification." }, { status: 402 }));
+  return noStoreResponse(Response.json({ error: "Tarot access is temporarily unavailable. Please try again." }, { status: 503 }));
 }
 
 export async function handleTarotClarificationRoute(args: HandleTarotClarificationRouteArgs): Promise<Response> {
@@ -97,6 +105,11 @@ export async function handleTarotClarificationRoute(args: HandleTarotClarificati
     if (error instanceof TarotAIError) {
       const response = providerError(error);
       log({ status: "failure", httpStatus: response.status, failureCategory: `provider_${error.code}`, sessionId, provider: metadata.provider, modelName: metadata.modelName });
+      return response;
+    }
+    if (error instanceof TarotCreditAuthorizationError) {
+      const response = authorizationError(error);
+      log({ status: "failure", httpStatus: response.status, failureCategory: `authorization_${error.code}`, sessionId, provider: metadata.provider, modelName: metadata.modelName });
       return response;
     }
     if (error instanceof TarotClarificationServiceError) {

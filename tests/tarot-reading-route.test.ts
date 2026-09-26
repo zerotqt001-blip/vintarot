@@ -232,6 +232,8 @@ test("maps not-found, incomplete, and persistence service failures to their HTTP
 
 test("maps credit authorization failures without leaking accounting details", async (t) => {
   const cases = [
+    ["unauthenticated", 401, "Sign in to get a Tarot reading."],
+    ["reading_required", 402, "A Credit-backed Tarot reading is required to continue."],
     ["insufficient", 402, "You need more credits for this Tarot reading."],
     ["in_progress", 409, "This Tarot reading is already being prepared."],
     ["conflict", 409, "This Tarot reading request conflicts with an existing request."],
@@ -252,11 +254,13 @@ test("maps credit authorization failures without leaking accounting details", as
       assert.doesNotMatch(JSON.stringify(events), /private ledger|account detail/);
       assert.equal((events[0] as Record<string, unknown>).requestId, requestId);
       assert.equal((events[0] as Record<string, unknown>).failureCategory,
-        code === "insufficient"
-          ? "TAROT_AI_CREDITS_INSUFFICIENT"
-          : code === "unavailable"
-            ? "TAROT_AI_CREDITS_UNAVAILABLE"
-            : "TAROT_AI_CREDITS_CONFLICT");
+        code === "unauthenticated"
+          ? "TAROT_AI_REQUEST_REJECTED"
+          : code === "insufficient" || code === "reading_required"
+            ? "TAROT_AI_CREDITS_INSUFFICIENT"
+            : code === "unavailable"
+              ? "TAROT_AI_CREDITS_UNAVAILABLE"
+              : "TAROT_AI_CREDITS_CONFLICT");
     });
   }
 });

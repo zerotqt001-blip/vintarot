@@ -87,7 +87,8 @@ test("dynamic draw route returns session metadata and an array without fixed pos
 test("canonical reading route is guest-safe, provider-backed, and has one compatibility alias", () => {
   assert.match(readingRoute, /readOptionalOwner/);
   assert.match(readingRoute, /getTarotRepository/);
-  assert.match(readingRoute, /generateTarotReading/);
+  assert.match(readingRoute, /getStoredTarotReadingForOwner/);
+  assert.match(readingRoute, /generateMemberTarotReading/);
   assert.match(readingRoute, /createTarotAIProvider/);
   assert.match(readingRoute, /runtimeEnv as unknown as Record/);
   assert.doesNotMatch(readingRoute, /cloudflare:workers/);
@@ -111,6 +112,28 @@ test("canonical reading route is guest-safe, provider-backed, and has one compat
   assert.match(repository, /getReadingTemplate/);
   assert.match(repository, /getMeaningPair/);
   assert.doesNotMatch(readingRoute, /portraitCard|obstacleCard|solutionCard/);
+});
+
+test("all Tarot AI route handlers require trusted member and Credit authorization before provider setup", () => {
+  const followUpRoute = readFileSync(new URL("../app/api/tarot/follow-up/route.ts", import.meta.url), "utf8");
+  const clarificationRoute = readFileSync(new URL("../app/api/tarot/clarification/route.ts", import.meta.url), "utf8");
+  const memberReadingService = readFileSync(new URL("../lib/tarot-credit-authorization.ts", import.meta.url), "utf8");
+  const assertBeforeProvider = (source: string, authorization: string) => {
+    const authorizationIndex = source.indexOf(authorization);
+    const providerIndex = source.indexOf("const provider = createTarotAIProvider");
+    assert.ok(authorizationIndex >= 0, `missing ${authorization}`);
+    assert.ok(providerIndex > authorizationIndex, `${authorization} must run before provider construction`);
+    assert.match(source, /readOptionalOwner\(req, database\)/);
+    assert.doesNotMatch(source, /x-user-id|x-oai-user-id|body\.owner|input\.owner/);
+  };
+
+  assert.match(readingRoute, /providerFactory:\s*\(\)\s*=>\s*createTarotAIProvider/);
+  assert.match(readingRoute, /onProviderCreated:\s*\(provider\)\s*=>/);
+  assert.doesNotMatch(readingRoute, /const provider = createTarotAIProvider/);
+  assertBeforeProvider(followUpRoute, "await assertPaidMemberTarotSession(");
+  assertBeforeProvider(clarificationRoute, "await assertPaidMemberTarotSession(");
+  assert.ok(memberReadingService.indexOf("creditOwner(args.owner)") < memberReadingService.indexOf("reserveCredits({"));
+  assert.ok(memberReadingService.indexOf("reserveCredits({") < memberReadingService.indexOf("args.providerFactory()"));
 });
 
 test("repository saves the V3 payload through legacy columns and the normalized payload column", () => {

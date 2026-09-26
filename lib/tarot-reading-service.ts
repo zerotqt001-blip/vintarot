@@ -1,7 +1,7 @@
 import { TAROT_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError, type TarotAIProvider } from "./ai/provider";
 import type { TarotProviderFailureStage } from "./ai/diagnostics";
-import type { TarotLocale, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
+import type { TarotLocale, TarotProviderId, TarotReadingCardIdentity, TarotReadingPayload } from "./ai/types";
 import type { ReadingOwner } from "./tarot-guest";
 import { parseStoredReading, type StoredReadingRow } from "./tarot-reading-compat";
 import { buildTarotReadingInput } from "./tarot-reading-context";
@@ -140,6 +140,24 @@ export async function hydrateStoredTarotReading(args: {
   } catch (error) {
     throw new TarotReadingServiceError("persistence", "The stored Tarot reading could not be read.", { cause: error });
   }
+}
+
+export async function getStoredTarotReadingForOwner(args: {
+  repository: TarotRepository;
+  owner: ReadingOwner;
+  sessionId: string;
+  locale: TarotLocale;
+}): Promise<GeneratedTarotReading | null> {
+  const stored = await args.repository.getLatestReadingForOwner(args.sessionId, args.owner);
+  if (!stored) return null;
+  const hydrated = await hydrateStoredTarotReading({ ...args, stored });
+  if (!hydrated) return null;
+
+  const provider = stored.modelName.split(":", 1)[0];
+  if (provider !== "openai" && provider !== "gemini" && provider !== "deepseek") {
+    throw new TarotReadingServiceError("persistence", "The stored Tarot reading has unsupported provider metadata.");
+  }
+  return { ...hydrated, source: "ai", provider: provider as TarotProviderId };
 }
 
 export async function generateTarotReading(args: GenerateTarotReadingArgs): Promise<GeneratedTarotReading> {

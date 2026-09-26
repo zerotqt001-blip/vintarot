@@ -1,6 +1,6 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import type { TarotAIProvider } from "./ai/provider";
-import type { TarotLocale } from "./ai/types";
+import type { TarotLocale, TarotProviderId } from "./ai/types";
 import {
   CreditError,
   CreditIdempotencyError,
@@ -16,7 +16,7 @@ import {
 } from "./tarot-reading-service";
 import type { TarotRepository } from "./tarot-repository";
 
-export type TarotCreditAuthorizationCode = "insufficient" | "in_progress" | "conflict" | "unavailable";
+export type TarotCreditAuthorizationCode = "unauthenticated" | "reading_required" | "insufficient" | "in_progress" | "conflict" | "unavailable";
 
 export class TarotCreditAuthorizationError extends Error {
   constructor(readonly code: TarotCreditAuthorizationCode, message: string, options?: { cause?: unknown }) {
@@ -32,18 +32,55 @@ export type GenerateMemberTarotReadingArgs = {
   owner: ReadingOwner;
   sessionId: string;
   locale: TarotLocale;
-  provider: TarotAIProvider;
+  providerFactory: () => TarotAIProvider;
+  onProviderCreated?: (provider: TarotAIProvider) => void;
   onProviderFailure?: (event: TarotProviderFailureEvent) => void;
 };
 
 function creditOwner(owner: ReadingOwner) {
-  if (owner.kind !== "user") throw new TarotCreditAuthorizationError("unavailable", "Member credit authorization requires a trusted member session.");
+  if (owner.kind !== "user") throw new TarotCreditAuthorizationError("unauthenticated", "A trusted member session is required for Tarot AI.");
   return { kind: "member" as const, ownerId: owner.userId };
 }
 
-function hydrationResult(hydrated: Awaited<ReturnType<typeof hydrateStoredTarotReading>>, provider: TarotAIProvider): GeneratedTarotReading {
+export async function assertPaidMemberTarotSession(args: {
+  creditStore: CreditStore;
+  repository: TarotRepository;
+  owner: ReadingOwner;
+  sessionId: string;
+}): Promise<void> {
+  const ownerForCredits = creditOwner(args.owner);
+  let reservation;
+  let stored;
+  try {
+    [reservation, stored] = await Promise.all([
+      args.creditStore.getReservationByKey(ownerForCredits, `tarot:${args.sessionId}`),
+      args.repository.getLatestReadingForOwner(args.sessionId, args.owner),
+    ]);
+  } catch (error) {
+    throw mapCreditError(error);
+  }
+
+  if (!reservation || !stored
+    || reservation.owner.kind !== "member"
+    || reservation.owner.ownerId !== ownerForCredits.ownerId
+    || reservation.usageType !== "TAROT_READING"
+    || reservation.units !== 1
+    || reservation.resourceType !== "reading_session"
+    || reservation.resourceId !== args.sessionId
+    || reservation.status !== "CONSUMED"
+    || reservation.resultType !== "tarot_reading"
+    || reservation.resultId !== stored.id) {
+    throw new TarotCreditAuthorizationError("reading_required", "A completed Credit-backed Tarot reading is required.");
+  }
+}
+
+function hydrationResult(hydrated: Awaited<ReturnType<typeof hydrateStoredTarotReading>>): GeneratedTarotReading {
   if (!hydrated) throw new TarotCreditAuthorizationError("unavailable", "Stored Tarot reading is unavailable.");
-  return { ...hydrated, source: "ai", provider: provider.id };
+  const provider = hydrated.modelName.split(":", 1)[0];
+  if (provider !== "openai" && provider !== "gemini" && provider !== "deepseek") {
+    throw new TarotCreditAuthorizationError("unavailable", "Stored Tarot provider metadata is unavailable.");
+  }
+  return { ...hydrated, source: "ai", provider: provider as TarotProviderId };
 }
 
 function mapCreditError(error: unknown): TarotCreditAuthorizationError {
@@ -69,7 +106,7 @@ export async function generateMemberTarotReading(args: GenerateMemberTarotReadin
         throw mapCreditError(error);
       }
     }
-    return hydrationResult(hydrated, args.provider);
+    return hydrationResult(hydrated);
   }
 
   let reservation;
@@ -95,7 +132,7 @@ export async function generateMemberTarotReading(args: GenerateMemberTarotReadin
       } catch (error) {
         throw mapCreditError(error);
       }
-      return hydrationResult(hydrated, args.provider);
+      return hydrationResult(hydrated);
     }
     throw new TarotCreditAuthorizationError("in_progress", "This Tarot reading is already being prepared.");
   }
@@ -108,17 +145,19 @@ export async function generateMemberTarotReading(args: GenerateMemberTarotReadin
     } catch (error) {
       throw mapCreditError(error);
     }
-    return hydrationResult(hydrated, args.provider);
+    return hydrationResult(hydrated);
   }
 
   let generated: GeneratedTarotReading;
   try {
+    const provider = args.providerFactory();
+    args.onProviderCreated?.(provider);
     generated = await generateTarotReading({
       repository: args.repository,
       owner: args.owner,
       sessionId: args.sessionId,
       locale: args.locale,
-      provider: args.provider,
+      provider,
       onProviderFailure: args.onProviderFailure,
     });
   } catch (error) {
@@ -130,7 +169,7 @@ export async function generateMemberTarotReading(args: GenerateMemberTarotReadin
       } catch (consumeError) {
         throw mapCreditError(consumeError);
       }
-      return hydrationResult(hydrated, args.provider);
+      return hydrationResult(hydrated);
     }
     try {
       await args.creditStore.releaseReservation({ owner: ownerForCredits, reservationId: reservation.id, reason: "Tarot provider or persistence failed" });

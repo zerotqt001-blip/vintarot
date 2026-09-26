@@ -3,6 +3,7 @@ import test from "node:test";
 import { TarotAIError } from "../lib/ai/provider";
 import { handleTarotFollowUpRoute } from "../lib/tarot-follow-up-route";
 import { TarotFollowUpServiceError } from "../lib/tarot-follow-up-service";
+import { TarotCreditAuthorizationError } from "../lib/tarot-credit-authorization";
 
 const result = {
   sessionId: "session-1",
@@ -79,5 +80,18 @@ test("maps service and provider failures without logging question content", asyn
     assert.equal(response.status, expectedStatus);
     assert.deepEqual(await json(response), { error: expectedMessage });
     assert.equal(JSON.stringify(events).includes(secret), false);
+  }
+});
+
+test("maps Tarot access failures to private authentication and paid-reading responses", async () => {
+  for (const [code, status] of [["unauthenticated", 401], ["reading_required", 402], ["unavailable", 503]] as const) {
+    const response = await handleTarotFollowUpRoute({
+      loadBody: async () => ({ session_id: "session-1", locale: "en", follow_up_question: "What should I notice?" }),
+      execute: async () => { throw new TarotCreditAuthorizationError(code, "private access detail"); },
+      log: () => undefined,
+    });
+    assert.equal(response.status, status);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.doesNotMatch(await response.text(), /private access detail/);
   }
 });

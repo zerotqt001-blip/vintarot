@@ -12,6 +12,7 @@ import {
 } from "@/components/auth/auth-shell";
 import { useLanguage } from "@/components/language";
 import { api } from "@/lib/client";
+import { decodeTarotAuthReturnRecord, TAROT_AUTH_RETURN_STORAGE_KEY } from "@/lib/tarot-room-resume";
 
 type AuthMode = "login" | "register" | "forgot" | "reset" | "verify";
 
@@ -99,7 +100,17 @@ export function AuthScreen({ mode: initialMode, returnTo, token, verified, googl
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState(googleError ? "auth.googleError" : verified === true ? "auth.verifySuccess" : verified === false ? "auth.invalidLink" : "");
   const [busy, setBusy] = useState(false);
-  const googleHref = `/api/auth/google/start?return_to=${encodeURIComponent(returnTo)}`;
+  const authReturnTo = (() => {
+    if (initialMode !== "verify" || typeof window === "undefined") return returnTo;
+    try {
+      const storedReturnTo = decodeTarotAuthReturnRecord(sessionStorage.getItem(TAROT_AUTH_RETURN_STORAGE_KEY));
+      if (!storedReturnTo) sessionStorage.removeItem(TAROT_AUTH_RETURN_STORAGE_KEY);
+      return storedReturnTo ?? returnTo;
+    } catch {
+      return returnTo;
+    }
+  })();
+  const googleHref = `/api/auth/google/start?return_to=${encodeURIComponent(authReturnTo)}`;
 
   const setField = (field: keyof typeof fields) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFields((current) => ({ ...current, [field]: event.target.value }));
@@ -132,7 +143,8 @@ export function AuthScreen({ mode: initialMode, returnTo, token, verified, googl
       if (mode === "login") {
         await api("auth/login", { identifier: fields.identifier, password: fields.password });
         setStatus("auth.loginSuccess");
-        window.location.assign(returnTo);
+        try { sessionStorage.removeItem(TAROT_AUTH_RETURN_STORAGE_KEY); } catch {}
+        window.location.assign(authReturnTo);
         return;
       }
       if (mode === "register") {

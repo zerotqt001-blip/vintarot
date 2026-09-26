@@ -69,6 +69,8 @@ function serviceError(error: TarotReadingServiceError): Response {
 }
 
 function creditError(error: TarotCreditAuthorizationError): Response {
+  if (error.code === "unauthenticated") return noStoreResponse(Response.json({ error: "Sign in to get a Tarot reading." }, { status: 401 }));
+  if (error.code === "reading_required") return noStoreResponse(Response.json({ error: "A Credit-backed Tarot reading is required to continue." }, { status: 402 }));
   if (error.code === "insufficient") return noStoreResponse(Response.json({ error: "You need more credits for this Tarot reading." }, { status: 402 }));
   if (error.code === "in_progress") return noStoreResponse(Response.json({ error: "This Tarot reading is already being prepared." }, { status: 409 }));
   if (error.code === "conflict") return noStoreResponse(Response.json({ error: "This Tarot reading request conflicts with an existing request." }, { status: 409 }));

@@ -4,6 +4,7 @@ import { TAROT_CLARIFICATION_PROMPT_VERSION } from "../lib/ai/prompts/tarot-read
 import { TarotAIError } from "../lib/ai/provider";
 import { handleTarotClarificationRoute } from "../lib/tarot-clarification-route";
 import { TarotClarificationServiceError, type GeneratedTarotClarification } from "../lib/tarot-clarification-service";
+import { TarotCreditAuthorizationError } from "../lib/tarot-credit-authorization";
 
 const result: GeneratedTarotClarification = {
   sessionId: "session-1",
@@ -95,5 +96,18 @@ test("maps clarification service/provider failures without logging question cont
     assert.equal(response.status, expectedStatus);
     assert.deepEqual(await json(response), { error: expectedMessage });
     assert.doesNotMatch(JSON.stringify(events), /PRIVATE_CLARIFICATION_QUESTION/);
+  }
+});
+
+test("maps Tarot access failures to private authentication and paid-reading responses", async () => {
+  for (const [code, status] of [["unauthenticated", 401], ["reading_required", 402], ["unavailable", 503]] as const) {
+    const response = await handleTarotClarificationRoute({
+      loadBody: async () => ({ session_id: "session-1", locale: "en", question: "What should I notice?", request_id: "request-1" }),
+      execute: async () => { throw new TarotCreditAuthorizationError(code, "private access detail"); },
+      log: () => undefined,
+    });
+    assert.equal(response.status, status);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.doesNotMatch(await response.text(), /private access detail/);
   }
 });

@@ -38,6 +38,21 @@ test("auth screens use shared fields, icon affordances, and real auth navigation
   assert.match(authSources, /auth\.brandTagline/);
 });
 
+test("same-tab verification keeps only a safe, expiring return path for Tarot draft resumption", () => {
+  const auth = read("app/auth/auth.tsx");
+  const resume = read("lib/tarot-room-resume.ts");
+  const messages = read("lib/i18n.ts");
+  assert.match(auth, /initialMode !== "verify"/);
+  assert.match(auth, /decodeTarotAuthReturnRecord/);
+  assert.match(auth, /window\.location\.assign\(authReturnTo\)/);
+  assert.match(auth, /TAROT_AUTH_RETURN_STORAGE_KEY/);
+  assert.match(resume, /isSafeTarotAuthReturnPath/);
+  assert.match(resume, /TAROT_ROOM_RESUME_MAX_AGE_MS/);
+  assert.doesNotMatch(auth, /localStorage/);
+  assert.match(messages, /verifyPending: "[^"]*return to this tab to sign in and continue your reading/i);
+  assert.match(messages, /verifyPending: "[^"]*quay lại thẻ trình duyệt này để đăng nhập và tiếp tục trải bài/i);
+});
+
 test("auth visual contract includes responsive shell, field states, and shared footer", () => {
   const styles = read("app/globals.css");
 

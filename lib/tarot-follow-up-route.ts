@@ -2,6 +2,7 @@ import { z } from "zod";
 import { MAX_TAROT_FOLLOW_UP_QUESTION_LENGTH, TAROT_FOLLOW_UP_PROMPT_VERSION } from "./ai/prompts/tarot-reading";
 import { TarotAIError } from "./ai/provider";
 import { noStoreResponse } from "./request-identity";
+import { TarotCreditAuthorizationError } from "./tarot-credit-authorization";
 import type { GeneratedTarotFollowUp } from "./tarot-follow-up-service";
 import { TarotFollowUpServiceError } from "./tarot-follow-up-service";
 
@@ -46,6 +47,12 @@ function serviceError(error: TarotFollowUpServiceError): Response {
   if (error.code === "not_found") return noStoreResponse(Response.json({ error: "Reading session not found." }, { status: 404 }));
   if (error.code === "invalid_request") return noStoreResponse(Response.json({ error: "Invalid Tarot follow-up request." }, { status: 400 }));
   return noStoreResponse(Response.json({ error: "This reading is not ready for a follow-up." }, { status: 409 }));
+}
+
+function authorizationError(error: TarotCreditAuthorizationError): Response {
+  if (error.code === "unauthenticated") return noStoreResponse(Response.json({ error: "Sign in to continue this Tarot reading." }, { status: 401 }));
+  if (error.code === "reading_required") return noStoreResponse(Response.json({ error: "A completed Credit-backed Tarot reading is required for follow-up." }, { status: 402 }));
+  return noStoreResponse(Response.json({ error: "Tarot access is temporarily unavailable. Please try again." }, { status: 503 }));
 }
 
 export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArgs): Promise<Response> {
@@ -95,6 +102,11 @@ export async function handleTarotFollowUpRoute(args: HandleTarotFollowUpRouteArg
     if (error instanceof TarotAIError) {
       const response = providerError(error);
       log({ status: "failure", httpStatus: response.status, failureCategory: `provider_${error.code}`, sessionId, provider: metadata.provider, modelName: metadata.modelName });
+      return response;
+    }
+    if (error instanceof TarotCreditAuthorizationError) {
+      const response = authorizationError(error);
+      log({ status: "failure", httpStatus: response.status, failureCategory: `authorization_${error.code}`, sessionId, provider: metadata.provider, modelName: metadata.modelName });
       return response;
     }
     if (error instanceof TarotFollowUpServiceError) {
