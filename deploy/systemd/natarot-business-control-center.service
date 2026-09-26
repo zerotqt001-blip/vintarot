@@ -1,0 +1,38 @@
+[Unit]
+Description=NaTarot read-only business reports and encrypted Drive backup
+After=local-fs.target network-online.target natarot-backup.service
+Wants=network-online.target
+ConditionPathExists=/var/lib/natarot/natarot.sqlite
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/opt/natarot/current
+EnvironmentFile=-/etc/natarot.env
+Environment=NATAROT_DB_PATH=/var/lib/natarot/natarot.sqlite
+Environment=NATAROT_BACKUP_ROOT=/var/backups/natarot
+Environment=NATAROT_RELEASE_MANAGER=/usr/local/sbin/natarot-release-manager
+Environment=NATAROT_RESTORE_TEST_COMMAND=/usr/local/sbin/natarot-restore-test
+Environment=NATAROT_RESTORE_STATUS_ROOT=/var/lib/natarot/business-control-center/restore-status
+UMask=0077
+ExecStart=/usr/bin/flock -n /run/lock/natarot-business-control-center.lock /usr/local/bin/node /opt/natarot/current/dist/business-control-center.mjs
+TimeoutStartSec=45min
+TimeoutStopSec=30s
+KillMode=mixed
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=full
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadOnlyPaths=/var/backups/natarot
+ReadWritePaths=/var/lib/natarot
+StandardOutput=journal
+StandardError=journal

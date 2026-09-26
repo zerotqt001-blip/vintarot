@@ -15,6 +15,7 @@ CREATE TABLE `business_reporting_sync_state` (
   `last_backup_status` text,
   `last_backup_error_code` text,
   `last_backup_drive_file_id` text,
+  `last_backup_alert_sent_at` integer,
   `last_alert_sent_at` integer,
   `updated_at` integer NOT NULL DEFAULT 0,
   CHECK (`retry_attempt` >= 0),
@@ -51,7 +52,7 @@ CREATE TABLE `business_reporting_export_audit` (
   `finished_at` integer,
   `rows_written` integer NOT NULL DEFAULT 0,
   `error_code` text,
-  CHECK (`job_type` IN ('sheets_sync', 'drive_backup')),
+  CHECK (`job_type` IN ('sheets_sync', 'drive_backup', 'drive_backup_run')),
   CHECK (`outcome` IN ('started', 'success', 'blocked', 'failure')),
   CHECK (`rows_written` >= 0)
 );

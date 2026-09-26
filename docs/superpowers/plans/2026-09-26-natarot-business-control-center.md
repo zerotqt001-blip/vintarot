@@ -16,7 +16,7 @@
 - The Google Sheets workbook is an output only; never mutate customer, payment, Credit, Affiliate, attribution, or access-control state.
 - Export no passwords, tokens, payment credentials, referral/owner keys, private Tarot questions, interpretations, fraud notes, or source snapshots.
 - Use the existing `drive.file` grant with the production OAuth client; never request full Drive scope or expose credentials.
-- Keep local backup retention at 7 daily, 4 weekly, and 3 monthly; never delete local database backups due to an offsite copy.
+- Preserve the existing local backup writer's 7 daily / 4 weekly / 3 monthly retention limits; mirror only currently verified local references (7 daily, 1 weekly, 1 monthly populated at audit time) and never delete local database backups.
 - Do not enable the new timer until one eligible verified `SUPER_ADMIN` connects Google Drive.
 - Keep NaTarot and VinTarot branding and the existing production baseline/rollback releases.
 
@@ -80,12 +80,12 @@
 - `uploadVerifiedOffsiteBackup({ database, owner, archivePath, manifest, restoreVerifier })` uploads encrypted bytes and a separate metadata-only manifest, validates remote identity and bytes, downloads/decrypts, and calls the isolated restore verifier before recording success.
 - `mirrorBackupRetention(localReferences, remoteManagedFiles)` moves only app-owned obsolete Drive files to Trash after current remote verification; it never writes to local backup paths.
 
-- [ ] Add synthetic tests for round-trip encryption, wrong key, byte tampering, source checksum mismatch, interrupted upload, retry, remote metadata mismatch, restore failure, idempotent duplicate backup ID, and exact 7/4/3 remote references.
-- [ ] Run `npx tsx --test tests/business-reporting-backup.test.ts` and verify expected missing exports.
-- [ ] Implement streaming AES-GCM, wrapped key header, streaming Drive upload/download, separate metadata-only manifest, remote file ID/name/size/appProperties/hash checks, and sanitized status persistence.
-- [ ] Invoke the existing restore-test script with `--archive` using a separate restore status root and a private temporary decrypted archive plus its checksum sidecar.
-- [ ] Mirror the local 7 daily/4 weekly/3 monthly reference set only after a successful remote restore test; never modify `/var/backups/natarot` contents.
-- [ ] Run backup tests and existing storage/restore contract tests; commit as `feat: encrypt and verify offsite production backups`.
+- [x] Add synthetic tests for round-trip encryption, wrong key, byte tampering, source checksum mismatch, interrupted upload, retry, remote metadata mismatch, restore failure, idempotent duplicate backup ID, and exact mirroring of the verified local references under the existing 7/4/3 retention limits (currently 7 daily, 1 weekly, 1 monthly populated).
+- [x] Run `npx tsx --test tests/business-reporting-backup.test.ts` and verify expected missing exports.
+- [x] Implement streaming AES-GCM, wrapped key header, streaming Drive upload/download, separate metadata-only manifest, remote file ID/name/size/appProperties/hash checks, and sanitized status persistence.
+- [x] Invoke the existing restore-test script with `--archive` using a separate restore status root and a private temporary decrypted archive plus its checksum sidecar.
+- [x] Mirror the verified local retention reference set only after a successful remote restore test; never modify `/var/backups/natarot` contents.
+- [x] Run backup tests and existing storage/restore contract tests; commit as `feat: encrypt and verify offsite production backups`.
 
 ### Task 4: Scheduled runner, failure alert, operator guide, and workbook status
 
@@ -104,11 +104,11 @@
 - The guide gives the owner’s exact production OAuth path, expected `drive.file` consent, enable/start command after connection, status checks, disconnect/revocation behavior, retention rules, and restore-verification evidence.
 - A continuous 24-hour backup failure sends at most one operational alert per day to the connected owner email through existing Resend config; no alert contains customer data or provider payloads.
 
-- [ ] Write deployment-contract tests for the 15-minute timer, `User=root`, private umask, `/etc/natarot.env`, lock/timeout, sandbox paths, explicit no-web-service dependency, and disabled-by-default install behavior.
-- [ ] Run `npx tsx --test tests/business-control-center-deployment.test.ts` before adding units/runner.
-- [ ] Implement the Node/TSX runner with independent Google job errors, daily local-time reconciliation, 24-hour alert threshold/dedupe, and machine-readable status-only output.
-- [ ] Add systemd units and deployment guide. Verify no secrets or database/build artifacts are staged.
-- [ ] Run focused reporting/backup/deployment tests, `npx tsc --noEmit`, `npm run build`, and `git diff --check`; commit as `feat: schedule isolated business reporting and backup jobs`.
+- [x] Write deployment-contract tests for the 15-minute timer, `User=root`, private umask, `/etc/natarot.env`, lock/timeout, sandbox paths, explicit no-web-service dependency, and disabled-by-default install behavior.
+- [x] Run `npx tsx --test tests/business-control-center-deployment.test.ts` before adding units/runner.
+- [x] Implement the Node/TSX runner with independent Google job errors, daily local-time reconciliation, 24-hour alert threshold/dedupe, and machine-readable status-only output.
+- [x] Add systemd units and deployment guide. Verify no secrets or database/build artifacts are staged.
+- [x] Run focused reporting/backup/deployment tests, `npx tsc --noEmit`, `npm run build`, and `git diff --check`; commit as `feat: schedule isolated business reporting and backup jobs`.
 
 ### Task 5: Production deploy with Google work paused
 
