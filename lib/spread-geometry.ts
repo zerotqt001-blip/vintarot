@@ -142,6 +142,32 @@ export function projectSpreadGeometry(
   const smallestScaledWidth = geometry.points.length
     ? estimatedBaseWidth * Math.min(...geometry.points.map((point) => point.scale))
     : estimatedBaseWidth;
+
+  if (options.mobile && geometry.points.length === 3) {
+    const sidePadding = clamp(width * 0.025, 6, 12);
+    const gap = clamp(width * 0.035, 8, 14);
+    const cardWidth = Math.max(1, Math.min(maxCardWidth, (width - sidePadding * 2 - gap * 2) / 3));
+    const cardHeight = cardWidth / cardAspectRatio;
+    const rowWidth = cardWidth * 3 + gap * 2;
+    const rowLeft = (width - rowWidth) / 2;
+
+    return {
+      mode: "geometry",
+      width,
+      height: Number((cardHeight + 64).toFixed(2)),
+      cards: geometry.points.map((point, index) => ({
+        key: point.key,
+        order: point.order,
+        left: Number((rowLeft + index * (cardWidth + gap)).toFixed(2)),
+        top: 12,
+        width: Number(cardWidth.toFixed(2)),
+        height: Number(cardHeight.toFixed(2)),
+        rotation: 0,
+        scale: 1,
+      })),
+    };
+  }
+
   const shouldOrderCards = options.mobile
     && (smallestScaledWidth < minCardWidth * 0.95 || geometry.points.length > 2);
 

@@ -2586,6 +2586,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .room-reading-panel-shell .reading-result-spread .reading-spread__hint{max-width:19ch;font-size:.64rem}
   .room-reading-panel-shell .reading-result-spread .reading-spread__card-name{font-size:.9rem}
   .room-reading-panel-shell .reading-result-spread .reading-spread__position,.room-reading-panel-shell .reading-result-spread .reading-spread__orientation{font-size:.53rem}
+  .room-reading-panel-shell .reading-result-spread .reading-spread__caption{gap:2px;padding:6px 1px 0}
+  .room-reading-panel-shell .reading-result-spread .reading-spread__position{font-size:clamp(.46rem,2.1vw,.56rem);letter-spacing:.035em}
+  .room-reading-panel-shell .reading-result-spread .reading-spread__card-name{font-size:clamp(.78rem,3.8vw,.98rem);line-height:1.1}
+  .room-reading-panel-shell .reading-result-spread .reading-spread__orientation{font-size:clamp(.46rem,2vw,.56rem)}
   .room-reading-panel-shell .reading-result-content__main{gap:11px}
   .room-reading-panel-shell .reading-result-reading-grid,.room-reading-panel-shell .reading-result-points-grid{grid-template-columns:minmax(0,1fr);gap:11px}
   .room-reading-panel-shell .reading-result-content .reading-section--direct-answer,.room-reading-panel-shell .reading-result-content .reading-section--deeper-reading,.room-reading-panel-shell .reading-result-content .reading-section--personal-insights,.room-reading-panel-shell .reading-result-content .reading-section--next-steps{padding:17px 15px}
