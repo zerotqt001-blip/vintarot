@@ -480,6 +480,21 @@ export async function runBusinessControlCenter(): Promise<void> {
     await recordBackupJobFailure(database, Date.now(), backupReason, backupAuditId);
   }
 
+  if (sheetsStatus === "success") {
+    try {
+      const finalSync = await syncBusinessReport(database, { config, now: Date.now() });
+      if (finalSync.status !== "success") {
+        sheetsStatus = "failed";
+        sheetsReason = finalSync.reason ?? "final_reporting_sync_failed";
+        sheetsHttpStatus = finalSync.googleHttpStatus ?? null;
+        sheetsProviderReason = finalSync.googleProviderReason ?? null;
+      }
+    } catch {
+      sheetsStatus = "failed";
+      sheetsReason = "reporting_internal_error";
+    }
+  }
+
   let alertSent = false;
   try {
     alertSent = await maybeSendBackupFailureAlert({

@@ -158,13 +158,18 @@ test("standalone runner recognizes the active-release symlink as its own entrypo
   assert.equal(detector?.(undefined, pathToFileURL(releaseEntry).href), false);
 });
 
-test("the durable backup-run audit starts before Sheets synchronization", () => {
+test("the durable backup-run audit starts before Sheets synchronization and the final sync follows backup verification", () => {
   const runner = readFileSync(join(projectRoot, "scripts/business-control-center.ts"), "utf8");
   const runStart = runner.indexOf("await startBackupJob(database, now)");
   const sheetsSync = runner.indexOf("await syncBusinessReport(database, { config, now })");
+  const backupRun = runner.indexOf("await runOffsiteBackup({ database, owner: ownerResolution.owner, config, now, auditId: backupAuditId })");
+  const finalSync = runner.indexOf("await syncBusinessReport(database, { config, now: Date.now() })");
   assert.notEqual(runStart, -1, "runner must persist a run audit");
-  assert.notEqual(sheetsSync, -1, "runner must synchronize Sheets");
+  assert.notEqual(sheetsSync, -1, "runner must perform its initial Sheets synchronization");
+  assert.notEqual(backupRun, -1, "runner must verify the offsite backup after the initial synchronization");
+  assert.notEqual(finalSync, -1, "runner must refresh the workbook after the backup outcome is recorded");
   assert.ok(runStart < sheetsSync, "timeout recovery must cover the entire scheduled run, including Sheets sync");
+  assert.ok(sheetsSync < backupRun && backupRun < finalSync, "the final workbook refresh must observe the completed backup outcome");
 });
 
 test("backup failure alert waits 24 hours and sends no more than once per day", async (context) => {
