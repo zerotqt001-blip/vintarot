@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
 import test from "node:test";
 import * as businessControlCenter from "../scripts/business-control-center";
-import { maybeSendBackupFailureAlert, readLocalBackupReferences, recordBackupJobFailure, recordBackupJobSuccess, startBackupJob } from "../scripts/business-control-center";
+import { buildRestoreVerifierEnvironment, maybeSendBackupFailureAlert, readLocalBackupReferences, recordBackupJobFailure, recordBackupJobSuccess, startBackupJob } from "../scripts/business-control-center";
 import { createSqliteD1Database, type SqliteConnection } from "../lib/sqlite-d1";
 
 const projectRoot = process.cwd();
@@ -97,6 +97,17 @@ test("local backup inventory verifies retained weekly/monthly archives after the
   assert.equal(inventory.references.length, 8);
   assert.equal(retained?.archiveSha256, hash(retainedArchive));
   assert.deepEqual(retained?.retentionClasses.sort(), ["monthly", "weekly"]);
+});
+
+test("offsite restore verification runs against the active release with an isolated status root", () => {
+  assert.deepEqual(buildRestoreVerifierEnvironment({ NODE_ENV: "production" }, "/tmp/natarot-restore-status", "backup-a"), {
+    NODE_ENV: "production",
+    NATAROT_APP_ROOT: "/opt/natarot/current",
+    NATAROT_BACKUP_ROOT: "/tmp/natarot-restore-status",
+    NATAROT_RESTORE_STATUS_FILE: "/tmp/natarot-restore-status/backup-a.status",
+  });
+  assert.equal(buildRestoreVerifierEnvironment({ NODE_ENV: "production", NATAROT_APP_ROOT: "/opt/natarot/releases/active" }, "/tmp/status", "backup-b").NATAROT_APP_ROOT,
+    "/opt/natarot/releases/active");
 });
 
 test("local backup inventory fails closed for a corrupt archive checksum or retention overflow", async (context) => {

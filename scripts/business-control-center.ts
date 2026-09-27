@@ -104,6 +104,19 @@ function isoWeekKey(timestamp: string): string {
   return `${isoYear}-W${String(week).padStart(2, "0")}`;
 }
 
+export function buildRestoreVerifierEnvironment(
+  baseEnvironment: NodeJS.ProcessEnv,
+  restoreStatusRoot: string,
+  backupId: string,
+): NodeJS.ProcessEnv {
+  return {
+    ...baseEnvironment,
+    NATAROT_APP_ROOT: baseEnvironment.NATAROT_APP_ROOT?.trim() || "/opt/natarot/current",
+    NATAROT_BACKUP_ROOT: restoreStatusRoot,
+    NATAROT_RESTORE_STATUS_FILE: join(restoreStatusRoot, `${backupId}.status`),
+  };
+}
+
 function backupManifest(path: string): { backupId: string; backupTimestamp: string } {
   try {
     const entries = execFileSync("tar", ["-tzf", path], {
@@ -338,7 +351,7 @@ export async function maybeSendBackupFailureAlert(input: {
 async function restoreVerifier(archivePath: string, restoreStatusRoot: string, backupId: string): Promise<void> {
   const restoreCommand = process.env.NATAROT_RESTORE_TEST_COMMAND || "/usr/local/sbin/natarot-restore-test";
   execFileSync(restoreCommand, ["--archive", archivePath], {
-    env: { ...process.env, NATAROT_BACKUP_ROOT: restoreStatusRoot, NATAROT_RESTORE_STATUS_FILE: join(restoreStatusRoot, `${backupId}.status`) },
+    env: buildRestoreVerifierEnvironment(process.env, restoreStatusRoot, backupId),
     stdio: "ignore",
     timeout: 15 * 60 * 1000,
   });
