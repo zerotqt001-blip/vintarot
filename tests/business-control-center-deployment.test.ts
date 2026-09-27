@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
-import { linkSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { linkSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { tmpdir } from "node:os";
+import { pathToFileURL } from "node:url";
 import test from "node:test";
+import * as businessControlCenter from "../scripts/business-control-center";
 import { maybeSendBackupFailureAlert, readLocalBackupReferences, recordBackupJobFailure, recordBackupJobSuccess, startBackupJob } from "../scripts/business-control-center";
 import { createSqliteD1Database, type SqliteConnection } from "../lib/sqlite-d1";
 
@@ -84,6 +86,24 @@ test("systemd units install a locked root-only 15-minute job and leave its timer
   assert.match(timer, /natarot-business-control-center\.service/);
   assert.match(timer, /\[Install\][\s\S]*WantedBy=timers\.target/);
   assert.doesNotMatch(service, /natarot\.service/);
+});
+
+test("standalone runner recognizes the active-release symlink as its own entrypoint", (context) => {
+  const root = mkdtempSync(join(tmpdir(), "natarot-bcc-entrypoint-"));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  const releaseDirectory = join(root, "releases", "release-a");
+  const distDirectory = join(releaseDirectory, "dist");
+  mkdirSync(distDirectory, { recursive: true });
+  const releaseEntry = join(distDirectory, "business-control-center.mjs");
+  writeFileSync(releaseEntry, "export {};\n");
+  const activeDirectory = join(root, "current");
+  symlinkSync(releaseDirectory, activeDirectory, "dir");
+
+  const detector = (businessControlCenter as unknown as Record<string, unknown>).isBusinessControlCenterEntrypoint as
+    | ((entryPath: string | undefined, moduleUrl: string) => boolean)
+    | undefined;
+  assert.equal(detector?.(join(activeDirectory, "dist", "business-control-center.mjs"), pathToFileURL(releaseEntry).href), true);
+  assert.equal(detector?.(undefined, pathToFileURL(releaseEntry).href), false);
 });
 
 test("the durable backup-run audit starts before Sheets synchronization", () => {

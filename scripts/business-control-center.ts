@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import { createHash, randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { createReadStream, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { D1Database } from "@cloudflare/workers-types";
 import { businessDateKey } from "../lib/business-reporting/read-model";
@@ -21,6 +21,15 @@ type BackupInventory = {
   references: LocalBackupRetentionReference[];
   counts: Record<RetentionClass, number>;
 };
+
+export function isBusinessControlCenterEntrypoint(entryPath: string | undefined, moduleUrl: string): boolean {
+  if (!entryPath) return false;
+  try {
+    return realpathSync(entryPath) === realpathSync(fileURLToPath(moduleUrl));
+  } catch {
+    return false;
+  }
+}
 
 function invalidInventory(): Error {
   return new Error("local_backup_inventory_invalid");
@@ -414,7 +423,7 @@ export async function runBusinessControlCenter(): Promise<void> {
   if (sheetsStatus === "failed" || backupStatus === "failed") process.exitCode = 1;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isBusinessControlCenterEntrypoint(process.argv[1], import.meta.url)) {
   try {
     await runBusinessControlCenter();
   } catch {
