@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Admin VIP actions streamlined (2026-09-27, source-only)
+The Admin console no longer asks staff to type a mutation reason or idempotency key. Each controlled action supplies a specific audit reason and generates an idempotency key automatically, reusing it after a failed request and clearing it after success. The VIP control now has the existing 30-day admin grant as a package choice, and active entitlements can be revoked directly from their row without copying an entitlement ID. Server-side RBAC, canonical domain services, audit writes, and database/API contracts are unchanged.
+
+Validation: `npx tsc --noEmit`, `npm run build`, targeted ESLint, Impeccable detector (`[]`), and `git diff --check` pass. No tests were run. Local browser inspection reached only the unauthenticated Admin sign-in shell, so the authenticated action layout could not be visually verified. This is source-only and is not deployed.
+
 ## Mobile three-card Reading Result spread (2026-09-27, source-only)
 On mobile stage widths, Reading Result spreads with exactly three cards now place equal-size cards in one centered horizontal row. Card width and spacing adapt to the available width while preserving the Moonlight artwork ratio; mobile position, card-name and orientation captions use compact responsive sizing. Desktop placement and the existing handling for other spread sizes remain unchanged.
 
