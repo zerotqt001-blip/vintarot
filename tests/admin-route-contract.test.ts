@@ -13,6 +13,7 @@ test("Admin APIs cover dashboard, search, user detail, readings, orders, audit, 
   const files = [
     "app/api/admin/overview/route.ts",
     "app/api/admin/users/route.ts",
+    "app/api/admin/user-directory/route.ts",
     "app/api/admin/users/[id]/route.ts",
     "app/api/admin/users/[id]/readings/route.ts",
     "app/api/admin/orders/route.ts",
@@ -23,16 +24,31 @@ test("Admin APIs cover dashboard, search, user detail, readings, orders, audit, 
   ];
   for (const file of files) assert.equal(existsSync(join(repoRoot, file)), true, `missing ${file}`);
   const all = files.map(source).join("\n");
-  for (const permission of ["admin.dashboard.read", "admin.users.read", "admin.readings.read", "admin.orders.read", "admin.affiliate.read", "admin.audit.read", "admin.credits.adjust", "admin.vip.adjust"]) {
+  for (const permission of ["admin.dashboard.read", "admin.users.read", "admin.users.manage", "admin.readings.read", "admin.orders.read", "admin.affiliate.read", "admin.audit.read", "admin.credits.adjust", "admin.vip.adjust"]) {
     assert.match(all, new RegExp(permission.replaceAll(".", "\\.")), permission);
   }
   assert.match(source("app/api/admin/users/route.ts"), /search|q/);
+  assert.match(source("app/api/admin/user-directory/route.ts"), /admin.users.manage/);
+  assert.match(source("app/admin/users/page.tsx"), /SUPER_ADMIN/);
   assert.match(source("app/api/admin/users/[id]/route.ts"), /getAdminMemberDetail/);
   assert.match(source("app/api/admin/users/[id]/readings/route.ts"), /listAdminMemberReadings/);
   assert.match(source("app/api/admin/orders/route.ts"), /listAdminOrders/);
   assert.match(source("app/api/admin/credits/route.ts"), /adjustAdminMemberCredits/);
   assert.match(source("app/api/admin/vip/route.ts"), /grantAdminVip|revokeAdminVip/);
   assert.doesNotMatch(all, /reading_payload|token_hash|password_hash|dangerouslySetInnerHTML|eval\(/);
+});
+
+test("the new user and Credit directory is available only to active Super Admins", () => {
+  const adminPage = source("app/admin/page.tsx");
+  const directoryPage = source("app/admin/users/page.tsx");
+  const consoleUi = source("app/admin/admin-console.tsx");
+  const directoryApi = source("app/api/admin/user-directory/route.ts");
+  assert.match(adminPage, /activeRole === "SUPER_ADMIN"/);
+  assert.match(directoryPage, /row\?\.role !== "SUPER_ADMIN"/);
+  assert.match(directoryPage, /Number\(row\.disabled\) !== 0/);
+  assert.match(consoleUi, /isSuperAdmin && <Link[^>]*href="\/admin\/users"/);
+  assert.match(directoryApi, /requirePermission\(request, "admin\.users\.manage"/);
+  assert.match(directoryApi, /noStoreResponse/);
 });
 
 test("Admin mutations keep strict reason/idempotency and delegate to domain actions", () => {

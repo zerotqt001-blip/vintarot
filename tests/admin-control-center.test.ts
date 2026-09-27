@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { adjustAdminMemberCredits, grantAdminVip, revokeAdminVip } from "../lib/admin/actions";
-import { getAdminDashboard, getAdminMemberDetail, listAdminMemberReadings, listAdminMembers } from "../lib/admin/read-model";
+import { getAdminDashboard, getAdminMemberDetail, listAdminMemberReadings, listAdminMembers, listAdminUserDirectory } from "../lib/admin/read-model";
 import { permissionsForRole, type AdminRole, type Permission } from "../lib/admin/permissions";
 import { activateEntitlement } from "../lib/entitlements";
 import { createCreditStore } from "../lib/credits/repository";
@@ -127,6 +127,43 @@ test("Admin search and detail projections are masked, metadata-first, and owner-
   fixtureData.sqlite.close();
 });
 
+test("Super Admin user directory paginates and returns live canonical Credit balances", async () => {
+  const fixtureData = fixture();
+  await seedTargetData(fixtureData.database);
+  await createCreditStore(fixtureData.database, () => 1_000).reserveCredits({
+    owner: { kind: "member", ownerId: "member:member-alpha" },
+    units: 2,
+    usageType: "TAROT_READING",
+    resourceType: "session",
+    resourceId: "fixture-reserved",
+    idempotencyKey: "fixture-reserved",
+  });
+  await insertMember(fixtureData.database, { id: "member-gamma", role: "SUPPORT" });
+  await fixtureData.database.prepare("UPDATE members SET created_at=10 WHERE id='member-admin'").run();
+  await fixtureData.database.prepare("UPDATE members SET created_at=20 WHERE id='member-beta'").run();
+  await fixtureData.database.prepare("UPDATE members SET created_at=30 WHERE id='member-alpha'").run();
+  await fixtureData.database.prepare("UPDATE members SET created_at=40 WHERE id='member-gamma'").run();
+  const firstPage = await listAdminUserDirectory(fixtureData.database, actor(), { limit: 2, now: 1_000 });
+  assert.equal(firstPage.total, 4);
+  assert.equal(firstPage.items.length, 2);
+  assert.ok(firstPage.nextCursor);
+  assert.deepEqual(firstPage.items.map((item) => item.id), ["member-gamma", "member-alpha"]);
+  assert.equal(firstPage.items.find((item) => item.id === "member-alpha")?.credits.totalUnits, 7);
+  assert.equal(firstPage.items.find((item) => item.id === "member-alpha")?.credits.availableUnits, 5);
+  assert.equal(firstPage.items.find((item) => item.id === "member-alpha")?.credits.reservedUnits, 2);
+  assert.doesNotMatch(JSON.stringify(firstPage), /member-alpha@example\.test|\+84912345678/);
+
+  const secondPage = await listAdminUserDirectory(fixtureData.database, actor(), { limit: 2, cursor: firstPage.nextCursor ?? undefined, now: 1_000 });
+  assert.deepEqual(secondPage.items.map((item) => item.id), ["member-beta", "member-admin"]);
+  assert.equal(secondPage.nextCursor, null);
+
+  const filtered = await listAdminUserDirectory(fixtureData.database, actor(), { search: "gamma", role: "SUPPORT", status: "active", limit: 20, now: 1_000 });
+  assert.equal(filtered.total, 1);
+  assert.equal(filtered.items[0]?.id, "member-gamma");
+  await assert.rejects(() => listAdminUserDirectory(fixtureData.database, actor("ADMIN"), {}), (error: unknown) => error instanceof Error && error.message === "Forbidden.");
+  fixtureData.sqlite.close();
+});
+
 test("Admin dashboard exposes bounded operational counts without financial payloads", async () => {
   const fixtureData = fixture();
   await seedTargetData(fixtureData.database);
@@ -211,7 +248,7 @@ test("Admin read models honor the server permission matrix", async () => {
   assert.equal(supportDetail.readingUsage, null);
   assert.deepEqual(supportDetail.readings.items, []);
   const financeDetail = await getAdminMemberDetail(fixtureData.database, actor("FINANCE"), "member-alpha");
-  assert.equal(financeDetail.credits?.balance.totalUnits, 7);
+  assert.equal(financeDetail.credits, null);
   assert.equal(financeDetail.vip?.length, 1);
   assert.equal(financeDetail.affiliate?.profile?.id, "affiliate-alpha");
   assert.equal(financeDetail.readingUsage, null);

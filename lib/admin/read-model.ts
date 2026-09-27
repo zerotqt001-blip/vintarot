@@ -3,8 +3,8 @@ import { getAffiliateSummary, listAffiliateHistory, type AffiliateHistoryItem, t
 import { createCreditStore } from "../credits/repository";
 import type { CreditBalance, CreditHistoryEntry, CreditOwner } from "../credits/types";
 import type { AdminActor } from "./context";
-import { AdminServiceError, getMemberDetail, listMembers, type MemberAdminView } from "./member-service";
-import { hasPermission, type Permission } from "./permissions";
+import { AdminServiceError, getMemberDetail, listMembers, projectAdminMember, type MemberAdminView } from "./member-service";
+import { hasPermission, isAdminRole, type AdminRole, type Permission } from "./permissions";
 
 const EMPTY_BALANCE: CreditBalance = { availableUnits: 0, reservedUnits: 0, totalUnits: 0 };
 
@@ -79,6 +79,17 @@ export type AdminDashboard = {
   audit: { events: number };
 };
 
+export type AdminUserDirectoryItem = MemberAdminView & { credits: CreditBalance };
+export type AdminUserDirectoryPage = { items: AdminUserDirectoryItem[]; total: number; nextCursor: string | null };
+export type AdminUserDirectoryInput = {
+  search?: string;
+  role?: AdminRole | "ALL";
+  status?: "active" | "disabled" | "all";
+  limit?: number;
+  cursor?: string;
+  now?: number;
+};
+
 function requirePermission(actor: AdminActor, permission: Permission): void {
   if (!hasPermission(actor.role, permission)) throw new AdminServiceError("forbidden", "Forbidden.");
 }
@@ -87,6 +98,21 @@ function boundedLimit(value: number | undefined, fallback = 20): number {
   if (value === undefined) return fallback;
   if (!Number.isSafeInteger(value) || value < 1 || value > 50) throw new AdminServiceError("invalid", "Invalid admin list request.");
   return value;
+}
+
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (character) => `\\${character}`);
+}
+
+function parseDirectoryCursor(value: string | undefined): { createdAt: number; id: string } | null {
+  if (value === undefined || value === "") return null;
+  try {
+    const parsed = JSON.parse(value) as { createdAt?: unknown; id?: unknown };
+    if (!Number.isSafeInteger(parsed.createdAt) || typeof parsed.id !== "string" || !parsed.id.trim() || parsed.id.length > 160) throw new Error("invalid");
+    return { createdAt: Number(parsed.createdAt), id: parsed.id };
+  } catch {
+    throw new AdminServiceError("invalid", "Invalid admin list request.");
+  }
 }
 
 function memberOwner(memberId: string): CreditOwner {
@@ -195,6 +221,66 @@ async function readAffiliate(database: D1Database, memberId: string): Promise<Ad
 export async function listAdminMembers(database: D1Database, actor: AdminActor, input: { search?: string; limit?: number } = {}): Promise<MemberAdminView[]> {
   requirePermission(actor, "admin.users.read");
   return listMembers(database, actor, boundedLimit(input.limit, 50), input.search ?? "");
+}
+
+export async function listAdminUserDirectory(database: D1Database, actor: AdminActor, input: AdminUserDirectoryInput = {}): Promise<AdminUserDirectoryPage> {
+  requirePermission(actor, "admin.users.manage");
+  const limit = boundedLimit(input.limit, 20);
+  const search = input.search?.trim() ?? "";
+  if (search.length > 120) throw new AdminServiceError("invalid", "Invalid admin list request.");
+  const role = input.role ?? "ALL";
+  if (role !== "ALL" && !isAdminRole(role)) throw new AdminServiceError("invalid", "Invalid admin list request.");
+  const status = input.status ?? "all";
+  if (status !== "active" && status !== "disabled" && status !== "all") throw new AdminServiceError("invalid", "Invalid admin list request.");
+  const cursor = parseDirectoryCursor(input.cursor);
+  const normalizedSearch = search.toLowerCase();
+  const like = normalizedSearch ? `%${escapeLike(normalizedSearch)}%` : null;
+  const clauses = ["1=1"];
+  const bindings: Array<string | number | null> = [];
+  if (like) {
+    clauses.push("(lower(m.id) LIKE ? ESCAPE '\\' OR lower(m.username) LIKE ? ESCAPE '\\' OR lower(m.email) LIKE ? ESCAPE '\\' OR lower(m.phone) LIKE ? ESCAPE '\\' OR lower(COALESCE(m.display_name, '')) LIKE ? ESCAPE '\\')");
+    bindings.push(like, like, like, like, like);
+  }
+  if (role !== "ALL") {
+    clauses.push("m.role=?");
+    bindings.push(role);
+  }
+  if (status !== "all") {
+    clauses.push("m.disabled=?");
+    bindings.push(status === "disabled" ? 1 : 0);
+  }
+  const where = clauses.join(" AND ");
+  const totalRow = await database.prepare(`SELECT COUNT(*) AS total FROM members m WHERE ${where}`).bind(...bindings).first<{ total: number }>();
+  const now = input.now ?? Date.now();
+  const pageClauses = [...clauses];
+  const pageBindings = [...bindings];
+  if (cursor) {
+    pageClauses.push("(m.created_at < ? OR (m.created_at = ? AND m.id < ?))");
+    pageBindings.push(cursor.createdAt, cursor.createdAt, cursor.id);
+  }
+  const result = await database.prepare(`SELECT
+      m.id, m.username, m.email, m.phone, m.display_name, m.role, m.disabled, m.disabled_at, m.disabled_reason, m.created_at, m.updated_at, m.last_login_at,
+      COALESCE((SELECT SUM(g.available_units) FROM credit_accounts ca JOIN credit_grants g ON g.account_id=ca.id
+        WHERE ca.owner_kind='member' AND ca.owner_id='member:' || m.id AND g.eligible_from <= ? AND (g.expires_at IS NULL OR g.expires_at > ?)), 0) AS credits_available,
+      COALESCE((SELECT SUM(a.held_units - a.consumed_units - a.released_units)
+        FROM credit_accounts ca JOIN credit_reservations r ON r.account_id=ca.id AND r.status='RESERVED'
+        JOIN credit_reservation_allocations a ON a.reservation_id=r.id JOIN credit_grants g ON g.id=a.grant_id
+        WHERE ca.owner_kind='member' AND ca.owner_id='member:' || m.id AND g.eligible_from <= ? AND (g.expires_at IS NULL OR g.expires_at > ?)), 0) AS credits_reserved
+    FROM members m WHERE ${pageClauses.join(" AND ")} ORDER BY m.created_at DESC, m.id DESC LIMIT ?`).bind(now, now, now, now, ...pageBindings, limit + 1).all<Record<string, unknown>>();
+  const hasMore = result.results.length > limit;
+  const rows = result.results.slice(0, limit);
+  const items = rows.map((row) => {
+    const member = projectAdminMember(row);
+    const availableUnits = Number(row.credits_available ?? 0);
+    const reservedUnits = Number(row.credits_reserved ?? 0);
+    return { ...member, credits: { availableUnits, reservedUnits, totalUnits: availableUnits + reservedUnits } };
+  });
+  const lastRow = rows.at(-1);
+  return {
+    items,
+    total: Number(totalRow?.total ?? 0),
+    nextCursor: hasMore && lastRow ? JSON.stringify({ createdAt: Number(lastRow.created_at), id: String(lastRow.id) }) : null,
+  };
 }
 
 export async function getAdminMemberDetail(database: D1Database, actor: AdminActor, memberId: string): Promise<AdminMemberDetail> {

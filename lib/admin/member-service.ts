@@ -70,7 +70,7 @@ function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (character) => `\\${character}`);
 }
 
-function memberProjection(row: Record<string, unknown>): MemberAdminView {
+export function projectAdminMember(row: Record<string, unknown>): MemberAdminView {
   const role = String(row.role);
   if (!isAdminRole(role)) throw new AdminServiceError("invalid", "Invalid member role.");
   return {
@@ -92,7 +92,7 @@ function memberProjection(row: Record<string, unknown>): MemberAdminView {
 async function getMember(database: D1Database, memberId: string): Promise<MemberAdminView> {
   const row = await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members WHERE id=? LIMIT 1").bind(memberId).first<Record<string, unknown>>();
   if (!row) throw new AdminServiceError("not_found", "Member not found.");
-  return memberProjection(row);
+  return projectAdminMember(row);
 }
 
 async function alreadyApplied(database: D1Database, idempotencyKey: string): Promise<boolean> {
@@ -121,7 +121,7 @@ export async function listMembers(database: D1Database, actor: AdminActor, limit
   const result = like
     ? await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members WHERE lower(id) LIKE ? ESCAPE '\\' OR lower(username) LIKE ? ESCAPE '\\' OR lower(email) LIKE ? ESCAPE '\\' OR lower(phone) LIKE ? ESCAPE '\\' OR lower(COALESCE(display_name, '')) LIKE ? ESCAPE '\\' ORDER BY created_at DESC, id DESC LIMIT ?").bind(like, like, like, like, like, boundedLimit).all<Record<string, unknown>>()
     : await database.prepare("SELECT id, username, email, phone, display_name, role, disabled, disabled_at, disabled_reason, created_at, updated_at, last_login_at FROM members ORDER BY created_at DESC, id DESC LIMIT ?").bind(boundedLimit).all<Record<string, unknown>>();
-  return result.results.map(memberProjection);
+  return result.results.map(projectAdminMember);
 }
 
 export async function getMemberDetail(database: D1Database, actor: AdminActor, memberId: string): Promise<MemberAdminView> {

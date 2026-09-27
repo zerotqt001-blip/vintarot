@@ -4,6 +4,7 @@ export type AdminRole = (typeof ADMIN_ROLES)[number];
 export const ADMIN_PERMISSIONS = [
   "admin.dashboard.read",
   "admin.users.read",
+  "admin.users.manage",
   "admin.users.status",
   "admin.roles.manage",
   "admin.sessions.read",
@@ -24,7 +25,7 @@ export type Permission = (typeof ADMIN_PERMISSIONS)[number];
 const permissionMatrix: Record<AdminRole, ReadonlySet<Permission>> = {
   USER: new Set(),
   SUPPORT: new Set(["admin.dashboard.read", "admin.users.read", "admin.users.status", "admin.sessions.read", "admin.sessions.revoke", "admin.orders.read"]),
-  FINANCE: new Set(["admin.dashboard.read", "admin.users.read", "admin.credits.adjust", "admin.vip.adjust", "admin.orders.read", "admin.affiliate.read", "admin.affiliate.adjust", "admin.audit.read"]),
+  FINANCE: new Set(["admin.dashboard.read", "admin.users.read", "admin.vip.adjust", "admin.orders.read", "admin.affiliate.read", "admin.affiliate.adjust", "admin.audit.read"]),
   CONTENT_ADMIN: new Set(["admin.readers.manage"]),
   ADMIN: new Set([
     "admin.dashboard.read",
@@ -32,7 +33,6 @@ const permissionMatrix: Record<AdminRole, ReadonlySet<Permission>> = {
     "admin.users.status",
     "admin.sessions.read",
     "admin.sessions.revoke",
-    "admin.credits.adjust",
     "admin.vip.adjust",
     "admin.orders.read",
     "admin.readings.read",

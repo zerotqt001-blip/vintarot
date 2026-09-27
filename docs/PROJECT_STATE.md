@@ -1,5 +1,11 @@
 # VinTarot state
 
+## NaTarot Super Admin user directory and Credit controls (2026-09-27; source verified)
+
+The approved Moonlight user-directory design is implemented at `/admin/users`. Its user list, masked contacts, status/role filters, keyset pagination, and live available/reserved/total Credit balances use a dedicated `admin.users.manage` permission granted only to `SUPER_ADMIN`. The page checks the current enabled role on the server; its JSON endpoint repeats the permission check. Credit adjustment controls and per-user balance/history are hidden from other roles, and `admin.credits.adjust` is now restricted to `SUPER_ADMIN`. Existing staff user-read/status/session and non-Credit Admin functions remain available under their prior permissions. Credit mutations still use the canonical ledger and required audit reason/idempotency path; no user balances were changed during implementation.
+
+Validation: the complete suite passes `764/764`; `npx tsc --noEmit`, production `npm run build`, targeted ESLint, and `git diff --check` pass. This source change has not yet been promoted to production; current live release and persistent data were not modified during implementation.
+
 ## NaTarot Owner activation (2026-09-27; Google BCC active)
 
 The production target was the existing enabled, email-verified account linked to Google OIDC. The Owner explicitly authorized that account and completed Google consent in the same account, `zerotqt001@gmail.com`. The two pre-existing `ADMIN` accounts and QA accounts were not changed. No public first-owner HTTP route exists. The root-only, transaction-safe, replay-protected provisioning command assigned `SUPER_ADMIN` to the exact eligible account, revoked all 13 prior sessions, and wrote the `member.first_owner.provisioned` success audit event with Google login evidence. Role, session revocation, and audit event were verified; the active Owner session now has access to `/admin` and Google integration. MFA is not supported by the application.
