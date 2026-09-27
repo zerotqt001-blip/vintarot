@@ -47,6 +47,10 @@ export function noStoreResponse(response: Response): Response {
   return response;
 }
 
+export function createMutableRedirectResponse(location: string, status: 301 | 302 | 303 | 307 | 308 = 302): Response {
+  return new Response(null, { status, headers: { Location: location } });
+}
+
 export function attachIdentityCookie(response: Response, identity: RequestIdentity): Response {
   noStoreResponse(response);
   if (identity.setCookie) response.headers.set("Set-Cookie", identity.setCookie);

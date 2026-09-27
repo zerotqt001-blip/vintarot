@@ -1,5 +1,6 @@
 import { attachIdentityCookie, boundary, db, identity, originCheck } from "@/lib/server";
 import { parseCookie } from "@/lib/member-auth";
+import { createMutableRedirectResponse } from "@/lib/request-identity";
 import {
   consumeGoogleDriveOAuthState,
   createGoogleDriveAuthorizationUrl,
@@ -59,7 +60,7 @@ export async function startGoogleDriveConnection(request: Request): Promise<Resp
     const config = getGoogleDriveConfig(request);
     if (!config) return Response.json({ error: "Google Drive connection is not configured." }, { status: 503, headers: { "Cache-Control": "no-store" } });
     const started = await createGoogleDriveAuthorizationUrl({ config, database: db(), memberId, returnPath });
-    const response = Response.redirect(started.url, 302);
+    const response = createMutableRedirectResponse(started.url, 302);
     response.headers.append("Set-Cookie", cookie(await hashGoogleDriveState(started.rawState), secureCookie(request, config.redirectUri)));
     response.headers.set("Cache-Control", "no-store");
     return attachIdentityCookie(response, requestIdentity);

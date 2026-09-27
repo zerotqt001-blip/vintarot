@@ -3,10 +3,29 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { createMemberAuthStore } from "../lib/member-auth";
-import { readRequestIdentity } from "../lib/request-identity";
+import { attachIdentityCookie, createMutableRedirectResponse, readRequestIdentity } from "../lib/request-identity";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
 
 const memberAuthMigration = readFileSync(new URL("../drizzle/0004_member_auth.sql", import.meta.url), "utf8");
+
+test("OAuth redirects allow state and identity cookies to be attached", () => {
+  const location = "https://accounts.google.com/o/oauth2/v2/auth?scope=openid%20email";
+  const response = createMutableRedirectResponse(location, 302);
+  response.headers.append("Set-Cookie", "natarot_google_drive_state=synthetic-state; HttpOnly; Path=/");
+  attachIdentityCookie(response, {
+    kind: "user",
+    userId: "member:synthetic-member",
+    displayName: "Synthetic Member",
+    email: "member@example.test",
+    fullName: "Synthetic Member",
+    owner: { kind: "user", userId: "member:synthetic-member" },
+  });
+
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("Location"), location);
+  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.match(response.headers.get("Set-Cookie") ?? "", /natarot_google_drive_state=synthetic-state/);
+});
 
 function createMemberSessionFixture(now = Date.now) {
   const sqlite = new DatabaseSync(":memory:");
