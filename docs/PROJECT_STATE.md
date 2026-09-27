@@ -1,5 +1,11 @@
 # VinTarot state
 
+## Member notice for admin Credit adjustments (2026-09-27; production deployment pending)
+
+The Owner-approved Credit adjustment notice is implemented as a compact, non-modal in-app popup for the affected signed-in member. It reads only that member's admin add/deduct events from the canonical Credit ledger, displays the exact administrator-entered reason, and records dismissal per credit account and adjustment. The admin form explains that members will see the reason at their next sign-in. English and Vietnamese copy are included. No member Credit balance was changed for this work.
+
+Validation on the production-based branch, including commit `5b7cd6c` (`mobile-spread`): `npx tsc --noEmit`, `npm run build`, targeted ESLint, and `git diff --check` pass. The focused visual detector reports no findings. The automated test suite was not run. Production deployment is pending.
+
 ## NaTarot Super Admin user directory and Credit controls (2026-09-27; source verified)
 
 The approved Moonlight user-directory design is implemented at `/admin/users`. Its user list, masked contacts, status/role filters, keyset pagination, and live available/reserved/total Credit balances use a dedicated `admin.users.manage` permission granted only to `SUPER_ADMIN`. The page checks the current enabled role on the server; its JSON endpoint repeats the permission check. Credit adjustment controls and per-user balance/history are hidden from other roles, and `admin.credits.adjust` is now restricted to `SUPER_ADMIN`. Existing staff user-read/status/session and non-Credit Admin functions remain available under their prior permissions. Credit mutations still use the canonical ledger and required audit reason/idempotency path; no user balances were changed during implementation.

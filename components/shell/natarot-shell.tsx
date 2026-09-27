@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import ReferralCapture from "@/components/affiliate/referral-capture";
+import CreditAdjustmentNotice from "@/components/account/credit-adjustment-notice";
 import { useLanguage } from "@/components/language";
 import CelestialBackground from "./celestial-background";
 import NaTarotFooter from "./natarot-footer";
@@ -130,6 +131,7 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
 
   return <SidebarProvider>
     <ReferralCapture enabled={Boolean(user)} />
+    {user && <CreditAdjustmentNotice key={user.username} enabled />}
     <div ref={shellRef} data-shell-variant={variant} data-home-atmosphere={isHome ? theme : undefined} data-guidebook-theme={variant === "library" ? theme : undefined} className={shellClassName}>
       <CelestialBackground variant={variant} />
       <NaTarotHeader path={path} variant={variant} t={t} accountHref={accountHref} />

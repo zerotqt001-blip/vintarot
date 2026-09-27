@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { blob, integer, index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { blob, integer, index, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const records = sqliteTable(
   "records",
@@ -767,5 +767,18 @@ export const affiliateCommissionLedger = sqliteTable(
     uniqueIndex("affiliate_commission_ledger_key_unique").on(table.idempotencyKey),
     index("affiliate_commission_ledger_conversion_idx").on(table.conversionId, table.createdAt, table.id),
     index("affiliate_commission_ledger_actor_idx").on(table.actorId, table.createdAt, table.id),
+  ],
+);
+
+export const memberCreditAdjustmentReads = sqliteTable(
+  "member_credit_adjustment_reads",
+  {
+    accountId: text("account_id").notNull().references(() => creditAccounts.id, { onDelete: "cascade" }),
+    adjustmentKey: text("adjustment_key").notNull(),
+    readAt: integer("read_at").notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.accountId, table.adjustmentKey] }),
+    index("member_credit_adjustment_reads_account_read_idx").on(table.accountId, table.readAt),
   ],
 );
