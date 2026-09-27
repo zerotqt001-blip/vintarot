@@ -39,7 +39,7 @@ async function insertMember(database: ReturnType<typeof createSqliteD1Database>,
     .bind(input.id, input.id, `${input.id}@example.test`, "+84912345678", `Display ${input.id}`, 100, 100, input.disabled ? 1 : 0, input.role ?? "USER").run();
 }
 
-async function seedTargetData(database: ReturnType<typeof createSqliteD1Database>) {
+async function seedTargetData(database: ReturnType<typeof createSqliteD1Database>, options: { vipOrder?: boolean } = {}) {
   await insertMember(database, { id: "member-admin", role: "SUPER_ADMIN" });
   await insertMember(database, { id: "member-alpha" });
   await insertMember(database, { id: "member-beta" });
@@ -60,18 +60,20 @@ async function seedTargetData(database: ReturnType<typeof createSqliteD1Database
     benefitVersion: "vip-fixture-v1",
     startsAt: 1,
     endsAt: 10_000_000_000_000,
-    sourceType: "ADMIN",
-    sourceId: "member-admin",
+    sourceType: options.vipOrder ? "ORDER" : "ADMIN",
+    sourceId: options.vipOrder ? "order-alpha" : "member-admin",
     grantKey: "fixture-alpha-vip",
     benefitSnapshot: { fixture: true },
     now: 1_000,
   });
 
   await database.prepare("INSERT INTO packages (id, slug, name_en, name_vi, active, created_at, updated_at) VALUES ('package-fixture', 'fixture', 'Fixture', 'Fixture', 1, 1, 1)").run();
-  await database.prepare("INSERT INTO package_versions (id, package_id, version, amount_minor, currency, credit_units, vip_duration_seconds, benefit_snapshot, policy_version, status, starts_at, created_at) VALUES ('package-version-fixture', 'package-fixture', 1, 12345, 'VND', 7, NULL, ?, 'test-v1', 'active', 1, 1)")
-    .bind(JSON.stringify({ credits: { units: 7 } })).run();
+  const packageBenefits = { credits: { units: 7 }, ...(options.vipOrder ? { vip: { durationSeconds: 86400, benefitVersion: "vip-fixture-v1", benefits: {} } } : {}) };
+  await database.prepare("INSERT INTO package_versions (id, package_id, version, amount_minor, currency, credit_units, vip_duration_seconds, benefit_snapshot, policy_version, status, starts_at, created_at) VALUES ('package-version-fixture', 'package-fixture', 1, 12345, 'VND', 7, ?, ?, 'test-v1', 'active', 1, 1)")
+    .bind(options.vipOrder ? 86400 : null, JSON.stringify(packageBenefits)).run();
   await database.prepare("INSERT INTO orders (id, account_id, package_id, package_version_id, package_snapshot, amount_minor, currency, status, idempotency_key, request_fingerprint, payment_reference, created_at, payment_confirmed_at, fulfilled_at) VALUES ('order-alpha', 'credit-account:member:member:member-alpha', 'package-fixture', 'package-version-fixture', ?, 12345, 'VND', 'FULFILLED', 'order-fixture', 'fingerprint-fixture', 'payment-alpha-secret', 1, 2, 3)")
-    .bind(JSON.stringify({ private: "package-snapshot" })).run();
+    .bind(JSON.stringify(options.vipOrder ? { id: "package-version-fixture", nameEn: "Fixture", nameVi: "Fixture", benefitSnapshot: packageBenefits } : { private: "package-snapshot" })).run();
+  if (options.vipOrder) await database.prepare("UPDATE packages SET name_en='Renamed catalog entry', name_vi='Tên danh mục mới' WHERE id='package-fixture'").run();
 
   await database.prepare("INSERT INTO affiliate_profiles (id, member_id, status, created_at, updated_at) VALUES ('affiliate-alpha', 'member-alpha', 'ACTIVE', 1, 1)").run();
   await database.prepare("INSERT INTO affiliate_profiles (id, member_id, status, created_at, updated_at) VALUES ('affiliate-beta', 'member-beta', 'SUSPENDED', 1, 1)").run();
@@ -161,6 +163,66 @@ test("Super Admin user directory paginates and returns live canonical Credit bal
   assert.equal(filtered.total, 1);
   assert.equal(filtered.items[0]?.id, "member-gamma");
   await assert.rejects(() => listAdminUserDirectory(fixtureData.database, actor("ADMIN"), {}), (error: unknown) => error instanceof Error && error.message === "Forbidden.");
+  fixtureData.sqlite.close();
+});
+
+test("Super Admin member inventory shows spendable Credits and current VIP while other roles receive no summary fields", async () => {
+  const fixtureData = fixture();
+  await seedTargetData(fixtureData.database, { vipOrder: true });
+  const owner = { kind: "member" as const, ownerId: "member:member-alpha" };
+  await createCreditStore(fixtureData.database, () => 1_000).reserveCredits({
+    owner,
+    units: 3,
+    usageType: "TAROT_READING",
+    resourceType: "reading_session",
+    resourceId: "session-held",
+    idempotencyKey: "tarot:session-held",
+  });
+
+  const superAdminRow = (await listAdminMembers(fixtureData.database, actor("SUPER_ADMIN"), { search: "alpha" }))[0];
+  assert.equal(superAdminRow?.creditAvailableUnits, 4);
+  assert.deepEqual(superAdminRow?.membership, {
+    status: "VIP",
+    endsAt: 10_000_000_000_000,
+    packageNameEn: "Fixture",
+    packageNameVi: "Fixture",
+  });
+
+  const nonSuperAdminRoles: AdminRole[] = ["SUPPORT", "FINANCE", "ADMIN"];
+  for (const role of nonSuperAdminRoles) {
+    const row = (await listAdminMembers(fixtureData.database, actor(role), { search: "alpha" }))[0];
+    assert.equal(Object.hasOwn(row ?? {}, "creditAvailableUnits"), false, `${role} must not receive Credits summary`);
+    assert.equal(Object.hasOwn(row ?? {}, "membership"), false, `${role} must not receive membership summary`);
+  }
+
+  const betaOwner = { kind: "member" as const, ownerId: "member:member-beta" };
+  const now = Date.now();
+  await activateEntitlement(fixtureData.database, {
+    owner: betaOwner,
+    entitlementType: "VIP",
+    benefitVersion: "expired-vip",
+    startsAt: 100,
+    endsAt: 200,
+    sourceType: "ADMIN",
+    sourceId: "member-admin",
+    grantKey: "expired-beta-vip",
+    benefitSnapshot: { fixture: true },
+    now,
+  });
+  await activateEntitlement(fixtureData.database, {
+    owner: betaOwner,
+    entitlementType: "VIP",
+    benefitVersion: "future-vip",
+    startsAt: now + 60_000,
+    endsAt: now + 120_000,
+    sourceType: "ADMIN",
+    sourceId: "member-admin",
+    grantKey: "future-beta-vip",
+    benefitSnapshot: { fixture: true },
+    now,
+  });
+  const noMembershipRow = (await listAdminMembers(fixtureData.database, actor("SUPER_ADMIN"), { search: "beta" }))[0];
+  assert.deepEqual(noMembershipRow?.membership, { status: "NONE", endsAt: null, packageNameEn: null, packageNameVi: null });
   fixtureData.sqlite.close();
 });
 
