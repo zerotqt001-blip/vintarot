@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Admin VIP controls (2026-09-27; production-based release candidate)
+The `/admin` controlled-actions panel removes the manual Reason and Idempotency key inputs. Mutations create audit reasons and idempotency keys automatically, keeping failed-action retries idempotent. VIP access uses a package selector with the currently supported 30-day admin grant; active VIP records can be revoked from their row. Existing Super Admin Credit controls, `/admin/users`, server-side RBAC, API contracts, and audit services are preserved. This candidate is based on production source `fb0a50a`.
+
+Validation: `npm run build`, `npx tsc --noEmit`, targeted ESLint for `app/admin/admin-console.tsx`, and `git diff --check` pass. No tests were run. Production deployment is pending.
+
 ## Member notice for admin Credit adjustments (2026-09-27; production active)
 
 The Owner-approved Credit adjustment notice is implemented as a compact, non-modal in-app popup for the affected signed-in member. It reads only that member's admin add/deduct events from the canonical Credit ledger, displays the exact administrator-entered reason, and records dismissal per credit account and adjustment. The admin form explains that members will see the reason at their next sign-in. English and Vietnamese copy are included. No member Credit balance was changed for this work.
