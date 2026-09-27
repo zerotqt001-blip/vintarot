@@ -9,19 +9,22 @@ export type AccountCreditAdjustmentNotice = {
   createdAt: number;
 };
 
+// Keep pre-rollout ledger entries from appearing as newly delivered notices.
+const NOTICE_ROLLOUT_START_AT = Date.parse("2026-09-27T00:00:00Z");
+
 const nextNoticeSql = [
   "WITH adjustments AS (",
   "  SELECT l.account_id AS account_id, g.grant_key AS adjustment_key,",
   "    SUM(l.units) AS units, MAX(l.reason) AS reason, MAX(l.created_at) AS created_at",
   "  FROM credit_ledger l JOIN credit_grants g ON g.id = l.grant_id",
-  "  WHERE l.account_id = ? AND l.event_type = 'ADJUSTMENT' AND l.units > 0 AND g.source = 'ADMIN'",
+  "  WHERE l.account_id = ? AND l.event_type = 'ADJUSTMENT' AND l.units > 0 AND g.source = 'ADMIN' AND l.created_at >= ?",
   "  GROUP BY l.account_id, g.grant_key",
   "  UNION ALL",
   "  SELECT l.account_id AS account_id, r.idempotency_key AS adjustment_key,",
   "    SUM(l.units) AS units, MAX(l.reason) AS reason, MAX(l.created_at) AS created_at",
   "  FROM credit_ledger l JOIN credit_reservations r ON r.id = l.reservation_id AND r.account_id = l.account_id",
   "  WHERE l.account_id = ? AND l.event_type = 'ADJUSTMENT' AND l.units < 0",
-  "    AND r.usage_type = 'CREDIT_ADJUSTMENT' AND r.resource_type = 'adjustment' AND r.status = 'CONSUMED'",
+  "    AND r.usage_type = 'CREDIT_ADJUSTMENT' AND r.resource_type = 'adjustment' AND r.status = 'CONSUMED' AND l.created_at >= ?",
   "  GROUP BY l.account_id, r.idempotency_key",
   ")",
   "SELECT adjustments.adjustment_key AS adjustmentKey, adjustments.units, adjustments.reason, adjustments.created_at AS createdAt",
@@ -44,7 +47,7 @@ export async function getNextAccountCreditAdjustmentNotice(
 ): Promise<AccountCreditAdjustmentNotice | null> {
   const accountId = memberAccountId(owner);
   const row = await database.prepare(nextNoticeSql)
-    .bind(accountId, accountId, accountId)
+    .bind(accountId, NOTICE_ROLLOUT_START_AT, accountId, NOTICE_ROLLOUT_START_AT, accountId)
     .first<AccountCreditAdjustmentNotice>();
   if (!row || !Number.isSafeInteger(Number(row.units)) || !Number.isSafeInteger(Number(row.createdAt))) return null;
   return {

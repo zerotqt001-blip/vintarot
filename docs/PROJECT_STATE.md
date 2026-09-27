@@ -1,10 +1,14 @@
 # VinTarot state
 
-## Member notice for admin Credit adjustments (2026-09-27; production deployment pending)
+## Member notice for admin Credit adjustments (2026-09-27; production active)
 
 The Owner-approved Credit adjustment notice is implemented as a compact, non-modal in-app popup for the affected signed-in member. It reads only that member's admin add/deduct events from the canonical Credit ledger, displays the exact administrator-entered reason, and records dismissal per credit account and adjustment. The admin form explains that members will see the reason at their next sign-in. English and Vietnamese copy are included. No member Credit balance was changed for this work.
 
-Validation on the production-based branch, including commit `5b7cd6c` (`mobile-spread`): `npx tsc --noEmit`, `npm run build`, targeted ESLint, and `git diff --check` pass. The focused visual detector reports no findings. The automated test suite was not run. Production deployment is pending.
+Validation on branch `codex/natarot-business-control-center` at feature commit `a3c7fdf`, including latest production commit `5b7cd6c` (`mobile-spread`): `npx tsc --noEmit`, `npm run build`, targeted ESLint, and `git diff --check` pass. The focused visual detector reports no findings. The automated test suite was not run.
+
+Production release `natarot-credit-notice-a3c7fdf-20260927T125748Z` is active. The production `0012_credit_adjustment_notification_reads.sql` migration is applied; SQLite integrity is `ok` with zero foreign-key violations. The latest production backup passed the restore-test service and the release manager verified backup policy (`daily=7`, `weekly=1`, `monthly=1`). `natarot.service` is active, public health returns `{"status":"ok"}`, and an unauthenticated notice API request returns HTTP 401. A real browser opened the production admin directory and confirmed the new reason-at-next-sign-in copy; no Credit adjustment was submitted for QA. The filesystem is 31% used with about 20.5 GB free. Managed cleanup retained exactly current `natarot-credit-notice-a3c7fdf-20260927T125748Z`, rollback `natarot-mobile-spread-5b7cd6c-20260927T124840Z`, and rollback `natarot-admin-users-bea3c03-20260927T103200Z`; it removed two verified obsolete releases. The unrelated unclassified `/opt/natarot/.incoming` tree and failed-release quarantine remain untouched. The task-owned local and remote release staging copies were removed after deployment.
+
+Follow-up root-cause correction: the new read-receipt table initially left pre-feature ledger entries unseen, which would queue a historical backlog at first login. A production aggregate query found two adjustments from 2026-09-22 and one recent same-day addition. Migration `0013_credit_adjustment_notice_legacy_baseline.sql` and a UTC rollout-day query cutoff will mark only the older entries as read while preserving the same-day addition. No Credit balance or ledger row is changed. Local TypeScript, production build, targeted ESLint, and diff checks pass; deployment of this correction is pending.
 
 ## NaTarot Super Admin user directory and Credit controls (2026-09-27; source verified)
 
