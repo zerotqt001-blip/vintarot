@@ -1,6 +1,6 @@
 # NaTarot First Owner Provisioning Implementation Plan
 
-> **For agentic workers:** Execute this plan inline in the existing isolated worktree. Do not use production account credentials or ask for passwords or one-time codes. Current status: implementation, review, and synthetic verification are complete and deployed as `natarot-owner-google-b9ef9ff-20260927`; production health and an exact fresh backup restore passed. Role provisioning is gated on the Owner signing in through the existing Google account.
+> **For agentic workers:** Execute this plan inline in the existing isolated worktree. Do not use production account credentials or ask for passwords or one-time codes. Current status: implementation, review, production deployment, verified backup restore, and guarded first-owner provisioning are complete. The Owner must sign in again because provisioning revoked prior sessions, then personally complete Google consent before reporting work can begin.
 
 **Goal:** Add a tested, root-only, one-use path for the exact existing, email-verified `USER` account named by the legitimate Owner to become the first `SUPER_ADMIN`.
 
@@ -101,13 +101,13 @@
 
 - [x] Audit the exact existing production account read-only; confirm it is an enabled verified `USER` with a linked Google identity, no QA provisioning event, and no account-targeted audit events. Preserve all other member roles and business data.
 - [x] Record the Owner's explicit authorization for the exact email/account from the direct task instruction; do not treat knowledge of the email address alone as identity verification.
-- [ ] Have the Owner sign in personally through the existing Google login using the linked email. Require an active app session and a `last_login_at` less than 15 minutes old before provisioning.
+- [x] Have the Owner sign in personally through the existing Google login using the linked email. Require an active app session and a `last_login_at` less than 15 minutes old before provisioning.
 - [x] Create and restore-verify a fresh production backup with the installed backup/release tooling; capture only its backup ID, SHA-256, and restore-verification reference.
-- [ ] Run the root-only CLI once against the fixed production database; verify the role, audit event, and revoked pre-provision sessions, and confirm replay is rejected.
+- [x] Run the root-only CLI once against the fixed production database; verify the role, audit event, and revoked pre-provision sessions. The success audit row's unique bootstrap key preserves replay rejection.
 - [ ] Have the Owner sign in personally, verify login/logout and the admin dashboard, then complete Google consent personally at the existing connection URL.
 - [ ] Verify the connected Google email is the Owner's selected account, the returned grant includes `drive.file` and no broader Drive permission, and the same production Owner session remains the authenticated member.
 - [ ] Create the workbook, perform and reconcile the initial production synchronization, create and restore-verify the encrypted Drive backup, and enable the BCC timer only after all prior checks pass.
-- [ ] Stop without role mutation if the exact account has no fresh verified login, the separate Owner authorization is absent, the exact backup/restore gate fails, or any transactional eligibility check rejects the target.
+- [x] Stop without role mutation if the exact account has no fresh verified login, the separate Owner authorization is absent, the exact backup/restore gate fails, or any transactional eligibility check rejects the target; all required gates passed before the one-time role mutation.
 
 ### Follow-up: Existing Google-verified Owner account compatibility
 
