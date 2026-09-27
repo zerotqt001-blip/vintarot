@@ -41,6 +41,18 @@ export type AdminAffiliateView = {
   history: AffiliateHistoryItem[];
 };
 
+export type AdminMemberMembershipSummary = {
+  status: "VIP" | "NONE";
+  endsAt: number | null;
+  packageNameEn: string | null;
+  packageNameVi: string | null;
+};
+
+export type AdminMemberInventoryView = MemberAdminView & {
+  creditAvailableUnits?: number;
+  membership?: AdminMemberMembershipSummary;
+};
+
 export type AdminMemberDetail = {
   member: MemberAdminView;
   credits: {
@@ -109,6 +121,21 @@ function parseSessionId(value: unknown): string | null {
     return typeof parsed.session_id === "string" && parsed.session_id.length <= 160 ? parsed.session_id : null;
   } catch {
     return null;
+  }
+}
+
+function packageNamesFromSnapshot(value: string | null): { packageNameEn: string | null; packageNameVi: string | null } {
+  if (!value) return { packageNameEn: null, packageNameVi: null };
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { packageNameEn: null, packageNameVi: null };
+    const snapshot = parsed as Record<string, unknown>;
+    return {
+      packageNameEn: typeof snapshot.nameEn === "string" && snapshot.nameEn.trim() ? snapshot.nameEn : null,
+      packageNameVi: typeof snapshot.nameVi === "string" && snapshot.nameVi.trim() ? snapshot.nameVi : null,
+    };
+  } catch {
+    return { packageNameEn: null, packageNameVi: null };
   }
 }
 
@@ -192,9 +219,57 @@ async function readAffiliate(database: D1Database, memberId: string): Promise<Ad
   };
 }
 
-export async function listAdminMembers(database: D1Database, actor: AdminActor, input: { search?: string; limit?: number } = {}): Promise<MemberAdminView[]> {
+export async function listAdminMembers(database: D1Database, actor: AdminActor, input: { search?: string; limit?: number } = {}): Promise<AdminMemberInventoryView[]> {
   requirePermission(actor, "admin.users.read");
-  return listMembers(database, actor, boundedLimit(input.limit, 50), input.search ?? "");
+  const members = await listMembers(database, actor, boundedLimit(input.limit, 50), input.search ?? "");
+  if (actor.role !== "SUPER_ADMIN" || members.length === 0) return members;
+
+  const now = Date.now();
+  const owners = members.map((member) => memberOwner(member.id).ownerId);
+  const placeholders = owners.map(() => "?").join(", ");
+  const [creditRows, vipRows] = await Promise.all([
+    database.prepare(`SELECT a.owner_id AS ownerId,
+        COALESCE(SUM(CASE WHEN g.eligible_from <= ? AND (g.expires_at IS NULL OR g.expires_at > ?) THEN g.available_units ELSE 0 END), 0) AS availableUnits
+      FROM credit_accounts a LEFT JOIN credit_grants g ON g.account_id=a.id
+      WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders})
+      GROUP BY a.owner_id`).bind(now, now, ...owners).all<{ ownerId: string; availableUnits: number }>(),
+    database.prepare(`SELECT a.owner_id AS ownerId, e.ends_at AS endsAt, o.package_snapshot AS packageSnapshot
+      FROM entitlements e
+      JOIN credit_accounts a ON a.id=e.account_id
+      LEFT JOIN orders o ON e.source_type='ORDER' AND o.id=e.source_id
+      WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders}) AND e.entitlement_type='VIP' AND e.status='ACTIVE'
+        AND e.starts_at <= ? AND (e.ends_at IS NULL OR e.ends_at > ?)
+      ORDER BY a.owner_id, e.starts_at DESC, e.id DESC`).bind(...owners, now, now).all<{
+        ownerId: string;
+        endsAt: number | null;
+        packageSnapshot: string | null;
+      }>(),
+  ]);
+
+  const availableCredits = new Map(creditRows.results.map((row) => [row.ownerId, Number(row.availableUnits)]));
+  const memberships = new Map<string, AdminMemberMembershipSummary>();
+  for (const row of vipRows.results) {
+    const packageNames = packageNamesFromSnapshot(row.packageSnapshot);
+    const membership = memberships.get(row.ownerId);
+    if (!membership) {
+      memberships.set(row.ownerId, {
+        status: "VIP",
+        endsAt: row.endsAt == null ? null : Number(row.endsAt),
+        packageNameEn: packageNames.packageNameEn,
+        packageNameVi: packageNames.packageNameVi,
+      });
+      continue;
+    }
+    if (row.endsAt == null || (membership.endsAt !== null && Number(row.endsAt) > membership.endsAt)) membership.endsAt = row.endsAt == null ? null : Number(row.endsAt);
+    if (!membership.packageNameEn && packageNames.packageNameEn) membership.packageNameEn = packageNames.packageNameEn;
+    if (!membership.packageNameVi && packageNames.packageNameVi) membership.packageNameVi = packageNames.packageNameVi;
+  }
+
+  return members.map((member) => ({
+    ...member,
+    creditAvailableUnits: availableCredits.get(`member:${member.id}`) ?? 0,
+    membership: memberships.get(`member:${member.id}`) ?? { status: "NONE", endsAt: null, packageNameEn: null, packageNameVi: null },
+  }));
 }
 
 export async function getAdminMemberDetail(database: D1Database, actor: AdminActor, memberId: string): Promise<AdminMemberDetail> {

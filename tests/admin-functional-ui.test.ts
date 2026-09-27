@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
+import { createElement, type ComponentType, type ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import AdminConsole from "../app/admin/admin-console";
+import { LanguageProvider } from "../components/language";
 
 const repoRoot = join(import.meta.dirname, "..");
 const files = [
@@ -59,4 +63,19 @@ test("account and admin links are reachable from the existing shell without chan
   assert.match(accountPage, /AccountHistory/);
   assert.match(shell, /\/profile/);
   assert.match(shell, /\/guidebook/);
+});
+
+test("membership and available Credits columns render only for the Super Admin inventory", () => {
+  const TestLanguageProvider = LanguageProvider as ComponentType<{ user: null; children?: ReactNode }>;
+  const renderAdmin = (showSuperAdminMemberSummary: boolean) => renderToStaticMarkup(
+    createElement(TestLanguageProvider, { user: null }, createElement(AdminConsole, { authenticated: true, showSuperAdminMemberSummary })),
+  );
+
+  const superAdminMarkup = renderAdmin(true);
+  assert.match(superAdminMarkup, /<th>Membership<\/th>/);
+  assert.match(superAdminMarkup, /<th>Available Credits<\/th>/);
+
+  const staffMarkup = renderAdmin(false);
+  assert.doesNotMatch(staffMarkup, /<th>Membership<\/th>/);
+  assert.doesNotMatch(staffMarkup, /<th>Available Credits<\/th>/);
 });

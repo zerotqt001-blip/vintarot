@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Super Admin user inventory membership and Credits columns (2026-09-27, source-only)
+The Admin Users table now adds Membership and Available Credits columns for SUPER_ADMIN only. Membership is based on VIP entitlements that are active at the current time and shows the immutable purchased package name when the linked order snapshot contains one, plus the entitlement end date. The Credit value uses eligible, non-expired available grant units, excluding units held by active reservations. The server omits both summary fields for SUPPORT, FINANCE and ADMIN, and the table hides the columns for those roles. No package names are invented for members without an active VIP entitlement.
+
+Validation: the two focused Admin/read-model and UI suites pass `10/10`; the new assertions were observed failing before implementation. `npx tsc --noEmit`, targeted ESLint, production build, the Impeccable layout detector (`[]`), and `git diff --check` pass. This is source-only and is not deployed.
+
 ## Admin VIP actions streamlined (2026-09-27, source-only)
 The Admin console no longer asks staff to type a mutation reason or idempotency key. Each controlled action supplies a specific audit reason and generates an idempotency key automatically, reusing it after a failed request and clearing it after success. The VIP control now has the existing 30-day admin grant as a package choice, and active entitlements can be revoked directly from their row without copying an entitlement ID. Server-side RBAC, canonical domain services, audit writes, and database/API contracts are unchanged.
 

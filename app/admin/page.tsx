@@ -15,5 +15,5 @@ export default async function AdminPage() {
   const activeRole = Number(roleRow?.disabled ?? 1) === 0 && isAdminRole(role) ? role : null;
   const canManageReaders = activeRole ? hasPermission(activeRole, "admin.readers.manage") : false;
   const canOpenDashboard = activeRole ? hasPermission(activeRole, "admin.dashboard.read") : false;
-  return <VinTarot user={toMemberShellUser(member)} path="/admin">{canManageReaders && !canOpenDashboard ? <ReaderManager authenticated={Boolean(member)} showBackLink={false} /> : <AdminConsole authenticated={Boolean(member)} canManageReaders={canManageReaders} />}</VinTarot>;
+  return <VinTarot user={toMemberShellUser(member)} path="/admin">{canManageReaders && !canOpenDashboard ? <ReaderManager authenticated={Boolean(member)} showBackLink={false} /> : <AdminConsole authenticated={Boolean(member)} canManageReaders={canManageReaders} showSuperAdminMemberSummary={activeRole === "SUPER_ADMIN"} />}</VinTarot>;
 }
