@@ -90,6 +90,61 @@ async function verifiedArchive(path: string): Promise<{ sha256: string; bytes: n
   return archive;
 }
 
+function isoWeekKey(timestamp: string): string {
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) throw invalidInventory();
+  const thursday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const weekday = (thursday.getUTCDay() + 6) % 7;
+  thursday.setUTCDate(thursday.getUTCDate() - weekday + 3);
+  const isoYear = thursday.getUTCFullYear();
+  const januaryFourth = new Date(Date.UTC(isoYear, 0, 4));
+  const januaryFourthWeekday = (januaryFourth.getUTCDay() + 6) % 7;
+  januaryFourth.setUTCDate(januaryFourth.getUTCDate() - januaryFourthWeekday + 3);
+  const week = 1 + Math.round((thursday.getTime() - januaryFourth.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  return `${isoYear}-W${String(week).padStart(2, "0")}`;
+}
+
+function backupManifest(path: string): { backupId: string; backupTimestamp: string } {
+  try {
+    const entries = execFileSync("tar", ["-tzf", path], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 1024 * 1024,
+      timeout: 30_000,
+    }).split(/\r?\n/).filter(Boolean);
+    const manifestPaths = entries.filter((entry) => /^[A-Za-z0-9][A-Za-z0-9._-]*\/manifest\/backup-manifest\.json$/.test(entry));
+    if (manifestPaths.length !== 1) throw invalidInventory();
+    const manifestPath = manifestPaths[0]!;
+    const prefixBackupId = manifestPath.slice(0, manifestPath.indexOf("/"));
+    const manifest = JSON.parse(execFileSync("tar", ["-xOzf", path, manifestPath], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 16 * 1024,
+      timeout: 30_000,
+    })) as { backupVersion?: unknown; backupId?: unknown; backupTimestamp?: unknown };
+    if (manifest.backupVersion !== "natarot-backup-v1" || manifest.backupId !== prefixBackupId
+      || typeof manifest.backupTimestamp !== "string" || !Number.isFinite(Date.parse(manifest.backupTimestamp))) {
+      throw invalidInventory();
+    }
+    const backupTimestamp = new Date(manifest.backupTimestamp).toISOString();
+    if (timestampFromBackupId(prefixBackupId) !== backupTimestamp) throw invalidInventory();
+    return { backupId: prefixBackupId, backupTimestamp };
+  } catch {
+    throw invalidInventory();
+  }
+}
+
+function validateRetentionPeriod(path: string, retentionClass: "weekly" | "monthly", backupTimestamp: string): void {
+  const filename = basename(path);
+  if (retentionClass === "weekly") {
+    const period = filename.match(/^natarot-production-(\d{4}-W\d{2})\.tar\.gz$/)?.[1];
+    if (!period || period !== isoWeekKey(backupTimestamp)) throw invalidInventory();
+    return;
+  }
+  const period = filename.match(/^natarot-production-(\d{4}-\d{2})\.tar\.gz$/)?.[1];
+  if (!period || period !== backupTimestamp.slice(0, 7)) throw invalidInventory();
+}
+
 function archiveFiles(directory: string): string[] {
   const entries = readdirSync(directory, { withFileTypes: true });
   return entries
@@ -155,8 +210,17 @@ export async function readLocalBackupReferences(backupRoot = process.env.NATAROT
     for (const path of archiveFiles(directories[retentionClass])) {
       const metadata = await verifiedArchive(path);
       const daily = dailyByInode.get(inodeKey(path));
-      if (!daily || daily.archiveSha256 !== metadata.sha256 || daily.archiveBytes !== metadata.bytes) throw invalidInventory();
-      candidates.push({ ...daily, retentionClass });
+      const identity = daily ?? backupManifest(path);
+      if (daily && (daily.archiveSha256 !== metadata.sha256 || daily.archiveBytes !== metadata.bytes)) throw invalidInventory();
+      validateRetentionPeriod(path, retentionClass, identity.backupTimestamp);
+      candidates.push({
+        backupId: identity.backupId,
+        archivePath: path,
+        archiveSha256: metadata.sha256,
+        archiveBytes: metadata.bytes,
+        backupTimestamp: identity.backupTimestamp,
+        retentionClass,
+      });
       counts[retentionClass] += 1;
     }
   }
@@ -372,10 +436,16 @@ export async function runBusinessControlCenter(): Promise<void> {
 
   let sheetsStatus: string;
   let sheetsReason: string | null = null;
+  let sheetsHttpStatus: number | null = null;
+  let sheetsProviderReason: string | null = null;
   try {
     const result = await syncBusinessReport(database, { config, now });
     sheetsStatus = result.status;
-    if (result.status === "failed" || result.status === "blocked") sheetsReason = result.reason ?? "reporting_sync_failed";
+    if (result.status === "failed" || result.status === "blocked") {
+      sheetsReason = result.reason ?? "reporting_sync_failed";
+      sheetsHttpStatus = result.googleHttpStatus ?? null;
+      sheetsProviderReason = result.googleProviderReason ?? null;
+    }
   } catch {
     sheetsStatus = "failed";
     sheetsReason = "reporting_internal_error";
@@ -415,6 +485,8 @@ export async function runBusinessControlCenter(): Promise<void> {
     timestamp: new Date(now).toISOString(),
     sheets: sheetsStatus,
     ...(sheetsReason ? { sheetsReason } : {}),
+    ...(sheetsHttpStatus ? { sheetsHttpStatus } : {}),
+    ...(sheetsProviderReason ? { sheetsProviderReason } : {}),
     backup: backupStatus,
     ...(backupReason ? { backupReason } : {}),
     backupReferences,

@@ -37,6 +37,8 @@ type SyncOptions = {
 type SyncResult = {
   status: "success" | "blocked" | "skipped" | "failed";
   reason?: string;
+  googleHttpStatus?: number;
+  googleProviderReason?: string;
   reconciled?: boolean;
   rowsWritten?: number;
 };
@@ -372,7 +374,15 @@ export async function syncBusinessReport(database: D1Database, options: SyncOpti
     await database.prepare("UPDATE business_reporting_sync_state SET last_error_code=?, retry_attempt=retry_attempt+1, next_retry_at=?, updated_at=? WHERE id='primary' AND lease_owner=?")
       .bind(errorCode, now + retryDelay, now, leaseOwner).run();
     await finishAudit(database, auditId, now, "failure", rowsWritten, errorCode);
-    return { status: "failed", reason: errorCode, rowsWritten };
+    return {
+      status: "failed",
+      reason: errorCode,
+      ...(error instanceof BusinessReportingGoogleError ? {
+        googleHttpStatus: error.httpStatus,
+        googleProviderReason: error.providerReason,
+      } : {}),
+      rowsWritten,
+    };
   } finally {
     await releaseLease(database, leaseOwner);
   }

@@ -104,6 +104,25 @@ test("Google API retry honors Retry-After and sanitizes provider response bodies
   assert.deepEqual(waits, [250]);
 });
 
+test("Google API authorization failures retain only the HTTP status and an allowlisted provider reason", async () => {
+  await assert.rejects(
+    () => googleFetchWithRetry(async () => Response.json({
+      error: {
+        status: "PERMISSION_DENIED",
+        errors: [{ reason: "accessNotConfigured", message: "private-provider-detail" }],
+      },
+    }, { status: 403 }), { maxAttempts: 1 }),
+    (error: unknown) => {
+      assert.ok(error instanceof BusinessReportingGoogleError);
+      assert.equal(error.code, "google_authorization");
+      assert.equal(error.httpStatus, 403);
+      assert.equal(error.providerReason, "accessNotConfigured");
+      assert.doesNotMatch(error.message, /private-provider-detail/);
+      return true;
+    },
+  );
+});
+
 test("Google API retry backs off on transient failures and never surfaces provider bodies", async () => {
   const waits: number[] = [];
   await assert.rejects(

@@ -22,6 +22,24 @@ function addArchive(path: string, bytes: Buffer): void {
   writeFileSync(path + ".sha256", `${hash(bytes)}  ${basename(path)}\n`, { mode: 0o600 });
 }
 
+function makeBackupWithManifest(backupId: string, backupTimestamp: string): Buffer {
+  const root = mkdtempSync(join(tmpdir(), "natarot-backup-manifest-"));
+  try {
+    const manifestDirectory = join(root, backupId, "manifest");
+    mkdirSync(manifestDirectory, { recursive: true });
+    writeFileSync(join(manifestDirectory, "backup-manifest.json"), JSON.stringify({
+      backupVersion: "natarot-backup-v1",
+      backupId,
+      backupTimestamp,
+    }));
+    const archivePath = join(root, "archive.tar.gz");
+    execFileSync("tar", ["-czf", archivePath, "-C", root, backupId]);
+    return readFileSync(archivePath);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
 function makeBackupFixture(): { root: string; latestId: string } {
   const root = mkdtempSync(join(tmpdir(), "natarot-backup-inventory-"));
   for (const directory of ["daily", "weekly", "monthly"]) mkdirSync(join(root, directory));
@@ -56,6 +74,29 @@ test("local backup inventory verifies sidecars and maps hard-linked weekly/month
   assert.equal(inventory.counts.daily, 7);
   assert.equal(inventory.counts.weekly, 1);
   assert.equal(inventory.counts.monthly, 1);
+});
+
+test("local backup inventory verifies retained weekly/monthly archives after their daily link is pruned", async (context) => {
+  const fixture = makeBackupFixture();
+  context.after(() => rmSync(fixture.root, { recursive: true, force: true }));
+
+  const weekly = join(fixture.root, "weekly", "natarot-production-2026-W39.tar.gz");
+  const monthly = join(fixture.root, "monthly", "natarot-production-2026-09.tar.gz");
+  rmSync(weekly);
+  rmSync(weekly + ".sha256");
+  rmSync(monthly);
+  rmSync(monthly + ".sha256");
+  const retainedBackupId = "natarot-production-20260921-083347";
+  const retainedArchive = makeBackupWithManifest(retainedBackupId, "2026-09-21T08:33:47Z");
+  addArchive(weekly, retainedArchive);
+  linkSync(weekly, monthly);
+  linkSync(weekly + ".sha256", monthly + ".sha256");
+
+  const inventory = await readLocalBackupReferences(fixture.root);
+  const retained = inventory.references.find((reference) => reference.backupId === retainedBackupId);
+  assert.equal(inventory.references.length, 8);
+  assert.equal(retained?.archiveSha256, hash(retainedArchive));
+  assert.deepEqual(retained?.retentionClasses.sort(), ["monthly", "weekly"]);
 });
 
 test("local backup inventory fails closed for a corrupt archive checksum or retention overflow", async (context) => {

@@ -31,6 +31,8 @@ export type ReportingRequest = (input: ReportingRequestInput) => Promise<Respons
 export class BusinessReportingGoogleError extends Error {
   constructor(
     readonly code: "google_unavailable" | "google_authorization" | "google_rejected" | "google_not_found" | "google_workbook_ambiguous",
+    readonly httpStatus?: number,
+    readonly providerReason?: string,
   ) {
     const message = code === "google_unavailable"
       ? "Google reporting service is temporarily unavailable."
@@ -74,9 +76,34 @@ function retryDelay(attempt: number, options: Required<Pick<GoogleRetryOptions, 
   return Math.min(options.maxDelayMs, Math.round(delay));
 }
 
-function errorForResponse(response: Response): BusinessReportingGoogleError {
-  if (response.status === 401 || response.status === 403) return new BusinessReportingGoogleError("google_authorization");
-  return new BusinessReportingGoogleError("google_rejected");
+const SAFE_PROVIDER_REASONS = new Set([
+  "accessNotConfigured",
+  "appNotAuthorizedToFile",
+  "insufficientAuthenticationScopes",
+  "insufficientPermissions",
+  "rateLimitExceeded",
+  "serviceDisabled",
+  "userRateLimitExceeded",
+  "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+  "PERMISSION_DENIED",
+  "SERVICE_DISABLED",
+  "UNAUTHENTICATED",
+]);
+
+async function errorForResponse(response: Response): Promise<BusinessReportingGoogleError> {
+  let providerReason = "other";
+  try {
+    const payload = await response.clone().json() as {
+      error?: { status?: unknown; errors?: Array<{ reason?: unknown }> };
+    };
+    const candidate = payload.error?.errors?.find((entry) => typeof entry.reason === "string")?.reason
+      ?? payload.error?.status;
+    if (typeof candidate === "string" && SAFE_PROVIDER_REASONS.has(candidate)) providerReason = candidate;
+  } catch {
+    // Keep only the HTTP status when the provider body is not valid JSON.
+  }
+  const code = response.status === 401 || response.status === 403 ? "google_authorization" : "google_rejected";
+  return new BusinessReportingGoogleError(code, response.status, providerReason);
 }
 
 export async function googleFetchWithRetry(
@@ -107,7 +134,7 @@ export async function googleFetchWithRetry(
     if (response.status === 404 && input.allowNotFound) return response;
 
     const retryable = response.status === 408 || response.status === 429 || response.status >= 500;
-    if (!retryable) throw errorForResponse(response);
+    if (!retryable) throw await errorForResponse(response);
     if (attempt === maxAttempts) throw new BusinessReportingGoogleError("google_unavailable");
 
     const retryAfter = response.status === 429 ? retryAfterMilliseconds(response, Date.now()) : null;
