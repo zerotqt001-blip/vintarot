@@ -1,6 +1,6 @@
 # NaTarot First Owner Provisioning Implementation Plan
 
-> **For agentic workers:** Execute this plan inline in the existing isolated worktree. Do not use production account credentials or ask for passwords or one-time codes. Current status: implementation, review, production deployment, verified backup restore, and guarded first-owner provisioning are complete. The Owner must sign in again because provisioning revoked prior sessions, then personally complete Google consent before reporting work can begin.
+> **For agentic workers:** Execute this plan inline in the existing isolated worktree. Do not use production account credentials or ask for passwords or one-time codes. Current status: implementation, review, deployment, verified backup restore, and guarded first-owner provisioning are complete. OAuth redirect header mutability is fixed and deployed as `natarot-google-drive-oauth-6863104-20260927`; 758 regression tests pass. The Owner must personally select the verified Google account and complete consent before reporting work can begin.
 
 **Goal:** Add a tested, root-only, one-use path for the exact existing, email-verified `USER` account named by the legitimate Owner to become the first `SUPER_ADMIN`.
 
@@ -105,7 +105,8 @@
 - [x] Create and restore-verify a fresh production backup with the installed backup/release tooling; capture only its backup ID, SHA-256, and restore-verification reference.
 - [x] Run the root-only CLI once against the fixed production database; verify the role, audit event, and revoked pre-provision sessions. The success audit row's unique bootstrap key preserves replay rejection.
 - [x] Have the Owner sign in again personally after the role change; verify the account identity, active `SUPER_ADMIN` role, and protected admin dashboard.
-- [ ] Have the Owner complete Google consent personally at the existing connection URL. The in-app browser did not display the consent screen, so continue from the signed-in NaTarot tab and let the Owner approve the grant.
+- [x] Fix the production OAuth redirect response so cookies can be attached to a mutable response. Add a regression test, deploy through the release manager, and verify local/public health.
+- [ ] Have the Owner select the verified Google account and complete consent personally at the existing connection URL. The fixed flow now displays the account chooser; the Owner must make the account and consent decisions.
 - [ ] Verify the connected Google email is the Owner's selected account, the returned grant includes `drive.file` and no broader Drive permission, and the same production Owner session remains the authenticated member.
 - [ ] Create the workbook, perform and reconcile the initial production synchronization, create and restore-verify the encrypted Drive backup, and enable the BCC timer only after all prior checks pass.
 - [x] Stop without role mutation if the exact account has no fresh verified login, the separate Owner authorization is absent, the exact backup/restore gate fails, or any transactional eligibility check rejects the target; all required gates passed before the one-time role mutation.
