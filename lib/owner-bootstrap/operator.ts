@@ -60,7 +60,7 @@ export async function confirmFirstOwnerEvidence(
   }
 
   const confirmations: Array<[string, (value: string) => boolean]> = [
-    ["Type the new Owner email", (value) => value.trim().toLowerCase() === normalizedEmail],
+    ["Type the exact Owner account email", (value) => value.trim().toLowerCase() === normalizedEmail],
     ["Type the member ID that belongs to this verified Owner email", (value) => value.trim() === input.memberId],
     ["Type the identity evidence reference verified for this exact email", (value) => value.trim() === input.identityVerificationRef],
     ["Type the separate Owner authorization reference for this exact email/account", (value) => value.trim() === input.ownerAuthorizationRef],

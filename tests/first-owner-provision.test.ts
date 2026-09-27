@@ -134,6 +134,144 @@ test("first-owner provisioning grants only the verified new USER, audits it, and
   assert.equal(result.memberId, member.id);
 });
 
+test("first-owner provisioning accepts a Google-verified account after a recent matching sign-in", async (context) => {
+  const fixture = createFixture(context);
+  const store = createMemberAuthStore(fixture.database, () => now);
+  const member = await store.createMember({
+    username: "google_owner",
+    email: "google-owner@example.test",
+    phone: "+84900000006",
+    passwordHash: null,
+    googleSubject: "synthetic-google-subject",
+    emailVerifiedAt: now,
+  });
+  await fixture.database.prepare("UPDATE members SET last_login_at=? WHERE id=?").bind(now, member.id).run();
+  const session = await store.createSession(member.id, true);
+  const provisionFirstOwner = await loadProvisioner();
+  const loginReference = `google-login-${new Date(now).toISOString()}`;
+
+  const result = await provisionFirstOwner(fixture.database, {
+    ...validInput(member.id, "google-owner@example.test"),
+    identityVerificationRef: loginReference,
+  }, () => now + 1);
+
+  assert.equal(result.memberId, member.id);
+  assert.equal(result.revokedSessions, 1);
+  assert.equal(await store.readSession(session.raw), null);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE id=? AND role='SUPER_ADMIN'", member.id), 1);
+  const audit = await fixture.database.prepare("SELECT metadata_json FROM audit_events WHERE id=?")
+    .bind(result.auditEventId).first<{ metadata_json: string }>();
+  assert.ok(audit);
+  assert.deepEqual(JSON.parse(audit.metadata_json), {
+    identityVerificationRef: loginReference,
+    ownerApprovalRecord: "owner-authorization-20420927",
+    operatorRef: "operator-case-20420927",
+    backupId: "natarot-production-20420927",
+    archiveChecksum: "a".repeat(64),
+    restoreVerificationRef: "restore-check-20420927",
+    verificationMethod: "google_oauth_recent_login",
+    verifiedLoginAt: now,
+  });
+});
+
+test("first-owner provisioning rechecks Google sign-in freshness after waiting for the transaction lock", async (context) => {
+  const fixture = createFixture(context);
+  const store = createMemberAuthStore(fixture.database, () => now);
+  const member = await store.createMember({
+    username: "delayed_google_owner",
+    email: "delayed-google-owner@example.test",
+    phone: "+84900000010",
+    passwordHash: null,
+    googleSubject: "synthetic-delayed-google-subject",
+    emailVerifiedAt: now,
+  });
+  await fixture.database.prepare("UPDATE members SET last_login_at=? WHERE id=?").bind(now, member.id).run();
+  const session = await store.createSession(member.id, true);
+  const provisionFirstOwner = await loadProvisioner();
+  let clock = now + 1;
+  const delayedDatabase = new Proxy(fixture.database, {
+    get(target, property, receiver) {
+      if (property === "transaction") {
+        return async (work: () => Promise<unknown>) => {
+          // Model BEGIN IMMEDIATE waiting long enough for the verified login to become stale.
+          clock = now + 16 * 60 * 1_000;
+          return target.transaction(work);
+        };
+      }
+      const value = Reflect.get(target, property, receiver) as unknown;
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  }) as TransactionalD1Database;
+
+  await assert.rejects(provisionFirstOwner(delayedDatabase, {
+    ...validInput(member.id, "delayed-google-owner@example.test"),
+    identityVerificationRef: `google-login-${new Date(now).toISOString()}`,
+  }, () => clock));
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE id=? AND role='USER'", member.id), 1);
+  assert.ok(await store.readSession(session.raw));
+});
+
+test("first-owner provisioning rejects stale Google sign-ins and mismatched login evidence", async (context) => {
+  const fixture = createFixture(context);
+  const store = createMemberAuthStore(fixture.database, () => now);
+  const stale = await store.createMember({
+    username: "stale_google_owner",
+    email: "stale-google-owner@example.test",
+    phone: "+84900000007",
+    passwordHash: null,
+    googleSubject: "synthetic-stale-google-subject",
+    emailVerifiedAt: now,
+  });
+  const staleLoginAt = now - 16 * 60 * 1_000;
+  await fixture.database.prepare("UPDATE members SET last_login_at=? WHERE id=?").bind(staleLoginAt, stale.id).run();
+  const staleSession = await store.createSession(stale.id, true);
+  const provisionFirstOwner = await loadProvisioner();
+
+  await assert.rejects(provisionFirstOwner(fixture.database, {
+    ...validInput(stale.id, "stale-google-owner@example.test"),
+    identityVerificationRef: `google-login-${new Date(staleLoginAt).toISOString()}`,
+  }, () => now));
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE id=? AND role='USER'", stale.id), 1);
+  assert.ok(await store.readSession(staleSession.raw));
+
+  const mismatched = await store.createMember({
+    username: "mismatched_google_owner",
+    email: "mismatched-google-owner@example.test",
+    phone: "+84900000008",
+    passwordHash: null,
+    googleSubject: "synthetic-mismatched-google-subject",
+    emailVerifiedAt: now,
+  });
+  await fixture.database.prepare("UPDATE members SET last_login_at=? WHERE id=?").bind(now, mismatched.id).run();
+  await assert.rejects(provisionFirstOwner(fixture.database, {
+    ...validInput(mismatched.id, "mismatched-google-owner@example.test"),
+    identityVerificationRef: `google-login-${new Date(now - 1).toISOString()}`,
+  }, () => now));
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE id=? AND role='USER'", mismatched.id), 1);
+});
+
+test("first-owner provisioning requires the recent Google sign-in to have created an active app session", async (context) => {
+  const fixture = createFixture(context);
+  const store = createMemberAuthStore(fixture.database, () => now);
+  const member = await store.createMember({
+    username: "sessionless_google_owner",
+    email: "sessionless-google-owner@example.test",
+    phone: "+84900000009",
+    passwordHash: null,
+    googleSubject: "synthetic-sessionless-google-subject",
+    emailVerifiedAt: now,
+  });
+  await fixture.database.prepare("UPDATE members SET last_login_at=? WHERE id=?").bind(now, member.id).run();
+  const provisionFirstOwner = await loadProvisioner();
+
+  await assert.rejects(provisionFirstOwner(fixture.database, {
+    ...validInput(member.id, "sessionless-google-owner@example.test"),
+    identityVerificationRef: `google-login-${new Date(now).toISOString()}`,
+  }, () => now));
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM members WHERE id=? AND role='USER'", member.id), 1);
+  assert.equal(countRows(fixture.sqlite, "SELECT COUNT(*) AS count FROM auth_sessions WHERE member_id=?", member.id), 0);
+});
+
 test("first-owner provisioning cannot change an ADMIN or an existing SUPER_ADMIN", async (context) => {
   const fixture = createFixture(context);
   const provisionFirstOwner = await loadProvisioner();

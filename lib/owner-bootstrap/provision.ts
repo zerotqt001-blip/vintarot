@@ -3,6 +3,7 @@ import { normalizeEmail } from "../member-auth";
 import type { TransactionalD1Database } from "../sqlite-d1";
 
 export const FIRST_OWNER_BOOTSTRAP_AUDIT_KEY = "natarot:first-owner:bootstrap:v1";
+const FIRST_OWNER_GOOGLE_LOGIN_MAX_AGE_MS = 15 * 60 * 1_000;
 
 export type FirstOwnerProvisionInput = {
   memberId: string;
@@ -26,7 +27,9 @@ type OwnerCandidate = {
   email: string;
   role: string;
   password_hash: string | null;
+  google_subject: string | null;
   email_verified_at: number | null;
+  last_login_at: number | null;
   disabled: number;
   disabled_at: number | null;
 };
@@ -81,10 +84,10 @@ export async function provisionFirstOwner(
     throw new Error("First-owner provisioning is unavailable.");
   }
   const owner = validatedInput(input);
-  const timestamp = now();
   const auditEventId = globalThis.crypto.randomUUID();
 
   return database.transaction(async () => {
+    const timestamp = now();
     const bootstrap = await database.prepare("SELECT id FROM audit_events WHERE idempotency_key=? LIMIT 1")
       .bind(FIRST_OWNER_BOOTSTRAP_AUDIT_KEY)
       .first<{ id: string }>();
@@ -94,15 +97,14 @@ export async function provisionFirstOwner(
       .first<{ id: string }>();
     if (existingSuperAdmin) throw new Error("A SUPER_ADMIN already exists.");
 
-    const candidate = await database.prepare(`SELECT id, email, role, password_hash, email_verified_at, disabled, disabled_at
+    const candidate = await database.prepare(`SELECT id, email, role, password_hash, google_subject, email_verified_at, last_login_at, disabled, disabled_at
       FROM members WHERE id=? LIMIT 1`).bind(owner.memberId).first<OwnerCandidate>();
     if (!candidate
       || candidate.email !== owner.email
       || candidate.role !== "USER"
       || candidate.disabled !== 0
       || candidate.disabled_at !== null
-      || candidate.email_verified_at === null
-      || !candidate.password_hash) {
+      || candidate.email_verified_at === null) {
       throw new Error("The new verified Owner account is not eligible.");
     }
 
@@ -110,7 +112,15 @@ export async function provisionFirstOwner(
       WHERE member_id=? AND kind='email-verification' AND consumed_at IS NOT NULL LIMIT 1`)
       .bind(candidate.id)
       .first<{ verified: number }>();
-    if (!verification) throw new Error("The new verified Owner account is not eligible.");
+    const appVerified = Boolean(candidate.password_hash && verification);
+    const googleLoginAt = candidate.google_subject?.trim()
+      && candidate.last_login_at !== null
+      && candidate.last_login_at <= timestamp
+      && timestamp - candidate.last_login_at <= FIRST_OWNER_GOOGLE_LOGIN_MAX_AGE_MS
+      && owner.identityVerificationRef === `google-login-${new Date(candidate.last_login_at).toISOString()}`
+      ? candidate.last_login_at
+      : null;
+    if (!appVerified && googleLoginAt === null) throw new Error("The new verified Owner account is not eligible.");
 
     const qaProvision = await database.prepare(`SELECT id FROM audit_events
       WHERE target_type='member' AND target_id=? AND action='owner_test.provisioned' LIMIT 1`)
@@ -120,14 +130,30 @@ export async function provisionFirstOwner(
 
     const update = await database.prepare(`UPDATE members SET role='SUPER_ADMIN', updated_at=?
       WHERE id=? AND email=? AND role='USER' AND disabled=0 AND disabled_at IS NULL
-        AND email_verified_at IS NOT NULL AND password_hash IS NOT NULL
-        AND EXISTS (SELECT 1 FROM auth_tokens
-          WHERE member_id=? AND kind='email-verification' AND consumed_at IS NOT NULL)
+        AND email_verified_at IS NOT NULL
+        AND ((password_hash IS NOT NULL AND EXISTS (SELECT 1 FROM auth_tokens
+          WHERE member_id=? AND kind='email-verification' AND consumed_at IS NOT NULL))
+          OR (google_subject IS NOT NULL AND last_login_at=? AND last_login_at>=? AND last_login_at<=?
+            AND EXISTS (SELECT 1 FROM auth_sessions
+              WHERE member_id=? AND revoked_at IS NULL AND expires_at>? AND created_at>=?)))
         AND NOT EXISTS (SELECT 1 FROM audit_events
           WHERE target_type='member' AND target_id=? AND action='owner_test.provisioned')
         AND NOT EXISTS (SELECT 1 FROM members WHERE role='SUPER_ADMIN')
         AND NOT EXISTS (SELECT 1 FROM audit_events WHERE idempotency_key=?)`)
-      .bind(timestamp, candidate.id, owner.email, candidate.id, candidate.id, FIRST_OWNER_BOOTSTRAP_AUDIT_KEY)
+      .bind(
+        timestamp,
+        candidate.id,
+        owner.email,
+        candidate.id,
+        googleLoginAt ?? -1,
+        timestamp - FIRST_OWNER_GOOGLE_LOGIN_MAX_AGE_MS,
+        timestamp,
+        candidate.id,
+        timestamp,
+        googleLoginAt ?? -1,
+        candidate.id,
+        FIRST_OWNER_BOOTSTRAP_AUDIT_KEY,
+      )
       .run();
     if (Number(update.meta.changes) !== 1) throw new Error("The new verified Owner account is not eligible.");
 
@@ -152,7 +178,8 @@ export async function provisionFirstOwner(
         backupId: owner.backupId,
         archiveChecksum: owner.backupSha256,
         restoreVerificationRef: owner.restoreVerificationRef,
-        verificationMethod: "consumed_app_token",
+        verificationMethod: googleLoginAt === null ? "consumed_app_token" : "google_oauth_recent_login",
+        ...(googleLoginAt === null ? {} : { verifiedLoginAt: googleLoginAt }),
       },
     }, timestamp, { ignoreExisting: false }).run();
 

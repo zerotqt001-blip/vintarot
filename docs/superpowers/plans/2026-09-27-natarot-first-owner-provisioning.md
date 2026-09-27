@@ -99,10 +99,34 @@
 **Files:**
 - No additional source file changes unless a verification step exposes a defect.
 
-- [ ] Obtain a new email address directly from the Owner; have the Owner complete `/register` and the emailed verification link personally.
-- [ ] Have a trusted operator verify an authoritative business ownership or authorized-representative record out of band and record an opaque evidence reference plus a separate explicit authorization reference for that account.
+- [x] Audit the exact existing production account read-only; confirm it is an enabled verified `USER` with a linked Google identity, no QA provisioning event, and no account-targeted audit events. Preserve all other member roles and business data.
+- [x] Record the Owner's explicit authorization for the exact email/account from the direct task instruction; do not treat knowledge of the email address alone as identity verification.
+- [ ] Have the Owner sign in personally through the existing Google login using the linked email. Require an active app session and a `last_login_at` less than 15 minutes old before provisioning.
 - [ ] Create and restore-verify a fresh production backup with the installed backup/release tooling; capture only its backup ID, SHA-256, and restore-verification reference.
 - [ ] Run the root-only CLI once against the fixed production database; verify the role, audit event, and revoked pre-provision sessions, and confirm replay is rejected.
 - [ ] Have the Owner sign in personally, verify login/logout and the admin dashboard, then complete Google consent personally at the existing connection URL.
 - [ ] Verify the connected Google email is the Owner's selected account, the returned grant includes `drive.file` and no broader Drive permission, and the same production Owner session remains the authenticated member.
-- [ ] Stop without role mutation if independent Owner identity evidence or explicit authorization is absent.
+- [ ] Create the workbook, perform and reconcile the initial production synchronization, create and restore-verify the encrypted Drive backup, and enable the BCC timer only after all prior checks pass.
+- [ ] Stop without role mutation if the exact account has no fresh verified login, the separate Owner authorization is absent, the exact backup/restore gate fails, or any transactional eligibility check rejects the target.
+
+### Follow-up: Existing Google-verified Owner account compatibility
+
+**Files:**
+- Modify: `lib/owner-bootstrap/provision.ts`
+- Modify: `tests/first-owner-provision.test.ts`
+- Modify: `docs/operations/NATAROT_FIRST_OWNER.md`
+- Modify: `docs/superpowers/specs/2026-09-27-natarot-first-owner-provisioning-design.md`
+- Modify: `docs/PROJECT_STATE.md`
+
+**Security contract:**
+- Preserve the existing password path: exact enabled `USER`, app verification timestamp, and consumed app-issued verification token.
+- Also permit the same account assurance from a linked Google identity only when the account has a non-empty Google subject, verified email, and a successful application login within the preceding 15 minutes.
+- For the Google path, bind the identity evidence reference to `google-login-<last_login_at ISO timestamp>`; record the method and timestamp in the one-time audit event.
+- Keep all existing single-use, QA rejection, backup, exact-account, transactional role assignment, and session-revocation gates.
+
+- [x] Add a failing transaction test for a verified Google-linked account after a fresh Google login; assert role assignment, session revocation, and audit method/timestamp.
+- [x] Run the focused test and confirm it fails because the existing implementation requires a password and consumed email token.
+- [x] Add the minimum implementation and focused rejection coverage for stale Google login, a missing active app session, and mismatched login evidence reference.
+- [x] Update the operator runbook and design record to document the existing-account Google verification path and its 15-minute login window.
+- [x] Run focused first-owner tests, full regression suite, typecheck, production build, targeted lint, diff and secret review.
+- [ ] Commit and push the reviewed change to `codex/natarot-business-control-center`.
