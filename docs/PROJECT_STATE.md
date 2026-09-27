@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Mobile three-card Reading Result spread (2026-09-27, source-only)
+On mobile stage widths, Reading Result spreads with exactly three cards now place equal-size cards in one centered horizontal row. Card width and spacing adapt to the available width while preserving the Moonlight artwork ratio; mobile position, card-name and orientation captions use compact responsive sizing. Desktop placement and the existing handling for other spread sizes remain unchanged.
+
+Validation: `npm run build` and `git diff --check` pass. No tests were run. The local preview at `127.0.0.1:5173` was not running, so browser visual inspection was unavailable. This is a source-only change and is not deployed.
+
 ## Header actions reduced to language and account (2026-09-25, source-only)
 
 The shared top-right header action groups now show only the language selector and account link on every shell variant, including Home, booking, Practice, Affiliate, Membership, Guidebook and fallback pages. The search, heart, theme, shopping and room shortcuts were removed from those header groups; the generic account avatar now uses the user icon. The Guidebook's in-page card search remains available, while its former header shortcut event was removed. Moonlight/NaTarot styling and all side, bottom and in-page navigation/content remain unchanged.
