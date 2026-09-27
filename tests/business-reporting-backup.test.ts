@@ -162,6 +162,11 @@ test("verified offsite upload checks remote identity and bytes, downloads, decry
     const entry = remote.get(fileId);
     assert.ok(entry);
     if (input.url.includes("alt=media")) return new Response(Buffer.from(entry.bytes));
+    if (method === "PATCH") {
+      const metadata = JSON.parse(String(input.body)) as { appProperties?: Record<string, string> };
+      if (metadata.appProperties) entry.metadata.appProperties = metadata.appProperties;
+      return Response.json(entry.metadata);
+    }
     if (method === "GET") return Response.json(entry.metadata);
     throw new Error("Unexpected backup API request.");
   };
@@ -206,7 +211,7 @@ test("verified offsite upload checks remote identity and bytes, downloads, decry
   assert.equal(restoreCalls, 1);
   assert.equal(calls.filter((call) => call.method === "PUT" && call.url.includes("session-")).length, uploadCallCount);
 
-  remote.get("drive-file-backup-synthetic-3-archive")!.metadata.size = "999";
+  (remote.get("drive-file-backup-synthetic-3-archive")!.metadata.appProperties as Record<string, string>).sourceSha256 = "wrong-source-hash";
   const mismatched = await uploadVerifiedOffsiteBackup({
     database, owner, config, archivePath, backupId: "backup-synthetic-3", archiveSha256: sha256(archive), archiveBytes: archive.byteLength,
     backupTimestamp: "2026-09-26T12:00:00Z", retentionClasses: ["daily"], keyring, restoreStatusRoot: join(directory, "restore-state"),
@@ -222,6 +227,15 @@ test("verified offsite upload checks remote identity and bytes, downloads, decry
   });
   assert.equal(restoreFailure.status, "failed");
   assert.equal(restoreFailure.errorCode, "restore_verification_failed");
+
+  const retryAfterRestoreFailure = await uploadVerifiedOffsiteBackup({
+    database, owner, config, archivePath, backupId: "backup-synthetic-restore-fail", archiveSha256: sha256(archive), archiveBytes: archive.byteLength,
+    backupTimestamp: "2026-09-26T12:00:00Z", retentionClasses: ["daily"], keyring, restoreStatusRoot: join(directory, "restore-state"),
+    request, sleep: async () => {}, restoreVerifier: async () => { restoreCalls += 1; },
+  });
+  assert.equal(retryAfterRestoreFailure.status, "verified");
+  const retriedArchive = remote.get("drive-file-backup-synthetic-restore-fail-archive")!;
+  assert.equal((retriedArchive.metadata.appProperties as Record<string, string>).encryptedSha256, sha256(retriedArchive.bytes));
 });
 
 test("backup retention trashes only app-owned archive and manifest pairs outside verified local references", async (context) => {

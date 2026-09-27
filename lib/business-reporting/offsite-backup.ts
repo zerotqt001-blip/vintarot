@@ -242,6 +242,35 @@ async function ensureManagedFile(context: DriveContext, input: {
   return await findManagedFile(context, input) ?? await createManagedFile(context, input);
 }
 
+async function updateManagedFileProperties(context: DriveContext, file: ManagedDriveFile, input: {
+  backupId: string;
+  kind: "archive" | "manifest";
+  sourceSha256: string;
+  encryptedSha256: string;
+}): Promise<void> {
+  if (!file.id) throw new OffsiteBackupError("remote_identity_mismatch");
+  const appProperties: Record<string, string> = {
+    ...file.appProperties,
+    [APP_PROPERTY]: APP_PROPERTY_VALUE,
+    backupId: input.backupId,
+    kind: input.kind,
+    sourceSha256: input.sourceSha256,
+    encryptedSha256: input.encryptedSha256,
+  };
+  const url = new URL(DRIVE_FILES_URL + "/" + encodeURIComponent(file.id));
+  url.searchParams.set("fields", "id,appProperties");
+  const updated = await json<ManagedDriveFile>(await callApi(context, url.toString(), {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ appProperties }),
+  }));
+  if (updated.id !== file.id || updated.appProperties?.[APP_PROPERTY] !== APP_PROPERTY_VALUE
+    || updated.appProperties?.backupId !== input.backupId || updated.appProperties?.kind !== input.kind
+    || updated.appProperties?.sourceSha256 !== input.sourceSha256 || updated.appProperties?.encryptedSha256 !== input.encryptedSha256) {
+    throw new OffsiteBackupError("remote_identity_mismatch");
+  }
+}
+
 async function uploadMedia(context: DriveContext, input: {
   fileId: string;
   sourcePath: string;
@@ -667,6 +696,12 @@ export async function uploadVerifiedOffsiteBackup(input: {
       size: encrypted.encryptedBytes,
       mimeType: ENCRYPTED_MIME_TYPE,
     });
+    await updateManagedFileProperties(context, archiveFile, {
+      backupId: input.backupId,
+      kind: "archive",
+      sourceSha256: encrypted.sourceSha256,
+      encryptedSha256: encrypted.encryptedSha256,
+    });
     const uploadedArchive = await getFileMetadata(context, archiveFile.id!);
     validateRemoteFile(uploadedArchive.file!, {
       fileId: archiveFile.id!,
@@ -704,6 +739,12 @@ export async function uploadVerifiedOffsiteBackup(input: {
     });
     activeStage = "manifest_upload";
     await uploadMedia(context, { fileId: manifestFile.id!, sourcePath: manifestPath, size: manifestInfo.size, mimeType: MANIFEST_MIME_TYPE });
+    await updateManagedFileProperties(context, manifestFile, {
+      backupId: input.backupId,
+      kind: "manifest",
+      sourceSha256: encrypted.sourceSha256,
+      encryptedSha256: encrypted.encryptedSha256,
+    });
     const uploadedManifest = await getFileMetadata(context, manifestFile.id!);
     validateRemoteFile(uploadedManifest.file!, {
       fileId: manifestFile.id!,
