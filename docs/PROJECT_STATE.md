@@ -1,5 +1,11 @@
 # VinTarot state
 
+## NaTarot three-card mobile spread (2026-09-27; deployed)
+
+Three-card reading results now keep the cards in one horizontal row on phone layouts, with mobile-sized cards and captions adjusted to fit the viewport. Other spread geometry and desktop presentation are unchanged. This is a presentation/geometry change only; it adds no database migration, API, prompt, auth, or payment change.
+
+Production release `natarot-mobile-spread-5b7cd6c-20260927T124840Z` is active at `https://natarot.com`, built from commit `5b7cd6c` on `codex/mobile-reading-spread-production-20260927` (based on production source `bea3c03`). The release manager completed its preflight, created and verified a fresh backup, passed candidate smoke checks, promoted the release, and reported `deployment_success=true`. Post-deploy checks on 2026-09-27: `natarot.service` active, `/api/health` returned `{"status":"ok"}`, and `/` returned HTTP 200. Local validation before deployment: `npm run build`, `npx tsx --test tests/deployment-contract.test.ts` (6/6), and `git diff --check` passed. No real browser verification of the production mobile reading result has been recorded yet; release-manager cleanup remains deferred until that verification is completed.
+
 ## NaTarot Super Admin user directory and Credit controls (2026-09-27; source verified)
 
 The approved Moonlight user-directory design is implemented at `/admin/users`. Its user list, masked contacts, status/role filters, keyset pagination, and live available/reserved/total Credit balances use a dedicated `admin.users.manage` permission granted only to `SUPER_ADMIN`. The page checks the current enabled role on the server; its JSON endpoint repeats the permission check. Credit adjustment controls and per-user balance/history are hidden from other roles, and `admin.credits.adjust` is now restricted to `SUPER_ADMIN`. Existing staff user-read/status/session and non-Credit Admin functions remain available under their prior permissions. Credit mutations still use the canonical ledger and required audit reason/idempotency path; no user balances were changed during implementation.
