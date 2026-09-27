@@ -104,7 +104,8 @@
 - [x] Have the Owner sign in personally through the existing Google login using the linked email. Require an active app session and a `last_login_at` less than 15 minutes old before provisioning.
 - [x] Create and restore-verify a fresh production backup with the installed backup/release tooling; capture only its backup ID, SHA-256, and restore-verification reference.
 - [x] Run the root-only CLI once against the fixed production database; verify the role, audit event, and revoked pre-provision sessions. The success audit row's unique bootstrap key preserves replay rejection.
-- [ ] Have the Owner sign in personally, verify login/logout and the admin dashboard, then complete Google consent personally at the existing connection URL.
+- [x] Have the Owner sign in again personally after the role change; verify the account identity, active `SUPER_ADMIN` role, and protected admin dashboard.
+- [ ] Have the Owner complete Google consent personally at the existing connection URL. The in-app browser did not display the consent screen, so continue from the signed-in NaTarot tab and let the Owner approve the grant.
 - [ ] Verify the connected Google email is the Owner's selected account, the returned grant includes `drive.file` and no broader Drive permission, and the same production Owner session remains the authenticated member.
 - [ ] Create the workbook, perform and reconcile the initial production synchronization, create and restore-verify the encrypted Drive backup, and enable the BCC timer only after all prior checks pass.
 - [x] Stop without role mutation if the exact account has no fresh verified login, the separate Owner authorization is absent, the exact backup/restore gate fails, or any transactional eligibility check rejects the target; all required gates passed before the one-time role mutation.
