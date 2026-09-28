@@ -1,9 +1,16 @@
 # VinTarot state
 
-## Admin VIP controls (2026-09-27; production-based release candidate)
+## Super Admin membership and Credit summaries (2026-09-28; production deployed)
+The `/admin` Users inventory now shows current Membership status/package and available Credits for the active `SUPER_ADMIN` role. The server read model only adds these two summaries for `SUPER_ADMIN`; `SUPPORT`, `FINANCE`, and `ADMIN` receive no summary fields. Membership uses active, currently valid VIP entitlements and the immutable order package snapshot when available. Available Credits are eligible, non-expired grant units after reservations. No package names are invented, no database migration ran, and no account, ledger, or customer data was changed.
+
+Validation on production-based source commit `42e1603`: Admin control-center and functional UI tests `12/12`, `npx tsc --noEmit`, targeted ESLint, `npm run build`, and `git diff --check` pass. The Owner's authenticated production browser rendered both new columns and live rows. Public `/api/health` and `/admin` return HTTP 200; unauthenticated `/api/admin/users` returns HTTP 401.
+
+Production release `natarot-admin-member-summary-42e1603-20260928T025007Z` is active. Fresh backup `natarot-production-20260928-025409` has SHA-256 `3a6452219aff80b4b285743b7a68804e9cfb787d5d32d22591c398ba2d9efce9`; checksum and release-manager backup/restore-readiness policy checks pass. `natarot.service` is active with local health `{"status":"ok"}`. The release manager retained exactly three distinct managed releases: current `natarot-admin-member-summary-42e1603-20260928T025007Z`, rollback `natarot-admin-vip-5d8a771-20260927T145703Z`, and rollback `natarot-credit-notice-fb0a50a-20260927T131249Z`; it removed two verified unreferenced successful releases. Storage preflight passes at 31% used with about 20 GB free. The unrelated unclassified `/opt/natarot/.incoming` tree and failed-release quarantine remain untouched. Task-owned remote staging and transfer archive were removed; the local transfer archive was moved to Trash.
+
+## Admin VIP controls (2026-09-27; production active)
 The `/admin` controlled-actions panel removes the manual Reason and Idempotency key inputs. Mutations create audit reasons and idempotency keys automatically, keeping failed-action retries idempotent. VIP access uses a package selector with the currently supported 30-day admin grant; active VIP records can be revoked from their row. Existing Super Admin Credit controls, `/admin/users`, server-side RBAC, API contracts, and audit services are preserved. This candidate is based on production source `fb0a50a`.
 
-Validation: `npm run build`, `npx tsc --noEmit`, targeted ESLint for `app/admin/admin-console.tsx`, and `git diff --check` pass. No tests were run. Production deployment is pending.
+Validation: `npm run build`, `npx tsc --noEmit`, targeted ESLint for `app/admin/admin-console.tsx`, and `git diff --check` pass. No tests or schema migrations were run. Production release `natarot-admin-vip-5d8a771-20260927T145703Z` from commit `5d8a771` was promoted at `2026-09-27T14:58:30Z`. Fresh backup `natarot-production-20260927-145824` passed release-manager verification with SHA-256 `32781d078b4b6a3e24d8074868836d55da949459fc966336c07df55671a2bcd4`. The service remained active, public health returned `{"status":"ok"}`, and cleanup was deferred until browser verification, which completed during the later membership/Credits deployment above.
 
 ## Member notice for admin Credit adjustments (2026-09-27; production active)
 
