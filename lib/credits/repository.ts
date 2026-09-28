@@ -245,11 +245,14 @@ export function creditAccountId(owner: CreditOwner): string {
 export function prepareGrantCreditsStatements(
   database: D1Database,
   input: GrantCreditsInput,
-  options: { timestamp?: number; createAccount?: boolean; requireMemberRecord?: boolean } = {},
+  options: { timestamp?: number; createAccount?: boolean; requireMemberRecord?: boolean; memberRecordId?: string } = {},
 ): Array<ReturnType<D1Database["prepare"]>> {
   if (!Number.isSafeInteger(input.units) || input.units <= 0) throw new CreditError("Grant units must be a positive integer", "invalid_units");
   if (!input.grantKey.trim()) throw new CreditError("Grant key is required", "invalid_grant_key");
-  if (options.requireMemberRecord && input.owner.kind !== "member") throw new CreditError("A member owner is required for this atomic grant", "invalid_owner");
+  const memberRecordId = options.memberRecordId;
+  if (options.requireMemberRecord && (input.owner.kind !== "member" || !memberRecordId || input.owner.ownerId !== `member:${memberRecordId}`)) {
+    throw new CreditError("A canonical member owner and member record id are required for this atomic grant", "invalid_owner");
+  }
   const accountId = creditAccountId(input.owner);
   const timestamp = options.timestamp ?? Date.now();
   const eligibleFrom = input.eligibleFrom ?? timestamp;
@@ -285,7 +288,7 @@ export function prepareGrantCreditsStatements(
   const accountValuesSql = options.requireMemberRecord
     ? "SELECT ?, ?, ?, 0, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
     : "VALUES (?, ?, ?, 0, NULL, ?, ?)";
-  const accountGuardValues = options.requireMemberRecord ? [input.owner.ownerId] : [];
+  const accountGuardValues = options.requireMemberRecord ? [memberRecordId!] : [];
   const statements: Array<ReturnType<D1Database["prepare"]>> = [];
 
   if (options.createAccount !== false) {

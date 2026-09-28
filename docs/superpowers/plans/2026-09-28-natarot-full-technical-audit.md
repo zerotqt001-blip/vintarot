@@ -121,3 +121,19 @@
 - [x] Run `git diff --check`, inspect the complete staged diff for secrets, commit only audit-related files, and report local/remote commit status.
 
 ---
+
+## Completion continuation (2026-09-28)
+
+**Updated live baseline:** release `natarot-admin-credit-read-7ab08e1-20260928T094059Z`, source commit `7ab08e136dfe89f475c276978830dc20d15cc2c9`. Read-only VPS inspection confirmed that `current` pointed to this release, `natarot.service` was active, localhost health returned `{"status":"ok"}`, and the deployment lock was clear. The active Marketing Campaign worktree contains uncommitted auth/Credit changes and remains isolated; its worker confirmed no current or planned production write.
+
+- [ ] Merge the exact live source commit into this audit branch without rewriting prior commits; resolve shared CSS and project-state changes while preserving the audit's WebP work.
+- [ ] Add regression coverage for every supported spread type at 320, 342, 375, 390, and 412 CSS pixels; prove the 342 px failure before changing the projector; preserve canonical keys, orders, labels, and positioning semantics.
+- [ ] Verify actual mobile rendering at those widths and inspect the winning CSS cascade before any UI cleanup.
+- [ ] Capture matched Create-page cold mobile measurements on live-baseline source and the final candidate, separating image, CSS, JavaScript, font, server response, and render delay. Optimize only measured bottlenecks and preserve Moonlight/VinTarot appearance.
+- [ ] Recheck duplicate CSS and unused code/dependencies/assets against the merged live source. Remove only proven dead material; do not edit financial logic or historical migrations.
+- [ ] Run the full regression suite, TypeScript, build, lint, and focused spread checks; record baseline and final transfer/LCP measurements and document any existing lint findings.
+- [ ] Before deployment, recheck production pointer, active deployment lock, concurrent worker state, free-space policy, and rollback references; create a fresh backup and verify exact restore readiness.
+- [ ] Deploy only a fully verified candidate under the release manager, retain current plus two known-good rollback releases and all protected backups, and run production browser QA for Login, Tarot, Credit, Affiliate, and public sharing without real payments, AI generation, or customer-data mutations.
+- [ ] Update the audit report and `docs/PROJECT_STATE.md`, inspect the staged diff for secrets, commit only related changes, and push the audit branch.
+
+---

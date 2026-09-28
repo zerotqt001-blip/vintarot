@@ -118,7 +118,7 @@ async function deleteAuthToken(database: D1Database, rawToken: string): Promise<
 }
 
 async function rollbackNewMember(database: D1Database, memberId: string, rawToken?: string): Promise<void> {
-  const accountId = creditAccountId({ kind: "member", ownerId: memberId });
+  const accountId = creditAccountId({ kind: "member", ownerId: `member:${memberId}` });
   const statements = [];
   if (rawToken) statements.push(database.prepare("DELETE FROM auth_tokens WHERE token_hash=?").bind(await digestToken(rawToken)));
   statements.push(
@@ -136,7 +136,7 @@ async function rollbackRegistration(database: D1Database, memberId: string, rawT
 
 function signupTrialCreditStatements(database: D1Database, memberId: string, now: () => number) {
   return prepareGrantCreditsStatements(database, {
-    owner: { kind: "member", ownerId: memberId },
+    owner: { kind: "member", ownerId: `member:${memberId}` },
     source: "TRIAL",
     units: 1,
     grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY,
@@ -149,6 +149,7 @@ function signupTrialCreditStatements(database: D1Database, memberId: string, now
     timestamp: now(),
     createAccount: true,
     requireMemberRecord: true,
+    memberRecordId: memberId,
   });
 }
 

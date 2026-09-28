@@ -166,7 +166,7 @@ test("Super Admin user directory paginates and returns live canonical Credit bal
   fixtureData.sqlite.close();
 });
 
-test("Super Admin member inventory shows spendable Credits and current VIP while other roles receive no summary fields", async () => {
+test("Admin member inventory shows Credits while VIP membership remains Super Admin only", async () => {
   const fixtureData = fixture();
   await seedTargetData(fixtureData.database, { vipOrder: true });
   const owner = { kind: "member" as const, ownerId: "member:member-alpha" };
@@ -181,6 +181,7 @@ test("Super Admin member inventory shows spendable Credits and current VIP while
 
   const superAdminRow = (await listAdminMembers(fixtureData.database, actor("SUPER_ADMIN"), { search: "alpha" }))[0];
   assert.equal(superAdminRow?.creditAvailableUnits, 4);
+  assert.equal(superAdminRow?.creditUsedUnits, 0);
   assert.deepEqual(superAdminRow?.membership, {
     status: "VIP",
     endsAt: 10_000_000_000_000,
@@ -188,10 +189,16 @@ test("Super Admin member inventory shows spendable Credits and current VIP while
     packageNameVi: "Fixture",
   });
 
-  const nonSuperAdminRoles: AdminRole[] = ["SUPPORT", "FINANCE", "ADMIN"];
-  for (const role of nonSuperAdminRoles) {
+  const adminRow = (await listAdminMembers(fixtureData.database, actor("ADMIN"), { search: "alpha" }))[0];
+  assert.equal(adminRow?.creditAvailableUnits, 4);
+  assert.equal(adminRow?.creditUsedUnits, 0);
+  assert.equal(Object.hasOwn(adminRow ?? {}, "membership"), false, "ADMIN must not receive membership summary");
+
+  const restrictedCreditRoles: AdminRole[] = ["SUPPORT", "FINANCE"];
+  for (const role of restrictedCreditRoles) {
     const row = (await listAdminMembers(fixtureData.database, actor(role), { search: "alpha" }))[0];
     assert.equal(Object.hasOwn(row ?? {}, "creditAvailableUnits"), false, `${role} must not receive Credits summary`);
+    assert.equal(Object.hasOwn(row ?? {}, "creditUsedUnits"), false, `${role} must not receive Credits usage`);
     assert.equal(Object.hasOwn(row ?? {}, "membership"), false, `${role} must not receive membership summary`);
   }
 

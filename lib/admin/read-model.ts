@@ -50,6 +50,7 @@ export type AdminMemberMembershipSummary = {
 
 export type AdminMemberInventoryView = MemberAdminView & {
   creditAvailableUnits?: number;
+  creditUsedUnits?: number;
   membership?: AdminMemberMembershipSummary;
 };
 
@@ -248,18 +249,24 @@ async function readAffiliate(database: D1Database, memberId: string): Promise<Ad
 export async function listAdminMembers(database: D1Database, actor: AdminActor, input: { search?: string; limit?: number } = {}): Promise<AdminMemberInventoryView[]> {
   requirePermission(actor, "admin.users.read");
   const members = await listMembers(database, actor, boundedLimit(input.limit, 50), input.search ?? "");
-  if (actor.role !== "SUPER_ADMIN" || members.length === 0) return members;
+  const canReadCredits = hasPermission(actor.role, "admin.credits.read");
+  const canReadMembership = actor.role === "SUPER_ADMIN";
+  if ((!canReadCredits && !canReadMembership) || members.length === 0) return members;
 
   const now = Date.now();
   const owners = members.map((member) => memberOwner(member.id).ownerId);
   const placeholders = owners.map(() => "?").join(", ");
-  const [creditRows, vipRows] = await Promise.all([
-    database.prepare(`SELECT a.owner_id AS ownerId,
+  const [creditRows, creditUsageRows, vipRows] = await Promise.all([
+    canReadCredits ? database.prepare(`SELECT a.owner_id AS ownerId,
         COALESCE(SUM(CASE WHEN g.eligible_from <= ? AND (g.expires_at IS NULL OR g.expires_at > ?) THEN g.available_units ELSE 0 END), 0) AS availableUnits
       FROM credit_accounts a LEFT JOIN credit_grants g ON g.account_id=a.id
       WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders})
-      GROUP BY a.owner_id`).bind(now, now, ...owners).all<{ ownerId: string; availableUnits: number }>(),
-    database.prepare(`SELECT a.owner_id AS ownerId, e.ends_at AS endsAt, o.package_snapshot AS packageSnapshot
+      GROUP BY a.owner_id`).bind(now, now, ...owners).all<{ ownerId: string; availableUnits: number }>() : Promise.resolve(null),
+    canReadCredits ? database.prepare(`SELECT a.owner_id AS ownerId, COALESCE(SUM(ABS(l.units)), 0) AS usedUnits
+      FROM credit_accounts a JOIN credit_ledger l ON l.account_id=a.id AND l.event_type='CONSUME'
+      WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders})
+      GROUP BY a.owner_id`).bind(...owners).all<{ ownerId: string; usedUnits: number }>() : Promise.resolve(null),
+    canReadMembership ? database.prepare(`SELECT a.owner_id AS ownerId, e.ends_at AS endsAt, o.package_snapshot AS packageSnapshot
       FROM entitlements e
       JOIN credit_accounts a ON a.id=e.account_id
       LEFT JOIN orders o ON e.source_type='ORDER' AND o.id=e.source_id
@@ -269,12 +276,13 @@ export async function listAdminMembers(database: D1Database, actor: AdminActor, 
         ownerId: string;
         endsAt: number | null;
         packageSnapshot: string | null;
-      }>(),
+      }>() : Promise.resolve(null),
   ]);
 
-  const availableCredits = new Map(creditRows.results.map((row) => [row.ownerId, Number(row.availableUnits)]));
+  const availableCredits = new Map((creditRows?.results ?? []).map((row) => [row.ownerId, Number(row.availableUnits)]));
+  const usedCredits = new Map((creditUsageRows?.results ?? []).map((row) => [row.ownerId, Number(row.usedUnits)]));
   const memberships = new Map<string, AdminMemberMembershipSummary>();
-  for (const row of vipRows.results) {
+  for (const row of vipRows?.results ?? []) {
     const packageNames = packageNamesFromSnapshot(row.packageSnapshot);
     const membership = memberships.get(row.ownerId);
     if (!membership) {
@@ -293,8 +301,13 @@ export async function listAdminMembers(database: D1Database, actor: AdminActor, 
 
   return members.map((member) => ({
     ...member,
-    creditAvailableUnits: availableCredits.get(`member:${member.id}`) ?? 0,
-    membership: memberships.get(`member:${member.id}`) ?? { status: "NONE", endsAt: null, packageNameEn: null, packageNameVi: null },
+    ...(canReadCredits ? {
+      creditAvailableUnits: availableCredits.get(`member:${member.id}`) ?? 0,
+      creditUsedUnits: usedCredits.get(`member:${member.id}`) ?? 0,
+    } : {}),
+    ...(canReadMembership ? {
+      membership: memberships.get(`member:${member.id}`) ?? { status: "NONE" as const, endsAt: null, packageNameEn: null, packageNameVi: null },
+    } : {}),
   }));
 }
 
