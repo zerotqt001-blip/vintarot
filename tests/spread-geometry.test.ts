@@ -138,6 +138,54 @@ test("keeps one-, three-, four-, five-, and ten-card readings legible without lo
   }
 });
 
+test("preserves every catalog spread's position identity across supported mobile widths", () => {
+  const viewports = [
+    { viewport: 320, stage: 292 },
+    { viewport: 342, stage: 314 },
+    { viewport: 375, stage: 347 },
+    { viewport: 390, stage: 362 },
+    { viewport: 412, stage: 384 },
+  ];
+
+  for (const template of currentSpreadCatalog.templates) {
+    const geometry = resolveSpreadGeometry(template.spreadType, catalogPositions(template.slug));
+    const cardWidth = resolveReadingSpreadCardWidth(template.cardCount, true);
+
+    for (const { viewport, stage } of viewports) {
+      const projection = projectSpreadGeometry(geometry, {
+        width: stage,
+        height: 480,
+        cardAspectRatio: 400 / 647,
+        ...cardWidth,
+        mobile: true,
+      });
+
+      const caseLabel = `${template.slug} at ${viewport}px viewport/${stage}px stage`;
+      assert.equal(projection.cards.length, geometry.points.length, caseLabel);
+      assert.deepEqual(
+        projection.cards.map(({ key, order }) => ({ key, order })),
+        geometry.points.map(({ key, order }) => ({ key, order })),
+        `${caseLabel} canonical position identity`,
+      );
+      assert.ok(projection.cards.every((card) => card.width >= cardWidth.minCardWidth), `${caseLabel} minimum card width`);
+      assert.ok(
+        projection.cards.every((card) => card.left >= 0 && card.left + card.width <= projection.width + 0.01),
+        `${caseLabel} horizontal bounds`,
+      );
+
+      if (template.spreadType === "row-3") {
+        assert.equal(projection.mode, stage < 368.2 ? "ordered" : "geometry", `${caseLabel} responsive row mode`);
+        if (projection.mode === "geometry") {
+          assert.ok(projection.cards.every((card) => card.rotation === 0 && card.top === projection.cards[0].top));
+          assert.ok(projection.cards[0].left < projection.cards[1].left && projection.cards[1].left < projection.cards[2].left);
+        }
+      } else if (geometry.points.length > 2) {
+        assert.equal(projection.mode, "ordered", `${caseLabel} keeps its semantic order`);
+      }
+    }
+  }
+});
+
 test("scales display card width to the number of visible positions", () => {
   assert.ok(resolveReadingSpreadCardWidth(1, false).maxCardWidth > resolveReadingSpreadCardWidth(4, false).maxCardWidth);
   assert.ok(resolveReadingSpreadCardWidth(4, false).maxCardWidth > resolveReadingSpreadCardWidth(10, false).maxCardWidth);
