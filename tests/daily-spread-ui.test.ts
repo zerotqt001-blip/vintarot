@@ -14,11 +14,11 @@ test("daily spread uses the celestial shell while preserving its card back", () 
   assert.match(pageSource, /daily-reflection/);
   assert.match(pageSource, /className="flip-front" aria-hidden=\{!flipped\[index\]\}/);
   assert.match(styles, /\.daily-shell\{/);
-  assert.match(styles, /\.daily-shell\{[^]*celestial-observatory\.png/);
+  assert.match(styles, /\.daily-shell\{[^]*var\(--asset-celestial-observatory\)/);
   assert.match(styles, /\.daily-shell\{[^]*width:100%;[^]*flex:1 1 auto/);
   assert.match(styles, /\.daily-shell\.site-shell \.site-sidebar/);
   assert.match(styles, /\.daily-shell \.daily-card-slot \.flip-card\{[^]*height:clamp\(213px,22\.5vw,294px\)/);
   assert.match(styles, /\.daily-shell \.top-actions \.button\.black/);
   assert.match(styles, /\.daily-shell \.card-back/);
-  assert.match(styles, /url\('\/cards\/vintarot-card-back\.png'\)/);
+  assert.match(styles, /\.daily-shell \.card-back\{[^]*background-image:var\(--asset-card-back\)!important/);
 });

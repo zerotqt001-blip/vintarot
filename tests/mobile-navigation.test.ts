@@ -13,6 +13,7 @@ const styles = readFileSync(new URL("../app/globals.css", import.meta.url), "utf
 test("Create renders the same five labeled primary destinations as the Home rail", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",
+    'require.extensions[".css"] = (module) => { module.exports = new Proxy({}, { get: () => "" }); };',
     "const React = require('react');",
     "const { renderToStaticMarkup } = require('react-dom/server');",
     "const VinTarot = require('./app/vintarot.tsx').default;",
@@ -46,6 +47,7 @@ test("Create renders the same five labeled primary destinations as the Home rail
 test("Account renders readable Home links and keeps its active state with the login return path", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",
+    'require.extensions[".css"] = (module) => { module.exports = new Proxy({}, { get: () => "" }); };',
     "const React = require('react');",
     "const { renderToStaticMarkup } = require('react-dom/server');",
     "const VinTarot = require('./app/vintarot.tsx').default;",
@@ -80,6 +82,7 @@ test("Account renders readable Home links and keeps its active state with the lo
 test("Affiliate uses the Home navigation rail with five labeled icons and Affiliate active", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",
+    'require.extensions[".css"] = (module) => { module.exports = new Proxy({}, { get: () => "" }); };',
     "const React = require('react');",
     "const { renderToStaticMarkup } = require('react-dom/server');",
     "const VinTarot = require('./app/vintarot.tsx').default;",
@@ -115,6 +118,7 @@ test("Affiliate uses the Home navigation rail with five labeled icons and Affili
 test("Daily spread keeps its primary navigation without secondary personal shortcuts", () => {
   const markup = execFileSync(process.execPath, ["-e", [
     "require('tsx/cjs');",
+    'require.extensions[".css"] = (module) => { module.exports = new Proxy({}, { get: () => "" }); };',
     "const React = require('react');",
     "const { renderToStaticMarkup } = require('react-dom/server');",
     "const VinTarot = require('./app/vintarot.tsx').default;",

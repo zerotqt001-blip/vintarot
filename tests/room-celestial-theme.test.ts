@@ -16,7 +16,7 @@ test("room theme defines the Celestial Luxury Tarot palette", () => {
 });
 
 test("room uses the local observatory artwork and layered glass surfaces", () => {
-  assert.match(css, /room-page[^\n]*celestial-observatory\.png/);
+  assert.match(css, /room-page[^\n]*var\(--asset-celestial-observatory\)/);
   assert.match(css, /room-page \.room-guide[^\n]*backdrop-filter:\s*blur\(14px\)/);
   assert.match(css, /room-page \.room-toolbar[^\n]*backdrop-filter:\s*blur\(14px\)/);
   assert.match(css, /room-page \.spread-slot[^\n]*border-color:\s*rgba\(199,\s*166,\s*106/);

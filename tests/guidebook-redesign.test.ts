@@ -56,7 +56,7 @@ test("the Guidebook worlds map keeps canonical five-family counts and target edi
 });
 
 test("the Guidebook target is responsive, observatory-backed, and motion-safe", () => {
-  assert.match(styles, /\.guidebook-target-shell[^}]*celestial-observatory\.png/);
+  assert.match(styles, /\.guidebook-target-shell[^}]*var\(--asset-celestial-observatory\)/);
   assert.match(styles, /\.guidebook-target-sidebar/);
   assert.match(styles, /\.guidebook-target-map[^}]*grid-template-areas/);
   assert.match(styles, /@media\(max-width:700px\)[\s\S]*guidebook-target-map/);

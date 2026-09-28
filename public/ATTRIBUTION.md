@@ -9,7 +9,7 @@ All 78 source image records explicitly declare Public domain; Wikimedia tags PD-
 Displayed card faces use the corresponding Rider–Waite files hosted by Moonlight's CDN (`https://moonlightcdn.imgix.net/decks/rider-waite/`). The local Wikimedia set above remains bundled as a fallback when the CDN is unavailable; the underlying Rider–Waite illustrations are public domain.
 
 ## VinTarot card back
-Custom card-back artwork supplied by the VinTarot project owner and stored at `cards/vintarot-card-back.png`.
+Custom card-back artwork supplied by the VinTarot project owner and stored at `cards/vintarot-card-back.png`. A visually matched WebP derivative is preferred by supported browsers; the original PNG remains the fallback.
 
 ## Work Sans
 Copyright 2019 The Work Sans Project Authors.
