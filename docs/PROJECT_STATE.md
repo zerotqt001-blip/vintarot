@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Mobile Room sign-in prompt (2026-09-28; production deployed)
+The Room auth prompt now presents both actions as full-width stacked buttons on mobile. “Đăng nhập” is the softly filled gold primary action; “Tạo tài khoản NaTarot” remains a quieter outlined action. The dialog keeps the Moonlight palette and rounded styling, with a visible keyboard focus ring. The existing sign-in/register handlers and safe reading-resume flow are unchanged; no API, database, or migration changes were made.
+
+Validation: `npm run build` and `git diff --check` passed; no automated tests were run. A real production browser at 390×844 showed the Vietnamese dialog and both buttons. The release manager passed candidate and production health/catalog smoke checks; `natarot.service` is active and local `/api/health` returns `{"status":"ok"}`. Production release `natarot-mobile-signin-5eda584-20260928T0804Z` from commit `5eda584` is active. The manager verified backups (`daily=7`, `weekly=2`, `monthly=1`) and, after browser verification, retained current `natarot-mobile-signin-5eda584-20260928T0804Z` plus rollback releases `natarot-signup-trial-f88dd6d-20260928T073600Z` and `natarot-admin-member-summary-42e1603-20260928T025007Z`; it deleted one verified obsolete release. Storage remains at 31% used. The pre-existing unclassified `/opt/natarot/.incoming` tree was preserved; only this task’s staging copy was removed. Source commit `5eda584` is pushed to `origin/codex/mobile-signin-prompt`.
+
 ## Super Admin membership and Credit summaries (2026-09-28; production deployed)
 The `/admin` Users inventory now shows current Membership status/package and available Credits for the active `SUPER_ADMIN` role. The server read model only adds these two summaries for `SUPER_ADMIN`; `SUPPORT`, `FINANCE`, and `ADMIN` receive no summary fields. Membership uses active, currently valid VIP entitlements and the immutable order package snapshot when available. Available Credits are eligible, non-expired grant units after reservations. No package names are invented, no database migration ran, and no account, ledger, or customer data was changed.
 
