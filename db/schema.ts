@@ -377,6 +377,7 @@ export const creditGrants = sqliteTable(
   (table) => [
     uniqueIndex("credit_grants_account_key_unique").on(table.accountId, table.grantKey),
     index("credit_grants_eligible_idx").on(table.accountId, table.eligibleFrom, table.expiresAt, table.createdAt),
+    index("credit_grants_expiry_idx").on(table.expiresAt, table.id).where(sql`${table.expiresAt} IS NOT NULL AND ${table.availableUnits} > 0`),
     index("credit_grants_source_idx").on(table.source, table.sourceType, table.sourceId),
   ],
 );

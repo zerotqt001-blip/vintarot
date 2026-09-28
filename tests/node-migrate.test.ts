@@ -315,6 +315,15 @@ test("campaign migrations preserve legacy Credit accounts, grants, ledger, reser
   assert.deepEqual(appliedCampaignMigrations.map(({ name }) => name), [
     "0014_marketing_campaigns.sql",
     "0015_business_reporting_campaigns.sql",
+    "0016_credit_grant_expiry_index.sql",
   ]);
+  const expiryIndexes = migrated.prepare("PRAGMA index_list('credit_grants')").all() as Array<{ name: string; partial: number }>;
+  assert.ok(expiryIndexes.some((index) => index.name === "credit_grants_expiry_idx" && index.partial === 1));
+  assert.deepEqual(
+    migrated.prepare("PRAGMA index_info('credit_grants_expiry_idx')").all().map(({ name }) => name),
+    ["expires_at", "id"],
+  );
+  const expiryIndexSql = (migrated.prepare("SELECT sql FROM sqlite_master WHERE type='index' AND name='credit_grants_expiry_idx'").get() as { sql: string }).sql;
+  assert.match(expiryIndexSql, /WHERE `expires_at` IS NOT NULL AND `available_units` > 0/i);
   migrated.close();
 });
