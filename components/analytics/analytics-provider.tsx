@@ -59,13 +59,15 @@ function analyticsLocation(pathname: string): string {
   return `${window.location.origin}${sanitizeAnalyticsPath(pathname)}`;
 }
 
-function analyticsReferrer(previousPath?: string): string | undefined {
+function analyticsReferrer(previousPath?: string): string {
   const referrer = sanitizeAnalyticsReferrer(
     document.referrer,
     window.location.origin,
     previousPath,
   );
-  return referrer?.startsWith('/') ? `${window.location.origin}${referrer}` : referrer;
+  // An explicit origin-only fallback prevents gtag from inferring a raw document.referrer.
+  if (!referrer) return window.location.origin;
+  return referrer.startsWith('/') ? `${window.location.origin}${referrer}` : referrer;
 }
 
 export function AnalyticsProvider({
@@ -122,7 +124,7 @@ export function AnalyticsProvider({
           allow_ad_personalization_signals: false,
           page_title: 'NaTarot',
           page_location: analyticsLocation(window.location.pathname),
-          ...(referrer ? { page_referrer: referrer } : {}),
+          page_referrer: referrer,
         });
         if (script) script.dataset.natarotReady = 'true';
       }
@@ -161,7 +163,7 @@ export function AnalyticsProvider({
     getGtag()('event', 'page_view', {
       page_title: 'NaTarot',
       page_location: analyticsLocation(pathname),
-      ...(referrer ? { page_referrer: referrer } : {}),
+      page_referrer: referrer,
       send_to: validMeasurementId,
     });
     previousPathRef.current = currentPath;
