@@ -83,17 +83,24 @@ test("Admin Affiliate view shows bounded attribution metadata without anonymous 
   assert.doesNotMatch(admin, /code_hash|public_code|referral_code_id|owner_key/);
 });
 
-test("membership and available Credits columns render only for the Super Admin inventory", () => {
+test("membership and Credit columns follow their respective Admin permissions", () => {
   const TestLanguageProvider = LanguageProvider as ComponentType<{ user: null; children?: ReactNode }>;
-  const renderAdmin = (isSuperAdmin: boolean) => renderToStaticMarkup(
-    createElement(TestLanguageProvider, { user: null }, createElement(AdminConsole, { authenticated: true, isSuperAdmin })),
+  const renderAdmin = (isSuperAdmin: boolean, canReadCredits: boolean) => renderToStaticMarkup(
+    createElement(TestLanguageProvider, { user: null }, createElement(AdminConsole, { authenticated: true, isSuperAdmin, canReadCredits })),
   );
 
-  const superAdminMarkup = renderAdmin(true);
+  const superAdminMarkup = renderAdmin(true, true);
   assert.match(superAdminMarkup, /<th>Membership<\/th>/);
   assert.match(superAdminMarkup, /<th>Available Credits<\/th>/);
+  assert.match(superAdminMarkup, /<th>Credits Used<\/th>/);
 
-  const staffMarkup = renderAdmin(false);
+  const staffMarkup = renderAdmin(false, false);
   assert.doesNotMatch(staffMarkup, /<th>Membership<\/th>/);
   assert.doesNotMatch(staffMarkup, /<th>Available Credits<\/th>/);
+  assert.doesNotMatch(staffMarkup, /<th>Credits Used<\/th>/);
+
+  const creditsReaderMarkup = renderAdmin(false, true);
+  assert.doesNotMatch(creditsReaderMarkup, /<th>Membership<\/th>/);
+  assert.match(creditsReaderMarkup, /<th>Available Credits<\/th>/);
+  assert.match(creditsReaderMarkup, /<th>Credits Used<\/th>/);
 });
