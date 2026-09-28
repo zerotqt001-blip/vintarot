@@ -64,10 +64,10 @@
 - `sanitizeAnalyticsPath(pathname: string): string`
 - `sanitizeAnalyticsReferrer(referrer: string, siteOrigin: string, previousPath?: string): string | undefined`
 
-- [ ] Define the static page-path allowlist from the current app routes: `/`, `/account`, `/admin`, `/admin/readers`, `/affiliate`, `/auth`, `/auth/complete`, `/book`, `/bookings`, `/checkout`, `/community`, `/create`, `/daily-spread`, `/decks`, `/forgot-password`, `/game`, `/guidebook`, `/invites`, `/journal`, `/login`, `/packages`, `/practice`, `/privacy`, `/profile`, `/register`, `/reset-password`, `/room`, and `/terms`.
-- [ ] Map `/guidebook/<card>` to `/guidebook/[card]`, `/r/<token>` to `/r/[share]`, and every unknown route to `/[page]`; never pass a dynamic segment through unchanged.
-- [ ] Make referrers same-origin sanitized paths or external origins only. Return `undefined` for an invalid/empty referrer; drop query and fragment data in all cases.
-- [ ] Accept only IDs matching `/^G-[A-Z0-9]+$/`.
+- [x] Define the static page-path allowlist from the current app routes: `/`, `/account`, `/admin`, `/admin/readers`, `/affiliate`, `/auth`, `/auth/complete`, `/book`, `/bookings`, `/checkout`, `/community`, `/create`, `/daily-spread`, `/decks`, `/forgot-password`, `/game`, `/guidebook`, `/invites`, `/journal`, `/login`, `/packages`, `/practice`, `/privacy`, `/profile`, `/register`, `/reset-password`, `/room`, and `/terms`.
+- [x] Map `/guidebook/<card>` to `/guidebook/[card]`, `/r/<token>` to `/r/[share]`, and every unknown route to `/[page]`; never pass a dynamic segment through unchanged.
+- [x] Make referrers same-origin sanitized paths or external origins only. Return `undefined` for an invalid/empty referrer; drop query and fragment data in all cases.
+- [x] Accept only IDs matching `/^G-[A-Z0-9]+$/`.
 
 ```ts
 export function sanitizeAnalyticsPath(pathname: string): string;
@@ -91,13 +91,14 @@ export function sanitizeAnalyticsReferrer(
 - `AnalyticsProvider({ children, measurementId }: { children: React.ReactNode; measurementId?: string })`
 - `AnalyticsPreferencesButton()` — reopens the choice from the Privacy page.
 
-- [ ] Create a client context with an `openPreferences(): void` method. Store the decision under `natarot.analytics-consent.v1` and load it after hydration.
-- [ ] Render no banner, script, or network request when the Measurement ID is missing/invalid. With a valid ID and no choice, render equal-priority “Cho phép phân tích / Allow analytics” and “Từ chối / Reject” buttons.
-- [ ] On acceptance, store `accepted`, set `analytics_storage`, `ad_storage`, `ad_user_data`, and `ad_personalization` to denied before loading the Google tag, then grant only `analytics_storage`. Ensure a stable script ID prevents duplicate loads.
-- [ ] Initialize the tag with `send_page_view: false`, `allow_google_signals: false`, `allow_ad_personalization_signals: false`, fixed title `NaTarot`, and a sanitized `page_location`/`page_referrer`.
-- [ ] After the tag is ready, emit the initial `page_view` and one event on each `usePathname()` change using only `sanitizeAnalyticsPath` and `sanitizeAnalyticsReferrer`. Track the previous sanitized path in a ref.
-- [ ] On rejection before acceptance, store `rejected` and never load the tag. On withdrawal after acceptance, set consent to denied, stop further events, clear `_ga`/`_ga_*` cookies for this site where possible, and reset the previous-path ref.
-- [ ] Keep only GA4's standard lifecycle events; add no custom NaTarot events. Enhanced measurement remains disabled in the GA property.
+- [x] Create a client context with an `openPreferences(): void` method. Store the decision under `natarot.analytics-consent.v1` and load it after hydration.
+- [x] Render no banner, script, or network request when the Measurement ID is missing/invalid. With a valid ID and no choice, render equal-priority “Cho phép phân tích / Allow analytics” and “Từ chối / Reject” buttons.
+- [x] On acceptance, store `accepted`, set `analytics_storage`, `ad_storage`, `ad_user_data`, and `ad_personalization` to denied before loading the Google tag, then grant only `analytics_storage`. Ensure a stable script ID prevents duplicate loads.
+- [x] Initialize the tag with `send_page_view: false`, `allow_google_signals: false`, `allow_ad_personalization_signals: false`, fixed title `NaTarot`, and a sanitized `page_location`/`page_referrer`.
+- [x] After the tag is ready, emit the initial `page_view` and one event on each `usePathname()` change using only `sanitizeAnalyticsPath` and `sanitizeAnalyticsReferrer`. Track the previous sanitized path in a ref.
+- [x] On rejection before acceptance, store `rejected` and never load the tag. On withdrawal after acceptance, set consent to denied, set Google's `ga-disable-<ID>` opt-out flag, stop further events, clear `_ga`/`_ga_*` cookies for this site where possible, and reset the previous-path ref.
+- [x] Keep only GA4's standard lifecycle events; add no custom NaTarot events.
+- [ ] Disable enhanced measurement in the GA property after the owner creates the property.
 
 ```ts
 type AnalyticsConsent = "accepted" | "rejected" | null;
@@ -118,9 +119,9 @@ const CONSENT_STORAGE_KEY = "natarot.analytics-consent.v1";
 - Modify: `app/legal-page.tsx`
 - Consume: `components/analytics/analytics-provider.tsx`
 
-- [ ] Pass `process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID` from the server root layout to `AnalyticsProvider`; wrap page content and `WebMCP` exactly once.
-- [ ] Add `AnalyticsPreferencesButton` to the Privacy page footer only, not the Terms page.
-- [ ] Keep `app/layout.tsx` a server component; the analytics provider owns browser state and scripts.
+- [x] Pass `process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID` from the server root layout to `AnalyticsProvider`; wrap page content and `WebMCP` exactly once.
+- [x] Add `AnalyticsPreferencesButton` to the Privacy page footer only, not the Terms page.
+- [x] Keep `app/layout.tsx` a server component; the analytics provider owns browser state and scripts.
 - [ ] Confirm existing auth, share, and normal page shells still render under the provider.
 
 **Manual check:** Load `/`, `/privacy`, `/auth`, and `/r/<test-token>`; verify there is one global consent banner and the Privacy page control reopens it.
@@ -132,10 +133,10 @@ const CONSENT_STORAGE_KEY = "natarot.analytics-consent.v1";
 - Modify: `app/globals.css`
 - Modify: `components/analytics/analytics-provider.tsx`
 
-- [ ] Add an English/Vietnamese “Google Analytics” section. State that, after consent, Google receives sanitized page routes and standard session data, which may include a pseudonymous `_ga` cookie, approximate region, browser/device details, and standard lifecycle events. State that NaTarot excludes Tarot/account content and explain rejection/withdrawal.
-- [ ] Link to Google's privacy information and update `legalUpdatedAt` to `2026-09-28`.
-- [ ] Use concise bilingual banner copy: explain page/session measurement, say it runs only after permission, and keep Accept and Reject equally visible.
-- [ ] Add namespaced CSS for a fixed, responsive consent panel using current navy/gold tokens, visible keyboard focus, and safe-area spacing. Avoid changes to other page surfaces.
+- [x] Add an English/Vietnamese “Google Analytics” section. State that, after consent, Google receives sanitized page routes and standard session data, which may include a pseudonymous `_ga` cookie, approximate region, browser/device details, and standard lifecycle events. State that NaTarot excludes Tarot/account content and explain rejection/withdrawal.
+- [x] Link to Google's privacy information and update `legalUpdatedAt` to `2026-09-28`.
+- [x] Use concise English or Vietnamese banner copy based on the saved site locale: explain page/session measurement, say it runs only after permission, and keep Accept and Reject equally visible.
+- [x] Add namespaced CSS for a fixed, responsive consent panel using current navy/gold tokens, visible keyboard focus, and safe-area spacing. Avoid changes to other page surfaces.
 
 **Manual check:** View the banner and Privacy page in Vietnamese and English at desktop and mobile widths; verify button labels, focus order, contrast, layout, and the settings reopening path.
 
@@ -145,12 +146,12 @@ const CONSENT_STORAGE_KEY = "natarot.analytics-consent.v1";
 - Modify: `docs/PROJECT_STATE.md`
 - Commit only the related app, legal, and documentation files; never stage `.env.local`.
 
-- [ ] Run `npx tsc --noEmit`, `npm run build`, and `git diff --check`.
+- [x] Run `npx tsc --noEmit`, `npm run build`, and `git diff --check`.
 - [ ] Use a fresh local browser state to verify no tag/request before consent; after acceptance inspect the Google tag requests and page-view payloads for sanitized routes/referrers, fixed title, and absence of query/token/content fields.
 - [ ] Verify rejection and withdrawal stop further collection; verify `/r/<token>` is represented only as `/r/[share]`.
 - [ ] Confirm the GA Realtime report after a deployed consented visit; do not treat the source-only build as production verification.
 - [ ] Record the Measurement ID as a public identifier only if useful for operator setup; never record Google login credentials or secrets. Update `docs/PROJECT_STATE.md` with source commit, checks, account/property/stream settings, and **SOURCE VERIFIED; NOT DEPLOYED** status.
-- [ ] Review the staged diff for unrelated files/secrets, commit the implementation, and push `codex/google-analytics-natarot`.
+- [x] Review the staged diff for unrelated files/secrets, commit the implementation, and push `codex/google-analytics-natarot`.
 - [ ] Present the finished source and request separate owner approval before any production deployment.
 
 **Validation note:** This plan does not add or run automated tests; verification is TypeScript, production build, diff review, and manual browser/network inspection.
