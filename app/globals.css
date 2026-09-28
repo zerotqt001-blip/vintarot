@@ -2663,7 +2663,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .room-reading-panel-shell .reading-continue-drawing:hover{transform:none}
 }
 
-/* Keep Super Admin membership and Credit summaries scannable without breaking the existing table scroll on narrow screens. */
+/* Keep Admin Credit summaries and Super Admin membership scannable without breaking the table scroll on narrow screens. */
 .admin-users-table{min-width:1080px}
 .admin-users-table th:nth-last-child(4){min-width:150px}
 .admin-users-table th:nth-last-child(3),.admin-users-table th:nth-last-child(2){min-width:118px}
