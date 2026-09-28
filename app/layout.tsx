@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
 import "./globals.css";
 import WebMCP from "./webmcp";
 
@@ -26,7 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}<WebMCP/></body>
+      <body className="antialiased">
+        <AnalyticsProvider measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}>
+          {children}
+          <WebMCP />
+        </AnalyticsProvider>
+      </body>
     </html>
   );
 }
