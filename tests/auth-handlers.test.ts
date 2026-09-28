@@ -96,8 +96,18 @@ test("registration creates one unverified member, mails once, and hides duplicat
   assert.deepEqual(await duplicateUsername.json(), { ok: true, next: "verify-email" });
   assert.equal(harness.verificationMail.length, 1);
   assert.equal(harness.verificationMail[0].to, "reader@example.test");
-  assert.equal((await harness.store.findByIdentifier("moon_rider"))?.email_verified_at, null);
+  const member = await harness.store.findByIdentifier("moon_rider");
+  assert.equal(member?.email_verified_at, null);
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 1);
+  const trialGrants = await harness.database.prepare(`SELECT g.units, g.source, g.grant_key, g.expires_at
+    FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id
+    WHERE a.owner_kind='member' AND a.owner_id=?`).bind(member?.id).all<{
+      units: number;
+      source: string;
+      grant_key: string;
+      expires_at: number | null;
+    }>();
+  assert.deepEqual(trialGrants.results, [{ units: 1, source: "TRIAL", grant_key: "signup-trial:v1", expires_at: null }]);
 });
 
 test("registration claims an anonymous referral only after mail delivery and verification enrolls the member", async (t) => {
@@ -298,6 +308,8 @@ test("registration mail failure is generic and rolls back the new member and tok
   assert.deepEqual(await response.json(), { ok: true, next: "verify-email" });
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 0);
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_accounts").first<{ count: number }>())?.count, 0);
 });
 
 test("reset mail failure is generic for known and unknown identifiers and preserves the account", async (t) => {

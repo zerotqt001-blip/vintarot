@@ -3,6 +3,7 @@ import type { GoogleOAuthClient } from "./google-oauth";
 import { clearAffiliateGuestCookie, readAffiliateGuestId } from "./affiliate/anonymous-attribution";
 import { ensureAffiliateEnrollment } from "./affiliate/enrollment";
 import { claimGuestReferralAttribution } from "./affiliate/service";
+import { createCreditStore, creditAccountId } from "./credits/repository";
 import {
   MemberConflictError,
   type MemberRow,
@@ -28,6 +29,7 @@ const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1_000;
 const PASSWORD_RESET_TOKEN_TTL_MS = 60 * 60 * 1_000;
 const GOOGLE_TRANSACTION_COOKIE_NAME = "natarot_google_oauth";
 const GOOGLE_TRANSACTION_TTL_SECONDS = 10 * 60;
+const SIGNUP_TRIAL_CREDIT_GRANT_KEY = "signup-trial:v1";
 const INVALID_CREDENTIALS = { error: "Invalid credentials." };
 const INVALID_TOKEN = { error: "This link is invalid or expired." };
 const DUMMY_PASSWORD_HASH = "pbkdf2-sha256$v1$600000$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -115,11 +117,35 @@ async function deleteAuthToken(database: D1Database, rawToken: string): Promise<
     .run();
 }
 
-async function rollbackRegistration(database: D1Database, memberId: string, rawToken: string): Promise<void> {
-  await database.batch([
-    database.prepare("DELETE FROM auth_tokens WHERE token_hash=?").bind(await digestToken(rawToken)),
+async function rollbackNewMember(database: D1Database, memberId: string, rawToken?: string): Promise<void> {
+  const accountId = creditAccountId({ kind: "member", ownerId: memberId });
+  const statements = [];
+  if (rawToken) statements.push(database.prepare("DELETE FROM auth_tokens WHERE token_hash=?").bind(await digestToken(rawToken)));
+  statements.push(
+    database.prepare("DELETE FROM credit_ledger WHERE account_id=? AND idempotency_key=?").bind(accountId, `grant:${SIGNUP_TRIAL_CREDIT_GRANT_KEY}`),
+    database.prepare("DELETE FROM credit_grants WHERE account_id=? AND grant_key=?").bind(accountId, SIGNUP_TRIAL_CREDIT_GRANT_KEY),
+    database.prepare("DELETE FROM credit_accounts WHERE id=?").bind(accountId),
     database.prepare("DELETE FROM members WHERE id=?").bind(memberId),
-  ]);
+  );
+  await database.batch(statements);
+}
+
+async function rollbackRegistration(database: D1Database, memberId: string, rawToken: string): Promise<void> {
+  await rollbackNewMember(database, memberId, rawToken);
+}
+
+async function grantSignupTrialCredit(database: D1Database, memberId: string, now: () => number): Promise<void> {
+  await createCreditStore(database, now).grantCredits({
+    owner: { kind: "member", ownerId: memberId },
+    source: "TRIAL",
+    units: 1,
+    grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY,
+    sourceType: "SIGNUP_TRIAL",
+    sourceId: memberId,
+    policyVersion: "signup-trial-v1",
+    policySnapshot: { grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY, units: 1, expiresAt: null },
+    reason: "Free signup trial credit",
+  });
 }
 
 function parseRegistration(value: unknown): { email: string; username: string; phone: string; password: string } | { fields: FieldErrors } {
@@ -353,6 +379,16 @@ export function createAuthHandlers({
           tokenHash,
         });
         if (!member) return invalidToken();
+        try {
+          await grantSignupTrialCredit(database, member.id, now);
+        } catch (error) {
+          try {
+            await rollbackNewMember(database, member.id);
+          } catch {
+            // Keep the generic completion error even if cleanup cannot complete.
+          }
+          throw error;
+        }
         await store.markLastLogin(member.id);
         await enrollAndClaimAffiliate(member.id, request);
         return withAffiliateGuestCookieCleared(localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw, false, trustForwardedFor), request, trustForwardedFor);
@@ -379,6 +415,17 @@ export function createAuthHandlers({
         });
       } catch (error) {
         if (error instanceof MemberConflictError) return Response.json({ ok: true, next: "verify-email" });
+        throw error;
+      }
+
+      try {
+        await grantSignupTrialCredit(database, member.id, now);
+      } catch (error) {
+        try {
+          await rollbackNewMember(database, member.id);
+        } catch {
+          // Keep the original credit error if cleanup cannot complete.
+        }
         throw error;
       }
 
