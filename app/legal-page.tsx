@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { LegalDocument } from "@/lib/legal-content";
+import { AnalyticsPreferencesButton } from "@/components/analytics/analytics-provider";
+import { googlePrivacyPolicyUrl, type LegalDocument } from "@/lib/legal-content";
 import { legalUpdatedAt } from "@/lib/legal-content";
 
 function BilingualParagraph({ en, vi }: { en: string; vi: string }) {
@@ -49,6 +50,19 @@ export function LegalPage({ document }: { document: LegalDocument }) {
                   ))}
                 </ul>
               )}
+              {section.externalLink?.href === googlePrivacyPolicyUrl && (
+                <p className="legal-external-link">
+                  <a
+                    href={section.externalLink.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${section.externalLink.label.en}. ${section.externalLink.label.vi}. Opens in a new tab / Mở trong thẻ mới`}
+                  >
+                    <span className="legal-en">{section.externalLink.label.en}</span>
+                    <span className="legal-vi">{section.externalLink.label.vi}</span>
+                  </a>
+                </p>
+              )}
             </section>
           ))}
         </div>
@@ -56,6 +70,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
         <footer className="legal-footer">
           <Link href="/">Back to NaTarot / Về NaTarot</Link>
           <span>Contact / Liên hệ: zerotqt001@gmail.com</span>
+          {document.path === "/privacy" && <AnalyticsPreferencesButton />}
         </footer>
       </article>
     </main>

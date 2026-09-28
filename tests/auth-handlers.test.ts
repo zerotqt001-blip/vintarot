@@ -8,6 +8,7 @@ import { SESSION_COOKIE_NAME, createMemberAuthStore, parseCookie, verifyPassword
 import { captureAttribution } from "../lib/affiliate/service";
 import { hashReferralCode } from "../lib/affiliate/repository";
 import { AFFILIATE_GUEST_COOKIE_NAME } from "../lib/affiliate/anonymous-attribution";
+import { createCreditStore } from "../lib/credits/repository";
 import { createSqliteD1Database } from "../lib/sqlite-d1";
 
 const migrationFiles = [
@@ -101,13 +102,14 @@ test("registration creates one unverified member, mails once, and hides duplicat
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM members").first<{ count: number }>())?.count, 1);
   const trialGrants = await harness.database.prepare(`SELECT g.units, g.source, g.grant_key, g.expires_at
     FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id
-    WHERE a.owner_kind='member' AND a.owner_id=?`).bind(member?.id).all<{
+    WHERE a.owner_kind='member' AND a.owner_id=?`).bind(`member:${member?.id}`).all<{
       units: number;
       source: string;
       grant_key: string;
       expires_at: number | null;
-    }>();
+  }>();
   assert.deepEqual(trialGrants.results, [{ units: 1, source: "TRIAL", grant_key: "signup-trial:v1", expires_at: null }]);
+  assert.equal((await createCreditStore(harness.database).getBalance({ kind: "member", ownerId: `member:${member?.id}` })).availableUnits, 1);
 });
 
 test("registration claims an anonymous referral only after mail delivery and verification enrolls the member", async (t) => {
