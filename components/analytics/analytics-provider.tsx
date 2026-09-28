@@ -15,19 +15,41 @@ type AnalyticsConsentContextValue = {
 };
 
 type Gtag = (...args: unknown[]) => void;
-type AnalyticsWindow = Window & { dataLayer?: unknown[]; gtag?: Gtag };
+type AnalyticsWindow = Window & {
+  [key: `ga-disable-${string}`]: boolean | undefined;
+  dataLayer?: unknown[];
+  gtag?: Gtag;
+};
+type BannerLocale = 'en' | 'vi';
 
 const CONSENT_STORAGE_KEY = 'natarot.analytics-consent.v1';
+const LOCALE_STORAGE_KEY = 'vintarot-locale';
 const TAG_SCRIPT_ID = 'natarot-ga4-tag';
 const AnalyticsConsentContext = createContext<AnalyticsConsentContextValue | null>(null);
 
 function getGtag(): Gtag {
-  const analyticsWindow = window as AnalyticsWindow;
+  const analyticsWindow = window as unknown as AnalyticsWindow;
   analyticsWindow.dataLayer ??= [];
   analyticsWindow.gtag ??= (...args: unknown[]) => {
     analyticsWindow.dataLayer?.push(args);
   };
   return analyticsWindow.gtag;
+}
+
+function setGoogleTagCollectionDisabled(measurementId: string, disabled: boolean) {
+  // Google checks this opt-out flag before sending data, including cookieless consent pings.
+  const analyticsWindow = window as unknown as AnalyticsWindow;
+  analyticsWindow[`ga-disable-${measurementId}`] = disabled;
+}
+
+function getBannerLocale(): BannerLocale {
+  try {
+    const saved = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (saved === 'en' || saved === 'vi') return saved;
+  } catch {
+    // Fall back to the document language when local storage is unavailable.
+  }
+  return document.documentElement.lang.toLowerCase().startsWith('vi') ? 'vi' : 'en';
 }
 
 function clearGaCookies() {
@@ -81,6 +103,7 @@ export function AnalyticsProvider({
   const validMeasurementId = isValidGa4MeasurementId(measurementId) ? measurementId : null;
   const [consent, setConsent] = useState<AnalyticsConsent>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [bannerLocale, setBannerLocale] = useState<BannerLocale>('en');
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [tagReady, setTagReady] = useState(false);
   const consentRef = useRef<AnalyticsConsent>(null);
@@ -89,15 +112,28 @@ export function AnalyticsProvider({
 
   useEffect(() => {
     if (!validMeasurementId) return;
+    setBannerLocale(getBannerLocale());
+    const syncBannerLocale = () => setBannerLocale(getBannerLocale());
+    const observer = new MutationObserver(syncBannerLocale);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    window.addEventListener('storage', syncBannerLocale);
+
     try {
       const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);
       const choice = stored === 'accepted' || stored === 'rejected' ? stored : null;
+      if (choice !== 'accepted') setGoogleTagCollectionDisabled(validMeasurementId, true);
       consentRef.current = choice;
       setConsent(choice);
     } catch {
+      setGoogleTagCollectionDisabled(validMeasurementId, true);
       consentRef.current = null;
     }
     setHydrated(true);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('storage', syncBannerLocale);
+    };
   }, [validMeasurementId]);
 
   useEffect(() => {
@@ -110,6 +146,7 @@ export function AnalyticsProvider({
       ad_user_data: 'denied',
       ad_personalization: 'denied',
     });
+    setGoogleTagCollectionDisabled(validMeasurementId, false);
     gtag('consent', 'update', { analytics_storage: 'granted' });
 
     const initializeTag = () => {
@@ -173,6 +210,9 @@ export function AnalyticsProvider({
   const chooseConsent = useCallback((choice: Exclude<AnalyticsConsent, null>) => {
     const wasAccepted = consentRef.current === 'accepted';
     consentRef.current = choice;
+    if (choice === 'rejected' && validMeasurementId) {
+      setGoogleTagCollectionDisabled(validMeasurementId, true);
+    }
     if (choice === 'rejected' && wasAccepted) {
       getGtag()('consent', 'update', {
         analytics_storage: 'denied',
@@ -192,7 +232,7 @@ export function AnalyticsProvider({
     }
     setConsent(choice);
     setPreferencesOpen(false);
-  }, []);
+  }, [validMeasurementId]);
 
   const openPreferences = useCallback(() => {
     if (validMeasurementId) setPreferencesOpen(true);
@@ -202,17 +242,25 @@ export function AnalyticsProvider({
     <AnalyticsConsentContext.Provider value={validMeasurementId ? { openPreferences } : null}>
       {children}
       {validMeasurementId && hydrated && (consent === null || preferencesOpen) && (
-        <section className="analytics-consent" aria-label="Tùy chọn phân tích / Analytics preferences">
+        <section
+          className="analytics-consent"
+          aria-label={bannerLocale === 'vi' ? 'Tùy chọn phân tích' : 'Analytics preferences'}
+          lang={bannerLocale}
+        >
           <div className="analytics-consent__content">
-            <h2>Quyền riêng tư / Your privacy</h2>
-            <p>Lượt xem trang và phiên chỉ được đo sau khi bạn cho phép. / Page views and sessions are measured only after you allow analytics.</p>
+            <h2>{bannerLocale === 'vi' ? 'Quyền riêng tư' : 'Your privacy'}</h2>
+            <p>
+              {bannerLocale === 'vi'
+                ? 'Lượt xem trang và phiên chỉ được đo sau khi bạn cho phép.'
+                : 'Page views and sessions are measured only after you allow analytics.'}
+            </p>
           </div>
           <div className="analytics-consent__actions">
             <button type="button" onClick={() => chooseConsent('accepted')}>
-              Cho phép phân tích / Allow analytics
+              {bannerLocale === 'vi' ? 'Cho phép phân tích' : 'Allow analytics'}
             </button>
             <button type="button" onClick={() => chooseConsent('rejected')}>
-              Từ chối / Reject
+              {bannerLocale === 'vi' ? 'Từ chối' : 'Reject'}
             </button>
           </div>
         </section>
