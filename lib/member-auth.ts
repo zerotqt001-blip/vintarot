@@ -8,7 +8,7 @@ const HASH_BYTES = 32;
 const SALT_BYTES = 16;
 const TOKEN_BYTES = 32;
 type D1Statement = ReturnType<D1Database["prepare"]>;
-type MemberAtomicStatements = (memberId: string) => D1Statement[];
+type MemberAtomicStatements = (memberId: string) => D1Statement[] | Promise<D1Statement[]>;
 
 export type AuthTokenKind = "email-verification" | "password-reset" | "google-completion";
 
@@ -312,7 +312,7 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
           row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
           row.last_login_at, row.disabled,
         ),
-        ...statementsForMember(row.id),
+        ...await statementsForMember(row.id),
       ]);
     } catch (error) {
       if (isUniqueConstraint(error)) throw new MemberConflictError();
@@ -630,7 +630,7 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
               row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
               row.last_login_at, row.disabled, input.tokenHash, marker,
             ),
-          ...statementsForMember(row.id),
+          ...await statementsForMember(row.id),
         ]);
         if (Number(results[1]?.meta.changes) !== 1) return null;
       } catch (error) {

@@ -85,6 +85,9 @@ function dashboardRows(report: BusinessReport, now: number): ReportRow[] {
     ["Successful orders", report.dashboard.successfulOrders, ""],
     ["Credits sold", report.dashboard.creditsSold, ""],
     ["Credits consumed", report.dashboard.creditsConsumed, ""],
+    ["Campaign rewards claimed", report.campaigns.reduce((total, row) => total + row.claimedRewards, 0), ""],
+    ["Promotional Credits redeemed", report.campaigns.reduce((total, row) => total + row.redeemedPromotionalUnits, 0), ""],
+    ["Promotional Credits expired", report.campaigns.reduce((total, row) => total + row.expiredPromotionalUnits, 0), ""],
     ["Affiliate commissions", report.dashboard.affiliateCommissionsMinor, "VND"],
     ["Pending commissions", report.dashboard.pendingCommissionsMinor, "VND"],
   ];
@@ -121,6 +124,13 @@ function reportRows(report: BusinessReport, now: number): Map<string, ReportRow[
   output.set("Credits", report.credits.map((row) => ({
     key: row.date,
     cells: [row.date, row.creditsSold, row.creditsConsumed, row.creditsExpired, row.creditsRefunded],
+  })));
+  output.set("Campaigns", report.campaigns.map((row) => ({
+    key: row.campaignId,
+    cells: [row.campaignName, row.campaignType, row.status, row.rewardUnits, row.claimFrequency, row.startDate,
+      row.endDate ?? "", row.timeZone, row.eligibleMembers, row.claimedRewards, row.redeemedPromotionalUnits,
+      row.expiredPromotionalUnits, row.returningUsers, row.budgetUsedUnits, row.totalBudgetUnits ?? "",
+      row.budgetUtilizationPercent ?? ""],
   })));
   output.set("System", [
     { key: "metric:last-successful-synchronization", cells: ["Last successful synchronization", isoAt(now), "success", isoAt(now)] },

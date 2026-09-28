@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
 import { mkdtempSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
@@ -30,5 +31,12 @@ test("reporting migration adds isolated job state without changing business tabl
   assert.ok(!tables.includes("business_reporting_customer_copy"));
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM orders").get() as { count: number }).count, 0);
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM members").get() as { count: number }).count, 0);
+  sqlite.prepare("INSERT INTO business_reporting_row_state (sheet_name, row_key, row_number, row_hash, updated_at) VALUES ('Customers', 'preserved-row', 2, ?, 123)")
+    .run("a".repeat(64));
+  sqlite.exec(readFileSync(join(repoRoot, "drizzle", "0015_business_reporting_campaigns.sql"), "utf8"));
+  assert.equal((sqlite.prepare("SELECT row_number FROM business_reporting_row_state WHERE sheet_name='Customers' AND row_key='preserved-row'").get() as { row_number: number }).row_number, 2);
+  sqlite.prepare("INSERT INTO business_reporting_row_state (sheet_name, row_key, row_number, row_hash, updated_at) VALUES ('Campaigns', 'campaign-row', 2, ?, 123)")
+    .run("b".repeat(64));
+  assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM business_reporting_row_state WHERE sheet_name='Campaigns'").get() as { count: number }).count, 1);
   sqlite.close();
 });

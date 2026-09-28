@@ -20,6 +20,7 @@ const migrationFiles = [
   "0007_sepay_commercial.sql",
   "0008_credit_fulfillment_timestamp.sql",
   "0009_affiliate_referral_links.sql",
+  "0014_marketing_campaigns.sql",
 ];
 const tokenUrl = "https://oauth2.googleapis.com/token";
 const userInfoUrl = "https://openidconnect.googleapis.com/v1/userinfo";
@@ -338,6 +339,9 @@ test("Google first login creates a completion token with no provider tokens and 
       expires_at: number | null;
     }>();
   assert.deepEqual(trialGrant, { units: 1, source: "TRIAL", grant_key: "signup-trial:v1", expires_at: null });
+  assert.deepEqual(await harness.database.prepare("SELECT campaign_id, claim_period, units FROM marketing_campaign_claims WHERE member_id=?").bind(member?.id).all().then((result) => result.results), [
+    { campaign_id: "welcome-bonus-v1", claim_period: "once", units: 1 },
+  ]);
   assert.ok(parseCookie(complete.headers.get("set-cookie"), SESSION_COOKIE_NAME));
   assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(member?.id).first<{ status: string }>())?.status, "ACTIVE");
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?) AND public_code IS NOT NULL").bind(member?.id).first<{ count: number }>())?.count, 1);

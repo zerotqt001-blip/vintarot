@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Globe2, HelpCircle, Heart, ShoppingBag, Star, UserRound, Gift } from "lucide-react";
+import { ArrowRight, Globe2, Gift, HelpCircle, Heart, Share2, ShoppingBag, Star, UserRound } from "lucide-react";
 import Link from "next/link";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -50,13 +50,15 @@ function resolveVariant(path: string, hasChildren: boolean): ShellVariant {
   if (path === "/room") return "immersive";
   if (path === "/create") return "create";
   if (path === "/daily-spread") return "daily";
+  if (path === "/daily-rewards") return "daily";
   if (path === "/reading") return "reading";
   return "standard";
 }
 
 const commerceNav = [
   ["nav.membership", ShoppingBag, "/packages"],
-  ["nav.affiliate", Gift, "/affiliate"],
+  ["nav.dailyRewards", Gift, "/daily-rewards"],
+  ["nav.affiliate", Share2, "/affiliate"],
   ["nav.account", UserRound, "/account"],
 ] as const;
 
@@ -136,10 +138,10 @@ export default function NaTarotShell({ user, children, path }: NaTarotShellProps
       <CelestialBackground variant={variant} />
       <NaTarotHeader path={path} variant={variant} t={t} accountHref={accountHref} />
       {showCommerceAccess && <>
-        <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+        <nav className="commerce-access-nav commerce-access-nav--desktop" aria-label={`${t("nav.membership")} / ${t("nav.dailyRewards")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
           {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}
         </nav>
-        <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
+        <nav className="commerce-access-nav commerce-access-nav--mobile" aria-label={`${t("nav.membership")} / ${t("nav.dailyRewards")} / ${t("nav.affiliate")} / ${t("nav.account")}`}>
           {commerceNav.map(([key, Icon, href]) => <Link className={`commerce-access-nav__link${href === path ? " active" : ""}`} key={href} href={href} aria-current={href === path ? "page" : undefined}><Icon size={16} strokeWidth={1.35} /><span>{t(key)}</span></Link>)}
         </nav>
       </>}
