@@ -1,6 +1,6 @@
 # NaTarot Google Analytics 4 Integration
 
-**Status:** Design approved in chat; awaiting owner review of this written specification.
+**Status:** Approved and implemented; production release active on 2026-09-28.
 
 ## Goal
 

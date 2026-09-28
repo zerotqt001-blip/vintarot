@@ -1,5 +1,14 @@
 # VinTarot state
 
+## NaTarot Google Analytics 4 (2026-09-28; live on a separate property)
+NaTarot now uses a dedicated Google Analytics account/property and web stream for `https://natarot.com`: account `NaTarot`, property `NaTarot Website` (property ID `556109282`), and Measurement ID `G-F9FTDDYV3E`. The property uses Vietnam time (`Asia/Ho_Chi_Minh`) and VND. It is separate from the existing `Kết Nối Bốn Phương` property, which was not changed.
+
+The consent-gated implementation is included in production source commit `4a55507cc46972b807fb0f5822cf9d4603f6033c` and was built with `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-F9FTDDYV3E`. Release `natarot-ga4-4a55507-20260928T092355Z` is active. Candidate and production health checks passed; local and public `/api/health`, `/`, and `/privacy` returned HTTP 200. TypeScript, production build, and `git diff --check` passed; no automated tests were run.
+
+The live browser showed the Vietnamese privacy banner, visible “Cho phép phân tích” and “Từ chối” actions, and the configured Measurement ID. Before a visitor chooses, the page loads no Google Analytics script. QA did not make a consent choice. Therefore Realtime currently shows zero users; it will begin receiving eligible visits only after a visitor opts in, and Google reports may take up to 48 hours to populate. The open report is [NaTarot Website Realtime](https://analytics.google.com/analytics/web/?authuser=2#/a409646526p556109282/realtime/overview?params=_u..nav%3Dmaui).
+
+The release manager verified the fresh backup policy (`daily=7`, `weekly=2`, `monthly=1`) and, after browser verification, retained current release `natarot-ga4-4a55507-20260928T092355Z` with rollback releases `natarot-admin-credit-summary-4a55507-20260928T090457Z` and `natarot-ga4-6157172-20260928T085215Z`; it removed two unreferenced releases. The task-created remote candidate was removed; the unrelated `/opt/natarot/.incoming` tree, failed-release quarantine, database, and staging environment were preserved.
+
 ## Admin Users Credit usage summary (2026-09-28; source implemented)
 The `/admin` Users table now includes the current available Credit balance and lifetime Credits used for each member. The available balance follows the existing eligible, non-expired grant projection; Credits used sums successful `CONSUME` events from the canonical ledger, matching the business-reporting definition and excluding adjustments or expirations. Both values remain restricted to the active `SUPER_ADMIN` role. No migration or account/ledger mutation was needed.
 
