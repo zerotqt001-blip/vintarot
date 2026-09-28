@@ -205,7 +205,7 @@ export function AnalyticsProvider({
         <section className="analytics-consent" aria-label="Tùy chọn phân tích / Analytics preferences">
           <div className="analytics-consent__content">
             <h2>Quyền riêng tư / Your privacy</h2>
-            <p>NaTarot chỉ đo lượt xem trang và phiên truy cập sau khi bạn cho phép. / NaTarot measures page views and sessions only after you allow it.</p>
+            <p>Lượt xem trang và phiên chỉ được đo sau khi bạn cho phép. / Page views and sessions are measured only after you allow analytics.</p>
           </div>
           <div className="analytics-consent__actions">
             <button type="button" onClick={() => chooseConsent('accepted')}>
