@@ -69,7 +69,7 @@ function createApiHarness() {
       const parsed = JSON.parse(body) as { requests: Array<{ addSheet?: { properties: { title: string } }; deleteSheet?: { sheetId: number } }> };
       const current = tabs.map((title, sheetId) => ({ title, sheetId }));
       for (const item of parsed.requests) if (item.addSheet) current.push({ title: item.addSheet.properties.title, sheetId: 100 + current.length });
-      tabs = current.filter(({ title }) => ["Dashboard", "Customers", "Revenue", "Affiliate", "Referrals", "Activity", "Credits", "System"].includes(title)).map(({ title }) => title);
+      tabs = current.filter(({ title }) => ["Dashboard", "Customers", "Revenue", "Affiliate", "Referrals", "Activity", "Credits", "Campaigns", "System"].includes(title)).map(({ title }) => title);
       return Response.json({ replies: [] });
     }
     if (url.includes("/values:batchUpdate")) return Response.json({ totalUpdatedCells: 100 });

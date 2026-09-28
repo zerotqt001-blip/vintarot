@@ -58,6 +58,26 @@ export type CreditReportRow = {
   creditsRefunded: number;
 };
 
+export type CampaignReportRow = {
+  campaignId: string;
+  campaignName: string;
+  campaignType: string;
+  status: string;
+  rewardUnits: number;
+  claimFrequency: string;
+  startDate: string;
+  endDate: string | null;
+  timeZone: string;
+  eligibleMembers: number;
+  claimedRewards: number;
+  redeemedPromotionalUnits: number;
+  expiredPromotionalUnits: number;
+  returningUsers: number;
+  budgetUsedUnits: number;
+  totalBudgetUnits: number | null;
+  budgetUtilizationPercent: number | null;
+};
+
 export type BusinessReport = {
   dashboard: {
     totalRegisteredUsers: number;
@@ -79,6 +99,7 @@ export type BusinessReport = {
   referrals: ReferralReportRow[];
   activity: ActivityReportRow[];
   credits: CreditReportRow[];
+  campaigns: CampaignReportRow[];
   system: {
     lastSuccessfulSynchronization: string | null;
     lastBackup: string | null;

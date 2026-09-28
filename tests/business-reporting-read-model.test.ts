@@ -8,6 +8,8 @@ import { tmpdir } from "node:os";
 import test, { type TestContext } from "node:test";
 import { createSqliteD1Database, type SqliteConnection } from "../lib/sqlite-d1";
 import { loadBusinessReport, recordDailyActivitySnapshot } from "../lib/business-reporting/read-model";
+import { createCreditStore } from "../lib/credits/repository";
+import { claimDailyReward, expireDueCreditGrants } from "../lib/marketing/campaigns";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
 const now = Date.UTC(2026, 8, 26, 5, 0, 0);
@@ -223,6 +225,41 @@ test("Credit totals use verified purchase grants and canonical ledger event sign
   assert.equal(report.dashboard.creditsSold, 10);
   assert.equal(report.dashboard.creditsConsumed, 2);
   assert.deepEqual(todayCredits, { date: "2026-09-26", creditsSold: 10, creditsConsumed: 2, creditsExpired: 3, creditsRefunded: 1 });
+});
+
+test("campaign analytics reconcile claims, redemption, expiration, returning members and budget without exporting member data", async (context) => {
+  const { database, sqlite } = makeFixture(context);
+  addMember(sqlite, { id: "campaign-analytics-member", createdAt: now - 86_400_000, verifiedAt: now - 86_400_000 });
+  sqlite.prepare(`UPDATE marketing_campaigns SET status='ACTIVE', reward_units=2, credit_expiration_seconds=60,
+    total_budget_units=4, budget_used_units=0 WHERE id='daily-rewards-v1'`).run();
+  await claimDailyReward(database, "campaign-analytics-member", now);
+  const owner = { kind: "member" as const, ownerId: "member:campaign-analytics-member" };
+  const credits = createCreditStore(database, () => now + 10_000);
+  const reservation = await credits.reserveCredits({
+    owner,
+    units: 1,
+    usageType: "TAROT_READING",
+    resourceType: "reading_session",
+    resourceId: "campaign-reading-one",
+    idempotencyKey: "campaign-reading-one",
+  });
+  await credits.consumeReservation({ owner, reservationId: reservation.id, resultType: "tarot_reading", resultId: "campaign-reading-one" });
+  assert.deepEqual(await expireDueCreditGrants(database, now + 61_000), { expiredGrants: 1, expiredUnits: 1 });
+  await claimDailyReward(database, "campaign-analytics-member", now + 86_400_000);
+
+  const report = await loadBusinessReport(database, { now: now + 86_410_000, timeZone: "Asia/Ho_Chi_Minh" });
+  const campaign = report.campaigns.find((row) => row.campaignName === "Daily Rewards");
+
+  assert.ok(campaign);
+  assert.equal(campaign.claimedRewards, 2);
+  assert.equal(campaign.eligibleMembers, 1);
+  assert.equal(campaign.redeemedPromotionalUnits, 1);
+  assert.equal(campaign.expiredPromotionalUnits, 1);
+  assert.equal(campaign.returningUsers, 1);
+  assert.equal(campaign.budgetUsedUnits, 4);
+  assert.equal(campaign.totalBudgetUnits, 4);
+  assert.equal(campaign.budgetUtilizationPercent, 100);
+  assert.equal(JSON.stringify(campaign).includes("campaign-analytics-member"), false);
 });
 
 test("Affiliate rows preserve held, eligible, adjustment, and reversal ledger totals without exporting private snapshots", async (context) => {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Ban, BookOpen, Check, Eye, Receipt, RefreshCw, Search, Shield, Sparkles, UserRound, Users, WalletCards } from "lucide-react";
+import { Ban, BookOpen, Check, Eye, Gift, Receipt, RefreshCw, Search, Shield, Sparkles, UserRound, Users, WalletCards } from "lucide-react";
 import { useLanguage } from "@/components/language";
 
 /* FUNCTIONAL UI — NOT FINAL DESIGN */
@@ -221,7 +221,7 @@ export default function AdminConsole({ authenticated, canManageReaders = false, 
 
   return (
     <div className="functional-page admin-functional-page">
-      <header className="page-head functional-page-head"><h1>Admin control center</h1><p>Internal operations for users, Credits, VIP, orders, affiliate review, readings metadata and audit evidence.</p>{isSuperAdmin && <Link className="button black" href="/admin/users"><Users size={15} aria-hidden="true" />User management</Link>}{canManageReaders && <Link className="button" href="/admin/readers">{t("humanReaders.adminLink")}</Link>}</header>
+      <header className="page-head functional-page-head"><h1>Admin control center</h1><p>Internal operations for users, Credits, VIP, orders, affiliate review, readings metadata and audit evidence.</p>{isSuperAdmin && <div className="admin-quick-links"><Link className="button black" href="/admin/users"><Users size={15} aria-hidden="true" />User management</Link><Link className="button" href="/admin/marketing/campaigns"><Gift size={15} aria-hidden="true" />Marketing campaigns</Link></div>}{canManageReaders && <Link className="button" href="/admin/readers">{t("humanReaders.adminLink")}</Link>}</header>
       <div className="functional-toolbar"><button className="button" type="button" onClick={() => void loadAll(searchQuery)} disabled={busy}><RefreshCw size={15} aria-hidden="true" />{busy ? "Working…" : "Refresh"}</button><span>Financial and entitlement actions are audited automatically.</span></div>
       {message && <p className="functional-status functional-status--error" role="status" aria-live="polite">{message}</p>}
 

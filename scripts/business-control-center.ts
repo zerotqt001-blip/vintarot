@@ -5,6 +5,7 @@ import { createReadStream, lstatSync, readFileSync, readdirSync, realpathSync } 
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { D1Database } from "@cloudflare/workers-types";
+import { expireDueCreditGrants } from "../lib/marketing/campaigns";
 import { businessDateKey } from "../lib/business-reporting/read-model";
 import { mirrorBackupRetention, selectOffsiteRetentionReferences, uploadVerifiedOffsiteBackup, type LocalBackupRetentionCandidate, type LocalBackupRetentionReference } from "../lib/business-reporting/offsite-backup";
 import { BUSINESS_REPORTING_TIME_ZONE } from "../lib/business-reporting/types";
@@ -427,14 +428,27 @@ export async function runBusinessControlCenter(): Promise<void> {
     import("../lib/google-drive-config"),
   ]);
   const now = Date.now();
+  let creditExpiryStatus: "success" | "failed" = "success";
+  let expiredGrants = 0;
+  let expiredUnits = 0;
+  try {
+    const result = await expireDueCreditGrants(database, now);
+    expiredGrants = result.expiredGrants;
+    expiredUnits = result.expiredUnits;
+  } catch {
+    creditExpiryStatus = "failed";
+  }
+  const creditExpiry = { creditExpiry: creditExpiryStatus, expiredGrants, expiredUnits };
   const ownerResolution = await resolveReportingOwner(database);
   if (!ownerResolution.owner) {
-    console.log(JSON.stringify({ service: "natarot-business-control-center", sheets: "blocked", backup: "blocked", reason: ownerResolution.blockedReason }));
+    console.log(JSON.stringify({ service: "natarot-business-control-center", ...creditExpiry, sheets: "blocked", backup: "blocked", reason: ownerResolution.blockedReason }));
+    if (creditExpiryStatus === "failed") process.exitCode = 1;
     return;
   }
   const config = getGoogleDriveConfig(new Request(runtimeEnv.NATAROT_PUBLIC_ORIGIN || "https://natarot.com"));
   if (!config) {
-    console.log(JSON.stringify({ service: "natarot-business-control-center", sheets: "blocked", backup: "blocked", reason: "google_configuration_unavailable" }));
+    console.log(JSON.stringify({ service: "natarot-business-control-center", ...creditExpiry, sheets: "blocked", backup: "blocked", reason: "google_configuration_unavailable" }));
+    if (creditExpiryStatus === "failed") process.exitCode = 1;
     return;
   }
 
@@ -442,7 +456,7 @@ export async function runBusinessControlCenter(): Promise<void> {
   try {
     backupAuditId = await startBackupJob(database, now);
   } catch {
-    console.log(JSON.stringify({ service: "natarot-business-control-center", status: "failed", reason: "backup_audit_start_failed" }));
+    console.log(JSON.stringify({ service: "natarot-business-control-center", ...creditExpiry, status: "failed", reason: "backup_audit_start_failed" }));
     process.exitCode = 1;
     return;
   }
@@ -511,6 +525,7 @@ export async function runBusinessControlCenter(): Promise<void> {
   console.log(JSON.stringify({
     service: "natarot-business-control-center",
     timestamp: new Date(now).toISOString(),
+    ...creditExpiry,
     sheets: sheetsStatus,
     ...(sheetsReason ? { sheetsReason } : {}),
     ...(sheetsHttpStatus ? { sheetsHttpStatus } : {}),
@@ -520,7 +535,7 @@ export async function runBusinessControlCenter(): Promise<void> {
     backupReferences,
     alertSent,
   }));
-  if (sheetsStatus === "failed" || backupStatus === "failed") process.exitCode = 1;
+  if (creditExpiryStatus === "failed" || sheetsStatus === "failed" || backupStatus === "failed") process.exitCode = 1;
 }
 
 if (isBusinessControlCenterEntrypoint(process.argv[1], import.meta.url)) {

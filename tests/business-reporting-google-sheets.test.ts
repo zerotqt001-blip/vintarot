@@ -7,12 +7,12 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test, { type TestContext } from "node:test";
 import { createSqliteD1Database, type SqliteConnection } from "../lib/sqlite-d1";
-import { BUSINESS_REPORT_SHEETS, BusinessReportingGoogleError, ensureBusinessSpreadsheet, googleFetchWithRetry } from "../lib/business-reporting/google-sheets";
+import { BUSINESS_REPORT_SHEETS, BusinessReportingGoogleError, ensureBusinessSpreadsheet, googleFetchWithRetry, reportSheetColumnLabel } from "../lib/business-reporting/google-sheets";
 import { resolveReportingOwner } from "../lib/business-reporting/sync";
 import type { DriveRuntimeConfig } from "../lib/google-drive";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
-const expectedTabs = ["Dashboard", "Customers", "Revenue", "Affiliate", "Referrals", "Activity", "Credits", "System"];
+const expectedTabs = ["Dashboard", "Customers", "Revenue", "Affiliate", "Referrals", "Activity", "Credits", "Campaigns", "System"];
 const keyring = { currentKeyId: "test", keys: { test: new Uint8Array(32) } };
 const config: DriveRuntimeConfig = {
   clientId: "synthetic-client-id",
@@ -20,6 +20,14 @@ const config: DriveRuntimeConfig = {
   redirectUri: "https://natarot.test/api/auth/google/callback",
   encryptionKeyring: keyring,
 };
+
+test("report sheet column labels support campaign rows beyond the previous eight-column limit", () => {
+  assert.equal(reportSheetColumnLabel(1), "A");
+  assert.equal(reportSheetColumnLabel(8), "H");
+  assert.equal(reportSheetColumnLabel(9), "I");
+  assert.equal(reportSheetColumnLabel(16), "P");
+  assert.equal(reportSheetColumnLabel(27), "AA");
+});
 
 function makeFixture(context: TestContext) {
   const directory = mkdtempSync(join(tmpdir(), "natarot-business-sheets-"));
@@ -193,12 +201,12 @@ test("spreadsheet creation retries safely, creates the exact private workbook ta
   assert.deepEqual(workbook.tabs, expectedTabs);
   assert.deepEqual(tabs, expectedTabs);
   assert.deepEqual(BUSINESS_REPORT_SHEETS.map((sheet) => sheet.name), expectedTabs);
-  assert.deepEqual(BUSINESS_REPORT_SHEETS.map((sheet) => sheet.headers.length), [5, 7, 6, 8, 5, 6, 5, 4]);
+  assert.deepEqual(BUSINESS_REPORT_SHEETS.map((sheet) => sheet.headers.length), [5, 7, 6, 8, 5, 6, 5, 16, 4]);
   const headerWrite = requests.find((entry) => entry.url.includes("/values:batchUpdate"));
   assert.ok(headerWrite);
   const headerPayload = JSON.parse(headerWrite.body) as { data: Array<{ range: string; values: string[][] }> };
   assert.deepEqual(headerPayload.data.map((range) => range.range.split("!")[0]), expectedTabs);
-  assert.deepEqual(headerPayload.data.map((range) => range.values[0]?.[0]), ["Metric", "Opaque customer ID", "Reporting date", "Opaque affiliate ID", "Opaque referrer ID", "Date", "Date", "Metric"]);
+  assert.deepEqual(headerPayload.data.map((range) => range.values[0]?.[0]), ["Metric", "Opaque customer ID", "Reporting date", "Opaque affiliate ID", "Opaque referrer ID", "Date", "Date", "Campaign", "Metric"]);
   assert.ok(requests.some((entry) => entry.url.includes("appProperties") || entry.url.includes("q=")));
   assert.ok(requests.some((entry) => JSON.stringify(JSON.parse(entry.body || "{}")).includes("natarotPurpose")));
   assert.equal(requests.some((entry) => entry.url.includes("/permissions")), false);

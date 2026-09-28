@@ -48,6 +48,69 @@ function createPreShareDatabase(dbPath: string): void {
   sqlite.close();
 }
 
+function createPreCampaignDatabase(dbPath: string): void {
+  const sqlite = new DatabaseSync(dbPath);
+  sqlite.exec("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS natarot_migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)");
+  for (const name of migrationNames().filter((migration) => Number(migration.slice(0, 4)) < 14)) {
+    applyMigration(sqlite, name, readFileSync(join(migrationDirectory, name), "utf8"), 1);
+  }
+  sqlite.prepare("INSERT INTO members (id, username, email, phone, created_at, updated_at, disabled) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .run("legacy-member", "legacy_reader", "legacy@example.test", "", 1, 1, 0);
+  const accountId = "credit-account:member:member:legacy-member";
+  sqlite.prepare("INSERT INTO credit_accounts (id, owner_kind, owner_id, mutation_version, mutation_token, created_at, updated_at) VALUES (?, 'member', ?, 3, NULL, 1, 2)")
+    .run(accountId, "member:legacy-member");
+  const grants = [
+    { id: "legacy-trial-grant", source: "TRIAL", sourceType: "SIGNUP_TRIAL", key: "signup-trial:v1", units: 1, expiresAt: null },
+    { id: "legacy-purchase-grant", source: "PURCHASE", sourceType: "COMMERCIAL_ORDER", key: "order:legacy", units: 4, expiresAt: null },
+    { id: "legacy-promotion-grant", source: "PROMOTION", sourceType: "LEGACY_PROMO", key: "promo:legacy", units: 2, expiresAt: 50_000 },
+  ];
+  for (const grant of grants) {
+    const fingerprint = grant.id.padEnd(64, "0").slice(0, 64);
+    sqlite.prepare(`INSERT INTO credit_grants (id, account_id, source, source_type, source_id, grant_key, request_fingerprint,
+      units, available_units, eligible_from, expires_at, policy_version, policy_snapshot, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 'legacy-reference', ?, ?, ?, ?, 10, ?, 'legacy-v1', '{}', 10, 10)`)
+      .run(grant.id, accountId, grant.source, grant.sourceType, grant.key, fingerprint, grant.units, grant.units, grant.expiresAt);
+    sqlite.prepare(`INSERT INTO credit_ledger (id, account_id, grant_id, reservation_id, event_type, units, reference_type, reference_id,
+      idempotency_key, request_fingerprint, actor_kind, actor_id, reason, effective_at, created_at, reversed_entry_id)
+      VALUES (?, ?, ?, NULL, 'GRANT', ?, 'legacy', ?, ?, ?, 'system', NULL, 'Legacy grant', 10, 10, NULL)`)
+      .run(`ledger-${grant.id}`, accountId, grant.id, grant.units, grant.id, `grant:${grant.key}`, fingerprint);
+  }
+  sqlite.prepare(`INSERT INTO credit_reservations (id, account_id, usage_type, units, resource_type, resource_id, idempotency_key,
+    request_fingerprint, status, lease_expires_at, retry_count, result_type, result_id, reason, created_at, updated_at, consumed_at, released_at)
+    VALUES ('legacy-reservation', ?, 'AI_READING', 1, 'reading', 'legacy-reading', 'legacy-reservation-key', ?, 'RESERVED', NULL, 0, NULL, NULL, 'Legacy reservation', 11, 11, NULL, NULL)`)
+    .run(accountId, "r".repeat(64));
+  sqlite.prepare(`INSERT INTO credit_reservation_allocations (id, reservation_id, grant_id, held_units, consumed_units, released_units, created_at, updated_at)
+    VALUES ('legacy-allocation', 'legacy-reservation', 'legacy-purchase-grant', 1, 0, 0, 11, 11)`);
+  sqlite.prepare("INSERT INTO packages (id, slug, name_en, name_vi, active, created_at, updated_at) VALUES ('legacy-package', 'legacy-package', 'Legacy', 'Cũ', 1, 1, 1)").run();
+  sqlite.prepare(`INSERT INTO package_versions (id, package_id, version, amount_minor, currency, credit_units, vip_duration_seconds,
+    benefit_snapshot, policy_version, status, starts_at, ends_at, created_at)
+    VALUES ('legacy-package-v1', 'legacy-package', 1, 100, 'VND', 4, NULL, '{}', 'legacy-v1', 'active', 1, NULL, 1)`).run();
+  sqlite.prepare(`INSERT INTO orders (id, account_id, package_id, package_version_id, package_snapshot, amount_minor, currency, status,
+    idempotency_key, request_fingerprint, payment_reference, created_at, payment_confirmed_at, fulfilled_at, cancelled_at, refunded_at)
+    VALUES ('legacy-order', ?, 'legacy-package', 'legacy-package-v1', '{}', 100, 'VND', 'FULFILLED', 'legacy-order-key', ?,
+      'legacy-payment', 12, 12, 13, NULL, NULL)`)
+    .run(accountId, "o".repeat(64));
+  sqlite.prepare(`INSERT INTO order_fulfillments (id, order_id, fulfillment_key, result_snapshot, created_at, updated_at)
+    VALUES ('legacy-fulfillment', 'legacy-order', 'legacy-fulfillment-key', '{}', 13, 13)`).run();
+  sqlite.prepare("INSERT INTO affiliate_profiles (id, member_id, status, created_at, updated_at) VALUES ('legacy-affiliate', 'legacy-member', 'ACTIVE', 1, 1)").run();
+  sqlite.prepare(`INSERT INTO referral_codes (id, affiliate_profile_id, code_hash, status, source, created_at, expires_at)
+    VALUES ('legacy-referral-code', 'legacy-affiliate', ?, 'ACTIVE', 'legacy-fixture', 1, NULL)`)
+    .run("c".repeat(64));
+  sqlite.prepare(`INSERT INTO referral_attributions (id, owner_key, member_id, affiliate_profile_id, referral_code_id, source, attributed_at, expires_at, created_at)
+    VALUES ('legacy-attribution', 'member:legacy-member', 'legacy-member', 'legacy-affiliate', 'legacy-referral-code', 'legacy-fixture', 1, 100000, 1)`).run();
+  sqlite.prepare(`INSERT INTO affiliate_conversions (id, event_key, order_id, fulfillment_id, member_id, attribution_id, affiliate_profile_id,
+    policy_version_id, tier_id, amount_minor, currency, commission_minor, payment_reference, package_snapshot, status, fulfilled_at,
+    eligible_at, reversed_at, created_at, updated_at)
+    VALUES ('legacy-conversion', 'legacy-event', 'legacy-order', 'legacy-fulfillment', 'legacy-member', 'legacy-attribution',
+      'legacy-affiliate', 'affiliate-v1-default', 'affiliate-v1-default-tier-1', 100, 'VND', 10, 'legacy-payment', '{}',
+      'HELD', 13, NULL, NULL, 13, 13)`).run();
+  sqlite.prepare(`INSERT INTO affiliate_commission_ledger (id, conversion_id, entry_type, direction, amount_minor, currency,
+    idempotency_key, reason, policy_snapshot, tier_snapshot, package_snapshot, created_at)
+    VALUES ('legacy-commission', 'legacy-conversion', 'COMMISSION', 'CREDIT', 10, 'VND', 'legacy-commission-key',
+      'Legacy commission', '{}', '{}', '{}', 13)`).run();
+  sqlite.close();
+}
+
 test("Node migration bootstrap applies and repeats the full schema and seed", (t) => {
   const directory = mkdtempSync(join(tmpdir(), "natarot-migrate-"));
   const dbPath = join(directory, "natarot.sqlite");
@@ -201,4 +264,57 @@ test("Node migration upgrades an existing pre-share database without losing memb
   assert.equal((sqlite.prepare("SELECT COUNT(*) AS count FROM commercial_payment_events").get() as { count: number }).count, 0);
   assert.deepEqual(sqlite.prepare("PRAGMA foreign_key_check").all(), []);
   sqlite.close();
+});
+
+test("campaign migrations preserve legacy Credit accounts, grants, ledger, reservations, and allocations", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "natarot-campaign-migration-"));
+  const dbPath = join(directory, "natarot.sqlite");
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  createPreCampaignDatabase(dbPath);
+  const sqlite = new DatabaseSync(dbPath);
+  const preservedTables = [
+    "credit_accounts",
+    "credit_grants",
+    "credit_ledger",
+    "credit_reservations",
+    "credit_reservation_allocations",
+    "orders",
+    "order_fulfillments",
+    "affiliate_profiles",
+    "referral_codes",
+    "referral_attributions",
+    "affiliate_conversions",
+    "affiliate_commission_ledger",
+  ];
+  const before = Object.fromEntries(preservedTables.map((table) => [
+    table,
+    sqlite.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all(),
+  ]));
+  sqlite.close();
+
+  execFileSync(process.execPath, ["scripts/node-migrate.mjs"], {
+    cwd: repoRoot,
+    env: { ...process.env, NATAROT_DB_PATH: dbPath },
+    stdio: "pipe",
+  });
+
+  const migrated = new DatabaseSync(dbPath);
+  for (const table of preservedTables) {
+    assert.deepEqual(migrated.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all(), before[table], `${table} changed during campaign migrations`);
+  }
+  assert.deepEqual(migrated.prepare("PRAGMA foreign_key_check").all(), []);
+  assert.deepEqual(
+    migrated.prepare("SELECT id, status, reward_units, budget_used_units FROM marketing_campaigns ORDER BY id").all()
+      .map((row) => ({ ...row })),
+    [
+      { id: "daily-rewards-v1", status: "PAUSED", reward_units: 1, budget_used_units: 0 },
+      { id: "welcome-bonus-v1", status: "ACTIVE", reward_units: 1, budget_used_units: 1 },
+    ],
+  );
+  const appliedCampaignMigrations = migrated.prepare("SELECT name FROM natarot_migrations WHERE name >= '0014_' ORDER BY name").all();
+  assert.deepEqual(appliedCampaignMigrations.map(({ name }) => name), [
+    "0014_marketing_campaigns.sql",
+    "0015_business_reporting_campaigns.sql",
+  ]);
+  migrated.close();
 });

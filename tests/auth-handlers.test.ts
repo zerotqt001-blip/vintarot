@@ -24,6 +24,7 @@ const migrationFiles = [
   "0007_sepay_commercial.sql",
   "0008_credit_fulfillment_timestamp.sql",
   "0009_affiliate_referral_links.sql",
+  "0014_marketing_campaigns.sql",
 ];
 const validRegistration = {
   email: "Reader@Example.test",
@@ -110,6 +111,44 @@ test("registration creates one unverified member, mails once, and hides duplicat
   }>();
   assert.deepEqual(trialGrants.results, [{ units: 1, source: "TRIAL", grant_key: "signup-trial:v1", expires_at: null }]);
   assert.equal((await createCreditStore(harness.database).getBalance({ kind: "member", ownerId: `member:${member?.id}` })).availableUnits, 1);
+  assert.deepEqual(await harness.database.prepare("SELECT campaign_id, claim_period, units FROM marketing_campaign_claims WHERE member_id=?").bind(member?.id).all().then((result) => result.results), [
+    { campaign_id: "welcome-bonus-v1", claim_period: "once", units: 1 },
+  ]);
+  assert.equal((await harness.database.prepare("SELECT budget_used_units FROM marketing_campaigns WHERE id='welcome-bonus-v1'").first<{ budget_used_units: number }>())?.budget_used_units, 1);
+});
+
+test("Admin Welcome Bonus settings apply to future signups without changing grant identity", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  const configuredExpiry = 1_700_000_000_000 + 24 * 60 * 60 * 1_000;
+  harness.sqlite.prepare("UPDATE marketing_campaigns SET reward_units=2, credit_expiration_seconds=86400, config_version=config_version+1 WHERE id='welcome-bonus-v1'").run();
+
+  const registration = await harness.handlers.register(jsonRequest("/api/auth/register", validRegistration));
+  assert.equal(registration.status, 200);
+  const member = await harness.store.findByIdentifier("moon_rider");
+  const grant = await harness.database.prepare(`SELECT g.units, g.source, g.source_type, g.grant_key, g.expires_at
+    FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id WHERE a.owner_id=?`).bind(`member:${member?.id}`).first<Record<string, unknown>>();
+  assert.deepEqual({ ...grant }, {
+    units: 2,
+    source: "TRIAL",
+    source_type: "SIGNUP_TRIAL",
+    grant_key: "signup-trial:v1",
+    expires_at: configuredExpiry,
+  });
+  assert.equal((await harness.database.prepare("SELECT units FROM marketing_campaign_claims WHERE member_id=?").bind(member?.id).first<{ units: number }>())?.units, 2);
+});
+
+test("pausing Welcome Bonus does not interrupt member registration and issues no trial grant", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.sqlite.close());
+  harness.sqlite.prepare("UPDATE marketing_campaigns SET status='PAUSED', config_version=config_version+1 WHERE id='welcome-bonus-v1'").run();
+
+  const registration = await harness.handlers.register(jsonRequest("/api/auth/register", validRegistration));
+  assert.deepEqual(await registration.json(), { ok: true, next: "verify-email" });
+  assert.ok(await harness.store.findByIdentifier("moon_rider"));
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM marketing_campaign_claims").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT budget_used_units AS units FROM marketing_campaigns WHERE id='welcome-bonus-v1'").first<{ units: number }>())?.units, 0);
 });
 
 test("registration claims an anonymous referral only after mail delivery and verification enrolls the member", async (t) => {
@@ -312,6 +351,7 @@ test("registration mail failure is generic and rolls back the new member and tok
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM auth_tokens").first<{ count: number }>())?.count, 0);
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants").first<{ count: number }>())?.count, 0);
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_accounts").first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT budget_used_units AS units FROM marketing_campaigns WHERE id='welcome-bonus-v1'").first<{ units: number }>())?.units, 0);
 });
 
 test("reset mail failure is generic for known and unknown identifiers and preserves the account", async (t) => {

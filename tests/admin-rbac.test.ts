@@ -50,8 +50,10 @@ test("the fixed role matrix denies spoofing and enforces every privilege boundar
     ["SUPPORT", "admin.dashboard.read", true],
     ["SUPPORT", "admin.readings.read", false],
     ["SUPPORT", "admin.credits.adjust", false],
+    ["SUPPORT", "admin.marketing.manage", false],
     ["FINANCE", "admin.dashboard.read", true],
     ["FINANCE", "admin.credits.adjust", false],
+    ["FINANCE", "admin.marketing.manage", false],
     ["FINANCE", "admin.users.manage" as Permission, false],
     ["FINANCE", "admin.roles.manage", false],
     ["CONTENT_ADMIN", "admin.users.read", false],
@@ -59,6 +61,7 @@ test("the fixed role matrix denies spoofing and enforces every privilege boundar
     ["ADMIN", "admin.affiliate.manage", true],
     ["ADMIN", "admin.readings.read", true],
     ["ADMIN", "admin.credits.adjust", false],
+    ["ADMIN", "admin.marketing.manage", false],
     ["ADMIN", "admin.users.manage" as Permission, false],
     ["ADMIN", "admin.roles.manage", false],
     ["ADMIN", "admin.security.manage", false],
@@ -66,6 +69,7 @@ test("the fixed role matrix denies spoofing and enforces every privilege boundar
     ["SUPER_ADMIN", "admin.security.manage", true],
     ["SUPER_ADMIN", "admin.credits.adjust", true],
     ["SUPER_ADMIN", "admin.users.manage" as Permission, true],
+    ["SUPER_ADMIN", "admin.marketing.manage", true],
   ];
   for (const [role, permission, allowed] of checks) {
     const request = requestFor(sessions.get(role)!, permission === "admin.users.read" ? { "x-role": "SUPER_ADMIN" } : {});
@@ -132,5 +136,7 @@ test("permission helper agrees with the documented matrix", () => {
   assert.equal(hasPermission("ADMIN", "admin.credits.adjust"), false);
   assert.equal(hasPermission("CONTENT_ADMIN", "admin.orders.read"), false);
   assert.equal(hasPermission("ADMIN", "admin.security.manage"), false);
+  assert.equal(hasPermission("ADMIN", "admin.marketing.manage"), false);
   assert.equal(hasPermission("SUPER_ADMIN", "admin.audit.read"), true);
+  assert.equal(hasPermission("SUPER_ADMIN", "admin.marketing.manage"), true);
 });

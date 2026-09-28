@@ -245,7 +245,14 @@ export function creditAccountId(owner: CreditOwner): string {
 export function prepareGrantCreditsStatements(
   database: D1Database,
   input: GrantCreditsInput,
-  options: { timestamp?: number; createAccount?: boolean; requireMemberRecord?: boolean; memberRecordId?: string } = {},
+  options: {
+    timestamp?: number;
+    createAccount?: boolean;
+    requireMemberRecord?: boolean;
+    memberRecordId?: string;
+    guardSql?: string;
+    guardValues?: unknown[];
+  } = {},
 ): Array<ReturnType<D1Database["prepare"]>> {
   if (!Number.isSafeInteger(input.units) || input.units <= 0) throw new CreditError("Grant units must be a positive integer", "invalid_units");
   if (!input.grantKey.trim()) throw new CreditError("Grant key is required", "invalid_grant_key");
@@ -284,11 +291,20 @@ export function prepareGrantCreditsStatements(
     createdAt: timestamp,
   });
 
-  const memberCondition = options.requireMemberRecord ? " AND EXISTS (SELECT 1 FROM members WHERE id = ?)" : "";
-  const accountValuesSql = options.requireMemberRecord
-    ? "SELECT ?, ?, ?, 0, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
+  const accountConditions = [
+    ...(options.requireMemberRecord ? ["EXISTS (SELECT 1 FROM members WHERE id = ?)"] : []),
+    ...(options.guardSql ? [`(${options.guardSql})`] : []),
+  ];
+  const accountConditionSql = accountConditions.length ? ` WHERE ${accountConditions.join(" AND ")}` : "";
+  const accountValuesSql = accountConditionSql
+    ? `SELECT ?, ?, ?, 0, NULL, ?, ?${accountConditionSql}`
     : "VALUES (?, ?, ?, 0, NULL, ?, ?)";
-  const accountGuardValues = options.requireMemberRecord ? [memberRecordId!] : [];
+  const accountGuardValues = [
+    ...(options.requireMemberRecord ? [memberRecordId!] : []),
+    ...(options.guardValues ?? []),
+  ];
+  const memberCondition = options.requireMemberRecord ? " AND EXISTS (SELECT 1 FROM members WHERE id = ?)" : "";
+  const guardCondition = options.guardSql ? ` AND (${options.guardSql})` : "";
   const statements: Array<ReturnType<D1Database["prepare"]>> = [];
 
   if (options.createAccount !== false) {
@@ -296,18 +312,20 @@ export function prepareGrantCreditsStatements(
       .bind(accountId, input.owner.kind, input.owner.ownerId, timestamp, timestamp, ...accountGuardValues));
   }
   statements.push(
-    database.prepare(`UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?${memberCondition}`)
-      .bind(timestamp, accountId, ...accountGuardValues),
+    database.prepare(`UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?${memberCondition}${guardCondition}`)
+      .bind(timestamp, accountId, ...(options.requireMemberRecord ? [memberRecordId!] : []), ...(options.guardValues ?? [])),
     database.prepare(`INSERT OR IGNORE INTO credit_grants (id, account_id, source, source_type, source_id, grant_key, request_fingerprint, units, available_units, eligible_from, expires_at, policy_version, policy_snapshot, created_at, updated_at)
       ${options.requireMemberRecord
-        ? "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
-        : "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"}`)
-      .bind(grantId, accountId, input.source, input.sourceType ?? null, input.sourceId ?? null, input.grantKey, requestFingerprint, input.units, input.units, eligibleFrom, expiresAt, input.policyVersion, policySnapshot, timestamp, timestamp, ...accountGuardValues),
+        ? `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)${guardCondition}`
+        : options.guardSql ? `SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE (${options.guardSql})` : "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"}`)
+      .bind(grantId, accountId, input.source, input.sourceType ?? null, input.sourceId ?? null, input.grantKey, requestFingerprint, input.units, input.units, eligibleFrom, expiresAt, input.policyVersion, policySnapshot, timestamp, timestamp,
+        ...(options.requireMemberRecord ? [memberRecordId!] : []), ...(options.guardValues ?? [])),
     database.prepare(`INSERT OR IGNORE INTO credit_ledger (id, account_id, grant_id, reservation_id, event_type, units, reference_type, reference_id, idempotency_key, request_fingerprint, actor_kind, actor_id, reason, effective_at, created_at, reversed_entry_id)
       ${options.requireMemberRecord
-        ? "SELECT ?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
-        : "VALUES (?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL)"}`)
-      .bind(ledgerId, accountId, grantId, input.units, input.sourceType ?? "grant", input.sourceId ?? input.grantKey, ledgerKey, requestFingerprint, input.reason, eligibleFrom, timestamp, ...accountGuardValues),
+        ? `SELECT ?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)${guardCondition}`
+        : options.guardSql ? `SELECT ?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL WHERE (${options.guardSql})` : "VALUES (?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL)"}`)
+      .bind(ledgerId, accountId, grantId, input.units, input.sourceType ?? "grant", input.sourceId ?? input.grantKey, ledgerKey, requestFingerprint, input.reason, eligibleFrom, timestamp,
+        ...(options.requireMemberRecord ? [memberRecordId!] : []), ...(options.guardValues ?? [])),
   );
   if (input.audit) statements.push(prepareAuditInsert(database, input.audit, timestamp, { ignoreExisting: input.auditStrict !== true }));
   return statements;

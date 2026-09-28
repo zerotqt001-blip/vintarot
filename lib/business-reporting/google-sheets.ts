@@ -7,7 +7,6 @@ const WORKBOOK_TITLE = "NaTarot Business Control Center";
 const WORKBOOK_MIME_TYPE = "application/vnd.google-apps.spreadsheet";
 const WORKBOOK_APP_PROPERTY = "natarotPurpose";
 const WORKBOOK_APP_PROPERTY_VALUE = "business-control-center-v1";
-const COLUMN_LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 export type ReportingOwner = {
   memberId: string;
@@ -171,6 +170,10 @@ export const BUSINESS_REPORT_SHEETS = [
   {
     name: "Credits",
     headers: ["Date", "Credits sold", "Credits consumed", "Credits expired", "Credits refunded"],
+  },
+  {
+    name: "Campaigns",
+    headers: ["Campaign", "Campaign type", "Status", "Reward Credits", "Claim frequency", "Start date", "End date", "Time zone", "Eligible members", "Rewards claimed", "Promotional Credits redeemed", "Promotional Credits expired", "Returning members", "Budget used (Credits)", "Total budget (Credits)", "Budget utilization (%)"],
   },
   {
     name: "System",
@@ -440,6 +443,13 @@ export async function writeBusinessReportValues(input: {
 }
 
 export function reportSheetColumnLabel(index: number): string {
-  if (!Number.isSafeInteger(index) || index < 1 || index > COLUMN_LABELS.length) throw new RangeError("Invalid report column.");
-  return COLUMN_LABELS[index - 1]!;
+  if (!Number.isSafeInteger(index) || index < 1) throw new RangeError("Invalid report column.");
+  let value = index;
+  let label = "";
+  while (value > 0) {
+    const remainder = (value - 1) % 26;
+    label = String.fromCharCode(65 + remainder) + label;
+    value = Math.floor((value - 1) / 26);
+  }
+  return label;
 }

@@ -3,7 +3,8 @@ import type { GoogleOAuthClient } from "./google-oauth";
 import { clearAffiliateGuestCookie, readAffiliateGuestId } from "./affiliate/anonymous-attribution";
 import { ensureAffiliateEnrollment } from "./affiliate/enrollment";
 import { claimGuestReferralAttribution } from "./affiliate/service";
-import { creditAccountId, prepareGrantCreditsStatements } from "./credits/repository";
+import { creditAccountId } from "./credits/repository";
+import { prepareWelcomeSignupStatements } from "./marketing/campaigns";
 import {
   MemberConflictError,
   type MemberRow,
@@ -122,6 +123,11 @@ async function rollbackNewMember(database: D1Database, memberId: string, rawToke
   const statements = [];
   if (rawToken) statements.push(database.prepare("DELETE FROM auth_tokens WHERE token_hash=?").bind(await digestToken(rawToken)));
   statements.push(
+    database.prepare(`UPDATE marketing_campaigns SET budget_used_units=MAX(0, budget_used_units - COALESCE(
+      (SELECT units FROM marketing_campaign_claims WHERE campaign_id='welcome-bonus-v1' AND member_id=?), 0)), updated_at=?
+      WHERE id='welcome-bonus-v1' AND EXISTS (
+        SELECT 1 FROM marketing_campaign_claims WHERE campaign_id='welcome-bonus-v1' AND member_id=?)`).bind(memberId, Date.now(), memberId),
+    database.prepare("DELETE FROM marketing_campaign_claims WHERE campaign_id='welcome-bonus-v1' AND member_id=?").bind(memberId),
     database.prepare("DELETE FROM credit_ledger WHERE account_id=? AND idempotency_key=?").bind(accountId, `grant:${SIGNUP_TRIAL_CREDIT_GRANT_KEY}`),
     database.prepare("DELETE FROM credit_grants WHERE account_id=? AND grant_key=?").bind(accountId, SIGNUP_TRIAL_CREDIT_GRANT_KEY),
     database.prepare("DELETE FROM credit_accounts WHERE id=?").bind(accountId),
@@ -135,22 +141,7 @@ async function rollbackRegistration(database: D1Database, memberId: string, rawT
 }
 
 function signupTrialCreditStatements(database: D1Database, memberId: string, now: () => number) {
-  return prepareGrantCreditsStatements(database, {
-    owner: { kind: "member", ownerId: `member:${memberId}` },
-    source: "TRIAL",
-    units: 1,
-    grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY,
-    sourceType: "SIGNUP_TRIAL",
-    sourceId: memberId,
-    policyVersion: "signup-trial-v1",
-    policySnapshot: { grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY, units: 1, expiresAt: null },
-    reason: "Free signup trial credit",
-  }, {
-    timestamp: now(),
-    createAccount: true,
-    requireMemberRecord: true,
-    memberRecordId: memberId,
-  });
+  return prepareWelcomeSignupStatements(database, memberId, now());
 }
 
 function parseRegistration(value: unknown): { email: string; username: string; phone: string; password: string } | { fields: FieldErrors } {

@@ -8,11 +8,13 @@ import {
   type ActivityReportRow,
   type AffiliateReportRow,
   type BusinessReport,
+  type CampaignReportRow,
   type CreditReportRow,
   type CustomerReportRow,
   type ReferralReportRow,
   type RevenueReportRow,
 } from "./types";
+import { loadMarketingCampaignReport } from "../marketing/admin";
 
 const DAY_MS = 86_400_000;
 const dayFormatters = new Map<string, Intl.DateTimeFormat>();
@@ -149,7 +151,7 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
   const todayStart = startOfBusinessDate(today, timeZone);
   const tomorrowStart = startOfBusinessDate(addDays(today, 1), timeZone);
 
-  const [members, sessions, orderRows, profiles, attributions, conversions, affiliateLedger, grants, creditLedger, readingSessions, snapshotRows, syncState] = await Promise.all([
+  const [members, sessions, orderRows, profiles, attributions, conversions, affiliateLedger, grants, creditLedger, readingSessions, snapshotRows, syncState, campaignRecords] = await Promise.all([
     all<MemberRow>(database, `SELECT id, created_at AS createdAt, email_verified_at AS verifiedAt, disabled FROM members ORDER BY created_at, id`),
     all<SessionRow>(database, `SELECT member_id AS memberId, MAX(last_seen_at) AS lastSeenAt FROM auth_sessions GROUP BY member_id`),
     all<OrderRow>(database, `SELECT o.id, a.owner_id AS ownerId, o.amount_minor AS amountMinor, o.currency, o.status,
@@ -178,12 +180,12 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
     first<SyncStateRow>(database, `SELECT last_success_at AS lastSuccessAt, last_backup_success_at AS lastBackupSuccessAt,
         last_backup_status AS lastBackupStatus, last_error_code AS lastErrorCode, last_backup_error_code AS lastBackupErrorCode
       FROM business_reporting_sync_state WHERE id='primary'`),
+    loadMarketingCampaignReport(database, now),
   ]);
 
   const sessionLastSeen = new Map(sessions.map((row) => [row.memberId, Number(row.lastSeenAt)]));
   const verifiedOrders = orderRows.map((order) => ({ ...order, ownerMemberId: memberFromAccountOwner(order.ownerId), amountMinor: Number(order.amountMinor), fulfilledAt: Number(order.fulfilledAt), refundedAt: order.refundedAt === null ? null : Number(order.refundedAt) }));
   const verifiedOrderIds = new Set(verifiedOrders.map((order) => order.id));
-  const memberById = new Map(members.map((member) => [member.id, member]));
 
   const activeCutoff = now - BUSINESS_REPORTING_ACTIVE_DAYS * DAY_MS;
   const activeUsers = members.filter((member) => Number(member.disabled) === 0 && member.verifiedAt !== null && (sessionLastSeen.get(member.id) ?? 0) >= activeCutoff).length;
@@ -335,6 +337,25 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
     if (entry.eventType === "REFUND") row.creditsRefunded += Math.max(0, Number(entry.units));
   }
   const credits: CreditReportRow[] = [...creditByDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+  const campaigns: CampaignReportRow[] = campaignRecords.map((campaign) => ({
+    campaignId: campaign.id,
+    campaignName: campaign.name,
+    campaignType: campaign.campaignType,
+    status: campaign.status,
+    rewardUnits: campaign.rewardUnits,
+    claimFrequency: campaign.claimFrequency,
+    startDate: businessDateKey(campaign.startAt, campaign.timeZone),
+    endDate: campaign.endAt === null ? null : businessDateKey(campaign.endAt, campaign.timeZone),
+    timeZone: campaign.timeZone,
+    eligibleMembers: campaign.eligibleMembers,
+    claimedRewards: campaign.claimedRewards,
+    redeemedPromotionalUnits: campaign.redeemedPromotionalUnits,
+    expiredPromotionalUnits: campaign.expiredPromotionalUnits,
+    returningUsers: campaign.returningUsers,
+    budgetUsedUnits: campaign.budgetUsedUnits,
+    totalBudgetUnits: campaign.totalBudgetUnits,
+    budgetUtilizationPercent: campaign.budgetUtilizationPercent,
+  }));
 
   const newUsersByDate = new Map<string, number>();
   for (const member of members) increment(newUsersByDate, businessDateKey(Number(member.createdAt), timeZone), 1);
@@ -408,6 +429,7 @@ export async function loadBusinessReport(database: D1Database, options: { now?: 
     referrals,
     activity,
     credits,
+    campaigns,
     system,
   };
 }
