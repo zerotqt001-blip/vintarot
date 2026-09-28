@@ -253,7 +253,7 @@ test("Google callback links a verified member by normalized email and starts a m
   assert.ok(session);
   assert.equal((await harness.store.readSession(session))?.id, existing.id);
   assert.equal((await harness.store.findByGoogleSubject("linked-google-subject"))?.id, existing.id);
-  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id WHERE a.owner_id=?").bind(existing.id).first<{ count: number }>())?.count, 0);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id WHERE a.owner_id=?").bind(`member:${existing.id}`).first<{ count: number }>())?.count, 0);
   assert.equal((await harness.database.prepare("SELECT status FROM affiliate_profiles WHERE member_id=?").bind(existing.id).first<{ status: string }>())?.status, "ACTIVE");
   assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM referral_codes WHERE affiliate_profile_id IN (SELECT id FROM affiliate_profiles WHERE member_id=?) AND public_code IS NOT NULL").bind(existing.id).first<{ count: number }>())?.count, 1);
 });
@@ -331,7 +331,7 @@ test("Google first login creates a completion token with no provider tokens and 
   assert.ok(member?.email_verified_at);
   const trialGrant = await harness.database.prepare(`SELECT g.units, g.source, g.grant_key, g.expires_at
     FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id
-    WHERE a.owner_kind='member' AND a.owner_id=?`).bind(member?.id).first<{
+    WHERE a.owner_kind='member' AND a.owner_id=?`).bind(`member:${member?.id}`).first<{
       units: number;
       source: string;
       grant_key: string;
@@ -344,7 +344,7 @@ test("Google first login creates a completion token with no provider tokens and 
 
   const replay = await harness.handlers.googleComplete(jsonRequest("/api/auth/google/complete", { token: completionToken, username: "other_reader", phone: "+84987654321" }));
   assert.equal(replay.status, 400);
-  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id WHERE a.owner_id=?").bind(member?.id).first<{ count: number }>())?.count, 1);
+  assert.equal((await harness.database.prepare("SELECT COUNT(*) AS count FROM credit_grants g JOIN credit_accounts a ON a.id=g.account_id WHERE a.owner_id=?").bind(`member:${member?.id}`).first<{ count: number }>())?.count, 1);
 });
 
 test("Google completion rejects duplicate username, duplicate email, and invalid local identifiers", async (t) => {
