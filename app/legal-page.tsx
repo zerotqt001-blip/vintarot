@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnalyticsPreferencesButton } from "@/components/analytics/analytics-provider";
 import type { LegalDocument } from "@/lib/legal-content";
 import { legalUpdatedAt } from "@/lib/legal-content";
 
@@ -56,6 +57,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
         <footer className="legal-footer">
           <Link href="/">Back to NaTarot / Về NaTarot</Link>
           <span>Contact / Liên hệ: zerotqt001@gmail.com</span>
+          {document.path === "/privacy" && <AnalyticsPreferencesButton />}
         </footer>
       </article>
     </main>
