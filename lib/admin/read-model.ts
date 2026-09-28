@@ -50,6 +50,7 @@ export type AdminMemberMembershipSummary = {
 
 export type AdminMemberInventoryView = MemberAdminView & {
   creditAvailableUnits?: number;
+  creditUsedUnits?: number;
   membership?: AdminMemberMembershipSummary;
 };
 
@@ -253,12 +254,16 @@ export async function listAdminMembers(database: D1Database, actor: AdminActor, 
   const now = Date.now();
   const owners = members.map((member) => memberOwner(member.id).ownerId);
   const placeholders = owners.map(() => "?").join(", ");
-  const [creditRows, vipRows] = await Promise.all([
+  const [creditRows, creditUsageRows, vipRows] = await Promise.all([
     database.prepare(`SELECT a.owner_id AS ownerId,
         COALESCE(SUM(CASE WHEN g.eligible_from <= ? AND (g.expires_at IS NULL OR g.expires_at > ?) THEN g.available_units ELSE 0 END), 0) AS availableUnits
       FROM credit_accounts a LEFT JOIN credit_grants g ON g.account_id=a.id
       WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders})
       GROUP BY a.owner_id`).bind(now, now, ...owners).all<{ ownerId: string; availableUnits: number }>(),
+    database.prepare(`SELECT a.owner_id AS ownerId, COALESCE(SUM(ABS(l.units)), 0) AS usedUnits
+      FROM credit_accounts a JOIN credit_ledger l ON l.account_id=a.id AND l.event_type='CONSUME'
+      WHERE a.owner_kind='member' AND a.owner_id IN (${placeholders})
+      GROUP BY a.owner_id`).bind(...owners).all<{ ownerId: string; usedUnits: number }>(),
     database.prepare(`SELECT a.owner_id AS ownerId, e.ends_at AS endsAt, o.package_snapshot AS packageSnapshot
       FROM entitlements e
       JOIN credit_accounts a ON a.id=e.account_id
@@ -273,6 +278,7 @@ export async function listAdminMembers(database: D1Database, actor: AdminActor, 
   ]);
 
   const availableCredits = new Map(creditRows.results.map((row) => [row.ownerId, Number(row.availableUnits)]));
+  const usedCredits = new Map(creditUsageRows.results.map((row) => [row.ownerId, Number(row.usedUnits)]));
   const memberships = new Map<string, AdminMemberMembershipSummary>();
   for (const row of vipRows.results) {
     const packageNames = packageNamesFromSnapshot(row.packageSnapshot);
@@ -294,6 +300,7 @@ export async function listAdminMembers(database: D1Database, actor: AdminActor, 
   return members.map((member) => ({
     ...member,
     creditAvailableUnits: availableCredits.get(`member:${member.id}`) ?? 0,
+    creditUsedUnits: usedCredits.get(`member:${member.id}`) ?? 0,
     membership: memberships.get(`member:${member.id}`) ?? { status: "NONE", endsAt: null, packageNameEn: null, packageNameVi: null },
   }));
 }

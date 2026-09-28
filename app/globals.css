@@ -2647,8 +2647,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 }
 
 /* Keep Super Admin membership and Credit summaries scannable without breaking the existing table scroll on narrow screens. */
-.admin-users-table{min-width:930px}
-.admin-users-table th:nth-last-child(3){min-width:150px}
+.admin-users-table{min-width:1080px}
+.admin-users-table th:nth-last-child(4){min-width:150px}
+.admin-users-table th:nth-last-child(3),.admin-users-table th:nth-last-child(2){min-width:118px}
 .admin-membership-status{display:inline-flex;align-items:center;min-height:24px;border:1px solid var(--color-border);border-radius:999px;padding:3px 9px;color:var(--color-text-muted);font-size:10px;line-height:1.2;white-space:nowrap}
 .admin-membership-status--active{border-color:var(--color-border-active);background:var(--color-gold-subtle);color:var(--color-gold-bright)}
 .admin-users-table .admin-user-credits{color:var(--color-gold-bright);font-size:13px;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.admin-users-table .admin-user-credits--used{color:var(--color-text-muted);font-weight:500}

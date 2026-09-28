@@ -1,5 +1,10 @@
 # VinTarot state
 
+## Admin Users Credit usage summary (2026-09-28; source implemented)
+The `/admin` Users table now includes the current available Credit balance and lifetime Credits used for each member. The available balance follows the existing eligible, non-expired grant projection; Credits used sums successful `CONSUME` events from the canonical ledger, matching the business-reporting definition and excluding adjustments or expirations. Both values remain restricted to the active `SUPER_ADMIN` role. No migration or account/ledger mutation was needed.
+
+Validation: `npx tsc --noEmit`, targeted ESLint for `app/admin/admin-console.tsx` and `lib/admin/read-model.ts`, `npm run build`, and `git diff --check` pass. No automated tests were run. The Impeccable detector returned existing stylesheet-wide findings outside the new table rules. Production deployment has not been recorded yet.
+
 ## Mobile Room sign-in prompt (2026-09-28; production deployed)
 The Room auth prompt now presents both actions as full-width stacked buttons on mobile. “Đăng nhập” is the softly filled gold primary action; “Tạo tài khoản NaTarot” remains a quieter outlined action. The dialog keeps the Moonlight palette and rounded styling, with a visible keyboard focus ring. The existing sign-in/register handlers and safe reading-resume flow are unchanged; no API, database, or migration changes were made.
 
