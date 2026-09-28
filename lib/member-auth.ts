@@ -7,6 +7,8 @@ const PBKDF2_ITERATIONS = 600_000;
 const HASH_BYTES = 32;
 const SALT_BYTES = 16;
 const TOKEN_BYTES = 32;
+type D1Statement = ReturnType<D1Database["prepare"]>;
+type MemberAtomicStatements = (memberId: string) => D1Statement[];
 
 export type AuthTokenKind = "email-verification" | "password-reset" | "google-completion";
 
@@ -284,39 +286,48 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
     .bind(id)
     .first<MemberRow>();
 
-  return {
-    async createMember(input: MemberRegistration): Promise<MemberView> {
-      const timestamp = now();
-      const row: MemberRow = {
-        id: crypto.randomUUID(),
-        username: normalizeUsername(input.username),
-        email: normalizeEmail(input.email),
-        phone: normalizePhone(input.phone),
-        display_name: input.displayName ?? null,
-        password_hash: input.passwordHash,
-        google_subject: input.googleSubject ?? null,
-        email_verified_at: input.emailVerifiedAt ?? null,
-        created_at: timestamp,
-        updated_at: timestamp,
-        last_login_at: null,
-        disabled: 0,
-      };
-      try {
-        await database.prepare(`INSERT INTO members (
+  async function insertMemberAtomically(input: MemberRegistration, statementsForMember: MemberAtomicStatements = () => []): Promise<MemberView> {
+    const timestamp = now();
+    const row: MemberRow = {
+      id: crypto.randomUUID(),
+      username: normalizeUsername(input.username),
+      email: normalizeEmail(input.email),
+      phone: normalizePhone(input.phone),
+      display_name: input.displayName ?? null,
+      password_hash: input.passwordHash,
+      google_subject: input.googleSubject ?? null,
+      email_verified_at: input.emailVerifiedAt ?? null,
+      created_at: timestamp,
+      updated_at: timestamp,
+      last_login_at: null,
+      disabled: 0,
+    };
+    try {
+      await database.batch([
+        database.prepare(`INSERT INTO members (
           id, username, email, phone, display_name, password_hash, google_subject,
           email_verified_at, created_at, updated_at, last_login_at, disabled
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-          .bind(
-            row.id, row.username, row.email, row.phone, row.display_name, row.password_hash,
-            row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
-            row.last_login_at, row.disabled,
-          )
-          .run();
-      } catch (error) {
-        if (isUniqueConstraint(error)) throw new MemberConflictError();
-        throw error;
-      }
-      return toMemberView(row);
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
+          row.id, row.username, row.email, row.phone, row.display_name, row.password_hash,
+          row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
+          row.last_login_at, row.disabled,
+        ),
+        ...statementsForMember(row.id),
+      ]);
+    } catch (error) {
+      if (isUniqueConstraint(error)) throw new MemberConflictError();
+      throw error;
+    }
+    return toMemberView(row);
+  }
+
+  return {
+    async createMember(input: MemberRegistration): Promise<MemberView> {
+      return insertMemberAtomically(input);
+    },
+
+    async createMemberAtomically(input: MemberRegistration, statementsForMember: MemberAtomicStatements): Promise<MemberView> {
+      return insertMemberAtomically(input, statementsForMember);
     },
 
     async findByIdentifier(identifier: string): Promise<MemberRow | null> {
@@ -584,7 +595,10 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
       }
     },
 
-    async completeGoogleMemberAtomically(input: MemberRegistration & { tokenHash: string }): Promise<MemberView | null> {
+    async completeGoogleMemberAtomically(
+      input: MemberRegistration & { tokenHash: string },
+      statementsForMember: MemberAtomicStatements = () => [],
+    ): Promise<MemberView | null> {
       const timestamp = now();
       const marker = uniqueMarker(timestamp);
       const row: MemberRow = {
@@ -616,6 +630,7 @@ export function createMemberAuthStore(database: D1Database, now: () => number = 
               row.google_subject, row.email_verified_at, row.created_at, row.updated_at,
               row.last_login_at, row.disabled, input.tokenHash, marker,
             ),
+          ...statementsForMember(row.id),
         ]);
         if (Number(results[1]?.meta.changes) !== 1) return null;
       } catch (error) {

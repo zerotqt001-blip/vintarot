@@ -242,6 +242,74 @@ export function creditAccountId(owner: CreditOwner): string {
   return `credit-account:${owner.kind}:${owner.ownerId}`;
 }
 
+export function prepareGrantCreditsStatements(
+  database: D1Database,
+  input: GrantCreditsInput,
+  options: { timestamp?: number; createAccount?: boolean; requireMemberRecord?: boolean } = {},
+): Array<ReturnType<D1Database["prepare"]>> {
+  if (!Number.isSafeInteger(input.units) || input.units <= 0) throw new CreditError("Grant units must be a positive integer", "invalid_units");
+  if (!input.grantKey.trim()) throw new CreditError("Grant key is required", "invalid_grant_key");
+  if (options.requireMemberRecord && input.owner.kind !== "member") throw new CreditError("A member owner is required for this atomic grant", "invalid_owner");
+  const accountId = creditAccountId(input.owner);
+  const timestamp = options.timestamp ?? Date.now();
+  const eligibleFrom = input.eligibleFrom ?? timestamp;
+  const expiresAt = input.expiresAt ?? null;
+  const policySnapshot = snapshot(input.policySnapshot);
+  const requestFingerprint = createRequestFingerprint({
+    eventType: "GRANT",
+    source: input.source,
+    units: input.units,
+    grantKey: input.grantKey,
+    eligibleFrom,
+    expiresAt,
+    sourceType: input.sourceType ?? null,
+    sourceId: input.sourceId ?? null,
+    policyVersion: input.policyVersion,
+    policySnapshot,
+    reason: input.reason,
+  });
+  const grantId = scopedId("credit-grant", accountId, input.grantKey);
+  const ledgerKey = `grant:${input.grantKey}`;
+  const ledgerId = scopedId("credit-ledger", accountId, ledgerKey);
+  validateLedgerEntry({
+    eventType: "GRANT",
+    units: input.units,
+    idempotencyKey: ledgerKey,
+    requestFingerprint,
+    reason: input.reason,
+    effectiveAt: eligibleFrom,
+    createdAt: timestamp,
+  });
+
+  const memberCondition = options.requireMemberRecord ? " AND EXISTS (SELECT 1 FROM members WHERE id = ?)" : "";
+  const accountValuesSql = options.requireMemberRecord
+    ? "SELECT ?, ?, ?, 0, NULL, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
+    : "VALUES (?, ?, ?, 0, NULL, ?, ?)";
+  const accountGuardValues = options.requireMemberRecord ? [input.owner.ownerId] : [];
+  const statements: Array<ReturnType<D1Database["prepare"]>> = [];
+
+  if (options.createAccount !== false) {
+    statements.push(database.prepare(`INSERT OR IGNORE INTO credit_accounts (id, owner_kind, owner_id, mutation_version, mutation_token, created_at, updated_at) ${accountValuesSql}`)
+      .bind(accountId, input.owner.kind, input.owner.ownerId, timestamp, timestamp, ...accountGuardValues));
+  }
+  statements.push(
+    database.prepare(`UPDATE credit_accounts SET mutation_version = mutation_version + 1, updated_at = ? WHERE id = ?${memberCondition}`)
+      .bind(timestamp, accountId, ...accountGuardValues),
+    database.prepare(`INSERT OR IGNORE INTO credit_grants (id, account_id, source, source_type, source_id, grant_key, request_fingerprint, units, available_units, eligible_from, expires_at, policy_version, policy_snapshot, created_at, updated_at)
+      ${options.requireMemberRecord
+        ? "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
+        : "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"}`)
+      .bind(grantId, accountId, input.source, input.sourceType ?? null, input.sourceId ?? null, input.grantKey, requestFingerprint, input.units, input.units, eligibleFrom, expiresAt, input.policyVersion, policySnapshot, timestamp, timestamp, ...accountGuardValues),
+    database.prepare(`INSERT OR IGNORE INTO credit_ledger (id, account_id, grant_id, reservation_id, event_type, units, reference_type, reference_id, idempotency_key, request_fingerprint, actor_kind, actor_id, reason, effective_at, created_at, reversed_entry_id)
+      ${options.requireMemberRecord
+        ? "SELECT ?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL WHERE EXISTS (SELECT 1 FROM members WHERE id = ?)"
+        : "VALUES (?, ?, ?, NULL, 'GRANT', ?, ?, ?, ?, ?, 'system', NULL, ?, ?, ?, NULL)"}`)
+      .bind(ledgerId, accountId, grantId, input.units, input.sourceType ?? "grant", input.sourceId ?? input.grantKey, ledgerKey, requestFingerprint, input.reason, eligibleFrom, timestamp, ...accountGuardValues),
+  );
+  if (input.audit) statements.push(prepareAuditInsert(database, input.audit, timestamp, { ignoreExisting: input.auditStrict !== true }));
+  return statements;
+}
+
 function scopedId(prefix: string, accountId: string, key: string): string {
   return `${prefix}:${accountId}:${key}`;
 }

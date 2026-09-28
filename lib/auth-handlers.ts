@@ -3,7 +3,7 @@ import type { GoogleOAuthClient } from "./google-oauth";
 import { clearAffiliateGuestCookie, readAffiliateGuestId } from "./affiliate/anonymous-attribution";
 import { ensureAffiliateEnrollment } from "./affiliate/enrollment";
 import { claimGuestReferralAttribution } from "./affiliate/service";
-import { createCreditStore, creditAccountId } from "./credits/repository";
+import { creditAccountId, prepareGrantCreditsStatements } from "./credits/repository";
 import {
   MemberConflictError,
   type MemberRow,
@@ -134,8 +134,8 @@ async function rollbackRegistration(database: D1Database, memberId: string, rawT
   await rollbackNewMember(database, memberId, rawToken);
 }
 
-async function grantSignupTrialCredit(database: D1Database, memberId: string, now: () => number): Promise<void> {
-  await createCreditStore(database, now).grantCredits({
+function signupTrialCreditStatements(database: D1Database, memberId: string, now: () => number) {
+  return prepareGrantCreditsStatements(database, {
     owner: { kind: "member", ownerId: memberId },
     source: "TRIAL",
     units: 1,
@@ -145,6 +145,10 @@ async function grantSignupTrialCredit(database: D1Database, memberId: string, no
     policyVersion: "signup-trial-v1",
     policySnapshot: { grantKey: SIGNUP_TRIAL_CREDIT_GRANT_KEY, units: 1, expiresAt: null },
     reason: "Free signup trial credit",
+  }, {
+    timestamp: now(),
+    createAccount: true,
+    requireMemberRecord: true,
   });
 }
 
@@ -377,18 +381,8 @@ export function createAuthHandlers({
           displayName: payload.displayName,
           emailVerifiedAt: now(),
           tokenHash,
-        });
+        }, (memberId) => signupTrialCreditStatements(database, memberId, now));
         if (!member) return invalidToken();
-        try {
-          await grantSignupTrialCredit(database, member.id, now);
-        } catch (error) {
-          try {
-            await rollbackNewMember(database, member.id);
-          } catch {
-            // Keep the generic completion error even if cleanup cannot complete.
-          }
-          throw error;
-        }
         await store.markLastLogin(member.id);
         await enrollAndClaimAffiliate(member.id, request);
         return withAffiliateGuestCookieCleared(localRedirect(request, payload.returnPath, (await store.createSession(member.id, true)).raw, false, trustForwardedFor), request, trustForwardedFor);
@@ -407,25 +401,14 @@ export function createAuthHandlers({
 
       let member;
       try {
-        member = await store.createMember({
+        member = await store.createMemberAtomically({
           email: parsed.email,
           username: parsed.username,
           phone: parsed.phone,
           passwordHash: await hashPassword(parsed.password),
-        });
+        }, (memberId) => signupTrialCreditStatements(database, memberId, now));
       } catch (error) {
         if (error instanceof MemberConflictError) return Response.json({ ok: true, next: "verify-email" });
-        throw error;
-      }
-
-      try {
-        await grantSignupTrialCredit(database, member.id, now);
-      } catch (error) {
-        try {
-          await rollbackNewMember(database, member.id);
-        } catch {
-          // Keep the original credit error if cleanup cannot complete.
-        }
         throw error;
       }
 
