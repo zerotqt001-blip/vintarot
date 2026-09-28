@@ -114,9 +114,37 @@ export function AnalyticsProvider({
     if (!validMeasurementId) return;
     setBannerLocale(getBannerLocale());
     const syncBannerLocale = () => setBannerLocale(getBannerLocale());
+    const syncConsent = (event: StorageEvent) => {
+      syncBannerLocale();
+      if (event.key !== CONSENT_STORAGE_KEY && event.key !== null) return;
+
+      const choice = event.newValue === 'accepted' || event.newValue === 'rejected'
+        ? event.newValue
+        : null;
+      const wasAccepted = consentRef.current === 'accepted';
+      consentRef.current = choice;
+
+      if (choice !== 'accepted') {
+        setGoogleTagCollectionDisabled(validMeasurementId, true);
+        if (wasAccepted) {
+          getGtag()('consent', 'update', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          });
+          previousPathRef.current = null;
+          lastTrackedPathRef.current = null;
+          setTagReady(false);
+        }
+        clearGaCookies();
+      }
+
+      setConsent(choice);
+    };
     const observer = new MutationObserver(syncBannerLocale);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-    window.addEventListener('storage', syncBannerLocale);
+    window.addEventListener('storage', syncConsent);
 
     try {
       const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);
@@ -132,7 +160,7 @@ export function AnalyticsProvider({
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('storage', syncBannerLocale);
+      window.removeEventListener('storage', syncConsent);
     };
   }, [validMeasurementId]);
 
