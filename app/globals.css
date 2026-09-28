@@ -2359,7 +2359,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
 @media(max-width:700px){.account-affiliate-panel .account-panel-heading{display:flex;flex-wrap:wrap;align-items:flex-start}.account-affiliate-open{width:100%;justify-content:center}.account-affiliate-field{grid-template-columns:minmax(0,1fr) auto;gap:6px}.account-affiliate-field>span{grid-column:1 / -1}.account-affiliate-field code{font-size:10px}.affiliate-referral-total{margin-top:9px}.affiliate-commission-activity{margin-top:15px}}
 /* NaTarot Reading Result: place the real spread and interpretation in one calm, navigable canvas. */
-.room-page.has-interpretation .room-reading-panel-shell{background:linear-gradient(180deg,rgba(4,14,27,.72),rgba(3,12,24,.86)),var(--asset-celestial-observatory) center top/cover no-repeat fixed;backdrop-filter:blur(2px)}
 .room-reading-panel-shell .reading-panel{background:transparent;box-shadow:none}
 .room-reading-panel-shell .reading-panel__scroll{flex:1 1 auto;min-width:0;padding:0 clamp(18px,3.2vw,56px) clamp(34px,5vh,58px);scroll-padding-bottom:clamp(34px,5vh,58px);scrollbar-color:rgba(227,201,143,.38) rgba(5,18,32,.45);scrollbar-width:thin}
 .room-reading-panel-shell .reading-panel__scroll::selection,.room-reading-panel-shell .reading-panel__scroll *::selection{background:rgba(199,166,106,.38);color:var(--color-ivory)}
@@ -2430,7 +2429,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .room-reading-panel-shell .reading-result-content__rail .reading-section--follow-up{position:relative;top:auto;min-height:0}
 }
 @media(max-width:680px){
-  .room-page.has-interpretation .room-reading-panel-shell{background:linear-gradient(180deg,rgba(4,14,27,.84),rgba(3,12,24,.94)),var(--asset-celestial-observatory) center top/auto 100% no-repeat;backdrop-filter:none}
   .room-reading-panel-shell .reading-panel__scroll{padding:0 max(14px,env(safe-area-inset-left)) calc(28px + env(safe-area-inset-bottom));scroll-padding-bottom:calc(28px + env(safe-area-inset-bottom))}
   .room-reading-panel-shell .reading-result-toolbar{width:100%;padding:6px 0}
   .room-reading-panel-shell .reading-result-toolbar .reading-panel__actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));width:min(100%,380px);gap:6px}
