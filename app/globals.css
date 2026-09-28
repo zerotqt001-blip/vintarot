@@ -308,6 +308,13 @@
 .room-dialog,[data-slot=dialog-content].room-dialog{background:rgba(5, 18, 32, 0.95);border:1px solid rgba(199, 166, 106, 0.38);color:var(--tarot-text);box-shadow:0 20px 70px rgba(2, 8, 18, 0.62)}
 .room-dialog [data-slot=dialog-title]{color:var(--tarot-gold-light)}
 .room-dialog [data-slot=dialog-description]{color:var(--tarot-text-secondary)}
+.room-dialog .room-signin-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%;margin-top:8px}
+.room-dialog .room-signin-actions>.button{width:100%;min-height:52px;padding:12px 18px;border-radius:22px;transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s ease}
+.room-dialog .room-signin-actions>.button.black{border-color:rgba(199,166,106,.68);background:rgba(199,166,106,.9);color:#06111f;box-shadow:0 6px 16px rgba(199,166,106,.1)}
+.room-dialog .room-signin-actions>.button.black:hover{border-color:rgba(227,201,143,.8);background:rgba(211,188,136,.98);box-shadow:0 8px 20px rgba(199,166,106,.14)}
+.room-dialog .room-signin-actions>.button:not(.black){border-color:rgba(199,166,106,.38);background:rgba(8,24,40,.36);color:var(--tarot-ivory)}
+.room-dialog .room-signin-actions>.button:not(.black):hover{border-color:rgba(199,166,106,.58);background:rgba(199,166,106,.07)}
+.room-dialog .room-signin-actions>.button:focus-visible{outline:2px solid var(--tarot-gold-light);outline-offset:3px}
 .room-dialog input,.room-dialog textarea{background:rgba(8, 24, 40, 0.82);border-color:rgba(199, 166, 106, 0.32);color:var(--tarot-ivory)}
 .room-dialog input::placeholder,.room-dialog textarea::placeholder{color:var(--tarot-text-muted)}
 .room-dialog .button.black{background:var(--tarot-gold);color:#06111F;border-color:var(--tarot-gold-light)}
