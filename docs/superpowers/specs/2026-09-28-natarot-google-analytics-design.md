@@ -4,7 +4,7 @@
 
 ## Goal
 
-Connect the production NaTarot website at `https://natarot.com` to a dedicated Google Analytics 4 property owned by `zerotqt001@gmail.com`. Measure page views and standard session metrics only after a clear visitor opt-in. Do not add custom product-interaction events.
+Connect the production NaTarot website at `https://natarot.com` to a dedicated Google Analytics 4 property in the owner's signed-in Google account. Measure page views and standard session metrics only after a clear visitor opt-in. Do not add custom product-interaction events.
 
 ## Current state
 
