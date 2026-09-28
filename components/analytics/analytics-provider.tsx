@@ -180,11 +180,11 @@ export function AnalyticsProvider({
         ad_user_data: 'denied',
         ad_personalization: 'denied',
       });
-      clearGaCookies();
       previousPathRef.current = null;
       lastTrackedPathRef.current = null;
       setTagReady(false);
     }
+    if (choice === 'rejected') clearGaCookies();
     try {
       window.localStorage.setItem(CONSENT_STORAGE_KEY, choice);
     } catch {
