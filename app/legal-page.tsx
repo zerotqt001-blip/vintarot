@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AnalyticsPreferencesButton } from "@/components/analytics/analytics-provider";
-import type { LegalDocument } from "@/lib/legal-content";
+import { googlePrivacyPolicyUrl, type LegalDocument } from "@/lib/legal-content";
 import { legalUpdatedAt } from "@/lib/legal-content";
 
 function BilingualParagraph({ en, vi }: { en: string; vi: string }) {
@@ -49,6 +49,19 @@ export function LegalPage({ document }: { document: LegalDocument }) {
                     </li>
                   ))}
                 </ul>
+              )}
+              {section.externalLink?.href === googlePrivacyPolicyUrl && (
+                <p className="legal-external-link">
+                  <a
+                    href={section.externalLink.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${section.externalLink.label.en}. ${section.externalLink.label.vi}. Opens in a new tab / Mở trong thẻ mới`}
+                  >
+                    <span className="legal-en">{section.externalLink.label.en}</span>
+                    <span className="legal-vi">{section.externalLink.label.vi}</span>
+                  </a>
+                </p>
               )}
             </section>
           ))}

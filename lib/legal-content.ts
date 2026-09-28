@@ -1,10 +1,18 @@
 export type BilingualText = { en: string; vi: string };
 
+export const googlePrivacyPolicyUrl = "https://policies.google.com/privacy?hl=en" as const;
+
+export type LegalExternalLink = {
+  href: typeof googlePrivacyPolicyUrl;
+  label: BilingualText;
+};
+
 export type LegalSection = {
   id: string;
   title: BilingualText;
   paragraphs?: BilingualText[];
   bullets?: BilingualText[];
+  externalLink?: LegalExternalLink;
 };
 
 export type LegalDocument = {
@@ -14,7 +22,7 @@ export type LegalDocument = {
   sections: LegalSection[];
 };
 
-export const legalUpdatedAt = "2026-09-19";
+export const legalUpdatedAt = "2026-09-28";
 export const supportEmail = "zerotqt001@gmail.com";
 
 export const legalDocuments: { privacy: LegalDocument; terms: LegalDocument } = {
@@ -93,6 +101,31 @@ export const legalDocuments: { privacy: LegalDocument; terms: LegalDocument } = 
             vi: "Chúng tôi không bán thông tin cá nhân và không dùng dữ liệu tài khoản Google cho quảng cáo. Dữ liệu tài khoản Google chỉ được dùng để tạo, liên kết và bảo vệ tài khoản thành viên NaTarot, cũng như cung cấp luồng đăng nhập mà bạn yêu cầu.",
           },
         ],
+      },
+      {
+        id: "analytics",
+        title: { en: "Google Analytics", vi: "Google Analytics" },
+        paragraphs: [
+          {
+            en: "With your permission, NaTarot uses Google Analytics to understand website visits and improve the service. Google receives allowlisted, sanitized page routes and standard session data. Depending on your browser and settings, this may include a pseudonymous first-party _ga cookie, approximate region, browser and device details, and standard lifecycle events such as first_visit, session_start and user_engagement.",
+            vi: "Khi bạn cho phép, NaTarot dùng Google Analytics để hiểu lượt truy cập website và cải thiện dịch vụ. Google nhận các đường dẫn trang đã được lọc và làm sạch cùng dữ liệu phiên tiêu chuẩn. Tùy trình duyệt và cài đặt, dữ liệu này có thể gồm cookie _ga bên thứ nhất dạng mã giả danh, khu vực gần đúng, thông tin trình duyệt và thiết bị, cùng các sự kiện vòng đời tiêu chuẩn như first_visit, session_start và user_engagement.",
+          },
+          {
+            en: "NaTarot does not send Tarot questions or optional context, card selections, readings, journal entries, account profile fields or user identifiers as Analytics events.",
+            vi: "NaTarot không gửi câu hỏi Tarot hoặc bối cảnh bổ sung, lựa chọn lá bài, nội dung trải bài, mục nhật ký, trường thông tin hồ sơ tài khoản hay mã định danh người dùng dưới dạng sự kiện Analytics.",
+          },
+          {
+            en: "Choosing Reject keeps Analytics off. You can change your choice anytime with the Analytics preferences button at the bottom of this page. Rejecting or withdrawing permission stops future collection and clears accessible _ga cookies. Data already sent to Google cannot be recalled by NaTarot.",
+            vi: "Chọn Từ chối sẽ tắt Analytics. Bạn có thể đổi lựa chọn bất cứ lúc nào bằng nút Tùy chọn phân tích ở cuối trang này. Từ chối hoặc rút lại quyền cho phép sẽ dừng việc thu thập trong tương lai và xóa các cookie _ga mà NaTarot có thể truy cập. NaTarot không thể thu hồi dữ liệu đã gửi đến Google.",
+          },
+        ],
+        externalLink: {
+          href: googlePrivacyPolicyUrl,
+          label: {
+            en: "Read Google's Privacy Policy",
+            vi: "Đọc Chính sách quyền riêng tư của Google",
+          },
+        },
       },
       {
         id: "retention",
@@ -177,8 +210,8 @@ export const legalDocuments: { privacy: LegalDocument; terms: LegalDocument } = 
         title: { en: "Contact", vi: "Liên hệ" },
         paragraphs: [
           {
-            en: "Questions about these terms can be sent to zerotqt001@gmail.com. These terms were last updated on September 19, 2026.",
-            vi: "Bạn có thể gửi câu hỏi về điều khoản đến zerotqt001@gmail.com. Điều khoản này được cập nhật lần cuối ngày 19 tháng 9 năm 2026.",
+            en: "Questions about these terms can be sent to zerotqt001@gmail.com. These terms were last updated on September 28, 2026.",
+            vi: "Bạn có thể gửi câu hỏi về điều khoản đến zerotqt001@gmail.com. Điều khoản này được cập nhật lần cuối ngày 28 tháng 9 năm 2026.",
           },
         ],
       },
